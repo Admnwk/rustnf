@@ -1,0 +1,609 @@
+{
+ "_comentario": "Esperado escrito a mao a partir da planilha do Anexo VIII v1.02.00 (portal da NFS-e); erro/aviso = trecho da mensagem.",
+ "versao_anexo": "1.02.00",
+ "casos": [
+  {
+   "nome": "funeral_humano",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "250101",
+    "nbs": "126030000"
+   },
+   "esperado": {
+    "linha": 1361,
+    "cind_op": "100301",
+    "cclasstrib": "200029",
+    "cst": "200",
+    "avisos": []
+   }
+  },
+  {
+   "nome": "funeral_animal",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "25.01",
+    "nbs": "1.1405.30.00"
+   },
+   "esperado": {
+    "linha": 1360,
+    "cind_op": "100301",
+    "cclasstrib": "000001",
+    "cst": "000",
+    "avisos": []
+   }
+  },
+  {
+   "nome": "funeral_sem_nbs_recusa",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "2501"
+   },
+   "esperado": {
+    "erro": "tem 2 classificacoes"
+   }
+  },
+  {
+   "nome": "cremacao_humano",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "25.02.01",
+    "nbs": "126030000"
+   },
+   "esperado": {
+    "linha": 1363,
+    "cind_op": "100301",
+    "cclasstrib": "200029",
+    "cst": "200",
+    "avisos": []
+   }
+  },
+  {
+   "nome": "plano_funerario_recusa",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "250301"
+   },
+   "esperado": {
+    "erro": "tem 2 classificacoes"
+   }
+  },
+  {
+   "nome": "plano_funerario_820002",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "250301",
+    "cclasstrib": "820002"
+   },
+   "esperado": {
+    "linha": 1365,
+    "cind_op": "100301",
+    "cclasstrib": "820002",
+    "cst": "820",
+    "avisos": []
+   }
+  },
+  {
+   "nome": "plano_funerario_011001_aviso",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "250301",
+    "cclasstrib": "011001"
+   },
+   "esperado": {
+    "linha": 1364,
+    "cind_op": "100301",
+    "cclasstrib": "011001",
+    "cst": "011",
+    "avisos": [
+     "011001 nao lista NFS-e"
+    ]
+   }
+  },
+  {
+   "nome": "jazigo_imovel",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "250401"
+   },
+   "esperado": {
+    "linha": 1366,
+    "cind_op": "020201",
+    "cclasstrib": "000001",
+    "cst": "000",
+    "avisos": []
+   }
+  },
+  {
+   "nome": "cessao_cemiterio",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "250501"
+   },
+   "esperado": {
+    "linha": 1367,
+    "cind_op": "020101",
+    "cclasstrib": "000001",
+    "cst": "000",
+    "avisos": []
+   }
+  },
+  {
+   "nome": "ti_nbs_sem_soberania",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "010101",
+    "nbs": "115021000"
+   },
+   "esperado": {
+    "linha": 2,
+    "cind_op": "100301",
+    "cclasstrib": "000001",
+    "cst": "000",
+    "avisos": []
+   }
+  },
+  {
+   "nome": "ti_nbs_com_soberania_recusa",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "010101",
+    "nbs": "115029000"
+   },
+   "esperado": {
+    "erro": "tem 3 classificacoes"
+   }
+  },
+  {
+   "nome": "ti_soberania_escolhida",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "010101",
+    "nbs": "115029000",
+    "cclasstrib": "200044"
+   },
+   "esperado": {
+    "linha": 8,
+    "cind_op": "100301",
+    "cclasstrib": "200044",
+    "cst": "200",
+    "avisos": []
+   }
+  },
+  {
+   "nome": "plano_pet_aviso",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "050901",
+    "nbs": "114055000",
+    "cclasstrib": "011005"
+   },
+   "esperado": {
+    "linha": 224,
+    "cind_op": "100301",
+    "cclasstrib": "011005",
+    "cst": "011",
+    "avisos": [
+     "011005 nao lista NFS-e"
+    ]
+   }
+  },
+  {
+   "nome": "corretagem_saude_recusa",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "100101",
+    "nbs": "109102000"
+   },
+   "esperado": {
+    "erro": "tem 2 classificacoes"
+   }
+  },
+  {
+   "nome": "corretagem_saude_820001",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "100101",
+    "nbs": "109102000",
+    "cclasstrib": "820001"
+   },
+   "esperado": {
+    "linha": 690,
+    "cind_op": "100301",
+    "cclasstrib": "820001",
+    "cst": "820",
+    "avisos": []
+   }
+  },
+  {
+   "nome": "via_explorada_aviso",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "220101",
+    "nbs": "106042100"
+   },
+   "esperado": {
+    "linha": 1347,
+    "cind_op": "080101",
+    "cclasstrib": "820006",
+    "cst": "820",
+    "avisos": [
+     "080101 nao e' de NFS-e"
+    ]
+   }
+  },
+  {
+   "nome": "gas_tres_indop_recusa",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "160201",
+    "nbs": "105013100"
+   },
+   "esperado": {
+    "erro": "tem 3 classificacoes"
+   }
+  },
+  {
+   "nome": "gas_filtro_cclasstrib",
+   "operacao": "candidatos",
+   "args": {
+    "codigo": "160201",
+    "nbs": "105013100",
+    "cclasstrib": "000001"
+   },
+   "esperado": [
+    1177,
+    1178,
+    1179
+   ]
+  },
+  {
+   "nome": "item_99_sem_classificacao",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "990101"
+   },
+   "esperado": {
+    "erro": "nao traz cIndOp/cClassTrib"
+   }
+  },
+  {
+   "nome": "item_99_recusa",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "99.02.01",
+    "nbs": "111033100"
+   },
+   "esperado": {
+    "erro": "tem 2 classificacoes"
+   }
+  },
+  {
+   "nome": "item_99_por_subitem",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "990201",
+    "nbs": "111033100",
+    "cclasstrib": "200039"
+   },
+   "esperado": {
+    "linha": 1424,
+    "cind_op": "100301",
+    "cclasstrib": "200039",
+    "cst": "200",
+    "avisos": []
+   }
+  },
+  {
+   "nome": "item_99_quatro_digitos",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "9902"
+   },
+   "esperado": {
+    "erro": "item 99 vai pelos 6 digitos"
+   }
+  },
+  {
+   "nome": "codigo_curto",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "123"
+   },
+   "esperado": {
+    "erro": "nao e' item LC 116"
+   }
+  },
+  {
+   "nome": "item_fora_do_anexo",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "2599"
+   },
+   "esperado": {
+    "erro": "nao esta no Anexo VIII"
+   }
+  },
+  {
+   "nome": "nbs_de_outro_item",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "250101",
+    "nbs": "115021000"
+   },
+   "esperado": {
+    "erro": "nao esta no item 25.01"
+   }
+  },
+  {
+   "nome": "nbs_curto",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "250101",
+    "nbs": "12603"
+   },
+   "esperado": {
+    "erro": "nao tem 9 digitos"
+   }
+  },
+  {
+   "nome": "nbs_longo",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "250101",
+    "nbs": "1260300001"
+   },
+   "esperado": {
+    "erro": "nao tem 9 digitos"
+   }
+  },
+  {
+   "nome": "nbs_oito",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "250101",
+    "nbs": "12603000"
+   },
+   "esperado": {
+    "erro": "nao tem 9 digitos"
+   }
+  },
+  {
+   "nome": "cclasstrib_fora_do_item",
+   "operacao": "sugerir",
+   "args": {
+    "codigo": "250401",
+    "cclasstrib": "200029"
+   },
+   "esperado": {
+    "erro": "opcoes: 000001"
+   }
+  },
+  {
+   "nome": "ativ_sn_fora_do_item",
+   "operacao": "candidatos",
+   "args": {
+    "codigo": "250101",
+    "cod_ativ_sn": "9"
+   },
+   "esperado": {
+    "erro": "opcoes: 7"
+   }
+  },
+  {
+   "nome": "cand_ti_mesclado",
+   "operacao": "candidatos",
+   "args": {
+    "codigo": "010101",
+    "nbs": "115029000"
+   },
+   "esperado": [
+    6,
+    7,
+    8
+   ]
+  },
+  {
+   "nome": "cand_funeral",
+   "operacao": "candidatos",
+   "args": {
+    "codigo": "250101"
+   },
+   "esperado": [
+    1360,
+    1361
+   ]
+  },
+  {
+   "nome": "cand_funeral_ativ_7",
+   "operacao": "candidatos",
+   "args": {
+    "codigo": "250101",
+    "cod_ativ_sn": "7"
+   },
+   "esperado": [
+    1360,
+    1361
+   ]
+  },
+  {
+   "nome": "cand_gas",
+   "operacao": "candidatos",
+   "args": {
+    "codigo": "160201",
+    "nbs": "105013100"
+   },
+   "esperado": [
+    1177,
+    1178,
+    1179
+   ]
+  },
+  {
+   "nome": "regra_onerosa_pais",
+   "operacao": "cind_op",
+   "args": {
+    "cind_op": "100301",
+    "onerosa": true,
+    "exterior": false
+   },
+   "esperado": "100301"
+  },
+  {
+   "nome": "regra_onerosa_exterior",
+   "operacao": "cind_op",
+   "args": {
+    "cind_op": "100301",
+    "onerosa": true,
+    "exterior": true
+   },
+   "esperado": "100302"
+  },
+  {
+   "nome": "regra_nao_onerosa",
+   "operacao": "cind_op",
+   "args": {
+    "cind_op": "100301",
+    "onerosa": false,
+    "exterior": false
+   },
+   "esperado": "100401"
+  },
+  {
+   "nome": "regra_nao_onerosa_exterior_vazia",
+   "operacao": "cind_op",
+   "args": {
+    "cind_op": "100301",
+    "onerosa": false,
+    "exterior": true
+   },
+   "esperado": {
+    "erro": "nao onerosa com adquirente no exterior"
+   }
+  },
+  {
+   "nome": "regra_publicidade_exterior",
+   "operacao": "cind_op",
+   "args": {
+    "cind_op": "100101",
+    "onerosa": true,
+    "exterior": true
+   },
+   "esperado": "100102"
+  },
+  {
+   "nome": "regra_publicidade_nao_onerosa",
+   "operacao": "cind_op",
+   "args": {
+    "cind_op": "100101",
+    "onerosa": false,
+    "exterior": false
+   },
+   "esperado": "100201"
+  },
+  {
+   "nome": "regra_bens_nao_onerosa",
+   "operacao": "cind_op",
+   "args": {
+    "cind_op": "100501",
+    "onerosa": false,
+    "exterior": false
+   },
+   "esperado": "100601"
+  },
+  {
+   "nome": "regra_bens_exterior",
+   "operacao": "cind_op",
+   "args": {
+    "cind_op": "100501",
+    "onerosa": true,
+    "exterior": true
+   },
+   "esperado": "100502"
+  },
+  {
+   "nome": "regra_imovel_exterior_recusa",
+   "operacao": "cind_op",
+   "args": {
+    "cind_op": "020101",
+    "onerosa": true,
+    "exterior": true
+   },
+   "esperado": {
+    "erro": "so' traz cIndOp"
+   }
+  },
+  {
+   "nome": "regra_imovel_pais_passa",
+   "operacao": "cind_op",
+   "args": {
+    "cind_op": "020101",
+    "onerosa": true,
+    "exterior": false
+   },
+   "esperado": "020101"
+  },
+  {
+   "nome": "conf_bate",
+   "operacao": "conferir",
+   "args": {
+    "codigo": "250101",
+    "nbs": "126030000",
+    "cind_op": "100301",
+    "cclasstrib": "200029"
+   },
+   "esperado": []
+  },
+  {
+   "nome": "conf_cclasstrib_trocado",
+   "operacao": "conferir",
+   "args": {
+    "codigo": "250101",
+    "nbs": "126030000",
+    "cind_op": "100301",
+    "cclasstrib": "000001"
+   },
+   "esperado": [
+    "nao esta no Anexo VIII"
+   ]
+  },
+  {
+   "nome": "conf_indop_trocado",
+   "operacao": "conferir",
+   "args": {
+    "codigo": "250401",
+    "nbs": "126030000",
+    "cind_op": "100301",
+    "cclasstrib": "000001"
+   },
+   "esperado": [
+    "o anexo traz: cIndOp 020201"
+   ]
+  },
+  {
+   "nome": "conf_bate_com_aviso",
+   "operacao": "conferir",
+   "args": {
+    "codigo": "250301",
+    "nbs": "126030000",
+    "cind_op": "100301",
+    "cclasstrib": "011001"
+   },
+   "esperado": [
+    "011001 nao lista NFS-e"
+   ]
+  },
+  {
+   "nome": "conf_nbs_fora",
+   "operacao": "conferir",
+   "args": {
+    "codigo": "250101",
+    "nbs": "999999999",
+    "cind_op": "100301",
+    "cclasstrib": "200029"
+   },
+   "esperado": [
+    "nao esta no item 25.01"
+   ]
+  }
+ ]
+}

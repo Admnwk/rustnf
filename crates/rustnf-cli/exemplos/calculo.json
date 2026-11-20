@@ -1,0 +1,17 @@
+{
+  "base": {
+    "ano": 2026,
+    "op_simples": 1,
+    "situacao": "comum",
+    "servico": "100.00",
+    "desconto_incondicionado": "5.00",
+    "issqn": "5.00",
+    "pis": "5.00",
+    "cofins": "5.00"
+  },
+  "tributos": {
+    "data": "2026-10-20",
+    "cst": "000",
+    "cclass_trib": "000001"
+  }
+}

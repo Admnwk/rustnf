@@ -1,0 +1,225 @@
+{
+ "_doc": "Contrato de rustnf::reforma::previa. Os casos marcados 'oficial' sao os testes da calculadora da Receita Federal (https://github.com/ReceitaFederal/calculadora-rtc-regime-regular, versao 1.7.2): 'Teste_BaseCalculoUnificadaNfse_Controller' e 'RG12' para as bases, 'Teste_CasosFixosArredondamento' (T1 a T4 e o caso do total da CBS) para os tributos, com a entrada reescrita nos nomes de campo deste modulo e o esperado copiado. O T4 oficial usa um cClassTrib de mercadoria com reducao de 60%; aqui vai um de servico com a mesma reducao, que da os mesmos numeros. Os demais casos sao proprios. Em 'bases', 'erros' e a lista completa de codigos, na ordem; 'aviso' e um trecho que um dos avisos contem. 'recusa' e o nome da variante de ErroPrevia.",
+ "bases": [
+  {
+   "nome": "oficial cenario 1: comum, nao optante",
+   "entrada": {"ano": 2026, "op_simples": 1, "situacao": "comum", "servico": "100.00", "desconto_incondicionado": "5.00", "issqn": "5.00", "pis": "5.00", "cofins": "5.00"},
+   "regime_regular": "80.00", "simples": null, "erros": []
+  },
+  {
+   "nome": "oficial cenario 2: salao parceiro, nao optante",
+   "entrada": {"ano": 2026, "op_simples": 1, "situacao": "salao_parceiro", "servico": "100.00", "desconto_incondicionado": "5.00", "issqn": "5.00", "pis": "5.00", "cofins": "5.00"},
+   "regime_regular": "80.00", "simples": null, "erros": []
+  },
+  {
+   "nome": "oficial cenario 3: locacao com 10% de copropriedade",
+   "entrada": {"ano": 2026, "op_simples": 1, "situacao": "locacao9903", "pis": "5.00", "cofins": "5.00", "locacao": {"copropriedade": "10.00", "total_operacao": "1000.00", "desconto_total": "5.00", "ajustes": "5.00"}},
+   "regime_regular": "89.00", "simples": null, "erros": []
+  },
+  {
+   "nome": "oficial cenario 4: desconto maior que o servico",
+   "entrada": {"ano": 2026, "op_simples": 1, "situacao": "comum", "servico": "0", "desconto_incondicionado": "1.313", "documentos": [{"tipo": "101", "valor": "0"}]},
+   "regime_regular": "-1.31", "simples": null, "erros": ["BASE-NEGATIVA"]
+  },
+  {
+   "nome": "oficial cenario 5: locacao por optante",
+   "entrada": {"ano": 2026, "op_simples": 3, "situacao": "locacao9903", "regime_apuracao": 1, "pis": "5.00", "cofins": "5.00", "locacao": {"copropriedade": "10.00", "total_operacao": "1000.00", "desconto_total": "5.00", "ajustes": "5.00"}},
+   "regime_regular": "89.00", "simples": "99.50", "erros": ["EXXX-LOC-SN"]
+  },
+  {
+   "nome": "oficial cenario 6: salao parceiro, optante com IBS e CBS regulares",
+   "entrada": {"ano": 2026, "op_simples": 3, "situacao": "salao_parceiro", "regime_apuracao": 3, "servico": "100", "desconto_incondicionado": "5", "issqn": "5", "pis": "5", "cofins": "5"},
+   "regime_regular": "80.00", "simples": "95.00", "erros": []
+  },
+  {
+   "nome": "oficial cenario 7: ajuste 102 reduz as duas bases",
+   "entrada": {"ano": 2026, "op_simples": 3, "situacao": "salao_parceiro", "regime_apuracao": 3, "servico": "100", "desconto_incondicionado": "5", "issqn": "5", "pis": "5", "cofins": "5", "documentos": [{"tipo": "102", "valor": "5"}]},
+   "regime_regular": "75.00", "simples": "90.00", "erros": []
+  },
+  {
+   "nome": "oficial cenario 8: ajuste 9 nao reduz o Simples quando IBS e CBS sao regulares",
+   "entrada": {"ano": 2026, "op_simples": 3, "situacao": "salao_parceiro", "regime_apuracao": 3, "servico": "100", "desconto_incondicionado": "5", "issqn": "5", "pis": "5", "cofins": "5", "documentos": [{"tipo": "102", "valor": "5"}, {"tipo": "9", "valor": "3"}]},
+   "regime_regular": "75.00", "simples": "90.00", "erros": []
+  },
+  {
+   "nome": "oficial: valores zerados",
+   "entrada": {"ano": 2026, "op_simples": 1, "situacao": "comum", "servico": "0", "desconto_incondicionado": "0"},
+   "regime_regular": "0.00", "simples": null, "erros": []
+  },
+  {
+   "nome": "oficial: 2027, optante",
+   "entrada": {"ano": 2027, "op_simples": 3, "situacao": "comum", "regime_apuracao": 1, "servico": "100", "desconto_incondicionado": "10"},
+   "regime_regular": "90.00", "simples": "90.00", "erros": []
+  },
+  {
+   "nome": "oficial: 2033, ISSQN extinto nao reduz a base",
+   "entrada": {"ano": 2033, "op_simples": 3, "situacao": "comum", "regime_apuracao": 1, "servico": "100", "desconto_incondicionado": "10", "issqn": "15"},
+   "regime_regular": "90.00", "simples": "90.00", "erros": []
+  },
+  {
+   "nome": "oficial: E1534, ajuste igual ao servico",
+   "entrada": {"ano": 2026, "op_simples": 3, "situacao": "comum", "regime_apuracao": 1, "servico": "50", "desconto_incondicionado": "10", "documentos": [{"tipo": "101", "valor": "50"}]},
+   "regime_regular": "-10.00", "simples": "-10.00", "erros": ["E1534", "BASE-NEGATIVA", "BASE-NEGATIVA"]
+  },
+  {
+   "nome": "oficial: MEI nao tem base",
+   "entrada": {"ano": 2026, "op_simples": 2, "situacao": "comum", "servico": "1000"},
+   "regime_regular": null, "simples": null, "erros": [], "aviso": "E1302"
+  },
+  {
+   "nome": "oficial: optante sem regime de apuracao",
+   "entrada": {"ano": 2026, "op_simples": 3, "situacao": "comum", "servico": "100"},
+   "regime_regular": "100.00", "simples": null, "erros": ["EXXX-REGAP"]
+  },
+  {
+   "nome": "oficial: locacao sem o grupo de locacao",
+   "entrada": {"ano": 2026, "op_simples": 1, "situacao": "locacao9903"},
+   "recusa": "Entrada"
+  },
+  {
+   "nome": "oficial: ajuste 199 sem descricao fica fora da soma",
+   "entrada": {"ano": 2026, "op_simples": 3, "situacao": "comum", "regime_apuracao": 1, "servico": "100", "documentos": [{"tipo": "199", "valor": "10"}]},
+   "regime_regular": "100.00", "simples": "100.00", "erros": ["LEIAUTE-XTP"]
+  },
+  {
+   "nome": "oficial: ajuste 199 com descricao reduz a base",
+   "entrada": {"ano": 2026, "op_simples": 1, "situacao": "comum", "servico": "100", "documentos": [{"tipo": "199", "valor": "10", "descricao": "Ajuste personalizado"}]},
+   "regime_regular": "90.00", "simples": null, "erros": []
+  },
+  {
+   "nome": "oficial: optante com todos os dedutores",
+   "entrada": {"ano": 2026, "op_simples": 3, "situacao": "comum", "regime_apuracao": 1, "servico": "500", "desconto_incondicionado": "20", "issqn": "15", "pis": "0.65", "cofins": "3.00"},
+   "regime_regular": "461.35", "simples": "480.00", "erros": []
+  },
+  {
+   "nome": "oficial: ajuste 9 nao reduz o Simples fora do salao parceiro",
+   "entrada": {"ano": 2026, "op_simples": 3, "situacao": "comum", "regime_apuracao": 2, "servico": "500", "desconto_incondicionado": "20", "issqn": "15", "pis": "0.65", "cofins": "3.00", "documentos": [{"tipo": "9", "valor": "15"}]},
+   "regime_regular": "461.35", "simples": "480.00", "erros": []
+  },
+  {
+   "nome": "oficial: ajuste 9 reduz o Simples no salao parceiro",
+   "entrada": {"ano": 2026, "op_simples": 3, "situacao": "salao_parceiro", "regime_apuracao": 1, "servico": "500", "desconto_incondicionado": "20", "issqn": "15", "pis": "0.65", "cofins": "3.00", "documentos": [{"tipo": "9", "valor": "15"}]},
+   "regime_regular": "461.35", "simples": "465.00", "erros": []
+  },
+  {
+   "nome": "oficial RG12: 1.000,05 x 33,33% = 333,316665, arredondado uma vez",
+   "entrada": {"ano": 2026, "op_simples": 1, "situacao": "locacao9903", "servico": 1000.0, "locacao": {"copropriedade": 33.33, "total_operacao": 1000.05, "desconto_total": 0.0, "ajustes": 0.0}},
+   "regime_regular": "333.32", "simples": null, "erros": []
+  },
+  {
+   "nome": "proprio: optante pendente calcula com ressalva",
+   "entrada": {"ano": 2026, "op_simples": 4, "regime_apuracao": 1, "servico": "200", "desconto_incondicionado": "10"},
+   "regime_regular": "190.00", "simples": "190.00", "erros": [], "aviso": "pendente"
+  },
+  {
+   "nome": "proprio: tipo de ajuste desconhecido e ignorado com aviso",
+   "entrada": {"ano": 2026, "op_simples": 1, "servico": "100", "documentos": [{"tipo": "777", "valor": "40"}]},
+   "regime_regular": "100.00", "simples": null, "erros": [], "aviso": "777"
+  },
+  {
+   "nome": "proprio: PIS e COFINS so reduzem a base em 2026",
+   "entrada": {"ano": 2027, "op_simples": 1, "servico": "100", "pis": "1.65", "cofins": "7.60", "issqn": "5"},
+   "regime_regular": "95.00", "simples": null, "erros": []
+  },
+  {
+   "nome": "proprio: valor que nao e numero",
+   "entrada": {"ano": 2026, "op_simples": 1, "servico": "cem"},
+   "recusa": "Entrada"
+  },
+  {
+   "nome": "proprio: ano anterior ao IBS e a CBS",
+   "entrada": {"ano": 2025, "op_simples": 1, "servico": "100"},
+   "recusa": "Entrada"
+  }
+ ],
+ "tributos": [
+  {
+   "nome": "oficial T1: base 25,00 em 2026, o empate exato vai para o par",
+   "entrada": {"data": "2026-10-20", "cst": "000", "cclass_trib": "000001", "base": 25.0},
+   "esperado": {"base": "25.00", "ibs": "0.02",
+    "cbs": {"aliquota": "0.90", "reducao": null, "aliquota_efetiva": "0.90", "calculado": "0.22", "devido": "0.22"},
+    "ibs_uf": {"aliquota": "0.10", "aliquota_efetiva": "0.10", "devido": "0.02"},
+    "ibs_mun": {"aliquota": "0.00", "devido": "0.00"}}
+  },
+  {
+   "nome": "oficial T2: base 12,00 em 2027, o IBS e a soma das partes publicadas",
+   "entrada": {"data": "2027-03-15", "cst": "000", "cclass_trib": "000001", "base": 12.0, "aliquotas": {"cbs": 8.8, "ibs_uf": 0.05, "ibs_mun": 0.05}},
+   "esperado": {"ibs": "0.02", "cbs": {"devido": "1.06"}, "ibs_uf": {"devido": "0.01"}, "ibs_mun": {"devido": "0.01"}}
+  },
+  {
+   "nome": "oficial T3: item de 14,00 em 2026",
+   "entrada": {"data": "2026-10-20", "cst": "000", "cclass_trib": "000001", "base": 14.0},
+   "esperado": {"ibs": "0.01", "cbs": {"devido": "0.13"}, "ibs_uf": {"devido": "0.01"}}
+  },
+  {
+   "nome": "oficial T4 (cClassTrib de servico): 1.000.000,00 com reducao de 60%, o valor usa a aliquota efetiva publicada",
+   "entrada": {"data": "2027-03-15", "cst": "200", "cclass_trib": "200028", "base": 1000000.0, "aliquotas": {"cbs": 8.8123, "ibs_uf": 0.05, "ibs_mun": 0.05}},
+   "esperado": {"base": "1000000.00", "ibs": "400.00",
+    "cbs": {"aliquota": "8.8123", "reducao": "60.00", "aliquota_efetiva": "3.5249", "devido": "35249.00"},
+    "ibs_uf": {"reducao": "60.00", "aliquota_efetiva": "0.02", "devido": "200.00"},
+    "ibs_mun": {"aliquota_efetiva": "0.02", "devido": "200.00"}}
+  },
+  {
+   "nome": "oficial: item de 2.315,79 em 2026",
+   "entrada": {"data": "2026-10-20", "cst": "000", "cclass_trib": "000001", "base": "2315.79"},
+   "esperado": {"cbs": {"devido": "20.84"}, "ibs_uf": {"devido": "2.32"}, "ibs": "2.32"}
+  },
+  {
+   "nome": "oficial: item de 690,52 em 2026",
+   "entrada": {"data": "2026-10-20", "cst": "000", "cclass_trib": "000001", "base": "690.52"},
+   "esperado": {"cbs": {"devido": "6.21"}, "ibs_uf": {"devido": "0.69"}, "ibs": "0.69"}
+  },
+  {
+   "nome": "proprio: imunidade nao leva valores",
+   "entrada": {"data": "2026-10-20", "cst": "410", "cclass_trib": "410001", "base": "100"},
+   "esperado": {"base": "100.00", "ibs": "0.00", "cbs": {"devido": "0.00"}, "ibs_uf": {"devido": "0.00"}},
+   "aviso": "410"
+  },
+  {
+   "nome": "proprio: optante do Simples Nacional em 2026 nao tem IBS nem CBS",
+   "entrada": {"data": "2026-10-20", "cst": "000", "cclass_trib": "000001", "base": "100", "simples_nacional": true},
+   "esperado": {"ibs": "0.00", "cbs": {"aliquota": "0.00", "devido": "0.00"}},
+   "aviso": "Simples"
+  },
+  {
+   "nome": "proprio: aliquota fixa informada",
+   "entrada": {"data": "2026-10-20", "cst": "221", "cclass_trib": "221001", "base": "1000", "aliquotas": {"cbs": "1.5", "ibs_uf": "0.2", "ibs_mun": "0.3"}},
+   "esperado": {"ibs": "5.00", "cbs": {"devido": "15.00"}, "ibs_uf": {"devido": "2.00"}, "ibs_mun": {"devido": "3.00"}}
+  },
+  {
+   "nome": "proprio: 2027 sem aliquota publicada",
+   "entrada": {"data": "2027-03-15", "cst": "000", "cclass_trib": "000001", "base": "100"},
+   "recusa": "AliquotaNaoPublicada"
+  },
+  {
+   "nome": "proprio: aliquota fixa sem informar",
+   "entrada": {"data": "2026-10-20", "cst": "221", "cclass_trib": "221001", "base": "1000"},
+   "recusa": "AliquotaNaoInformada"
+  },
+  {
+   "nome": "proprio: cClassTrib que nao vale na NFS-e",
+   "entrada": {"data": "2026-10-20", "cst": "200", "cclass_trib": "200034", "base": "100"},
+   "recusa": "Classificacao"
+  },
+  {
+   "nome": "proprio: par CST x cClassTrib trocado",
+   "entrada": {"data": "2026-10-20", "cst": "000", "cclass_trib": "200028", "base": "100"},
+   "recusa": "Classificacao"
+  },
+  {
+   "nome": "proprio: diferimento em CST que nao admite",
+   "entrada": {"data": "2026-10-20", "cst": "000", "cclass_trib": "000001", "base": "100", "diferimento": {"cbs": "50"}},
+   "recusa": "Entrada"
+  },
+  {
+   "nome": "proprio: tributacao regular fica de fora",
+   "entrada": {"data": "2026-10-20", "cst": "550", "cclass_trib": "550016", "base": "100"},
+   "recusa": "NaoCoberto"
+  },
+  {
+   "nome": "proprio: base negativa",
+   "entrada": {"data": "2026-10-20", "cst": "000", "cclass_trib": "000001", "base": "-1"},
+   "recusa": "BaseNegativa"
+  }
+ ]
+}

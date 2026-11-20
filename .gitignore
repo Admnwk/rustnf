@@ -1,0 +1,6 @@
+/target
+*.pfx
+*.p12
+*.pem
+*.key
+.env

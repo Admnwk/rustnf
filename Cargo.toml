@@ -1,0 +1,19 @@
+[workspace]
+resolver = "2"
+members = ["crates/rustnf", "crates/rustnf-cli"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MPL-2.0"
+authors = ["Os autores do rustnf"]
+repository = "https://github.com/Admnwk/rustnf"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+unreachable_pub = "warn"
+
+[workspace.lints.clippy]
+dbg_macro = "deny"
+todo = "deny"
+unimplemented = "deny"

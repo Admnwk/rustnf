@@ -1,0 +1,1701 @@
+{
+ "_comentario": "Lista Nacional de Servicos ISS (cTribNac da NFS-e Nacional). EXTRACAO do Anexo B OFICIAL (gov.br/nfse), sem interpretacao. cTribNac = item(2)+subitem(2)+desdobro(2). O Anexo B nao traz aliquota de ISS: ela e do municipio.",
+ "vigencia_a_contar_de": "2025-11-24",
+ "versao": "ANEXO_B-NBS2-LISTA_SERVICO_NACIONAL-SNNFSe-v1.01-20260122",
+ "extraido_de": "https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica/documentacao-atual/anexo_b-nbs2-lista_servico_nacional-snnfse-v1-01-20260122.xlsx",
+ "sha256_fonte": "e74b0be8ad204e458932efb1716225a3fb5703a84e5475ce5c4c6789d1c61b1a",
+ "extraido_em": "2026-10-03",
+ "total": 338,
+ "codigos": [
+  {
+   "ctribnac": "010101",
+   "item_lc116": "01.01.01",
+   "descricao": "Análise e desenvolvimento de sistemas."
+  },
+  {
+   "ctribnac": "010201",
+   "item_lc116": "01.02.01",
+   "descricao": "Programação."
+  },
+  {
+   "ctribnac": "010301",
+   "item_lc116": "01.03.01",
+   "descricao": "Processamento de dados, textos, imagens, vídeos, páginas eletrônicas, aplicativos e sistemas de informação, entre outros formatos, e congêneres."
+  },
+  {
+   "ctribnac": "010302",
+   "item_lc116": "01.03.02",
+   "descricao": "Armazenamento ou hospedagem de dados, textos, imagens, vídeos, páginas eletrônicas, aplicativos e sistemas de informação, entre outros formatos, e congêneres."
+  },
+  {
+   "ctribnac": "010401",
+   "item_lc116": "01.04.01",
+   "descricao": "Elaboração de programas de computadores, inclusive de jogos eletrônicos, independentemente da arquitetura construtiva da máquina em que o programa será executado, incluindo tablets, smartphones e congêneres."
+  },
+  {
+   "ctribnac": "010501",
+   "item_lc116": "01.05.01",
+   "descricao": "Licenciamento ou cessão de direito de uso de programas de computação."
+  },
+  {
+   "ctribnac": "010601",
+   "item_lc116": "01.06.01",
+   "descricao": "Assessoria e consultoria em informática."
+  },
+  {
+   "ctribnac": "010701",
+   "item_lc116": "01.07.01",
+   "descricao": "Suporte técnico em informática, inclusive instalação, configuração e manutenção de programas de computação e bancos de dados."
+  },
+  {
+   "ctribnac": "010801",
+   "item_lc116": "01.08.01",
+   "descricao": "Planejamento, confecção, manutenção e atualização de páginas eletrônicas."
+  },
+  {
+   "ctribnac": "010901",
+   "item_lc116": "01.09.01",
+   "descricao": "Disponibilização, sem cessão definitiva, de conteúdos de áudio por meio da internet (exceto a distribuição de conteúdos pelas prestadoras de Serviço de Acesso Condicionado, de que trata a Lei nº 12.485, de 12 de setembro de 2011, sujeita ao ICMS)."
+  },
+  {
+   "ctribnac": "010902",
+   "item_lc116": "01.09.02",
+   "descricao": "Disponibilização, sem cessão definitiva, de conteúdos de vídeo, imagem e texto por meio da internet, respeitada a imunidade de livros, jornais e periódicos (exceto a distribuição de conteúdos pelas prestadoras de Serviço de Acesso Condicionado, de que trata a Lei nº 12.485, de 12 de setembro de 2011, sujeita ao ICMS)."
+  },
+  {
+   "ctribnac": "020101",
+   "item_lc116": "02.01.01",
+   "descricao": "Serviços de pesquisas e desenvolvimento de qualquer natureza."
+  },
+  {
+   "ctribnac": "030201",
+   "item_lc116": "03.02.01",
+   "descricao": "Cessão de direito de uso de marcas e de sinais de propaganda."
+  },
+  {
+   "ctribnac": "030301",
+   "item_lc116": "03.03.01",
+   "descricao": "Exploração de salões de festas, centro de convenções, stands e congêneres, para realização de eventos ou negócios de qualquer natureza."
+  },
+  {
+   "ctribnac": "030302",
+   "item_lc116": "03.03.02",
+   "descricao": "Exploração de escritórios virtuais e congêneres, para realização de eventos ou negócios de qualquer natureza."
+  },
+  {
+   "ctribnac": "030303",
+   "item_lc116": "03.03.03",
+   "descricao": "Exploração de quadras esportivas, estádios, ginásios, canchas e congêneres, para realização de eventos ou negócios de qualquer natureza."
+  },
+  {
+   "ctribnac": "030304",
+   "item_lc116": "03.03.04",
+   "descricao": "Exploração de auditórios, casas de espetáculos e congêneres, para realização de eventos ou negócios de qualquer natureza."
+  },
+  {
+   "ctribnac": "030305",
+   "item_lc116": "03.03.05",
+   "descricao": "Exploração de parques de diversões e congêneres, para realização de eventos ou negócios de qualquer natureza."
+  },
+  {
+   "ctribnac": "030401",
+   "item_lc116": "03.04.01",
+   "descricao": "Locação, sublocação, arrendamento, direito de passagem ou permissão de uso, compartilhado ou não, de ferrovia."
+  },
+  {
+   "ctribnac": "030402",
+   "item_lc116": "03.04.02",
+   "descricao": "Locação, sublocação, arrendamento, direito de passagem ou permissão de uso, compartilhado ou não, de rodovia."
+  },
+  {
+   "ctribnac": "030403",
+   "item_lc116": "03.04.03",
+   "descricao": "Locação, sublocação, arrendamento, direito de passagem ou permissão de uso, compartilhado ou não, de postes, cabos, dutos e condutos de qualquer natureza."
+  },
+  {
+   "ctribnac": "030501",
+   "item_lc116": "03.05.01",
+   "descricao": "Cessão de andaimes, palcos, coberturas e outras estruturas de uso temporário."
+  },
+  {
+   "ctribnac": "040101",
+   "item_lc116": "04.01.01",
+   "descricao": "Medicina."
+  },
+  {
+   "ctribnac": "040102",
+   "item_lc116": "04.01.02",
+   "descricao": "Biomedicina."
+  },
+  {
+   "ctribnac": "040201",
+   "item_lc116": "04.02.01",
+   "descricao": "Análises clínicas e congêneres."
+  },
+  {
+   "ctribnac": "040202",
+   "item_lc116": "04.02.02",
+   "descricao": "Patologia e congêneres."
+  },
+  {
+   "ctribnac": "040203",
+   "item_lc116": "04.02.03",
+   "descricao": "Eletricidade médica (eletroestimulação de nervos e musculos, cardioversão, etc) e congêneres."
+  },
+  {
+   "ctribnac": "040204",
+   "item_lc116": "04.02.04",
+   "descricao": "Radioterapia, quimioterapia e congêneres."
+  },
+  {
+   "ctribnac": "040205",
+   "item_lc116": "04.02.05",
+   "descricao": "Ultra-sonografia, ressonância magnética, radiologia, tomografia e congêneres."
+  },
+  {
+   "ctribnac": "040301",
+   "item_lc116": "04.03.01",
+   "descricao": "Hospitais e congêneres."
+  },
+  {
+   "ctribnac": "040302",
+   "item_lc116": "04.03.02",
+   "descricao": "Laboratórios e congêneres."
+  },
+  {
+   "ctribnac": "040303",
+   "item_lc116": "04.03.03",
+   "descricao": "Clínicas, sanatórios, manicômios, casas de saúde, prontos-socorros, ambulatórios e congêneres."
+  },
+  {
+   "ctribnac": "040401",
+   "item_lc116": "04.04.01",
+   "descricao": "Instrumentação cirúrgica."
+  },
+  {
+   "ctribnac": "040501",
+   "item_lc116": "04.05.01",
+   "descricao": "Acupuntura."
+  },
+  {
+   "ctribnac": "040601",
+   "item_lc116": "04.06.01",
+   "descricao": "Enfermagem, inclusive serviços auxiliares."
+  },
+  {
+   "ctribnac": "040701",
+   "item_lc116": "04.07.01",
+   "descricao": "Serviços farmacêuticos."
+  },
+  {
+   "ctribnac": "040801",
+   "item_lc116": "04.08.01",
+   "descricao": "Terapia ocupacional."
+  },
+  {
+   "ctribnac": "040802",
+   "item_lc116": "04.08.02",
+   "descricao": "Fisioterapia."
+  },
+  {
+   "ctribnac": "040803",
+   "item_lc116": "04.08.03",
+   "descricao": "Fonoaudiologia."
+  },
+  {
+   "ctribnac": "040901",
+   "item_lc116": "04.09.01",
+   "descricao": "Terapias de qualquer espécie destinadas ao tratamento físico, orgânico e mental."
+  },
+  {
+   "ctribnac": "041001",
+   "item_lc116": "04.10.01",
+   "descricao": "Nutrição."
+  },
+  {
+   "ctribnac": "041101",
+   "item_lc116": "04.11.01",
+   "descricao": "Obstetrícia."
+  },
+  {
+   "ctribnac": "041201",
+   "item_lc116": "04.12.01",
+   "descricao": "Odontologia."
+  },
+  {
+   "ctribnac": "041301",
+   "item_lc116": "04.13.01",
+   "descricao": "Ortóptica."
+  },
+  {
+   "ctribnac": "041401",
+   "item_lc116": "04.14.01",
+   "descricao": "Próteses sob encomenda."
+  },
+  {
+   "ctribnac": "041501",
+   "item_lc116": "04.15.01",
+   "descricao": "Psicanálise."
+  },
+  {
+   "ctribnac": "041601",
+   "item_lc116": "04.16.01",
+   "descricao": "Psicologia."
+  },
+  {
+   "ctribnac": "041701",
+   "item_lc116": "04.17.01",
+   "descricao": "Casas de repouso e congêneres."
+  },
+  {
+   "ctribnac": "041702",
+   "item_lc116": "04.17.02",
+   "descricao": "Casas de recuperação e congêneres."
+  },
+  {
+   "ctribnac": "041703",
+   "item_lc116": "04.17.03",
+   "descricao": "Creches e congêneres."
+  },
+  {
+   "ctribnac": "041704",
+   "item_lc116": "04.17.04",
+   "descricao": "Asilos e congêneres."
+  },
+  {
+   "ctribnac": "041801",
+   "item_lc116": "04.18.01",
+   "descricao": "Inseminação artificial, fertilização in vitro e congêneres."
+  },
+  {
+   "ctribnac": "041901",
+   "item_lc116": "04.19.01",
+   "descricao": "Bancos de sangue, leite, pele, olhos, óvulos, sêmen e congêneres."
+  },
+  {
+   "ctribnac": "042001",
+   "item_lc116": "04.20.01",
+   "descricao": "Coleta de sangue, leite, tecidos, sêmen, órgãos e materiais biológicos de qualquer espécie."
+  },
+  {
+   "ctribnac": "042101",
+   "item_lc116": "04.21.01",
+   "descricao": "Unidade de atendimento, assistência ou tratamento móvel e congêneres."
+  },
+  {
+   "ctribnac": "042201",
+   "item_lc116": "04.22.01",
+   "descricao": "Planos de medicina de grupo ou individual e convênios para prestação de assistência médica, hospitalar, odontológica e congêneres."
+  },
+  {
+   "ctribnac": "042301",
+   "item_lc116": "04.23.01",
+   "descricao": "Outros planos de saúde que se cumpram através de serviços de terceiros contratados, credenciados, cooperados ou apenas pagos pelo operador do plano mediante indicação do beneficiário."
+  },
+  {
+   "ctribnac": "050101",
+   "item_lc116": "05.01.01",
+   "descricao": "Medicina veterinária"
+  },
+  {
+   "ctribnac": "050102",
+   "item_lc116": "05.01.02",
+   "descricao": "Zootecnia."
+  },
+  {
+   "ctribnac": "050201",
+   "item_lc116": "05.02.01",
+   "descricao": "Hospitais e congêneres, na área veterinária."
+  },
+  {
+   "ctribnac": "050202",
+   "item_lc116": "05.02.02",
+   "descricao": "Clínicas, ambulatórios, prontos-socorros e congêneres, na área veterinária."
+  },
+  {
+   "ctribnac": "050301",
+   "item_lc116": "05.03.01",
+   "descricao": "Laboratórios de análise na área veterinária."
+  },
+  {
+   "ctribnac": "050401",
+   "item_lc116": "05.04.01",
+   "descricao": "Inseminação artificial, fertilização in vitro e congêneres."
+  },
+  {
+   "ctribnac": "050501",
+   "item_lc116": "05.05.01",
+   "descricao": "Bancos de sangue e de órgãos e congêneres."
+  },
+  {
+   "ctribnac": "050601",
+   "item_lc116": "05.06.01",
+   "descricao": "Coleta de sangue, leite, tecidos, sêmen, órgãos e materiais biológicos de qualquer espécie."
+  },
+  {
+   "ctribnac": "050701",
+   "item_lc116": "05.07.01",
+   "descricao": "Unidade de atendimento, assistência ou tratamento móvel e congêneres."
+  },
+  {
+   "ctribnac": "050801",
+   "item_lc116": "05.08.01",
+   "descricao": "Guarda, tratamento, amestramento, embelezamento, alojamento e congêneres."
+  },
+  {
+   "ctribnac": "050901",
+   "item_lc116": "05.09.01",
+   "descricao": "Planos de atendimento e assistência médico-veterinária."
+  },
+  {
+   "ctribnac": "060101",
+   "item_lc116": "06.01.01",
+   "descricao": "Barbearia, cabeleireiros, manicuros, pedicuros e congêneres."
+  },
+  {
+   "ctribnac": "060201",
+   "item_lc116": "06.02.01",
+   "descricao": "Esteticistas, tratamento de pele, depilação e congêneres."
+  },
+  {
+   "ctribnac": "060301",
+   "item_lc116": "06.03.01",
+   "descricao": "Banhos, duchas, sauna, massagens e congêneres."
+  },
+  {
+   "ctribnac": "060401",
+   "item_lc116": "06.04.01",
+   "descricao": "Ginástica, dança, esportes, natação, artes marciais e demais atividades físicas."
+  },
+  {
+   "ctribnac": "060501",
+   "item_lc116": "06.05.01",
+   "descricao": "Centros de emagrecimento, spa e congêneres."
+  },
+  {
+   "ctribnac": "060601",
+   "item_lc116": "06.06.01",
+   "descricao": "Aplicação de tatuagens, piercings e congêneres."
+  },
+  {
+   "ctribnac": "070101",
+   "item_lc116": "07.01.01",
+   "descricao": "Engenharia e congêneres."
+  },
+  {
+   "ctribnac": "070102",
+   "item_lc116": "07.01.02",
+   "descricao": "Agronomia e congêneres."
+  },
+  {
+   "ctribnac": "070103",
+   "item_lc116": "07.01.03",
+   "descricao": "Agrimensura e congêneres."
+  },
+  {
+   "ctribnac": "070104",
+   "item_lc116": "07.01.04",
+   "descricao": "Arquitetura, urbanismo e congêneres."
+  },
+  {
+   "ctribnac": "070105",
+   "item_lc116": "07.01.05",
+   "descricao": "Geologia e congêneres."
+  },
+  {
+   "ctribnac": "070106",
+   "item_lc116": "07.01.06",
+   "descricao": "Paisagismo e congêneres."
+  },
+  {
+   "ctribnac": "070201",
+   "item_lc116": "07.02.01",
+   "descricao": "Execução, por administração, de obras de construção civil, hidráulica ou elétrica e de outras obras semelhantes, inclusive sondagem, perfuração de poços, escavação, drenagem e irrigação, terraplanagem, pavimentação, concretagem e a instalação e montagem de produtos, peças e equipamentos (exceto o fornecimento de mercadorias produzidas pelo prestador de serviços fora do local da prestação dos serviços, que fica sujeito ao ICMS)."
+  },
+  {
+   "ctribnac": "070202",
+   "item_lc116": "07.02.02",
+   "descricao": "Execução, por empreitada ou subempreitada, de obras de construção civil, hidráulica ou elétrica e de outras obras semelhantes, inclusive sondagem, perfuração de poços, escavação, drenagem e irrigação, terraplanagem, pavimentação, concretagem e a instalação e montagem de produtos, peças e equipamentos (exceto o fornecimento de mercadorias produzidas pelo prestador de serviços fora do local da prestação dos serviços, que fica sujeito ao ICMS)."
+  },
+  {
+   "ctribnac": "070301",
+   "item_lc116": "07.03.01",
+   "descricao": "Elaboração de planos diretores, estudos de viabilidade, estudos organizacionais e outros, relacionados com obras e serviços de engenharia."
+  },
+  {
+   "ctribnac": "070302",
+   "item_lc116": "07.03.02",
+   "descricao": "Elaboração de anteprojetos, projetos básicos e projetos executivos para trabalhos de engenharia."
+  },
+  {
+   "ctribnac": "070401",
+   "item_lc116": "07.04.01",
+   "descricao": "Demolição."
+  },
+  {
+   "ctribnac": "070501",
+   "item_lc116": "07.05.01",
+   "descricao": "Reparação, conservação e reforma de edifícios e congêneres (exceto o fornecimento de mercadorias produzidas pelo prestador dos serviços, fora do local da prestação dos serviços, que fica sujeito ao ICMS)."
+  },
+  {
+   "ctribnac": "070502",
+   "item_lc116": "07.05.02",
+   "descricao": "Reparação, conservação e reforma de estradas, pontes, portos e congêneres (exceto o fornecimento de mercadorias produzidas pelo prestador dos serviços, fora do local da prestação dos serviços, que fica sujeito ao ICMS)."
+  },
+  {
+   "ctribnac": "070601",
+   "item_lc116": "07.06.01",
+   "descricao": "Colocação e instalação de tapetes, carpetes, cortinas e congêneres, com material fornecido pelo tomador do serviço."
+  },
+  {
+   "ctribnac": "070602",
+   "item_lc116": "07.06.02",
+   "descricao": "Colocação e instalação de assoalhos, revestimentos de parede, vidros, divisórias, placas de gesso e congêneres, com material fornecido pelo tomador do serviço."
+  },
+  {
+   "ctribnac": "070701",
+   "item_lc116": "07.07.01",
+   "descricao": "Recuperação, raspagem, polimento e lustração de pisos e congêneres."
+  },
+  {
+   "ctribnac": "070801",
+   "item_lc116": "07.08.01",
+   "descricao": "Calafetação."
+  },
+  {
+   "ctribnac": "070901",
+   "item_lc116": "07.09.01",
+   "descricao": "Varrição, coleta e remoção de lixo, rejeitos e outros resíduos quaisquer."
+  },
+  {
+   "ctribnac": "070902",
+   "item_lc116": "07.09.02",
+   "descricao": "Incineração, tratamento, reciclagem, separação e destinação final de lixo, rejeitos e outros resíduos quaisquer."
+  },
+  {
+   "ctribnac": "071001",
+   "item_lc116": "07.10.01",
+   "descricao": "Limpeza, manutenção e conservação de vias e logradouros públicos, parques, jardins e congêneres."
+  },
+  {
+   "ctribnac": "071002",
+   "item_lc116": "07.10.02",
+   "descricao": "Limpeza, manutenção e conservação de imóveis, chaminés, piscinas e congêneres."
+  },
+  {
+   "ctribnac": "071101",
+   "item_lc116": "07.11.01",
+   "descricao": "Decoração."
+  },
+  {
+   "ctribnac": "071102",
+   "item_lc116": "07.11.02",
+   "descricao": "Jardinagem, inclusive corte e poda de árvores."
+  },
+  {
+   "ctribnac": "071201",
+   "item_lc116": "07.12.01",
+   "descricao": "Controle e tratamento de efluentes de qualquer natureza e de agentes físicos, químicos e biológicos."
+  },
+  {
+   "ctribnac": "071301",
+   "item_lc116": "07.13.01",
+   "descricao": "Dedetização, desinfecção, desinsetização, imunização, higienização, desratização, pulverização e congêneres."
+  },
+  {
+   "ctribnac": "071601",
+   "item_lc116": "07.16.01",
+   "descricao": "Florestamento, reflorestamento, semeadura, adubação, reparação de solo, plantio, silagem, colheita, corte e descascamento de árvores, silvicultura, exploração florestal e dos serviços congêneres indissociáveis da formação, manutenção e colheita de florestas, para quaisquer fins e por quaisquer meios."
+  },
+  {
+   "ctribnac": "071701",
+   "item_lc116": "07.17.01",
+   "descricao": "Escoramento, contenção de encostas e serviços congêneres."
+  },
+  {
+   "ctribnac": "071801",
+   "item_lc116": "07.18.01",
+   "descricao": "Limpeza e dragagem de rios, portos, canais, baías, lagos, lagoas, represas, açudes e congêneres."
+  },
+  {
+   "ctribnac": "071901",
+   "item_lc116": "07.19.01",
+   "descricao": "Acompanhamento e fiscalização da execução de obras de engenharia, arquitetura e urbanismo."
+  },
+  {
+   "ctribnac": "072001",
+   "item_lc116": "07.20.01",
+   "descricao": "Aerofotogrametria (inclusive interpretação), cartografia, mapeamento e congêneres."
+  },
+  {
+   "ctribnac": "072002",
+   "item_lc116": "07.20.02",
+   "descricao": "Levantamentos batimétricos, geográficos, geodésicos, geológicos, geofísicos e congêneres."
+  },
+  {
+   "ctribnac": "072003",
+   "item_lc116": "07.20.03",
+   "descricao": "Levantamentos topográficos e congêneres."
+  },
+  {
+   "ctribnac": "072101",
+   "item_lc116": "07.21.01",
+   "descricao": "Pesquisa, perfuração, cimentação, mergulho, perfilagem, concretação, testemunhagem, pescaria, estimulação e outros serviços relacionados com a exploração e explotação de petróleo, gás natural e de outros recursos minerais."
+  },
+  {
+   "ctribnac": "072201",
+   "item_lc116": "07.22.01",
+   "descricao": "Nucleação e bombardeamento de nuvens e congêneres."
+  },
+  {
+   "ctribnac": "080101",
+   "item_lc116": "08.01.01",
+   "descricao": "Ensino regular pré-escolar, fundamental e médio."
+  },
+  {
+   "ctribnac": "080102",
+   "item_lc116": "08.01.02",
+   "descricao": "Ensino regular superior."
+  },
+  {
+   "ctribnac": "080201",
+   "item_lc116": "08.02.01",
+   "descricao": "Instrução, treinamento, orientação pedagógica e educacional, avaliação de conhecimentos de qualquer natureza."
+  },
+  {
+   "ctribnac": "090101",
+   "item_lc116": "09.01.01",
+   "descricao": "Hospedagem em hotéis, hotelaria marítima e congêneres (o valor da alimentação e gorjeta, quando incluído no preço da diária, fica sujeito ao Imposto Sobre Serviços)."
+  },
+  {
+   "ctribnac": "090102",
+   "item_lc116": "09.01.02",
+   "descricao": "Hospedagem em pensões, albergues, pousadas, hospedarias, ocupação por temporada com fornecimento de serviços e congêneres (o valor da alimentação e gorjeta, quando incluído no preço da diária, fica sujeito ao Imposto Sobre Serviços)."
+  },
+  {
+   "ctribnac": "090103",
+   "item_lc116": "09.01.03",
+   "descricao": "Hospedagem em motéis e congêneres (o valor da alimentação e gorjeta, quando incluído no preço da diária, fica sujeito ao Imposto Sobre Serviços)."
+  },
+  {
+   "ctribnac": "090104",
+   "item_lc116": "09.01.04",
+   "descricao": "Hospedagem em apart-service condominiais, flat, apart-hotéis, hotéis residência, residence-service, suite service e congêneres (o valor da alimentação e gorjeta, quando incluído no preço da diária, fica sujeito ao Imposto Sobre Serviços)."
+  },
+  {
+   "ctribnac": "090201",
+   "item_lc116": "09.02.01",
+   "descricao": "Agenciamento e intermediação de programas de turismo, passeios, viagens, excursões, hospedagens e congêneres."
+  },
+  {
+   "ctribnac": "090202",
+   "item_lc116": "09.02.02",
+   "descricao": "Organização, promoção e execução de programas de turismo, passeios, viagens, excursões, hospedagens e congêneres."
+  },
+  {
+   "ctribnac": "090301",
+   "item_lc116": "09.03.01",
+   "descricao": "Guias de turismo."
+  },
+  {
+   "ctribnac": "100101",
+   "item_lc116": "10.01.01",
+   "descricao": "Agenciamento, corretagem ou intermediação de câmbio."
+  },
+  {
+   "ctribnac": "100102",
+   "item_lc116": "10.01.02",
+   "descricao": "Agenciamento, corretagem ou intermediação de seguros."
+  },
+  {
+   "ctribnac": "100103",
+   "item_lc116": "10.01.03",
+   "descricao": "Agenciamento, corretagem ou intermediação de cartões de crédito."
+  },
+  {
+   "ctribnac": "100104",
+   "item_lc116": "10.01.04",
+   "descricao": "Agenciamento, corretagem ou intermediação de planos de saúde."
+  },
+  {
+   "ctribnac": "100105",
+   "item_lc116": "10.01.05",
+   "descricao": "Agenciamento, corretagem ou intermediação de planos de previdência privada."
+  },
+  {
+   "ctribnac": "100201",
+   "item_lc116": "10.02.01",
+   "descricao": "Agenciamento, corretagem ou intermediação de títulos em geral e valores mobiliários."
+  },
+  {
+   "ctribnac": "100202",
+   "item_lc116": "10.02.02",
+   "descricao": "Agenciamento, corretagem ou intermediação de contratos quaisquer."
+  },
+  {
+   "ctribnac": "100301",
+   "item_lc116": "10.03.01",
+   "descricao": "Agenciamento, corretagem ou intermediação de direitos de propriedade industrial, artística ou literária."
+  },
+  {
+   "ctribnac": "100401",
+   "item_lc116": "10.04.01",
+   "descricao": "Agenciamento, corretagem ou intermediação de contratos de arrendamento mercantil (leasing)."
+  },
+  {
+   "ctribnac": "100402",
+   "item_lc116": "10.04.02",
+   "descricao": "Agenciamento, corretagem ou intermediação de contratos de franquia (franchising)."
+  },
+  {
+   "ctribnac": "100403",
+   "item_lc116": "10.04.03",
+   "descricao": "Agenciamento, corretagem ou intermediação de faturização (factoring)."
+  },
+  {
+   "ctribnac": "100501",
+   "item_lc116": "10.05.01",
+   "descricao": "Agenciamento, corretagem ou intermediação de bens móveis ou imóveis, não abrangidos em outros itens ou subitens, por quaisquer meios."
+  },
+  {
+   "ctribnac": "100502",
+   "item_lc116": "10.05.02",
+   "descricao": "Agenciamento, corretagem ou intermediação de bens móveis ou imóveis realizados no âmbito de Bolsas de Mercadorias e Futuros, por quaisquer meios."
+  },
+  {
+   "ctribnac": "100601",
+   "item_lc116": "10.06.01",
+   "descricao": "Agenciamento marítimo."
+  },
+  {
+   "ctribnac": "100701",
+   "item_lc116": "10.07.01",
+   "descricao": "Agenciamento de notícias."
+  },
+  {
+   "ctribnac": "100801",
+   "item_lc116": "10.08.01",
+   "descricao": "Agenciamento de publicidade e propaganda, inclusive o agenciamento de veiculação por quaisquer meios."
+  },
+  {
+   "ctribnac": "100901",
+   "item_lc116": "10.09.01",
+   "descricao": "Representação de qualquer natureza, inclusive comercial."
+  },
+  {
+   "ctribnac": "101001",
+   "item_lc116": "10.10.01",
+   "descricao": "Distribuição de bens de terceiros."
+  },
+  {
+   "ctribnac": "110101",
+   "item_lc116": "11.01.01",
+   "descricao": "Guarda e estacionamento de veículos terrestres automotores."
+  },
+  {
+   "ctribnac": "110102",
+   "item_lc116": "11.01.02",
+   "descricao": "Guarda e estacionamento de aeronaves e de embarcações."
+  },
+  {
+   "ctribnac": "110201",
+   "item_lc116": "11.02.01",
+   "descricao": "Vigilância, segurança ou monitoramento de bens, pessoas e semoventes."
+  },
+  {
+   "ctribnac": "110301",
+   "item_lc116": "11.03.01",
+   "descricao": "Escolta, inclusive de veículos e cargas."
+  },
+  {
+   "ctribnac": "110401",
+   "item_lc116": "11.04.01",
+   "descricao": "Armazenamento, depósito, guarda de bens de qualquer espécie."
+  },
+  {
+   "ctribnac": "110402",
+   "item_lc116": "11.04.02",
+   "descricao": "Carga, descarga, arrumação de bens de qualquer espécie."
+  },
+  {
+   "ctribnac": "110501",
+   "item_lc116": "11.05.01",
+   "descricao": "Serviços relacionados ao monitoramento e rastreamento a distância, em qualquer via ou local, de veículos, cargas, pessoas e semoventes em circulação ou movimento, realizados por meio de telefonia móvel, transmissão de satélites, rádio ou qualquer outro meio, inclusive pelas empresas de Tecnologia da Informação Veicular, independentemente de o prestador de serviços ser proprietário ou não da infraestrutura de telecomunicações que utiliza."
+  },
+  {
+   "ctribnac": "120101",
+   "item_lc116": "12.01.01",
+   "descricao": "Espetáculos teatrais."
+  },
+  {
+   "ctribnac": "120201",
+   "item_lc116": "12.02.01",
+   "descricao": "Exibições cinematográficas."
+  },
+  {
+   "ctribnac": "120301",
+   "item_lc116": "12.03.01",
+   "descricao": "Espetáculos circenses."
+  },
+  {
+   "ctribnac": "120401",
+   "item_lc116": "12.04.01",
+   "descricao": "Programas de auditório."
+  },
+  {
+   "ctribnac": "120501",
+   "item_lc116": "12.05.01",
+   "descricao": "Parques de diversões, centros de lazer e congêneres."
+  },
+  {
+   "ctribnac": "120601",
+   "item_lc116": "12.06.01",
+   "descricao": "Boates, taxi-dancing e congêneres."
+  },
+  {
+   "ctribnac": "120701",
+   "item_lc116": "12.07.01",
+   "descricao": "Shows, ballet, danças, desfiles, bailes, óperas, concertos, recitais, festivais e congêneres."
+  },
+  {
+   "ctribnac": "120801",
+   "item_lc116": "12.08.01",
+   "descricao": "Feiras, exposições, congressos e congêneres."
+  },
+  {
+   "ctribnac": "120901",
+   "item_lc116": "12.09.01",
+   "descricao": "Bilhares."
+  },
+  {
+   "ctribnac": "120902",
+   "item_lc116": "12.09.02",
+   "descricao": "Boliches."
+  },
+  {
+   "ctribnac": "120903",
+   "item_lc116": "12.09.03",
+   "descricao": "Diversões eletrônicas ou não."
+  },
+  {
+   "ctribnac": "121001",
+   "item_lc116": "12.10.01",
+   "descricao": "Corridas e competições de animais."
+  },
+  {
+   "ctribnac": "121101",
+   "item_lc116": "12.11.01",
+   "descricao": "Competições esportivas ou de destreza física ou intelectual, com ou sem a participação do espectador."
+  },
+  {
+   "ctribnac": "121201",
+   "item_lc116": "12.12.01",
+   "descricao": "Execução de música."
+  },
+  {
+   "ctribnac": "121301",
+   "item_lc116": "12.13.01",
+   "descricao": "Produção, mediante ou sem encomenda prévia, de eventos, espetáculos, entrevistas, shows, ballet, danças, desfiles, bailes, teatros, óperas, concertos, recitais, festivais e congêneres."
+  },
+  {
+   "ctribnac": "121401",
+   "item_lc116": "12.14.01",
+   "descricao": "Fornecimento de música para ambientes fechados ou não, mediante transmissão por qualquer processo."
+  },
+  {
+   "ctribnac": "121501",
+   "item_lc116": "12.15.01",
+   "descricao": "Desfiles de blocos carnavalescos ou folclóricos, trios elétricos e congêneres."
+  },
+  {
+   "ctribnac": "121601",
+   "item_lc116": "12.16.01",
+   "descricao": "Exibição de filmes, entrevistas, musicais, espetáculos, shows, concertos, desfiles, óperas, competições esportivas, de destreza intelectual ou congêneres."
+  },
+  {
+   "ctribnac": "121701",
+   "item_lc116": "12.17.01",
+   "descricao": "Recreação e animação, inclusive em festas e eventos de qualquer natureza."
+  },
+  {
+   "ctribnac": "130201",
+   "item_lc116": "13.02.01",
+   "descricao": "Fonografia ou gravação de sons, inclusive trucagem, dublagem, mixagem e congêneres."
+  },
+  {
+   "ctribnac": "130301",
+   "item_lc116": "13.03.01",
+   "descricao": "Fotografia e cinematografia, inclusive revelação, ampliação, cópia, reprodução, trucagem e congêneres."
+  },
+  {
+   "ctribnac": "130401",
+   "item_lc116": "13.04.01",
+   "descricao": "Reprografia, microfilmagem e digitalização."
+  },
+  {
+   "ctribnac": "130501",
+   "item_lc116": "13.05.01",
+   "descricao": "Composição gráfica, inclusive confecção de impressos gráficos, fotocomposição, clicheria, zincografia, litografia e fotolitografia, exceto se destinados a posterior operação de comercialização ou industrialização, ainda que incorporados, de qualquer forma, a outra mercadoria que deva ser objeto de posterior circulação, tais como bulas, rótulos, etiquetas, caixas, cartuchos, embalagens e manuais técnicos e de instrução, quando ficarão sujeitos ao ICMS."
+  },
+  {
+   "ctribnac": "140101",
+   "item_lc116": "14.01.01",
+   "descricao": "Lubrificação, limpeza, lustração, revisão, carga e recarga, conserto, restauração, blindagem, manutenção e conservação de máquinas, veículos, aparelhos, equipamentos, motores, elevadores ou de qualquer objeto (exceto peças e partes empregadas, que ficam sujeitas ao ICMS)."
+  },
+  {
+   "ctribnac": "140201",
+   "item_lc116": "14.02.01",
+   "descricao": "Assistência técnica."
+  },
+  {
+   "ctribnac": "140301",
+   "item_lc116": "14.03.01",
+   "descricao": "Recondicionamento de motores (exceto peças e partes empregadas, que ficam sujeitas ao ICMS)."
+  },
+  {
+   "ctribnac": "140401",
+   "item_lc116": "14.04.01",
+   "descricao": "Recauchutagem ou regeneração de pneus."
+  },
+  {
+   "ctribnac": "140501",
+   "item_lc116": "14.05.01",
+   "descricao": "Restauração, recondicionamento, acondicionamento, pintura, beneficiamento, lavagem, secagem, tingimento, galvanoplastia, anodização, corte, recorte, plastificação, costura, acabamento, polimento e congêneres de objetos quaisquer."
+  },
+  {
+   "ctribnac": "140601",
+   "item_lc116": "14.06.01",
+   "descricao": "Instalação e montagem de aparelhos, máquinas e equipamentos, inclusive montagem industrial, prestados ao usuário final, exclusivamente com material por ele fornecido."
+  },
+  {
+   "ctribnac": "140701",
+   "item_lc116": "14.07.01",
+   "descricao": "Colocação de molduras e congêneres."
+  },
+  {
+   "ctribnac": "140801",
+   "item_lc116": "14.08.01",
+   "descricao": "Encadernação, gravação e douração de livros, revistas e congêneres."
+  },
+  {
+   "ctribnac": "140901",
+   "item_lc116": "14.09.01",
+   "descricao": "Alfaiataria e costura, quando o material for fornecido pelo usuário final, exceto aviamento."
+  },
+  {
+   "ctribnac": "141001",
+   "item_lc116": "14.10.01",
+   "descricao": "Tinturaria e lavanderia."
+  },
+  {
+   "ctribnac": "141101",
+   "item_lc116": "14.11.01",
+   "descricao": "Tapeçaria e reforma de estofamentos em geral."
+  },
+  {
+   "ctribnac": "141201",
+   "item_lc116": "14.12.01",
+   "descricao": "Funilaria e lanternagem."
+  },
+  {
+   "ctribnac": "141301",
+   "item_lc116": "14.13.01",
+   "descricao": "Carpintaria."
+  },
+  {
+   "ctribnac": "141302",
+   "item_lc116": "14.13.02",
+   "descricao": "Serralheria."
+  },
+  {
+   "ctribnac": "141401",
+   "item_lc116": "14.14.01",
+   "descricao": "Guincho intramunicipal."
+  },
+  {
+   "ctribnac": "141402",
+   "item_lc116": "14.14.02",
+   "descricao": "Guindaste e içamento."
+  },
+  {
+   "ctribnac": "141403",
+   "item_lc116": "14.14.03",
+   "descricao": "Guincho intramunicipal em construção civil."
+  },
+  {
+   "ctribnac": "141404",
+   "item_lc116": "14.14.04",
+   "descricao": "Guindaste e içamento em construção civil."
+  },
+  {
+   "ctribnac": "150101",
+   "item_lc116": "15.01.01",
+   "descricao": "Administração de fundos quaisquer e congêneres."
+  },
+  {
+   "ctribnac": "150102",
+   "item_lc116": "15.01.02",
+   "descricao": "Administração de consórcio e congêneres."
+  },
+  {
+   "ctribnac": "150103",
+   "item_lc116": "15.01.03",
+   "descricao": "Administração de cartão de crédito ou débito e congêneres."
+  },
+  {
+   "ctribnac": "150104",
+   "item_lc116": "15.01.04",
+   "descricao": "Administração de carteira de clientes e congêneres."
+  },
+  {
+   "ctribnac": "150105",
+   "item_lc116": "15.01.05",
+   "descricao": "Administração de cheques pré-datados e congêneres."
+  },
+  {
+   "ctribnac": "150201",
+   "item_lc116": "15.02.01",
+   "descricao": "Abertura de conta-corrente no País, bem como a manutenção da referida conta ativa e inativa."
+  },
+  {
+   "ctribnac": "150202",
+   "item_lc116": "15.02.02",
+   "descricao": "Abertura de conta-corrente no exterior, bem como a manutenção da referida conta ativa e inativa."
+  },
+  {
+   "ctribnac": "150203",
+   "item_lc116": "15.02.03",
+   "descricao": "Abertura de conta de investimentos e aplicação no País, bem como a manutenção da referida conta ativa e inativa."
+  },
+  {
+   "ctribnac": "150204",
+   "item_lc116": "15.02.04",
+   "descricao": "Abertura de conta de investimentos e aplicação no exterior, bem como a manutenção da referida conta ativa e inativa."
+  },
+  {
+   "ctribnac": "150205",
+   "item_lc116": "15.02.05",
+   "descricao": "Abertura de caderneta de poupança no País, bem como a manutenção da referida conta ativa e inativa."
+  },
+  {
+   "ctribnac": "150206",
+   "item_lc116": "15.02.06",
+   "descricao": "Abertura de caderneta de poupança no exterior, bem como a manutenção da referida conta ativa e inativa."
+  },
+  {
+   "ctribnac": "150207",
+   "item_lc116": "15.02.07",
+   "descricao": "Abertura de contas em geral no País, não abrangida em outro subitem, bem como a manutenção das referidas contas ativas e inativas."
+  },
+  {
+   "ctribnac": "150208",
+   "item_lc116": "15.02.08",
+   "descricao": "Abertura de contas em geral no exterior, não abrangida em outro subitem, bem como a manutenção das referidas contas ativas e inativas."
+  },
+  {
+   "ctribnac": "150301",
+   "item_lc116": "15.03.01",
+   "descricao": "Locação de cofres particulares."
+  },
+  {
+   "ctribnac": "150302",
+   "item_lc116": "15.03.02",
+   "descricao": "Manutenção de cofres particulares."
+  },
+  {
+   "ctribnac": "150303",
+   "item_lc116": "15.03.03",
+   "descricao": "Locação de terminais eletrônicos."
+  },
+  {
+   "ctribnac": "150304",
+   "item_lc116": "15.03.04",
+   "descricao": "Manutenção de terminais eletrônicos."
+  },
+  {
+   "ctribnac": "150305",
+   "item_lc116": "15.03.05",
+   "descricao": "Locação de terminais de atendimento."
+  },
+  {
+   "ctribnac": "150306",
+   "item_lc116": "15.03.06",
+   "descricao": "Manutenção de terminais de atendimento."
+  },
+  {
+   "ctribnac": "150307",
+   "item_lc116": "15.03.07",
+   "descricao": "Locação de bens e equipamentos em geral."
+  },
+  {
+   "ctribnac": "150308",
+   "item_lc116": "15.03.08",
+   "descricao": "Manutenção de bens e equipamentos em geral."
+  },
+  {
+   "ctribnac": "150401",
+   "item_lc116": "15.04.01",
+   "descricao": "Fornecimento ou emissão de atestados em geral, inclusive atestado de idoneidade, atestado de capacidade financeira e congêneres."
+  },
+  {
+   "ctribnac": "150501",
+   "item_lc116": "15.05.01",
+   "descricao": "Cadastro, elaboração de ficha cadastral, renovação cadastral e congêneres."
+  },
+  {
+   "ctribnac": "150502",
+   "item_lc116": "15.05.02",
+   "descricao": "Inclusão no Cadastro de Emitentes de Cheques sem Fundos - CCF."
+  },
+  {
+   "ctribnac": "150503",
+   "item_lc116": "15.05.03",
+   "descricao": "Exclusão no Cadastro de Emitentes de Cheques sem Fundos - CCF."
+  },
+  {
+   "ctribnac": "150504",
+   "item_lc116": "15.05.04",
+   "descricao": "Inclusão em quaisquer outros bancos cadastrais."
+  },
+  {
+   "ctribnac": "150505",
+   "item_lc116": "15.05.05",
+   "descricao": "Exclusão em quaisquer outros bancos cadastrais."
+  },
+  {
+   "ctribnac": "150601",
+   "item_lc116": "15.06.01",
+   "descricao": "Emissão, reemissão e fornecimento de avisos, comprovantes e documentos em geral"
+  },
+  {
+   "ctribnac": "150602",
+   "item_lc116": "15.06.02",
+   "descricao": "Abono de firmas."
+  },
+  {
+   "ctribnac": "150603",
+   "item_lc116": "15.06.03",
+   "descricao": "Coleta e entrega de documentos, bens e valores."
+  },
+  {
+   "ctribnac": "150604",
+   "item_lc116": "15.06.04",
+   "descricao": "Comunicação com outra agência ou com a administração central."
+  },
+  {
+   "ctribnac": "150605",
+   "item_lc116": "15.06.05",
+   "descricao": "Licenciamento eletrônico de veículos."
+  },
+  {
+   "ctribnac": "150606",
+   "item_lc116": "15.06.06",
+   "descricao": "Transferência de veículos."
+  },
+  {
+   "ctribnac": "150607",
+   "item_lc116": "15.06.07",
+   "descricao": "Agenciamento fiduciário ou depositário."
+  },
+  {
+   "ctribnac": "150608",
+   "item_lc116": "15.06.08",
+   "descricao": "Devolução de bens em custódia."
+  },
+  {
+   "ctribnac": "150701",
+   "item_lc116": "15.07.01",
+   "descricao": "Acesso, movimentação, atendimento e consulta a contas em geral, por qualquer meio ou processo, inclusive por telefone, fac-símile, internet e telex."
+  },
+  {
+   "ctribnac": "150702",
+   "item_lc116": "15.07.02",
+   "descricao": "Acesso a terminais de atendimento, inclusive vinte e quatro horas."
+  },
+  {
+   "ctribnac": "150703",
+   "item_lc116": "15.07.03",
+   "descricao": "Acesso a outro banco e à rede compartilhada."
+  },
+  {
+   "ctribnac": "150704",
+   "item_lc116": "15.07.04",
+   "descricao": "Fornecimento de saldo, extrato e demais informações relativas a contas em geral, por qualquer meio ou processo."
+  },
+  {
+   "ctribnac": "150801",
+   "item_lc116": "15.08.01",
+   "descricao": "Emissão, reemissão, alteração, cessão, substituição, cancelamento e registro de contrato de crédito."
+  },
+  {
+   "ctribnac": "150802",
+   "item_lc116": "15.08.02",
+   "descricao": "Estudo, análise e avaliação de operações de crédito."
+  },
+  {
+   "ctribnac": "150803",
+   "item_lc116": "15.08.03",
+   "descricao": "Emissão, concessão, alteração ou contratação de aval, fiança, anuência e congêneres."
+  },
+  {
+   "ctribnac": "150804",
+   "item_lc116": "15.08.04",
+   "descricao": "Serviços relativos à abertura de crédito, para quaisquer fins."
+  },
+  {
+   "ctribnac": "150901",
+   "item_lc116": "15.09.01",
+   "descricao": "Arrendamento mercantil (leasing) de quaisquer bens, inclusive cessão de direitos e obrigações, substituição de garantia, alteração, cancelamento e registro de contrato, e demais serviços relacionados ao arrendamento mercantil (leasing)."
+  },
+  {
+   "ctribnac": "151001",
+   "item_lc116": "15.10.01",
+   "descricao": "Serviços relacionados a cobranças em geral, de títulos quaisquer, de contas ou carnês, de câmbio, de tributos e por conta de terceiros, inclusive os efetuados por meio eletrônico, automático ou por máquinas de atendimento."
+  },
+  {
+   "ctribnac": "151002",
+   "item_lc116": "15.10.02",
+   "descricao": "Serviços relacionados a recebimentos em geral, de títulos quaisquer, de contas ou carnês, de câmbio, de tributos e por conta de terceiros, inclusive os efetuados por meio eletrônico, automático ou por máquinas de atendimento."
+  },
+  {
+   "ctribnac": "151003",
+   "item_lc116": "15.10.03",
+   "descricao": "Serviços relacionados a pagamentos em geral, de títulos quaisquer, de contas ou carnês, de câmbio, de tributos e por conta de terceiros, inclusive os efetuados por meio eletrônico, automático ou por máquinas de atendimento."
+  },
+  {
+   "ctribnac": "151004",
+   "item_lc116": "15.10.04",
+   "descricao": "Serviços relacionados a fornecimento de posição de cobrança, recebimento ou pagamento."
+  },
+  {
+   "ctribnac": "151005",
+   "item_lc116": "15.10.05",
+   "descricao": "Serviços relacionados a emissão de carnês, fichas de compensação, impressos e documentos em geral."
+  },
+  {
+   "ctribnac": "151101",
+   "item_lc116": "15.11.01",
+   "descricao": "Devolução de títulos, protesto de títulos, sustação de protesto, manutenção de títulos, reapresentação de títulos, e demais serviços a eles relacionados."
+  },
+  {
+   "ctribnac": "151201",
+   "item_lc116": "15.12.01",
+   "descricao": "Custódia em geral, inclusive de títulos e valores mobiliários."
+  },
+  {
+   "ctribnac": "151301",
+   "item_lc116": "15.13.01",
+   "descricao": "Serviços relacionados a operações de câmbio em geral, edição, alteração, prorrogação, cancelamento e baixa de contrato de câmbio."
+  },
+  {
+   "ctribnac": "151302",
+   "item_lc116": "15.13.02",
+   "descricao": "Serviços relacionados a emissão de registro de exportação ou de crédito."
+  },
+  {
+   "ctribnac": "151303",
+   "item_lc116": "15.13.03",
+   "descricao": "Serviços relacionados a cobrança ou depósito no exterior."
+  },
+  {
+   "ctribnac": "151304",
+   "item_lc116": "15.13.04",
+   "descricao": "Serviços relacionados a emissão, fornecimento e cancelamento de cheques de viagem."
+  },
+  {
+   "ctribnac": "151305",
+   "item_lc116": "15.13.05",
+   "descricao": "Serviços relacionados a fornecimento, transferência, cancelamento e demais serviços relativos a carta de crédito de importação, exportação e garantias recebidas."
+  },
+  {
+   "ctribnac": "151306",
+   "item_lc116": "15.13.06",
+   "descricao": "Serviços relacionados a envio e recebimento de mensagens em geral relacionadas a operações de câmbio."
+  },
+  {
+   "ctribnac": "151401",
+   "item_lc116": "15.14.01",
+   "descricao": "Fornecimento, emissão, reemissão de cartão magnético, cartão de crédito, cartão de débito, cartão salário e congêneres."
+  },
+  {
+   "ctribnac": "151402",
+   "item_lc116": "15.14.02",
+   "descricao": "Renovação de cartão magnético, cartão de crédito, cartão de débito, cartão salário e congêneres."
+  },
+  {
+   "ctribnac": "151403",
+   "item_lc116": "15.14.03",
+   "descricao": "Manutenção de cartão magnético, cartão de crédito, cartão de débito, cartão salário e congêneres."
+  },
+  {
+   "ctribnac": "151501",
+   "item_lc116": "15.15.01",
+   "descricao": "Compensação de cheques e títulos quaisquer."
+  },
+  {
+   "ctribnac": "151502",
+   "item_lc116": "15.15.02",
+   "descricao": "Serviços relacionados a depósito, inclusive depósito identificado, a saque de contas quaisquer, por qualquer meio ou processo, inclusive em terminais eletrônicos e de atendimento."
+  },
+  {
+   "ctribnac": "151601",
+   "item_lc116": "15.16.01",
+   "descricao": "Emissão, reemissão, liquidação, alteração, cancelamento e baixa de ordens de pagamento, ordens de crédito e similares, por qualquer meio ou processo."
+  },
+  {
+   "ctribnac": "151602",
+   "item_lc116": "15.16.02",
+   "descricao": "Serviços relacionados à transferência de valores, dados, fundos, pagamentos e similares, inclusive entre contas em geral."
+  },
+  {
+   "ctribnac": "151701",
+   "item_lc116": "15.17.01",
+   "descricao": "Emissão e fornecimento de cheques quaisquer, avulso ou por talão."
+  },
+  {
+   "ctribnac": "151702",
+   "item_lc116": "15.17.02",
+   "descricao": "Devolução de cheques quaisquer, avulso ou por talão."
+  },
+  {
+   "ctribnac": "151703",
+   "item_lc116": "15.17.03",
+   "descricao": "Sustação, cancelamento e oposição de cheques quaisquer, avulso ou por talão."
+  },
+  {
+   "ctribnac": "151801",
+   "item_lc116": "15.18.01",
+   "descricao": "Serviços relacionados a crédito imobiliário, de avaliação e vistoria de imóvel ou obra."
+  },
+  {
+   "ctribnac": "151802",
+   "item_lc116": "15.18.02",
+   "descricao": "Serviços relacionados a crédito imobiliário, de análise técnica e jurídica."
+  },
+  {
+   "ctribnac": "151803",
+   "item_lc116": "15.18.03",
+   "descricao": "Serviços relacionados a crédito imobiliário, de emissão, reemissão, alteração, transferência e renegociação de contrato."
+  },
+  {
+   "ctribnac": "151804",
+   "item_lc116": "15.18.04",
+   "descricao": "Serviços relacionados a crédito imobiliário, de emissão e reemissão do termo de quitação."
+  },
+  {
+   "ctribnac": "151805",
+   "item_lc116": "15.18.05",
+   "descricao": "Demais serviços relacionados a crédito imobiliário."
+  },
+  {
+   "ctribnac": "160101",
+   "item_lc116": "16.01.01",
+   "descricao": "Serviços de transporte coletivo municipal rodoviário de passageiros."
+  },
+  {
+   "ctribnac": "160102",
+   "item_lc116": "16.01.02",
+   "descricao": "Serviços de transporte coletivo municipal metroviário de passageiros."
+  },
+  {
+   "ctribnac": "160103",
+   "item_lc116": "16.01.03",
+   "descricao": "Serviços de transporte coletivo municipal ferroviário de passageiros."
+  },
+  {
+   "ctribnac": "160104",
+   "item_lc116": "16.01.04",
+   "descricao": "Serviços de transporte coletivo municipal aquaviário de passageiros."
+  },
+  {
+   "ctribnac": "160201",
+   "item_lc116": "16.02.01",
+   "descricao": "Outros serviços de transporte de natureza municipal."
+  },
+  {
+   "ctribnac": "170101",
+   "item_lc116": "17.01.01",
+   "descricao": "Assessoria ou consultoria de qualquer natureza, não contida em outros itens desta lista."
+  },
+  {
+   "ctribnac": "170102",
+   "item_lc116": "17.01.02",
+   "descricao": "Análise, exame, pesquisa, coleta, compilação e fornecimento de dados e informações de qualquer natureza, inclusive cadastro e similares."
+  },
+  {
+   "ctribnac": "170201",
+   "item_lc116": "17.02.01",
+   "descricao": "Datilografia, digitação, estenografia e congêneres."
+  },
+  {
+   "ctribnac": "170202",
+   "item_lc116": "17.02.02",
+   "descricao": "Expediente, secretaria em geral, apoio e infra-estrutura administrativa e congêneres."
+  },
+  {
+   "ctribnac": "170203",
+   "item_lc116": "17.02.03",
+   "descricao": "Resposta audível e congêneres."
+  },
+  {
+   "ctribnac": "170204",
+   "item_lc116": "17.02.04",
+   "descricao": "Redação, edição, revisão e congêneres."
+  },
+  {
+   "ctribnac": "170205",
+   "item_lc116": "17.02.05",
+   "descricao": "Interpretação, tradução e congêneres."
+  },
+  {
+   "ctribnac": "170301",
+   "item_lc116": "17.03.01",
+   "descricao": "Planejamento, coordenação, programação ou organização técnica."
+  },
+  {
+   "ctribnac": "170302",
+   "item_lc116": "17.03.02",
+   "descricao": "Planejamento, coordenação, programação ou organização financeira."
+  },
+  {
+   "ctribnac": "170303",
+   "item_lc116": "17.03.03",
+   "descricao": "Planejamento, coordenação, programação ou organização administrativa."
+  },
+  {
+   "ctribnac": "170401",
+   "item_lc116": "17.04.01",
+   "descricao": "Recrutamento, agenciamento, seleção e colocação de mão-de-obra."
+  },
+  {
+   "ctribnac": "170501",
+   "item_lc116": "17.05.01",
+   "descricao": "Fornecimento de mão-de-obra, mesmo em caráter temporário, inclusive de empregados ou trabalhadores, avulsos ou temporários, contratados pelo prestador de serviço."
+  },
+  {
+   "ctribnac": "170601",
+   "item_lc116": "17.06.01",
+   "descricao": "Propaganda e publicidade, inclusive promoção de vendas, planejamento de campanhas ou sistemas de publicidade, elaboração de desenhos, textos e demais materiais publicitários."
+  },
+  {
+   "ctribnac": "170801",
+   "item_lc116": "17.08.01",
+   "descricao": "Franquia (franchising)."
+  },
+  {
+   "ctribnac": "170901",
+   "item_lc116": "17.09.01",
+   "descricao": "Perícias, laudos, exames técnicos e análises técnicas."
+  },
+  {
+   "ctribnac": "171001",
+   "item_lc116": "17.10.01",
+   "descricao": "Planejamento, organização e administração de feiras, exposições, e congêneres."
+  },
+  {
+   "ctribnac": "171002",
+   "item_lc116": "17.10.02",
+   "descricao": "Planejamento, organização e administração de congressos e congêneres."
+  },
+  {
+   "ctribnac": "171101",
+   "item_lc116": "17.11.01",
+   "descricao": "Organização de festas e recepções."
+  },
+  {
+   "ctribnac": "171102",
+   "item_lc116": "17.11.02",
+   "descricao": "Bufê (exceto o fornecimento de alimentação e bebidas, que fica sujeito ao ICMS)."
+  },
+  {
+   "ctribnac": "171201",
+   "item_lc116": "17.12.01",
+   "descricao": "Administração em geral, inclusive de bens e negócios de terceiros."
+  },
+  {
+   "ctribnac": "171301",
+   "item_lc116": "17.13.01",
+   "descricao": "Leilão e congêneres."
+  },
+  {
+   "ctribnac": "171401",
+   "item_lc116": "17.14.01",
+   "descricao": "Advocacia"
+  },
+  {
+   "ctribnac": "171501",
+   "item_lc116": "17.15.01",
+   "descricao": "Arbitragem de qualquer espécie, inclusive jurídica."
+  },
+  {
+   "ctribnac": "171601",
+   "item_lc116": "17.16.01",
+   "descricao": "Auditoria."
+  },
+  {
+   "ctribnac": "171701",
+   "item_lc116": "17.17.01",
+   "descricao": "Análise de Organização e Métodos."
+  },
+  {
+   "ctribnac": "171801",
+   "item_lc116": "17.18.01",
+   "descricao": "Atuária e cálculos técnicos de qualquer natureza."
+  },
+  {
+   "ctribnac": "171901",
+   "item_lc116": "17.19.01",
+   "descricao": "Contabilidade, inclusive serviços técnicos e auxiliares."
+  },
+  {
+   "ctribnac": "172001",
+   "item_lc116": "17.20.01",
+   "descricao": "Consultoria e assessoria econômica ou financeira."
+  },
+  {
+   "ctribnac": "172101",
+   "item_lc116": "17.21.01",
+   "descricao": "Estatística."
+  },
+  {
+   "ctribnac": "172201",
+   "item_lc116": "17.22.01",
+   "descricao": "Cobrança em geral."
+  },
+  {
+   "ctribnac": "172301",
+   "item_lc116": "17.23.01",
+   "descricao": "Assessoria, análise, avaliação, atendimento, consulta, cadastro, seleção, gerenciamento de informações, administração de contas a receber ou a pagar e em geral, relacionados a operações de faturização (factoring)."
+  },
+  {
+   "ctribnac": "172401",
+   "item_lc116": "17.24.01",
+   "descricao": "Apresentação de palestras, conferências, seminários e congêneres."
+  },
+  {
+   "ctribnac": "172501",
+   "item_lc116": "17.25.01",
+   "descricao": "Inserção de textos, desenhos e outros materiais de propaganda e publicidade, em qualquer meio (exceto em livros, jornais, periódicos e nas modalidades de serviços de radiodifusão sonora e de sons e imagens de recepção livre e gratuita)."
+  },
+  {
+   "ctribnac": "180101",
+   "item_lc116": "18.01.01",
+   "descricao": "Serviços de regulação de sinistros vinculados a contratos de seguros e congêneres."
+  },
+  {
+   "ctribnac": "180102",
+   "item_lc116": "18.01.02",
+   "descricao": "Serviços de inspeção e avaliação de riscos para cobertura de contratos de seguros e congêneres."
+  },
+  {
+   "ctribnac": "180103",
+   "item_lc116": "18.01.03",
+   "descricao": "Serviços de prevenção e gerência de riscos seguráveis e congêneres."
+  },
+  {
+   "ctribnac": "190101",
+   "item_lc116": "19.01.01",
+   "descricao": "Serviços de distribuição e venda de bilhetes e demais produtos de loteria, cartões, pules ou cupons de apostas, sorteios, prêmios, inclusive os decorrentes de títulos de capitalização e congêneres."
+  },
+  {
+   "ctribnac": "190102",
+   "item_lc116": "19.01.02",
+   "descricao": "Serviços de distribuição e venda de bingos e congêneres."
+  },
+  {
+   "ctribnac": "200101",
+   "item_lc116": "20.01.01",
+   "descricao": "Serviços portuários, ferroportuários, utilização de porto, movimentação de passageiros, reboque de embarcações, rebocador escoteiro, atracação, desatracação, serviços de praticagem, capatazia, armazenagem de qualquer natureza, serviços acessórios, movimentação de mercadorias, serviços de apoio marítimo, de movimentação ao largo, serviços de armadores, estiva, conferência, logística e congêneres. (prestado em terra)"
+  },
+  {
+   "ctribnac": "200102",
+   "item_lc116": "20.01.02",
+   "descricao": "Serviços portuários, ferroportuários, utilização de porto, movimentação de passageiros, reboque de embarcações, rebocador escoteiro, atracação, desatracação, serviços de praticagem, capatazia, armazenagem de qualquer natureza, serviços acessórios, movimentação de mercadorias, serviços de apoio marítimo, de movimentação ao largo, serviços de armadores, estiva, conferência, logística e congêneres. (prestado em águas marinhas)"
+  },
+  {
+   "ctribnac": "200201",
+   "item_lc116": "20.02.01",
+   "descricao": "Serviços aeroportuários, utilização de aeroporto, movimentação de passageiros, armazenagem de qualquer natureza, capatazia, movimentação de aeronaves, serviços de apoio aeroportuários, serviços acessórios, movimentação de mercadorias, logística e congêneres."
+  },
+  {
+   "ctribnac": "200301",
+   "item_lc116": "20.03.01",
+   "descricao": "Serviços de terminais rodoviários, ferroviários, metroviários, movimentação de passageiros, mercadorias, inclusive suas operações, logística e congêneres."
+  },
+  {
+   "ctribnac": "210101",
+   "item_lc116": "21.01.01",
+   "descricao": "Serviços de registros públicos, cartorários e notariais."
+  },
+  {
+   "ctribnac": "220101",
+   "item_lc116": "22.01.01",
+   "descricao": "Serviços de exploração de rodovia mediante cobrança de preço ou pedágio dos usuários, envolvendo execução de serviços de conservação, manutenção, melhoramentos para adequação de capacidade e segurança de trânsito, operação, monitoração, assistência aos usuários e outros serviços definidos em contratos, atos de concessão ou de permissão ou em normas oficiais."
+  },
+  {
+   "ctribnac": "230101",
+   "item_lc116": "23.01.01",
+   "descricao": "Serviços de programação e comunicação visual e congêneres."
+  },
+  {
+   "ctribnac": "230102",
+   "item_lc116": "23.01.02",
+   "descricao": "Serviços de desenho industrial e congêneres."
+  },
+  {
+   "ctribnac": "240101",
+   "item_lc116": "24.01.01",
+   "descricao": "Serviços de chaveiros, confecção de carimbos e congêneres."
+  },
+  {
+   "ctribnac": "240102",
+   "item_lc116": "24.01.02",
+   "descricao": "Serviços de placas, sinalização visual, banners, adesivos e congêneres."
+  },
+  {
+   "ctribnac": "250101",
+   "item_lc116": "25.01.01",
+   "descricao": "Funerais, inclusive fornecimento de caixão, urna ou esquifes; aluguel de capela; transporte do corpo cadavérico; fornecimento de flores, coroas e outros paramentos; desembaraço de certidão de óbito; fornecimento de véu, essa e outros adornos; embalsamento, embelezamento, conservação ou restauração de cadáveres."
+  },
+  {
+   "ctribnac": "250201",
+   "item_lc116": "25.02.01",
+   "descricao": "Translado intramunicipal de corpos e partes de corpos cadavéricos."
+  },
+  {
+   "ctribnac": "250202",
+   "item_lc116": "25.02.02",
+   "descricao": "Cremação de corpos e partes de corpos cadavéricos."
+  },
+  {
+   "ctribnac": "250301",
+   "item_lc116": "25.03.01",
+   "descricao": "Planos ou convênio funerários."
+  },
+  {
+   "ctribnac": "250401",
+   "item_lc116": "25.04.01",
+   "descricao": "Manutenção e conservação de jazigos e cemitérios."
+  },
+  {
+   "ctribnac": "250501",
+   "item_lc116": "25.05.01",
+   "descricao": "Cessão de uso de espaços em cemitérios para sepultamento."
+  },
+  {
+   "ctribnac": "260101",
+   "item_lc116": "26.01.01",
+   "descricao": "Serviços de coleta, remessa ou entrega de correspondências, documentos, objetos, bens ou valores, inclusive pelos correios e suas agências franqueadas."
+  },
+  {
+   "ctribnac": "260102",
+   "item_lc116": "26.01.02",
+   "descricao": "Serviços de courrier e congêneres."
+  },
+  {
+   "ctribnac": "270101",
+   "item_lc116": "27.01.01",
+   "descricao": "Serviços de assistência social."
+  },
+  {
+   "ctribnac": "280101",
+   "item_lc116": "28.01.01",
+   "descricao": "Serviços de avaliação de bens e serviços de qualquer natureza."
+  },
+  {
+   "ctribnac": "290101",
+   "item_lc116": "29.01.01",
+   "descricao": "Serviços de biblioteconomia."
+  },
+  {
+   "ctribnac": "300101",
+   "item_lc116": "30.01.01",
+   "descricao": "Serviços de biologia e biotecnologia."
+  },
+  {
+   "ctribnac": "300102",
+   "item_lc116": "30.01.02",
+   "descricao": "Serviços de química."
+  },
+  {
+   "ctribnac": "310101",
+   "item_lc116": "31.01.01",
+   "descricao": "Serviços técnicos em edificações e congêneres."
+  },
+  {
+   "ctribnac": "310102",
+   "item_lc116": "31.01.02",
+   "descricao": "Serviços técnicos em eletrônica, eletrotécnica e congêneres."
+  },
+  {
+   "ctribnac": "310103",
+   "item_lc116": "31.01.03",
+   "descricao": "Serviços técnicos em mecânica e congêneres."
+  },
+  {
+   "ctribnac": "310104",
+   "item_lc116": "31.01.04",
+   "descricao": "Serviços técnicos em telecomunicações e congêneres."
+  },
+  {
+   "ctribnac": "320101",
+   "item_lc116": "32.01.01",
+   "descricao": "Serviços de desenhos técnicos."
+  },
+  {
+   "ctribnac": "330101",
+   "item_lc116": "33.01.01",
+   "descricao": "Serviços de desembaraço aduaneiro, comissários, despachantes e congêneres."
+  },
+  {
+   "ctribnac": "340101",
+   "item_lc116": "34.01.01",
+   "descricao": "Serviços de investigações particulares, detetives e congêneres."
+  },
+  {
+   "ctribnac": "350101",
+   "item_lc116": "35.01.01",
+   "descricao": "Serviços de reportagem e jornalismo."
+  },
+  {
+   "ctribnac": "350102",
+   "item_lc116": "35.01.02",
+   "descricao": "Serviços de assessoria de imprensa."
+  },
+  {
+   "ctribnac": "350103",
+   "item_lc116": "35.01.03",
+   "descricao": "Serviços de relações públicas."
+  },
+  {
+   "ctribnac": "360101",
+   "item_lc116": "36.01.01",
+   "descricao": "Serviços de meteorologia."
+  },
+  {
+   "ctribnac": "370101",
+   "item_lc116": "37.01.01",
+   "descricao": "Serviços de artistas, atletas, modelos e manequins."
+  },
+  {
+   "ctribnac": "380101",
+   "item_lc116": "38.01.01",
+   "descricao": "Serviços de museologia."
+  },
+  {
+   "ctribnac": "390101",
+   "item_lc116": "39.01.01",
+   "descricao": "Serviços de ourivesaria e lapidação (quando o material for fornecido pelo tomador do serviço)."
+  },
+  {
+   "ctribnac": "400101",
+   "item_lc116": "40.01.01",
+   "descricao": "Obras de arte sob encomenda."
+  },
+  {
+   "ctribnac": "990101",
+   "item_lc116": "99.01.01",
+   "descricao": "Serviços sem a incidência de ISSQN e ICMS"
+  }
+ ]
+}

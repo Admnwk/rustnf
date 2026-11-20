@@ -1,0 +1,164 @@
+{
+ "_doc": "Forma do totTrib x situacao do prestador no Simples Nacional: Anexo I v1.01 (portal da NFS-e, aba RN DPS_NFS-e), regras E0710 (MEI nao informa pTotTribSN), E0712 (ME/EPP nao informa indTotTrib) e E0713 (nao optante nao informa indTotTrib nem pTotTribSN). A DPS-base e a primeira de `dps` em nfse_nacional.json; cada caso troca op_simples (1 nao optante, 2 MEI, 3 ME/EPP) e o grupo total.",
+ "tot_trib_recusa": [
+  {
+   "nome": "mei com pTotTribSN",
+   "op_simples": 2,
+   "total": {
+    "percentual_sn": "4.50"
+   },
+   "campo": "infDPS/valores/trib/totTrib/pTotTribSN",
+   "regra": "E0710"
+  },
+  {
+   "nome": "me/epp sem forma (indTotTrib)",
+   "op_simples": 3,
+   "total": {},
+   "campo": "infDPS/valores/trib/totTrib/indTotTrib",
+   "regra": "E0712"
+  },
+  {
+   "nome": "nao optante sem forma (indTotTrib)",
+   "op_simples": 1,
+   "total": {},
+   "campo": "infDPS/valores/trib/totTrib/indTotTrib",
+   "regra": "E0713"
+  },
+  {
+   "nome": "nao optante com pTotTribSN",
+   "op_simples": 1,
+   "total": {
+    "percentual_sn": "4.50"
+   },
+   "campo": "infDPS/valores/trib/totTrib/pTotTribSN",
+   "regra": "E0713"
+  }
+ ],
+ "tot_trib_contraprova": [
+  {
+   "nome": "mei sem forma sai indTotTrib 0",
+   "op_simples": 2,
+   "total": {},
+   "ok": "<totTrib><indTotTrib>0</indTotTrib></totTrib>"
+  },
+  {
+   "nome": "mei com valores",
+   "op_simples": 2,
+   "total": {
+    "valor_federal": "10",
+    "valor_municipal": "5"
+   },
+   "ok": "<totTrib><vTotTrib><vTotTribFed>10.00</vTotTribFed><vTotTribEst>0.00</vTotTribEst><vTotTribMun>5.00</vTotTribMun></vTotTrib></totTrib>"
+  },
+  {
+   "nome": "mei com percentuais",
+   "op_simples": 2,
+   "total": {
+    "percentual_federal": "13.45",
+    "percentual_municipal": "2"
+   },
+   "ok": "<totTrib><pTotTrib><pTotTribFed>13.45</pTotTribFed><pTotTribEst>0.00</pTotTribEst><pTotTribMun>2.00</pTotTribMun></pTotTrib></totTrib>"
+  },
+  {
+   "nome": "me/epp com pTotTribSN",
+   "op_simples": 3,
+   "total": {
+    "percentual_sn": "4.50"
+   },
+   "ok": "<totTrib><pTotTribSN>4.50</pTotTribSN></totTrib>"
+  },
+  {
+   "nome": "me/epp com valores",
+   "op_simples": 3,
+   "total": {
+    "valor_federal": "10",
+    "valor_municipal": "5"
+   },
+   "ok": "<totTrib><vTotTrib><vTotTribFed>10.00</vTotTribFed><vTotTribEst>0.00</vTotTribEst><vTotTribMun>5.00</vTotTribMun></vTotTrib></totTrib>"
+  },
+  {
+   "nome": "me/epp com percentuais",
+   "op_simples": 3,
+   "total": {
+    "percentual_federal": "13.45",
+    "percentual_municipal": "2"
+   },
+   "ok": "<totTrib><pTotTrib><pTotTribFed>13.45</pTotTribFed><pTotTribEst>0.00</pTotTribEst><pTotTribMun>2.00</pTotTribMun></pTotTrib></totTrib>"
+  },
+  {
+   "nome": "nao optante com valores",
+   "op_simples": 1,
+   "total": {
+    "valor_federal": "10",
+    "valor_municipal": "5"
+   },
+   "ok": "<totTrib><vTotTrib><vTotTribFed>10.00</vTotTribFed><vTotTribEst>0.00</vTotTribEst><vTotTribMun>5.00</vTotTribMun></vTotTrib></totTrib>"
+  },
+  {
+   "nome": "nao optante com percentuais",
+   "op_simples": 1,
+   "total": {
+    "percentual_federal": "13.45",
+    "percentual_municipal": "2"
+   },
+   "ok": "<totTrib><pTotTrib><pTotTribFed>13.45</pTotTribFed><pTotTribEst>0.00</pTotTribEst><pTotTribMun>2.00</pTotTribMun></pTotTrib></totTrib>"
+  }
+ ],
+ "dicas": [
+  {
+   "nome": "E0037 municipio nao ativo no ambiente",
+   "json": {
+    "erros": [
+     {
+      "codigo": "E0037",
+      "descricao": "O codigo do municipio emissor informado na DPS e inexistente no cadastro de convenio municipal do sistema nacional."
+     }
+    ]
+   },
+   "contem": [
+    "E0037:",
+    "dica:",
+    "NAQUELE ambiente",
+    "producao restrita"
+   ]
+  },
+  {
+   "nome": "E0312 municipio sem o codigo na competencia",
+   "json": {
+    "erros": [
+     {
+      "codigo": "E0312",
+      "descricao": "O codigo de tributacao nacional informado nao esta administrado pelo municipio de incidencia do ISSQN na data de competencia informada na DPS."
+     }
+    ]
+   },
+   "contem": [
+    "E0312:",
+    "dica:",
+    "competencia",
+    "desdobro"
+   ]
+  }
+ ],
+ "dicas_contraprova": [
+  {
+   "nome": "E0014 segue sem dica",
+   "json": {
+    "erros": [
+     {
+      "codigo": "E0014",
+      "descricao": "ja existe"
+     }
+    ]
+   },
+   "esperado": "E0014: ja existe"
+  },
+  {
+   "nome": "sem codigo segue sem dica",
+   "json": {
+    "erros": "DPS invalida"
+   },
+   "esperado": "DPS invalida"
+  }
+ ]
+}

@@ -1,0 +1,227 @@
+{
+ "_comentario": "Casos do modulo `reforma`: aliquotas do ano do fato gerador e validacao de CST/cClassTrib contra a tabela oficial.",
+ "aliquotas": [
+  {
+   "data": "2025-12-31",
+   "ok": {
+    "ano": 2025,
+    "ibs_uf": "0",
+    "ibs_mun": "0",
+    "cbs": "0",
+    "confirmado": true,
+    "aplica": false,
+    "motivo": "em 2025 o IBS e a CBS ainda nao existem (comecam em 2026: LC 214/2025 arts. 343 e 346)"
+   }
+  },
+  {
+   "data": "2026-01-01",
+   "ok": {
+    "ano": 2026,
+    "ibs_uf": "0.1",
+    "ibs_mun": "0",
+    "cbs": "0.9",
+    "confirmado": true,
+    "aplica": true,
+    "motivo": ""
+   }
+  },
+  {
+   "data": "2026-10-03",
+   "simples_nacional": true,
+   "ok": {
+    "ano": 2026,
+    "ibs_uf": "0",
+    "ibs_mun": "0",
+    "cbs": "0",
+    "confirmado": true,
+    "aplica": false,
+    "motivo": "as aliquotas de 2026 nao se aplicam as operacoes do optante do Simples Nacional (LC 214/2025 art. 348, III, c)"
+   }
+  },
+  {
+   "data": "2027-01-01",
+   "ok": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "0",
+    "confirmado": false,
+    "aplica": true,
+    "motivo": "a CBS de 2027 e' a aliquota de referencia fixada pelo Senado menos 0,1 p.p. (LC 214/2025 arts. 347 e 349) e ela nao foi informada -- cadastre o numero publicado antes de emitir ou apurar"
+   }
+  },
+  {
+   "data": "2027-06-15",
+   "publicadas": {
+    "2027": {
+     "cbs_referencia": "8.8"
+    }
+   },
+   "ok": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "8.7",
+    "confirmado": true,
+    "aplica": true,
+    "motivo": ""
+   }
+  },
+  {
+   "data": "2028-02-01",
+   "publicadas": {
+    "2028": {
+     "cbs": "8.75"
+    }
+   },
+   "ok": {
+    "ano": 2028,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "8.75",
+    "confirmado": true,
+    "aplica": true,
+    "motivo": ""
+   }
+  },
+  {
+   "data": "2028-02-01",
+   "publicadas": {
+    "2028": {
+     "ibs_uf": "0.1",
+     "cbs": "8.75"
+    }
+   },
+   "erro": "fixado_em_lei"
+  },
+  {
+   "data": "2029-01-01",
+   "publicadas": {
+    "2029": {
+     "cbs": "8.8"
+    }
+   },
+   "ok": {
+    "ano": 2029,
+    "ibs_uf": "0",
+    "ibs_mun": "0",
+    "cbs": "8.8",
+    "confirmado": false,
+    "aplica": true,
+    "motivo": "as aliquotas de 2029 (ibs_uf, ibs_mun) sao as de referencia fixadas pelo Senado (ou as proprias do ente) e nao foram informadas -- cadastre o numero publicado antes de emitir ou apurar"
+   }
+  },
+  {
+   "data": "2030-03",
+   "publicadas": {
+    "2030": {
+     "cbs": "8.8",
+     "ibs_uf": "4.1",
+     "ibs_mun": "1.2"
+    }
+   },
+   "ok": {
+    "ano": 2030,
+    "ibs_uf": "4.1",
+    "ibs_mun": "1.2",
+    "cbs": "8.8",
+    "confirmado": true,
+    "aplica": true,
+    "motivo": ""
+   }
+  },
+  {
+   "data": "2033-01-01",
+   "publicadas": {
+    "2033": {
+     "cbs": "8.8",
+     "ibs_uf": "14.5",
+     "ibs_mun": "3.2"
+    }
+   },
+   "ok": {
+    "ano": 2033,
+    "ibs_uf": "14.5",
+    "ibs_mun": "3.2",
+    "cbs": "8.8",
+    "confirmado": true,
+    "aplica": true,
+    "motivo": ""
+   }
+  }
+ ],
+ "validar": [
+  {
+   "cst": "000",
+   "cclass_trib": "000001",
+   "documento": "nfe",
+   "data": "2026-10-03",
+   "ok": "000"
+  },
+  {
+   "cst": "999",
+   "cclass_trib": "000001",
+   "documento": "nfe",
+   "erro": "UB13-10/1020"
+  },
+  {
+   "cst": "000",
+   "cclass_trib": "999999",
+   "documento": "nfe",
+   "erro": "UB14-10/1023"
+  },
+  {
+   "cst": "200",
+   "cclass_trib": "000001",
+   "documento": "nfe",
+   "erro": "UB14-20/1024"
+  },
+  {
+   "cst": "000",
+   "cclass_trib": "000002",
+   "documento": "nfe",
+   "erro": "UB14-25/1025"
+  },
+  {
+   "cst": "000",
+   "cclass_trib": "000003",
+   "documento": "nfce",
+   "erro": "UB14-25/1025"
+  },
+  {
+   "cst": "550",
+   "cclass_trib": "550002",
+   "documento": "nfe",
+   "erro": "UB14-25/1025"
+  },
+  {
+   "cst": "620",
+   "cclass_trib": "620006",
+   "documento": "65",
+   "ok": "620"
+  },
+  {
+   "cst": "620",
+   "cclass_trib": "620001",
+   "documento": "65",
+   "erro": "UB14-25/1025"
+  },
+  {
+   "cst": "820",
+   "cclass_trib": "820002",
+   "documento": "nfse",
+   "ok": "820"
+  },
+  {
+   "cst": "000",
+   "cclass_trib": "000001",
+   "documento": "xyz",
+   "erro": "documento"
+  }
+ ],
+ "procedencia": {
+  "total_cst": 18,
+  "total_cclasstrib": 173,
+  "sha256_pagina": "cfb2d4078af0569ec466efe510a07a2f54cc28d14f502432e4dd8cc7a664c568"
+ }
+}

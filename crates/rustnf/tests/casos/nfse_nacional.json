@@ -1,0 +1,4993 @@
+{
+ "id_dps": [
+  {
+   "cmun": "3550308",
+   "inscricao": "11222333000181",
+   "serie": 1,
+   "numero": 42,
+   "ok": "DPS355030821122233300018100001000000000000042"
+  },
+  {
+   "cmun": "3550308",
+   "inscricao": "52998224725",
+   "serie": "900",
+   "numero": "1",
+   "ok": "DPS355030810005299822472500900000000000000001"
+  },
+  {
+   "cmun": "2111300",
+   "inscricao": "11222333000181",
+   "serie": 3,
+   "numero": 5306,
+   "ok": "DPS211130021122233300018100003000000000005306"
+  },
+  {
+   "cmun": "3550308",
+   "inscricao": "12ABC34501DE35",
+   "serie": 1,
+   "numero": 1,
+   "ok": "DPS3550308212ABC34501DE3500001000000000000001"
+  },
+  {
+   "cmun": "3550308",
+   "inscricao": "11222333000181",
+   "serie": 90000,
+   "numero": 1,
+   "erro": "infDPS/serie"
+  },
+  {
+   "cmun": "3550308",
+   "inscricao": "11222333000181",
+   "serie": 1,
+   "numero": "042",
+   "erro": "infDPS/nDPS"
+  },
+  {
+   "cmun": "355030",
+   "inscricao": "11222333000181",
+   "serie": 1,
+   "numero": 1,
+   "erro": "infDPS/cLocEmi"
+  },
+  {
+   "cmun": "3550308",
+   "inscricao": "123",
+   "serie": 1,
+   "numero": 1,
+   "erro": "?"
+  },
+  {
+   "cmun": "3550308",
+   "inscricao": "11222333000181",
+   "serie": 89999,
+   "numero": 999999999999999,
+   "ok": "DPS355030821122233300018189999999999999999999"
+  }
+ ],
+ "dinheiro": [
+  {
+   "entrada": "0",
+   "inteiros": 15,
+   "ok": "0.00"
+  },
+  {
+   "entrada": "0.005",
+   "inteiros": 15,
+   "ok": "0.01"
+  },
+  {
+   "entrada": "10.5",
+   "inteiros": 15,
+   "ok": "10.50"
+  },
+  {
+   "entrada": "1234567.891",
+   "inteiros": 15,
+   "ok": "1234567.89"
+  },
+  {
+   "entrada": "-1",
+   "inteiros": 15,
+   "erro": "x"
+  },
+  {
+   "entrada": "abc",
+   "inteiros": 15,
+   "erro": "x"
+  },
+  {
+   "entrada": "5",
+   "inteiros": 1,
+   "ok": "5.00"
+  },
+  {
+   "entrada": "9.995",
+   "inteiros": 1,
+   "erro": "x"
+  },
+  {
+   "entrada": "10",
+   "inteiros": 1,
+   "erro": "x"
+  },
+  {
+   "entrada": "100",
+   "inteiros": 3,
+   "ok": "100.00"
+  },
+  {
+   "entrada": "1000",
+   "inteiros": 3,
+   "erro": "x"
+  }
+ ],
+ "data_hora": [
+  {
+   "entrada": "2026-10-02T10:00:00.987654",
+   "offset_min": -180,
+   "ok": "2026-10-02T10:00:00-03:00"
+  },
+  {
+   "entrada": "2026-10-02T10:00:00",
+   "offset_min": null,
+   "ok": "2026-10-02T10:00:00-03:00"
+  },
+  {
+   "entrada": "2026-10-02T23:59:59",
+   "offset_min": 0,
+   "ok": "2026-10-02T23:59:59+00:00"
+  },
+  {
+   "entrada": "2026-10-02T10:00:00",
+   "offset_min": -150,
+   "erro": "dhEmi"
+  },
+  {
+   "entrada": "2026-10-02T10:00:00",
+   "offset_min": 720,
+   "ok": "2026-10-02T10:00:00+12:00"
+  },
+  {
+   "entrada": "2026-10-02T10:00:00",
+   "offset_min": -720,
+   "erro": "dhEmi"
+  }
+ ],
+ "latin1": [
+  {
+   "entrada": "Joao D'Avila — “ME”",
+   "saida": "Joao D'Avila - \"ME\""
+  },
+  {
+   "entrada": "  Linha  com   espacos  ",
+   "saida": "Linha com espacos"
+  },
+  {
+   "entrada": "Café …",
+   "saida": "Café ..."
+  },
+  {
+   "entrada": "Maçã",
+   "saida": "Maçã"
+  },
+  {
+   "entrada": "OK😀",
+   "saida": "OK"
+  },
+  {
+   "entrada": "‘x’ €5",
+   "saida": "'x' EUR5"
+  }
+ ],
+ "chave_evento": [
+  {
+   "chave": "35503082100052998224725000000000000726101234567895",
+   "ok": "35503082100052998224725000000000000726101234567895"
+  },
+  {
+   "chave": "35503082211222333000181000000000004226100000000010",
+   "ok": "35503082211222333000181000000000004226100000000010"
+  },
+  {
+   "chave": "35503082211222333000181000000000004226100000000011",
+   "erro": "infPedReg/chNFSe"
+  },
+  {
+   "chave": "3550308221122233300018100000000000422610000000001",
+   "erro": "infPedReg/chNFSe"
+  },
+  {
+   "chave": "00000000000000000000000000000000000000000000000000",
+   "erro": "infPedReg/chNFSe"
+  }
+ ],
+ "ctribnac": [
+  {
+   "entrada": "140101",
+   "ok": "140101"
+  },
+  {
+   "entrada": "14.01.01",
+   "ok": "140101"
+  },
+  {
+   "entrada": "1401",
+   "ok": "140101"
+  },
+  {
+   "entrada": "14.01",
+   "ok": "140101"
+  },
+  {
+   "entrada": "140100",
+   "erro": "infDPS/serv/cServ/cTribNac"
+  },
+  {
+   "entrada": "0401",
+   "erro": "infDPS/serv/cServ/cTribNac"
+  },
+  {
+   "entrada": "999999",
+   "erro": "infDPS/serv/cServ/cTribNac"
+  },
+  {
+   "entrada": "12345",
+   "erro": "infDPS/serv/cServ/cTribNac"
+  },
+  {
+   "entrada": "250101",
+   "ok": "250101"
+  },
+  {
+   "entrada": "141403",
+   "ok": "141403",
+   "_fonte": "Anexo B v1.01-20260122 (gov.br/nfse)"
+  },
+  {
+   "entrada": "141404",
+   "ok": "141404"
+  },
+  {
+   "entrada": "200102",
+   "ok": "200102"
+  },
+  {
+   "entrada": "20.01",
+   "erro": "infDPS/serv/cServ/cTribNac",
+   "_fonte": "2 desdobros oficiais (200101 terra, 200102 aguas marinhas)"
+  }
+ ],
+ "dps": [
+  {
+   "nome": "minima",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ></serv><valores><vServPrest><vServ>150.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores></infDPS></DPS>"
+  },
+  {
+   "nome": "completa",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "P",
+     "op_simples": 1,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "10",
+      "bairro": "Centro",
+      "cmun": "3550308",
+      "cep": "01001-000",
+      "complemento": "Sala 2"
+     }
+    },
+    "servico": {
+     "ctribnac": "1401",
+     "descricao": "Linha 1\r\nLinha 2  com  espacos",
+     "cmun_prestacao": "3304557",
+     "ctribmun": "001",
+     "cnbs": "123456789",
+     "cod_interno": "A1",
+     "comercio_exterior": {
+      "modo": 1,
+      "vinculo": 0,
+      "moeda": "220",
+      "valor_moeda": "10.5",
+      "mdic": 1,
+      "num_di": "123"
+     },
+     "obra": {
+      "endereco": {
+       "logradouro": "Obra",
+       "numero": "0",
+       "bairro": "B",
+       "cep": "01001000"
+      }
+     },
+     "evento": {
+      "nome": "Feira",
+      "inicio": "2026-10-01",
+      "fim": "2026-10-03",
+      "identificacao": "EV1"
+     },
+     "complemento": {
+      "id_doc_tecnico": "ART1",
+      "doc_referencia": "contrato 9",
+      "pedido": "P1",
+      "itens_pedido": [
+       "1",
+       "2"
+      ],
+      "texto": "obs"
+     }
+    },
+    "valores": {
+     "servico": 1000,
+     "recebido": "1000",
+     "desconto_incondicionado": "10",
+     "desconto_condicionado": 5,
+     "deducao": {
+      "documentos": [
+       {
+        "tipo": 2,
+        "emissao": "2026-09-30",
+        "valor_dedutivel": 100,
+        "valor_deducao": "50",
+        "chave_nfe": "33333333333333333333333333333333333333333333",
+        "fornecedor": {
+         "nome": "F",
+         "documento": "52998224725"
+        }
+       },
+       {
+        "tipo": 99,
+        "emissao": "2026-09-30",
+        "valor_dedutivel": 1,
+        "valor_deducao": 1,
+        "nfse_mun_cmun": "3550308",
+        "nfse_mun_numero": "12",
+        "nfse_mun_verif": "AB12",
+        "descricao_outras": "outra"
+       }
+      ]
+     },
+     "municipal": {
+      "tributacao": 1,
+      "retencao": 2,
+      "beneficio_numero": "11111111111111",
+      "beneficio_reducao_percentual": "10",
+      "suspensao_tipo": 1,
+      "suspensao_processo": "111111111111111111111111111111"
+     },
+     "federal": {
+      "pis_cofins": {
+       "cst": "01",
+       "base": 1000,
+       "aliquota_pis": "0.65",
+       "aliquota_cofins": 3,
+       "valor_pis": "6.5",
+       "valor_cofins": 30,
+       "tipo_retencao": 1
+      },
+      "retencao_cp": 11,
+      "retencao_irrf": "15",
+      "retencao_csll": "10"
+     },
+     "total": {
+      "valor_federal": 1,
+      "valor_estadual": 0,
+      "valor_municipal": "2"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Tomador SA — D'Avila & <Filhos>",
+     "documento": "12ABC34501DE35",
+     "im": "9",
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "10",
+      "bairro": "Centro",
+      "cmun": "3550308",
+      "cep": "01001-000",
+      "complemento": "Sala 2"
+     },
+     "fone": "(11) 99999-0000",
+     "email": "a@b.com.br"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "intermediario": {
+     "nome": "Intermediario",
+     "nif": "ABC-123",
+     "endereco": {
+      "logradouro": "Main St",
+      "numero": "1",
+      "bairro": "Downtown",
+      "pais": "US",
+      "cod_postal": "10001",
+      "cidade": "New York",
+      "estado": "NY"
+     }
+    },
+    "ibscbs": {
+     "cind_op": "020201",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "ind_dest": 1,
+     "ind_final": 1,
+     "tp_oper": 2,
+     "refs_nfse": [
+      "35503082211222333000181000000000004226100000000010"
+     ],
+     "tp_ente_gov": 1,
+     "destinatario": {
+      "nome": "Dest",
+      "documento": "52998224725",
+      "endereco": {
+       "logradouro": "Rua A",
+       "numero": "10",
+       "bairro": "Centro",
+       "cmun": "3550308",
+       "cep": "01001-000",
+       "complemento": "Sala 2"
+      }
+     },
+     "imovel_cib": "12345678",
+     "reembolsos": [
+      {
+       "tipo": "01",
+       "emissao": "2026-09-01",
+       "competencia": "2026-09-01",
+       "valor": 1,
+       "dfe_tipo": 1,
+       "dfe_chave": "35503082211222333000181000000000004226100000000010",
+       "fornecedor": {
+        "nome": "F",
+        "documento": "52998224725"
+       }
+      },
+      {
+       "tipo": 99,
+       "emissao": "2026-09-01",
+       "competencia": "2026-09-01",
+       "valor": 2,
+       "doc_numero": "9",
+       "doc_descricao": "recibo",
+       "tipo_descricao": "outro"
+      }
+     ]
+    },
+    "substituicao": {
+     "chave": "35503082211222333000181000000000004226100000000010",
+     "motivo": "99",
+     "texto": "texto do motivo da troca"
+    }
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><cLocEmi>3550308</cLocEmi><subst><chSubstda>35503082211222333000181000000000004226100000000010</chSubstda><cMotivo>99</cMotivo><xMotivo>texto do motivo da troca</xMotivo></subst><prest><CNPJ>11222333000181</CNPJ><regTrib><opSimpNac>1</opSimpNac><regEspTrib>0</regEspTrib></regTrib></prest><toma><CNPJ>12ABC34501DE35</CNPJ><IM>9</IM><xNome>Tomador SA - D'Avila &amp; &lt;Filhos&gt;</xNome><end><endNac><cMun>3550308</cMun><CEP>01001000</CEP></endNac><xLgr>Rua A</xLgr><nro>10</nro><xCpl>Sala 2</xCpl><xBairro>Centro</xBairro></end><fone>11999990000</fone><email>a@b.com.br</email></toma><interm><NIF>ABC-123</NIF><xNome>Intermediario</xNome><end><endExt><cPais>US</cPais><cEndPost>10001</cEndPost><xCidade>New York</xCidade><xEstProvReg>NY</xEstProvReg></endExt><xLgr>Main St</xLgr><nro>1</nro><xBairro>Downtown</xBairro></end></interm><serv><locPrest><cLocPrestacao>3304557</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><cTribMun>001</cTribMun><xDescServ>Linha 1\nLinha 2 com espacos</xDescServ><cNBS>123456789</cNBS><cIntContrib>A1</cIntContrib></cServ><comExt><mdPrestacao>1</mdPrestacao><vincPrest>0</vincPrest><tpMoeda>220</tpMoeda><vServMoeda>10.50</vServMoeda><mecAFComexP>00</mecAFComexP><mecAFComexT>00</mecAFComexT><movTempBens>0</movTempBens><nDI>123</nDI><mdic>1</mdic></comExt><obra><end><CEP>01001000</CEP><xLgr>Obra</xLgr><nro>0</nro><xBairro>B</xBairro></end></obra><atvEvento><xNome>Feira</xNome><dtIni>2026-10-01</dtIni><dtFim>2026-10-03</dtFim><idAtvEvt>EV1</idAtvEvt></atvEvento><infoCompl><idDocTec>ART1</idDocTec><docRef>contrato 9</docRef><xPed>P1</xPed><gItemPed><xItemPed>1</xItemPed><xItemPed>2</xItemPed></gItemPed><xInfComp>obs</xInfComp></infoCompl></serv><valores><vServPrest><vReceb>1000.00</vReceb><vServ>1000.00</vServ></vServPrest><vDescCondIncond><vDescIncond>10.00</vDescIncond><vDescCond>5.00</vDescCond></vDescCondIncond><vDedRed><documentos><docDedRed><chNFe>33333333333333333333333333333333333333333333</chNFe><tpDedRed>2</tpDedRed><dtEmiDoc>2026-09-30</dtEmiDoc><vDedutivelRedutivel>100.00</vDedutivelRedutivel><vDeducaoReducao>50.00</vDeducaoReducao><fornec><CPF>52998224725</CPF><xNome>F</xNome></fornec></docDedRed><docDedRed><NFSeMun><cMunNFSeMun>3550308</cMunNFSeMun><nNFSeMun>000000000000012</nNFSeMun><cVerifNFSeMun>AB12</cVerifNFSeMun></NFSeMun><tpDedRed>99</tpDedRed><xDescOutDed>outra</xDescOutDed><dtEmiDoc>2026-09-30</dtEmiDoc><vDedutivelRedutivel>1.00</vDedutivelRedutivel><vDeducaoReducao>1.00</vDeducaoReducao></docDedRed></documentos></vDedRed><trib><tribMun><tribISSQN>1</tribISSQN><exigSusp><tpSusp>1</tpSusp><nProcesso>111111111111111111111111111111</nProcesso></exigSusp><BM><nBM>11111111111111</nBM><pRedBCBM>10.00</pRedBCBM></BM><tpRetISSQN>2</tpRetISSQN></tribMun><tribFed><piscofins><CST>01</CST><vBCPisCofins>1000.00</vBCPisCofins><pAliqPis>0.65</pAliqPis><pAliqCofins>3.00</pAliqCofins><vPis>6.50</vPis><vCofins>30.00</vCofins><tpRetPisCofins>1</tpRetPisCofins></piscofins><vRetCP>11.00</vRetCP><vRetIRRF>15.00</vRetIRRF><vRetCSLL>10.00</vRetCSLL></tribFed><totTrib><vTotTrib><vTotTribFed>1.00</vTotTribFed><vTotTribEst>0.00</vTotTribEst><vTotTribMun>2.00</vTotTribMun></vTotTrib></totTrib></trib></valores><IBSCBS><finNFSe>0</finNFSe><indFinal>1</indFinal><cIndOp>020201</cIndOp><tpOper>2</tpOper><gRefNFSe><refNFSe>35503082211222333000181000000000004226100000000010</refNFSe></gRefNFSe><tpEnteGov>1</tpEnteGov><indDest>1</indDest><dest><CPF>52998224725</CPF><xNome>Dest</xNome><end><endNac><cMun>3550308</cMun><CEP>01001000</CEP></endNac><xLgr>Rua A</xLgr><nro>10</nro><xCpl>Sala 2</xCpl><xBairro>Centro</xBairro></end></dest><imovel><cCIB>12345678</cCIB></imovel><valores><gReeRepRes><documentos><dFeNacional><tipoChaveDFe>1</tipoChaveDFe><chaveDFe>35503082211222333000181000000000004226100000000010</chaveDFe></dFeNacional><fornec><CPF>52998224725</CPF><xNome>F</xNome></fornec><dtEmiDoc>2026-09-01</dtEmiDoc><dtCompDoc>2026-09-01</dtCompDoc><tpReeRepRes>01</tpReeRepRes><vlrReeRepRes>1.00</vlrReeRepRes></documentos><documentos><docOutro><nDoc>9</nDoc><xDoc>recibo</xDoc></docOutro><dtEmiDoc>2026-09-01</dtEmiDoc><dtCompDoc>2026-09-01</dtCompDoc><tpReeRepRes>99</tpReeRepRes><xTpReeRepRes>outro</xTpReeRepRes><vlrReeRepRes>2.00</vlrReeRepRes></documentos></gReeRepRes><trib><gIBSCBS><CST>000</CST><cClassTrib>000001</cClassTrib></gIBSCBS></trib></valores></IBSCBS></infDPS></DPS>"
+  },
+  {
+   "nome": "pelo_tomador",
+   "entrada": {
+    "prestador": {
+     "documento": "52998224725",
+     "nome": "Autonomo",
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "10",
+      "bairro": "Centro",
+      "cmun": "3550308",
+      "cep": "01001-000",
+      "complemento": "Sala 2"
+     },
+     "op_simples": 1
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_federal": "13.45",
+      "percentual_estadual": "0",
+      "percentual_municipal": "2"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Empresa",
+     "documento": "11222333000181"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "emitente": 2,
+    "motivo_emissao_ti": 1
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>2</tpEmit><cMotivoEmisTI>1</cMotivoEmisTI><cLocEmi>3550308</cLocEmi><prest><CPF>52998224725</CPF><xNome>Autonomo</xNome><end><endNac><cMun>3550308</cMun><CEP>01001000</CEP></endNac><xLgr>Rua A</xLgr><nro>10</nro><xCpl>Sala 2</xCpl><xBairro>Centro</xBairro></end><regTrib><opSimpNac>1</opSimpNac><regEspTrib>0</regEspTrib></regTrib></prest><toma><CNPJ>11222333000181</CNPJ><xNome>Empresa</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ></serv><valores><vServPrest><vServ>150.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTrib><pTotTribFed>13.45</pTotTribFed><pTotTribEst>0.00</pTotTribEst><pTotTribMun>2.00</pTotTribMun></pTotTrib></totTrib></trib></valores></infDPS></DPS>"
+  },
+  {
+   "nome": "pf_aliquota",
+   "entrada": {
+    "prestador": {
+     "documento": "52998224725",
+     "op_simples": 1
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "10",
+     "municipal": {
+      "aliquota": "2.5"
+     },
+     "total": {
+      "percentual_federal": "13.45",
+      "percentual_estadual": "0",
+      "percentual_municipal": "2"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030810005299822472500001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><cLocEmi>3550308</cLocEmi><prest><CPF>52998224725</CPF><regTrib><opSimpNac>1</opSimpNac><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ></serv><valores><vServPrest><vServ>10.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN><pAliq>2.50</pAliq></tribMun><totTrib><pTotTrib><pTotTribFed>13.45</pTotTribFed><pTotTribEst>0.00</pTotTribEst><pTotTribMun>2.00</pTotTribMun></pTotTrib></totTrib></trib></valores></infDPS></DPS>"
+  },
+  {
+   "nome": "percentual",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "10",
+     "total": {
+      "percentual_federal": 1
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ></serv><valores><vServPrest><vServ>10.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTrib><pTotTribFed>1.00</pTotTribFed><pTotTribEst>0.00</pTotTribEst><pTotTribMun>0.00</pTotTribMun></pTotTrib></totTrib></trib></valores></infDPS></DPS>"
+  },
+  {
+   "nome": "simples",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "10",
+     "total": {
+      "percentual_sn": "4.5"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ></serv><valores><vServPrest><vServ>10.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores></infDPS></DPS>"
+  },
+  {
+   "nome": "fuso_utc",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": "7",
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T13:00:00+00:00",
+    "competencia": "2026-10-01",
+    "ambiente": 1,
+    "serie": "900"
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100900000000000000007\"><tpAmb>1</tpAmb><dhEmi>2026-10-02T13:00:00+00:00</dhEmi><verAplic>rustnf</verAplic><serie>900</serie><nDPS>7</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ></serv><valores><vServPrest><vServ>150.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores></infDPS></DPS>"
+  },
+  {
+   "nome": "trib_regular",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "550",
+     "cclass_trib": "550016",
+     "cst_regular": "000",
+     "cclass_trib_regular": "000001"
+    }
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>x</xDescServ><cNBS>123456789</cNBS></cServ></serv><valores><vServPrest><vServ>150.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores><IBSCBS><finNFSe>0</finNFSe><cIndOp>100301</cIndOp><indDest>0</indDest><valores><trib><gIBSCBS><CST>550</CST><cClassTrib>550016</cClassTrib><gTribRegular><CSTReg>000</CSTReg><cClassTribReg>000001</cClassTribReg></gTribRegular></gIBSCBS></trib></valores></IBSCBS></infDPS></DPS>"
+  },
+  {
+   "nome": "diferimento",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "515",
+     "cclass_trib": "515001",
+     "dif_uf": 1,
+     "dif_mun": "2",
+     "dif_cbs": 3
+    }
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>x</xDescServ><cNBS>123456789</cNBS></cServ></serv><valores><vServPrest><vServ>150.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores><IBSCBS><finNFSe>0</finNFSe><cIndOp>100301</cIndOp><indDest>0</indDest><valores><trib><gIBSCBS><CST>515</CST><cClassTrib>515001</cClassTrib><gDif><pDifUF>1.00</pDifUF><pDifMun>2.00</pDifMun><pDifCBS>3.00</pDifCBS></gDif></gIBSCBS></trib></valores></IBSCBS></infDPS></DPS>"
+  }
+ ],
+ "dps_erro": [
+  {
+   "nome": "E0166",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "op_simples": 3
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/prest/regTrib/regApTribSN",
+   "regra": "E0166"
+  },
+  {
+   "nome": "E0162",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "op_simples": 1,
+     "apuracao_sn": 1
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/prest/regTrib/regApTribSN",
+   "regra": "E0162"
+  },
+  {
+   "nome": "E0174",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "op_simples": 2,
+     "regime_especial": 5
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/prest/regTrib/regEspTrib",
+   "regra": "E0174"
+  },
+  {
+   "nome": "E0175",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "regime_especial": 6
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/prest/regTrib/regEspTrib",
+   "regra": "E0175"
+  },
+  {
+   "nome": "E0080",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000182",
+     "op_simples": 1
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/prest/CNPJ",
+   "regra": "E0080"
+  },
+  {
+   "nome": "E0112",
+   "entrada": {
+    "prestador": {
+     "nif": "X1",
+     "op_simples": 1
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/@Id",
+   "regra": ""
+  },
+  {
+   "nome": "E0122",
+   "entrada": {
+    "prestador": {
+     "documento": "52998224725",
+     "op_simples": 1,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "10",
+      "bairro": "Centro",
+      "cmun": "3550308",
+      "cep": "01001-000",
+      "complemento": "Sala 2"
+     }
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "emitente": 2,
+    "motivo_emissao_ti": 1
+   },
+   "campo": "infDPS/prest/xNome",
+   "regra": "E0122"
+  },
+  {
+   "nome": "E0129",
+   "entrada": {
+    "prestador": {
+     "documento": "52998224725",
+     "nome": "X",
+     "op_simples": 1
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "emitente": 2,
+    "motivo_emissao_ti": 1
+   },
+   "campo": "infDPS/prest/end",
+   "regra": "E0129"
+  },
+  {
+   "nome": "E0202",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Eu",
+     "documento": "11222333000181"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/toma/CNPJ",
+   "regra": "E0202"
+  },
+  {
+   "nome": "E0204",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "municipal": {
+      "retencao": 2
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": null,
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/toma",
+   "regra": "E0204"
+  },
+  {
+   "nome": "E0264",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "municipal": {
+      "retencao": 3
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "intermediario": null
+   },
+   "campo": "infDPS/interm",
+   "regra": "E0264"
+  },
+  {
+   "nome": "E0304",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "pais_prestacao": "BR"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/serv/locPrest",
+   "regra": "E0304"
+  },
+  {
+   "nome": "E0315",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "ctribmun": "000"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/serv/cServ/cTribMun",
+   "regra": "E0315"
+  },
+  {
+   "nome": "E0322",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001"
+    }
+   },
+   "campo": "infDPS/serv/cServ/cNBS",
+   "regra": "E0322"
+  },
+  {
+   "nome": "E0850",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2025-12-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001"
+    }
+   },
+   "campo": "infDPS/IBSCBS",
+   "regra": "E0850"
+  },
+  {
+   "nome": "E0903_item",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "250501",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001"
+    }
+   },
+   "campo": "infDPS/IBSCBS/tpOper",
+   "regra": "E0903"
+  },
+  {
+   "nome": "E0903_gov",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "tp_ente_gov": 1
+    }
+   },
+   "campo": "infDPS/IBSCBS/tpOper",
+   "regra": "E0903"
+  },
+  {
+   "nome": "E0904",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "tp_oper": 1
+    }
+   },
+   "campo": "infDPS/IBSCBS/tpOper",
+   "regra": "E0904"
+  },
+  {
+   "nome": "E0905",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "tp_oper": 3,
+     "tp_ente_gov": 1
+    }
+   },
+   "campo": "infDPS/IBSCBS/gRefNFSe",
+   "regra": "E0905"
+  },
+  {
+   "nome": "E0906",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "tp_oper": 1,
+     "tp_ente_gov": 1,
+     "refs_nfse": [
+      "35503082211222333000181000000000004226100000000010"
+     ]
+    }
+   },
+   "campo": "infDPS/IBSCBS/gRefNFSe",
+   "regra": "E0906"
+  },
+  {
+   "nome": "E0425",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "recebido": 5
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/valores/vServPrest/vReceb",
+   "regra": "E0425"
+  },
+  {
+   "nome": "E0453",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "percentual": 0
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/valores/vDedRed/pDR",
+   "regra": "E0453"
+  },
+  {
+   "nome": "E0580",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "municipal": {
+      "tributacao": 3,
+      "retencao": 2
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/valores/trib/tribMun/tpRetISSQN",
+   "regra": "E0580"
+  },
+  {
+   "nome": "E0592",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "municipal": {
+      "tributacao": 2
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/valores/trib/tribMun/tpImunidade",
+   "regra": "E0592"
+  },
+  {
+   "nome": "E0600",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "op_simples": 2
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "municipal": {
+      "aliquota": 2
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/valores/trib/tribMun/pAliq",
+   "regra": "E0600"
+  },
+  {
+   "nome": "E0602",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "municipal": {
+      "tributacao": 4,
+      "aliquota": 2
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/valores/trib/tribMun/pAliq",
+   "regra": "E0602"
+  },
+  {
+   "nome": "E0604",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "op_simples": 1,
+     "regime_especial": 1
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "municipal": {
+      "aliquota": 2
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/valores/trib/tribMun/pAliq",
+   "regra": "E0604"
+  },
+  {
+   "nome": "E0015",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-03"
+   },
+   "campo": "infDPS/dCompet",
+   "regra": "E0015"
+  },
+  {
+   "nome": "E0042",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "substituicao": {
+     "chave": "35503082100052998224725000000000000926090000000072",
+     "motivo": "01"
+    }
+   },
+   "campo": "infDPS/subst/chSubstda",
+   "regra": "E0042"
+  },
+  {
+   "nome": "E0595",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "municipal": {
+      "aliquota": "5.01"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/valores/trib/tribMun/pAliq",
+   "regra": "E0595"
+  },
+  {
+   "nome": "toma_sem_id",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Consumidor"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/toma",
+   "regra": ""
+  },
+  {
+   "nome": "ctribnac_00",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140100",
+     "descricao": "x"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/serv/cServ/cTribNac",
+   "regra": ""
+  },
+  {
+   "nome": "vserv_zero",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 0
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/valores/vServPrest/vServ",
+   "regra": ""
+  },
+  {
+   "nome": "E0901",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "010201",
+     "cst": "000",
+     "cclass_trib": "000001"
+    }
+   },
+   "campo": "infDPS/IBSCBS/cIndOp",
+   "regra": "E0901"
+  },
+  {
+   "nome": "E0910_sem_dest",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "ind_dest": 1
+    }
+   },
+   "campo": "infDPS/IBSCBS/dest",
+   "regra": "E0910"
+  },
+  {
+   "nome": "E0910_dest_sobrando",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "destinatario": {
+      "nome": "Dest",
+      "documento": "52998224725"
+     }
+    }
+   },
+   "campo": "infDPS/IBSCBS/dest",
+   "regra": "E0910"
+  },
+  {
+   "nome": "E0911",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "ind_dest": 1,
+     "destinatario": {
+      "nome": "Dest",
+      "documento": "11222333000182"
+     }
+    }
+   },
+   "campo": "infDPS/IBSCBS/dest/CNPJ",
+   "regra": "E0911"
+  },
+  {
+   "nome": "E0913",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "ind_dest": 1,
+     "destinatario": {
+      "nome": "Dest",
+      "documento": "52998224724"
+     }
+    }
+   },
+   "campo": "infDPS/IBSCBS/dest/CPF",
+   "regra": "E0913"
+  },
+  {
+   "nome": "E0928",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel_cib": "12345678"
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel",
+   "regra": "E0928"
+  },
+  {
+   "nome": "E0931",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "070201",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "020201",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel_cib": "12345678"
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel",
+   "regra": "E0931"
+  },
+  {
+   "nome": "E0932",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "020401",
+     "cst": "000",
+     "cclass_trib": "000001"
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel",
+   "regra": "E0932"
+  },
+  {
+   "nome": "par_cst_trocado",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "200",
+     "cclass_trib": "000001"
+    }
+   },
+   "campo": "infDPS/IBSCBS/valores/trib/gIBSCBS/cClassTrib",
+   "regra": "E0959"
+  },
+  {
+   "nome": "cclass_fora_da_nfse",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "410",
+     "cclass_trib": "410028"
+    }
+   },
+   "campo": "infDPS/IBSCBS/valores/trib/gIBSCBS/cClassTrib",
+   "regra": "E0958"
+  },
+  {
+   "nome": "E0964",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "cst_regular": "000",
+     "cclass_trib_regular": "000001"
+    }
+   },
+   "campo": "infDPS/IBSCBS/valores/trib/gIBSCBS/gTribRegular",
+   "regra": "E0964"
+  },
+  {
+   "nome": "E0965",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "550",
+     "cclass_trib": "550016"
+    }
+   },
+   "campo": "infDPS/IBSCBS/valores/trib/gIBSCBS/gTribRegular",
+   "regra": "E0965"
+  },
+  {
+   "nome": "par_regular_trocado",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "550",
+     "cclass_trib": "550016",
+     "cst_regular": "200",
+     "cclass_trib_regular": "000001"
+    }
+   },
+   "campo": "infDPS/IBSCBS/valores/trib/gIBSCBS/gTribRegular/cClassTribReg",
+   "regra": "E0970"
+  }
+ ],
+ "eventos": [
+  {
+   "tipo": "101101",
+   "chave": "35503082211222333000181000000000004226100000000010",
+   "autor": "11222333000181",
+   "motivo": "1",
+   "texto": "Erro na emissao da nota",
+   "ambiente": 2,
+   "dh_evento": "2026-10-02T10:00:00",
+   "id": "PRE35503082211222333000181000000000004226100000000010101101",
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><pedRegEvento xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infPedReg Id=\"PRE35503082211222333000181000000000004226100000000010101101\"><tpAmb>2</tpAmb><verAplic>rustnf</verAplic><dhEvento>2026-10-02T10:00:00-03:00</dhEvento><CNPJAutor>11222333000181</CNPJAutor><chNFSe>35503082211222333000181000000000004226100000000010</chNFSe><e101101><xDesc>Cancelamento de NFS-e</xDesc><cMotivo>1</cMotivo><xMotivo>Erro na emissao da nota</xMotivo></e101101></infPedReg></pedRegEvento>"
+  },
+  {
+   "tipo": "101103",
+   "chave": "35503082211222333000181000000000004226100000000010",
+   "autor": "11222333000181",
+   "motivo": "9",
+   "texto": "Pedido de analise fiscal",
+   "ambiente": 2,
+   "dh_evento": "2026-10-02T10:00:00",
+   "id": "PRE35503082211222333000181000000000004226100000000010101103",
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><pedRegEvento xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infPedReg Id=\"PRE35503082211222333000181000000000004226100000000010101103\"><tpAmb>2</tpAmb><verAplic>rustnf</verAplic><dhEvento>2026-10-02T10:00:00-03:00</dhEvento><CNPJAutor>11222333000181</CNPJAutor><chNFSe>35503082211222333000181000000000004226100000000010</chNFSe><e101103><xDesc>Solicitação de Análise Fiscal para Cancelamento de NFS-e</xDesc><cMotivo>9</cMotivo><xMotivo>Pedido de analise fiscal</xMotivo></e101103></infPedReg></pedRegEvento>"
+  },
+  {
+   "tipo": "202201",
+   "chave": "35503082211222333000181000000000004226100000000010",
+   "autor": "11222333000181",
+   "motivo": "",
+   "texto": "",
+   "ambiente": 2,
+   "dh_evento": "2026-10-02T10:00:00",
+   "id": "PRE35503082211222333000181000000000004226100000000010202201",
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><pedRegEvento xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infPedReg Id=\"PRE35503082211222333000181000000000004226100000000010202201\"><tpAmb>2</tpAmb><verAplic>rustnf</verAplic><dhEvento>2026-10-02T10:00:00-03:00</dhEvento><CNPJAutor>11222333000181</CNPJAutor><chNFSe>35503082211222333000181000000000004226100000000010</chNFSe><e202201><xDesc>Manifestação de NFS-e - Confirmação do Prestador</xDesc></e202201></infPedReg></pedRegEvento>"
+  },
+  {
+   "tipo": "203206",
+   "chave": "35503082211222333000181000000000004226100000000010",
+   "autor": "11222333000181",
+   "motivo": "5",
+   "texto": "",
+   "ambiente": 2,
+   "dh_evento": "2026-10-02T10:00:00",
+   "id": "PRE35503082211222333000181000000000004226100000000010203206",
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><pedRegEvento xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infPedReg Id=\"PRE35503082211222333000181000000000004226100000000010203206\"><tpAmb>2</tpAmb><verAplic>rustnf</verAplic><dhEvento>2026-10-02T10:00:00-03:00</dhEvento><CNPJAutor>11222333000181</CNPJAutor><chNFSe>35503082211222333000181000000000004226100000000010</chNFSe><e203206><xDesc>Manifestação de NFS-e - Rejeição do Tomador</xDesc><cMotivo>5</cMotivo></e203206></infPedReg></pedRegEvento>"
+  },
+  {
+   "tipo": "204207",
+   "chave": "35503082211222333000181000000000004226100000000010",
+   "autor": "11222333000181",
+   "motivo": "9",
+   "texto": "Rejeicao com motivo outro",
+   "ambiente": 2,
+   "dh_evento": "2026-10-02T10:00:00",
+   "id": "PRE35503082211222333000181000000000004226100000000010204207",
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><pedRegEvento xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infPedReg Id=\"PRE35503082211222333000181000000000004226100000000010204207\"><tpAmb>2</tpAmb><verAplic>rustnf</verAplic><dhEvento>2026-10-02T10:00:00-03:00</dhEvento><CNPJAutor>11222333000181</CNPJAutor><chNFSe>35503082211222333000181000000000004226100000000010</chNFSe><e204207><xDesc>Manifestação de NFS-e - Rejeição do Intermediário</xDesc><cMotivo>9</cMotivo><xMotivo>Rejeicao com motivo outro</xMotivo></e204207></infPedReg></pedRegEvento>"
+  },
+  {
+   "tipo": "101101",
+   "chave": "35503082211222333000181000000000004226100000000010",
+   "autor": "11222333000181",
+   "motivo": "1",
+   "texto": "curto",
+   "ambiente": 2,
+   "dh_evento": "2026-10-02T10:00:00",
+   "erro": "infPedReg/xMotivo"
+  },
+  {
+   "tipo": "105102",
+   "chave": "35503082211222333000181000000000004226100000000010",
+   "autor": "11222333000181",
+   "motivo": "",
+   "texto": "",
+   "ambiente": 2,
+   "dh_evento": "2026-10-02T10:00:00",
+   "erro": "infPedReg"
+  },
+  {
+   "tipo": "305101",
+   "chave": "35503082211222333000181000000000004226100000000010",
+   "autor": "11222333000181",
+   "motivo": "",
+   "texto": "",
+   "ambiente": 2,
+   "dh_evento": "2026-10-02T10:00:00",
+   "erro": "infPedReg"
+  },
+  {
+   "tipo": "203206",
+   "chave": "35503082211222333000181000000000004226100000000010",
+   "autor": "11222333000181",
+   "motivo": "9",
+   "texto": "",
+   "ambiente": 2,
+   "dh_evento": "2026-10-02T10:00:00",
+   "erro": "infPedReg/e203206/xMotivo"
+  },
+  {
+   "tipo": "101101",
+   "chave": "35503082211222333000181000000000004226100000000010",
+   "autor": "11222333000181",
+   "motivo": "3",
+   "texto": "Motivo que nao existe",
+   "ambiente": 2,
+   "dh_evento": "2026-10-02T10:00:00",
+   "erro": "infPedReg/e101101/cMotivo"
+  }
+ ],
+ "dps_nt009": [
+  {
+   "nome": "minima",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><finNFSe>0</finNFSe><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ></serv><valores><vServPrest><vServ>150.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores></infDPS></DPS>"
+  },
+  {
+   "nome": "completa",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "P",
+     "op_simples": 1,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "10",
+      "bairro": "Centro",
+      "cmun": "3550308",
+      "cep": "01001-000",
+      "complemento": "Sala 2"
+     }
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": 1000,
+     "desconto_incondicionado": "10",
+     "deducao": {
+      "ajustes": [
+       {
+        "tipo": 2,
+        "valor_total": 100,
+        "valor_aplicado": "50",
+        "dfe_tipo": 2,
+        "dfe_chave": "33333333333333333333333333333333333333333333"
+       },
+       {
+        "tipo": 101,
+        "valor_total": 300,
+        "valor_aplicado": "250.5",
+        "emissao": "2026-09-20",
+        "competencia": "2026-09-01",
+        "dfe_tipo": 1,
+        "dfe_chave": "35503082211222333000181000000000004226100000000010",
+        "fornecedor": {
+         "nome": "Corretor",
+         "documento": "52998224725"
+        }
+       },
+       {
+        "tipo": 99,
+        "valor_total": 5,
+        "valor_aplicado": 5,
+        "tipo_descricao": "outra deducao",
+        "outro_cmun": "3550308",
+        "outro_numero": "12",
+        "outro_descricao": "nota municipal"
+       },
+       {
+        "tipo": 7,
+        "valor_total": 1,
+        "valor_aplicado": 1,
+        "doc_numero": "9",
+        "doc_descricao": "recibo"
+       }
+      ]
+     },
+     "total": {
+      "percentual_federal": "13.45",
+      "percentual_estadual": "0",
+      "percentual_municipal": "2"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ibscbs": {
+     "cind_op": "020201",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "ind_dest": 1,
+     "ind_final": 1,
+     "tp_oper": 2,
+     "refs_nfse": [
+      "35503082211222333000181000000000004226100000000010"
+     ],
+     "tp_ente_gov": 1,
+     "destinatario": {
+      "nome": "Dest",
+      "documento": "52998224725",
+      "endereco": {
+       "logradouro": "Rua A",
+       "numero": "10",
+       "bairro": "Centro",
+       "cmun": "3550308",
+       "cep": "01001-000",
+       "complemento": "Sala 2"
+      }
+     },
+     "imovel": {
+      "cmun": "3550308",
+      "unidades": [
+       {
+        "cib": "12345678"
+       }
+      ]
+     }
+    }
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><finNFSe>0</finNFSe><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><regTrib><opSimpNac>1</opSimpNac><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><cNBS>123456789</cNBS><xDescServ>x</xDescServ></cServ></serv><valores><vServPrest><vServ>1000.00</vServ></vServPrest><vDescCondIncond><vDescIncond>10.00</vDescIncond></vDescCondIncond><vAjusteBC><documentos><docAjusteBC><tpAjusteBC>2</tpAjusteBC><vTotDoc>100.00</vTotDoc><vAjusteAplic>50.00</vAjusteAplic><dFeNacional><tipoChaveDFe>2</tipoChaveDFe><chaveDFe>33333333333333333333333333333333333333333333</chaveDFe></dFeNacional></docAjusteBC><docAjusteBC><tpAjusteBC>101</tpAjusteBC><vTotDoc>300.00</vTotDoc><vAjusteAplic>250.50</vAjusteAplic><dtEmiDoc>2026-09-20</dtEmiDoc><dtCompDoc>2026-09-01</dtCompDoc><dFeNacional><tipoChaveDFe>1</tipoChaveDFe><chaveDFe>35503082211222333000181000000000004226100000000010</chaveDFe></dFeNacional><fornec><CPF>52998224725</CPF><xNome>Corretor</xNome></fornec></docAjusteBC><docAjusteBC><tpAjusteBC>99</tpAjusteBC><xTpAjusteBC>outra deducao</xTpAjusteBC><vTotDoc>5.00</vTotDoc><vAjusteAplic>5.00</vAjusteAplic><docFiscalOutro><cMunDocFiscal>3550308</cMunDocFiscal><nDocFiscal>12</nDocFiscal><xDocFiscal>nota municipal</xDocFiscal></docFiscalOutro></docAjusteBC><docAjusteBC><tpAjusteBC>7</tpAjusteBC><vTotDoc>1.00</vTotDoc><vAjusteAplic>1.00</vAjusteAplic><docOutro><nDoc>9</nDoc><xDoc>recibo</xDoc></docOutro></docAjusteBC></documentos></vAjusteBC><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTrib><pTotTribFed>13.45</pTotTribFed><pTotTribEst>0.00</pTotTribEst><pTotTribMun>2.00</pTotTribMun></pTotTrib></totTrib></trib></valores><IBSCBS><indFinal>1</indFinal><cIndOp>020201</cIndOp><tpOper>2</tpOper><gRefNFSe><refNFSe>35503082211222333000181000000000004226100000000010</refNFSe></gRefNFSe><tpEnteGov>1</tpEnteGov><indDest>1</indDest><dest><CPF>52998224725</CPF><xNome>Dest</xNome><end><endNac><cMun>3550308</cMun><CEP>01001000</CEP></endNac><xLgr>Rua A</xLgr><nro>10</nro><xCpl>Sala 2</xCpl><xBairro>Centro</xBairro></end></dest><imovel><cMun>3550308</cMun><gUnidImob><cCIB>12345678</cCIB></gUnidImob></imovel><valores><trib><CST>000</CST><cClassTrib>000001</cClassTrib></trib></valores></IBSCBS></infDPS></DPS>"
+  },
+  {
+   "nome": "trib_regular",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "550",
+     "cclass_trib": "550016",
+     "cst_regular": "000",
+     "cclass_trib_regular": "000001"
+    }
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><finNFSe>0</finNFSe><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><cNBS>123456789</cNBS><xDescServ>x</xDescServ></cServ></serv><valores><vServPrest><vServ>150.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores><IBSCBS><cIndOp>100301</cIndOp><indDest>0</indDest><valores><trib><CST>550</CST><cClassTrib>550016</cClassTrib><gIBSCBS><gTribRegular><CSTReg>000</CSTReg><cClassTribReg>000001</cClassTribReg></gTribRegular></gIBSCBS></trib></valores></IBSCBS></infDPS></DPS>"
+  },
+  {
+   "nome": "diferimento",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "515",
+     "cclass_trib": "515001",
+     "dif_uf": 1,
+     "dif_mun": "2",
+     "dif_cbs": 3
+    }
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><finNFSe>0</finNFSe><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><cNBS>123456789</cNBS><xDescServ>x</xDescServ></cServ></serv><valores><vServPrest><vServ>150.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores><IBSCBS><cIndOp>100301</cIndOp><indDest>0</indDest><valores><trib><CST>515</CST><cClassTrib>515001</cClassTrib><gIBSCBS><gDif><pDifUF>1.00</pDifUF><pDifMun>2.00</pDifMun><pDifCBS>3.00</pDifCBS></gDif></gIBSCBS></trib></valores></IBSCBS></infDPS></DPS>"
+  },
+  {
+   "nome": "trib_sem_gIBSCBS",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001"
+    }
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><finNFSe>0</finNFSe><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><cNBS>123456789</cNBS><xDescServ>x</xDescServ></cServ></serv><valores><vServPrest><vServ>150.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores><IBSCBS><cIndOp>100301</cIndOp><indDest>0</indDest><valores><trib><CST>000</CST><cClassTrib>000001</cClassTrib></trib></valores></IBSCBS></infDPS></DPS>"
+  },
+  {
+   "nome": "percentual",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "10",
+     "deducao": {
+      "percentual": "12.5"
+     },
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><finNFSe>0</finNFSe><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ></serv><valores><vServPrest><vServ>10.00</vServ></vServPrest><vAjusteBC><pAjusteBCISSQN>12.50</pAjusteBCISSQN></vAjusteBC><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores></infDPS></DPS>"
+  },
+  {
+   "nome": "valor",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "10",
+     "deducao": {
+      "valor": "1"
+     },
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><finNFSe>0</finNFSe><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ></serv><valores><vServPrest><vServ>10.00</vServ></vServPrest><vAjusteBC><vAjusteBCISSQN>1.00</vAjusteBCISSQN></vAjusteBC><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores></infDPS></DPS>"
+  },
+  {
+   "nome": "percentual_com_repasse",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 1000,
+     "deducao": {
+      "percentual": "10",
+      "ajustes": [
+       {
+        "tipo": 101,
+        "valor_total": 300,
+        "valor_aplicado": "250.5",
+        "emissao": "2026-09-01",
+        "competencia": "2026-09-01",
+        "dfe_tipo": 1,
+        "dfe_chave": "35503082211222333000181000000000004226100000000010",
+        "fornecedor": {
+         "nome": "Corretor",
+         "documento": "52998224725"
+        }
+       }
+      ]
+     },
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><finNFSe>0</finNFSe><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ></serv><valores><vServPrest><vServ>1000.00</vServ></vServPrest><vAjusteBC><pAjusteBCISSQN>10.00</pAjusteBCISSQN><documentos><docAjusteBC><tpAjusteBC>101</tpAjusteBC><vTotDoc>300.00</vTotDoc><vAjusteAplic>250.50</vAjusteAplic><dtEmiDoc>2026-09-01</dtEmiDoc><dtCompDoc>2026-09-01</dtCompDoc><dFeNacional><tipoChaveDFe>1</tipoChaveDFe><chaveDFe>35503082211222333000181000000000004226100000000010</chaveDFe></dFeNacional><fornec><CPF>52998224725</CPF><xNome>Corretor</xNome></fornec></docAjusteBC></documentos></vAjusteBC><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores></infDPS></DPS>"
+  },
+  {
+   "nome": "imune_com_repasse",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 1000,
+     "municipal": {
+      "tributacao": 2,
+      "imunidade": 1
+     },
+     "deducao": {
+      "ajustes": [
+       {
+        "tipo": 101,
+        "valor_total": 300,
+        "valor_aplicado": "250.5",
+        "emissao": "2026-09-20",
+        "competencia": "2026-09-01",
+        "dfe_tipo": 1,
+        "dfe_chave": "35503082211222333000181000000000004226100000000010",
+        "fornecedor": {
+         "nome": "Corretor",
+         "documento": "52998224725"
+        }
+       }
+      ]
+     },
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><finNFSe>0</finNFSe><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ></serv><valores><vServPrest><vServ>1000.00</vServ></vServPrest><vAjusteBC><documentos><docAjusteBC><tpAjusteBC>101</tpAjusteBC><vTotDoc>300.00</vTotDoc><vAjusteAplic>250.50</vAjusteAplic><dtEmiDoc>2026-09-20</dtEmiDoc><dtCompDoc>2026-09-01</dtCompDoc><dFeNacional><tipoChaveDFe>1</tipoChaveDFe><chaveDFe>35503082211222333000181000000000004226100000000010</chaveDFe></dFeNacional><fornec><CPF>52998224725</CPF><xNome>Corretor</xNome></fornec></docAjusteBC></documentos></vAjusteBC><trib><tribMun><tribISSQN>2</tribISSQN><tpImunidade>1</tpImunidade><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores></infDPS></DPS>"
+  },
+  {
+   "nome": "locacao",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "990301",
+     "descricao": "Aluguel residencial",
+     "cnbs": "110021000"
+    },
+    "valores": {
+     "servico": 1000,
+     "desconto_incondicionado": 50,
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ctribnac_estrito": false,
+    "ibscbs": {
+     "cind_op": "020101",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308",
+      "locacao": {
+       "copropriedade": 50,
+       "valor_total": 2000,
+       "desconto_incondicionado": 100,
+       "vencimento": "2026-10-10"
+      },
+      "unidades": [
+       {
+        "endereco": {
+         "logradouro": "Rua B",
+         "numero": "5",
+         "bairro": "",
+         "cep": "01001000"
+        },
+        "inscricao": "IPTU-1",
+        "ajustes": [
+         {
+          "tipo": "01",
+          "valor": "120"
+         },
+         {
+          "tipo": 4,
+          "valor": "600"
+         },
+         {
+          "tipo": "99",
+          "valor": 10,
+          "descricao": "taxa de lixo"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><finNFSe>0</finNFSe><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>990301</cTribNac><cNBS>110021000</cNBS><xDescServ>Aluguel residencial</xDescServ></cServ></serv><valores><vServPrest><vServ>1000.00</vServ></vServPrest><vDescCondIncond><vDescIncond>50.00</vDescIncond></vDescCondIncond><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores><IBSCBS><cIndOp>020101</cIndOp><indDest>0</indDest><imovel><cMun>3550308</cMun><gLocacao><pCopropriedade>50.00</pCopropriedade><vTotOper>2000.00</vTotOper><vDescIncondTot>100.00</vDescIncondTot><dVencOrig>2026-10-10</dVencOrig></gLocacao><gUnidImob><inscImobFisc>IPTU-1</inscImobFisc><end><CEP>01001000</CEP><xLgr>Rua B</xLgr><nro>5</nro></end><gAjusteBCLocImoveis><tpAjusteBCLocImoveis>01</tpAjusteBCLocImoveis><vAjusteBCLocImoveis>120.00</vAjusteBCLocImoveis></gAjusteBCLocImoveis><gAjusteBCLocImoveis><tpAjusteBCLocImoveis>04</tpAjusteBCLocImoveis><vAjusteBCLocImoveis>600.00</vAjusteBCLocImoveis></gAjusteBCLocImoveis><gAjusteBCLocImoveis><tpAjusteBCLocImoveis>99</tpAjusteBCLocImoveis><xTpAjusteBCLocImoveis>taxa de lixo</xTpAjusteBCLocImoveis><vAjusteBCLocImoveis>10.00</vAjusteBCLocImoveis></gAjusteBCLocImoveis></gUnidImob></imovel><valores><trib><CST>000</CST><cClassTrib>000001</cClassTrib></trib></valores></IBSCBS></infDPS></DPS>"
+  },
+  {
+   "nome": "bens_moveis",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "990401",
+     "descricao": "Locacao de trator",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ctribnac_estrito": false,
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "bens_moveis": [
+      {
+       "ncm": "8429.11.00",
+       "descricao": "Trator de esteira",
+       "quantidade": 2
+      }
+     ]
+    }
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><finNFSe>0</finNFSe><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>990401</cTribNac><cNBS>123456789</cNBS><xDescServ>Locacao de trator</xDescServ></cServ></serv><valores><vServPrest><vServ>150.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores><IBSCBS><cIndOp>100301</cIndOp><indDest>0</indDest><bensMoveis><cNCMBemMovel>84291100</cNCMBemMovel><xNCMBemMovel>Trator de esteira</xNCMBemMovel><qtdNCMBemMovel>2</qtdNCMBemMovel></bensMoveis><valores><trib><CST>000</CST><cClassTrib>000001</cClassTrib></trib></valores></IBSCBS></infDPS></DPS>"
+  },
+  {
+   "nome": "locacao_tolerancia_1_centavo",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "990301",
+     "descricao": "Aluguel residencial",
+     "cnbs": "110021000"
+    },
+    "valores": {
+     "servico": "999.99",
+     "desconto_incondicionado": 50,
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ctribnac_estrito": false,
+    "ibscbs": {
+     "cind_op": "020101",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308",
+      "locacao": {
+       "copropriedade": 50,
+       "valor_total": 2000,
+       "desconto_incondicionado": 100,
+       "vencimento": "2026-10-10"
+      },
+      "unidades": [
+       {
+        "endereco": {
+         "logradouro": "Rua B",
+         "numero": "5",
+         "bairro": "",
+         "cep": "01001000"
+        },
+        "inscricao": "IPTU-1",
+        "ajustes": [
+         {
+          "tipo": "01",
+          "valor": "120"
+         },
+         {
+          "tipo": 4,
+          "valor": "600"
+         },
+         {
+          "tipo": "99",
+          "valor": 10,
+          "descricao": "taxa de lixo"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><finNFSe>0</finNFSe><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>990301</cTribNac><cNBS>110021000</cNBS><xDescServ>Aluguel residencial</xDescServ></cServ></serv><valores><vServPrest><vServ>999.99</vServ></vServPrest><vDescCondIncond><vDescIncond>50.00</vDescIncond></vDescCondIncond><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores><IBSCBS><cIndOp>020101</cIndOp><indDest>0</indDest><imovel><cMun>3550308</cMun><gLocacao><pCopropriedade>50.00</pCopropriedade><vTotOper>2000.00</vTotOper><vDescIncondTot>100.00</vDescIncondTot><dVencOrig>2026-10-10</dVencOrig></gLocacao><gUnidImob><inscImobFisc>IPTU-1</inscImobFisc><end><CEP>01001000</CEP><xLgr>Rua B</xLgr><nro>5</nro></end><gAjusteBCLocImoveis><tpAjusteBCLocImoveis>01</tpAjusteBCLocImoveis><vAjusteBCLocImoveis>120.00</vAjusteBCLocImoveis></gAjusteBCLocImoveis><gAjusteBCLocImoveis><tpAjusteBCLocImoveis>04</tpAjusteBCLocImoveis><vAjusteBCLocImoveis>600.00</vAjusteBCLocImoveis></gAjusteBCLocImoveis><gAjusteBCLocImoveis><tpAjusteBCLocImoveis>99</tpAjusteBCLocImoveis><xTpAjusteBCLocImoveis>taxa de lixo</xTpAjusteBCLocImoveis><vAjusteBCLocImoveis>10.00</vAjusteBCLocImoveis></gAjusteBCLocImoveis></gUnidImob></imovel><valores><trib><CST>000</CST><cClassTrib>000001</cClassTrib></trib></valores></IBSCBS></infDPS></DPS>"
+  }
+ ],
+ "dps_nt009_erro": [
+  {
+   "nome": "leiaute_invalido",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "1.01"
+   },
+   "campo": "leiaute",
+   "regra": ""
+  },
+  {
+   "nome": "producao_com_ajustes",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "ajustes": [
+       {
+        "tipo": 2,
+        "valor_total": 1,
+        "valor_aplicado": 1,
+        "dfe_tipo": 2,
+        "dfe_chave": "33333333333333333333333333333333333333333333"
+       }
+      ]
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01"
+   },
+   "campo": "infDPS/valores/vDedRed/documentos",
+   "regra": ""
+  },
+  {
+   "nome": "producao_com_imovel",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308"
+     }
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel",
+   "regra": ""
+  },
+  {
+   "nome": "producao_com_bens",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "bens_moveis": [
+      {
+       "ncm": "8429.11.00",
+       "descricao": "Trator de esteira",
+       "quantidade": 2
+      }
+     ]
+    }
+   },
+   "campo": "infDPS/IBSCBS/bensMoveis",
+   "regra": ""
+  },
+  {
+   "nome": "nt009_com_documentos",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "documentos": [
+       {
+        "tipo": 2,
+        "emissao": "2026-09-30",
+        "valor_dedutivel": 1,
+        "valor_deducao": 1,
+        "doc": "1"
+       }
+      ]
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC/documentos",
+   "regra": ""
+  },
+  {
+   "nome": "nt009_com_reembolso",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "reembolsos": [
+      {
+       "tipo": "01",
+       "emissao": "2026-09-01",
+       "competencia": "2026-09-01",
+       "valor": 1,
+       "doc_numero": "9",
+       "doc_descricao": "r"
+      }
+     ]
+    }
+   },
+   "campo": "infDPS/IBSCBS/valores/gReeRepRes",
+   "regra": ""
+  },
+  {
+   "nome": "nt009_com_imovel_cib",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel_cib": "12345678"
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel",
+   "regra": ""
+  },
+  {
+   "nome": "uma_forma",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "percentual": 1,
+      "valor": 1
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC",
+   "regra": ""
+  },
+  {
+   "nome": "E0435",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "municipal": {
+      "tributacao": 2,
+      "imunidade": 1
+     },
+     "deducao": {
+      "valor": 1
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC",
+   "regra": "E0435"
+  },
+  {
+   "nome": "E0436",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "op_simples": 2
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "valor": 1
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC",
+   "regra": "E0436"
+  },
+  {
+   "nome": "E0445",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "op_simples": 1,
+     "regime_especial": 1
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "valor": 1
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC",
+   "regra": "E0445"
+  },
+  {
+   "nome": "E0453",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "percentual": 0
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC/pAjusteBCISSQN",
+   "regra": "E0453"
+  },
+  {
+   "nome": "E0463",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "060101",
+     "descricao": "x"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "ajustes": [
+       {
+        "tipo": 2,
+        "valor_total": 1,
+        "valor_aplicado": 1,
+        "dfe_tipo": 2,
+        "dfe_chave": "33333333333333333333333333333333333333333333"
+       }
+      ]
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC/documentos/docAjusteBC[0]/tpAjusteBC",
+   "regra": "E0463"
+  },
+  {
+   "nome": "E0464",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "ajustes": [
+       {
+        "tipo": 2,
+        "valor_total": 1,
+        "valor_aplicado": 1,
+        "dfe_tipo": 2,
+        "dfe_chave": "33333333333333333333333333333333333333333333",
+        "tipo_descricao": "x"
+       }
+      ]
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC/documentos/docAjusteBC[0]/xTpAjusteBC",
+   "regra": "E0464"
+  },
+  {
+   "nome": "E0465",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "ajustes": [
+       {
+        "tipo": 199,
+        "valor_total": 1,
+        "valor_aplicado": 1,
+        "dfe_tipo": 2,
+        "dfe_chave": "33333333333333333333333333333333333333333333"
+       }
+      ]
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC/documentos/docAjusteBC[0]/xTpAjusteBC",
+   "regra": "E0465"
+  },
+  {
+   "nome": "E0479",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "ajustes": [
+       {
+        "tipo": 103,
+        "valor_total": 1,
+        "valor_aplicado": 1,
+        "doc_numero": "9",
+        "doc_descricao": "r"
+       }
+      ]
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC/documentos/docAjusteBC[0]",
+   "regra": "E0479"
+  },
+  {
+   "nome": "E0462",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "valor": 1,
+      "ajustes": [
+       {
+        "tipo": 2,
+        "valor_total": 1,
+        "valor_aplicado": 1,
+        "dfe_tipo": 2,
+        "dfe_chave": "33333333333333333333333333333333333333333333"
+       }
+      ]
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC/documentos/docAjusteBC[0]/tpAjusteBC",
+   "regra": "E0462"
+  },
+  {
+   "nome": "E0472",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "ajustes": [
+       {
+        "tipo": 2,
+        "valor_total": 1,
+        "valor_aplicado": 1,
+        "dfe_tipo": 2,
+        "dfe_chave": "33333333333333333333333333333333333333333333",
+        "emissao": "2026-08-31",
+        "competencia": "2026-09-01"
+       }
+      ]
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC/documentos/docAjusteBC[0]/dtEmiDoc",
+   "regra": "E0472"
+  },
+  {
+   "nome": "E0467",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "ajustes": [
+       {
+        "tipo": 2,
+        "valor_total": 20,
+        "valor_aplicado": "10.01",
+        "dfe_tipo": 2,
+        "dfe_chave": "33333333333333333333333333333333333333333333"
+       }
+      ]
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC/documentos/docAjusteBC[0]/vAjusteAplic",
+   "regra": "E0467"
+  },
+  {
+   "nome": "E0469",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "ajustes": [
+       {
+        "tipo": 2,
+        "valor_total": 5,
+        "valor_aplicado": "5.01",
+        "dfe_tipo": 2,
+        "dfe_chave": "33333333333333333333333333333333333333333333"
+       }
+      ]
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC/documentos/docAjusteBC[0]/vAjusteAplic",
+   "regra": "E0469"
+  },
+  {
+   "nome": "E0470",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "ajustes": [
+       {
+        "tipo": 2,
+        "valor_total": 1,
+        "valor_aplicado": 1,
+        "dfe_tipo": 9,
+        "dfe_chave": "33333333333333333333333333333333333333333333"
+       }
+      ]
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC/documentos/docAjusteBC[0]/dFeNacional/xTipoChaveDFe",
+   "regra": "E0470"
+  },
+  {
+   "nome": "E0460",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "ajustes": [
+       {
+        "tipo": 2,
+        "valor_total": 1,
+        "valor_aplicado": 1,
+        "dfe_tipo": 1,
+        "dfe_chave": "33333333333333333333333333333333333333333333"
+       }
+      ]
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC/documentos/docAjusteBC[0]/dFeNacional/chaveDFe",
+   "regra": "E0460"
+  },
+  {
+   "nome": "E0476",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": 10,
+     "deducao": {
+      "ajustes": [
+       {
+        "tipo": 2,
+        "valor_total": 1,
+        "valor_aplicado": 1,
+        "competencia": "2026-01-01",
+        "outro_cmun": "3550308",
+        "outro_numero": "12",
+        "outro_descricao": "nota municipal"
+       }
+      ]
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC/documentos/docAjusteBC[0]/dtCompDoc",
+   "regra": "E0476"
+  },
+  {
+   "nome": "E0936",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": 1000,
+     "desconto_incondicionado": 50
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ctribnac_estrito": true,
+    "ibscbs": {
+     "cind_op": "020101",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308",
+      "locacao": {
+       "copropriedade": 50,
+       "valor_total": 2000,
+       "desconto_incondicionado": 100,
+       "vencimento": "2026-10-10"
+      },
+      "unidades": [
+       {
+        "endereco": {
+         "logradouro": "Rua B",
+         "numero": "5",
+         "bairro": "",
+         "cep": "01001000"
+        },
+        "inscricao": "IPTU-1",
+        "ajustes": [
+         {
+          "tipo": "01",
+          "valor": "120"
+         },
+         {
+          "tipo": 4,
+          "valor": "600"
+         },
+         {
+          "tipo": "99",
+          "valor": 10,
+          "descricao": "taxa de lixo"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel/gLocacao",
+   "regra": "E0936"
+  },
+  {
+   "nome": "E0937",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "990301",
+     "descricao": "Aluguel residencial",
+     "cnbs": "110021000"
+    },
+    "valores": {
+     "servico": 1000,
+     "desconto_incondicionado": 50
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ctribnac_estrito": false,
+    "ibscbs": {
+     "cind_op": "020101",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308",
+      "locacao": null,
+      "unidades": [
+       {
+        "endereco": {
+         "logradouro": "Rua B",
+         "numero": "5",
+         "bairro": "",
+         "cep": "01001000"
+        },
+        "inscricao": "IPTU-1",
+        "ajustes": [
+         {
+          "tipo": "01",
+          "valor": "120"
+         },
+         {
+          "tipo": 4,
+          "valor": "600"
+         },
+         {
+          "tipo": "99",
+          "valor": 10,
+          "descricao": "taxa de lixo"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel/gLocacao",
+   "regra": "E0937"
+  },
+  {
+   "nome": "E0938",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ibscbs": {
+     "cind_op": "020101",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308"
+     }
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel/gUnidImob",
+   "regra": "E0938"
+  },
+  {
+   "nome": "E0928",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308",
+      "unidades": [
+       {
+        "cib": "12345678"
+       }
+      ]
+     }
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel",
+   "regra": "E0928"
+  },
+  {
+   "nome": "E0931",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "070201",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ibscbs": {
+     "cind_op": "020201",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308",
+      "unidades": [
+       {
+        "cib": "12345678"
+       }
+      ]
+     }
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel",
+   "regra": "E0931"
+  },
+  {
+   "nome": "E0932",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ibscbs": {
+     "cind_op": "020101",
+     "cst": "000",
+     "cclass_trib": "000001"
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel",
+   "regra": "E0932"
+  },
+  {
+   "nome": "E0939",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": 1000,
+     "desconto_incondicionado": 50
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ctribnac_estrito": true,
+    "ibscbs": {
+     "cind_op": "020101",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308",
+      "locacao": null,
+      "unidades": [
+       {
+        "endereco": {
+         "logradouro": "Rua B",
+         "numero": "5",
+         "bairro": "",
+         "cep": "01001000"
+        },
+        "inscricao": "IPTU-1",
+        "ajustes": [
+         {
+          "tipo": "01",
+          "valor": "120"
+         },
+         {
+          "tipo": 4,
+          "valor": "600"
+         },
+         {
+          "tipo": "99",
+          "valor": 10,
+          "descricao": "taxa de lixo"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel/gUnidImob[0]/gAjusteBCLocImoveis[0]",
+   "regra": "E0939"
+  },
+  {
+   "nome": "E0940",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "990301",
+     "descricao": "Aluguel residencial",
+     "cnbs": "110021000"
+    },
+    "valores": {
+     "servico": 1000,
+     "desconto_incondicionado": 50
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ctribnac_estrito": false,
+    "ibscbs": {
+     "cind_op": "020101",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308",
+      "locacao": {
+       "copropriedade": "100.01",
+       "valor_total": 2000,
+       "desconto_incondicionado": 100,
+       "vencimento": "2026-10-10"
+      },
+      "unidades": [
+       {
+        "endereco": {
+         "logradouro": "Rua B",
+         "numero": "5",
+         "bairro": "",
+         "cep": "01001000"
+        },
+        "inscricao": "IPTU-1",
+        "ajustes": [
+         {
+          "tipo": "01",
+          "valor": "120"
+         },
+         {
+          "tipo": 4,
+          "valor": "600"
+         },
+         {
+          "tipo": "99",
+          "valor": 10,
+          "descricao": "taxa de lixo"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel/gLocacao/pCopropriedade",
+   "regra": "E0940"
+  },
+  {
+   "nome": "E0944",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "990301",
+     "descricao": "Aluguel residencial",
+     "cnbs": "110022000"
+    },
+    "valores": {
+     "servico": 1000,
+     "desconto_incondicionado": 50
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ctribnac_estrito": false,
+    "ibscbs": {
+     "cind_op": "020101",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308",
+      "locacao": {
+       "copropriedade": 50,
+       "valor_total": 2000,
+       "desconto_incondicionado": 100,
+       "vencimento": "2026-10-10"
+      },
+      "unidades": [
+       {
+        "endereco": {
+         "logradouro": "Rua B",
+         "numero": "5",
+         "bairro": "",
+         "cep": "01001000"
+        },
+        "inscricao": "IPTU-1",
+        "ajustes": [
+         {
+          "tipo": "01",
+          "valor": "120"
+         },
+         {
+          "tipo": 4,
+          "valor": "600"
+         },
+         {
+          "tipo": "99",
+          "valor": 10,
+          "descricao": "taxa de lixo"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel/gUnidImob[0]/gAjusteBCLocImoveis[1]/tpAjusteBCLocImoveis",
+   "regra": "E0944"
+  },
+  {
+   "nome": "E0949",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "990301",
+     "descricao": "Aluguel residencial",
+     "cnbs": "110021000"
+    },
+    "valores": {
+     "servico": 1000,
+     "desconto_incondicionado": 50
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ctribnac_estrito": false,
+    "ibscbs": {
+     "cind_op": "020101",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308",
+      "locacao": {
+       "copropriedade": 50,
+       "valor_total": 2000,
+       "desconto_incondicionado": 100,
+       "vencimento": "2026-10-10"
+      },
+      "unidades": [
+       {
+        "cib": "12345678",
+        "ajustes": [
+         {
+          "tipo": 99,
+          "valor": 1
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel/gUnidImob[0]/gAjusteBCLocImoveis[0]/xTpAjusteBCLocImoveis",
+   "regra": "E0949"
+  },
+  {
+   "nome": "E0966",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "990301",
+     "descricao": "Aluguel residencial",
+     "cnbs": "110021000"
+    },
+    "valores": {
+     "servico": 1000,
+     "desconto_incondicionado": 50
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ctribnac_estrito": false,
+    "ibscbs": {
+     "cind_op": "020101",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308",
+      "locacao": {
+       "copropriedade": 50,
+       "valor_total": 2000,
+       "desconto_incondicionado": 100,
+       "vencimento": "2026-10-10"
+      },
+      "unidades": [
+       {
+        "cib": "12345678",
+        "ajustes": [
+         {
+          "tipo": 1,
+          "valor": "2000.01"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "campo": "infDPS/IBSCBS/imovel/gUnidImob[0]/gAjusteBCLocImoveis[0]/vAjusteBCLocImoveis",
+   "regra": "E0966"
+  },
+  {
+   "nome": "E0967",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "x",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "bens_moveis": [
+      {
+       "ncm": "8429.11.00",
+       "descricao": "Trator de esteira",
+       "quantidade": 2
+      }
+     ]
+    }
+   },
+   "campo": "infDPS/IBSCBS/bensMoveis",
+   "regra": "E0967"
+  },
+  {
+   "nome": "E0963",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "990401",
+     "descricao": "Locacao de trator",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ctribnac_estrito": false,
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001"
+    }
+   },
+   "campo": "infDPS/IBSCBS/bensMoveis",
+   "regra": "E0963"
+  },
+  {
+   "nome": "E0974",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "990401",
+     "descricao": "Locacao de trator",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ctribnac_estrito": false,
+    "ibscbs": {
+     "cind_op": "100301",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "bens_moveis": [
+      {
+       "ncm": "8429.11.00",
+       "descricao": "Trator de esteira",
+       "quantidade": "0"
+      }
+     ]
+    }
+   },
+   "campo": "infDPS/IBSCBS/bensMoveis[0]/qtdNCMBemMovel",
+   "regra": "E0974"
+  },
+  {
+   "nome": "E0433",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "990301",
+     "descricao": "Aluguel residencial",
+     "cnbs": "110021000"
+    },
+    "valores": {
+     "servico": "999.98",
+     "desconto_incondicionado": 50
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ctribnac_estrito": false,
+    "ibscbs": {
+     "cind_op": "020101",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308",
+      "locacao": {
+       "copropriedade": 50,
+       "valor_total": 2000,
+       "desconto_incondicionado": 100,
+       "vencimento": "2026-10-10"
+      },
+      "unidades": [
+       {
+        "endereco": {
+         "logradouro": "Rua B",
+         "numero": "5",
+         "bairro": "",
+         "cep": "01001000"
+        },
+        "inscricao": "IPTU-1",
+        "ajustes": [
+         {
+          "tipo": "01",
+          "valor": "120"
+         },
+         {
+          "tipo": 4,
+          "valor": "600"
+         },
+         {
+          "tipo": "99",
+          "valor": 10,
+          "descricao": "taxa de lixo"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "campo": "infDPS/valores/vServPrest/vServ",
+   "regra": "E0433"
+  },
+  {
+   "nome": "E0434",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "990301",
+     "descricao": "Aluguel residencial",
+     "cnbs": "110021000"
+    },
+    "valores": {
+     "servico": 1000,
+     "desconto_incondicionado": "49.98"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ctribnac_estrito": false,
+    "ibscbs": {
+     "cind_op": "020101",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308",
+      "locacao": {
+       "copropriedade": 50,
+       "valor_total": 2000,
+       "desconto_incondicionado": 100,
+       "vencimento": "2026-10-10"
+      },
+      "unidades": [
+       {
+        "endereco": {
+         "logradouro": "Rua B",
+         "numero": "5",
+         "bairro": "",
+         "cep": "01001000"
+        },
+        "inscricao": "IPTU-1",
+        "ajustes": [
+         {
+          "tipo": "01",
+          "valor": "120"
+         },
+         {
+          "tipo": 4,
+          "valor": "600"
+         },
+         {
+          "tipo": "99",
+          "valor": 10,
+          "descricao": "taxa de lixo"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "campo": "infDPS/valores/vDescCondIncond/vDescIncond",
+   "regra": "E0434"
+  },
+  {
+   "nome": "E0443",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "990301",
+     "descricao": "Aluguel residencial",
+     "cnbs": "110021000"
+    },
+    "valores": {
+     "servico": 1000,
+     "desconto_incondicionado": 50
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-10-02T10:00:00",
+    "competencia": "2026-10-01",
+    "leiaute": "nt009",
+    "ctribnac_estrito": false,
+    "ibscbs": {
+     "cind_op": "020101",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "imovel": {
+      "cmun": "3550308",
+      "locacao": {
+       "copropriedade": 50,
+       "valor_total": 2000,
+       "desconto_incondicionado": 100,
+       "vencimento": "2026-10-10",
+       "desconto_condicionado": 100
+      },
+      "unidades": [
+       {
+        "endereco": {
+         "logradouro": "Rua B",
+         "numero": "5",
+         "bairro": "",
+         "cep": "01001000"
+        },
+        "inscricao": "IPTU-1",
+        "ajustes": [
+         {
+          "tipo": "01",
+          "valor": "120"
+         },
+         {
+          "tipo": 4,
+          "valor": "600"
+         },
+         {
+          "tipo": "99",
+          "valor": 10,
+          "descricao": "taxa de lixo"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "campo": "infDPS/valores/vDescCondIncond/vDescCond",
+   "regra": "E0443"
+  }
+ ],
+ "c14n": [
+  {
+   "xml": "<a xmlns=\"http://u\" xmlns:xsi=\"http://x\" xmlns:p=\"http://pp\"><b Id=\"1\" b=\"2\" p:z=\"3\"><c xmlns=\"\"><p:d/><!--k--></c></b></a>",
+   "alvo": "b",
+   "exclusiva": false,
+   "comentarios": false,
+   "saida": "<b xmlns=\"http://u\" xmlns:p=\"http://pp\" xmlns:xsi=\"http://x\" Id=\"1\" b=\"2\" p:z=\"3\"><c xmlns=\"\"><p:d></p:d></c></b>"
+  },
+  {
+   "xml": "<a xmlns=\"http://u\" xmlns:xsi=\"http://x\" xmlns:p=\"http://pp\"><b Id=\"1\" b=\"2\" p:z=\"3\"><c xmlns=\"\"><p:d/><!--k--></c></b></a>",
+   "alvo": "b",
+   "exclusiva": false,
+   "comentarios": true,
+   "saida": "<b xmlns=\"http://u\" xmlns:p=\"http://pp\" xmlns:xsi=\"http://x\" Id=\"1\" b=\"2\" p:z=\"3\"><c xmlns=\"\"><p:d></p:d><!--k--></c></b>"
+  },
+  {
+   "xml": "<a xmlns=\"http://u\" xmlns:xsi=\"http://x\" xmlns:p=\"http://pp\"><b Id=\"1\" b=\"2\" p:z=\"3\"><c xmlns=\"\"><p:d/><!--k--></c></b></a>",
+   "alvo": "b",
+   "exclusiva": true,
+   "comentarios": false,
+   "saida": "<b xmlns=\"http://u\" xmlns:p=\"http://pp\" Id=\"1\" b=\"2\" p:z=\"3\"><c xmlns=\"\"><p:d></p:d></c></b>"
+  },
+  {
+   "xml": "<a xmlns=\"http://u\" xmlns:xsi=\"http://x\" xmlns:p=\"http://pp\"><b Id=\"1\" b=\"2\" p:z=\"3\"><c xmlns=\"\"><p:d/><!--k--></c></b></a>",
+   "alvo": "b",
+   "exclusiva": true,
+   "comentarios": true,
+   "saida": "<b xmlns=\"http://u\" xmlns:p=\"http://pp\" Id=\"1\" b=\"2\" p:z=\"3\"><c xmlns=\"\"><p:d></p:d><!--k--></c></b>"
+  },
+  {
+   "xml": "<?xml version='1.0'?>\r\n<r xmlns='http://www.sped.fazenda.gov.br/nfse'>\r\n <inf Id='X' z='&amp;&lt;&gt;\"' a='t&#9;n&#10;r&#13;'>t&#13;e&amp;&lt;&gt;\"'<![CDATA[<cd>&]]><?pi dados?><v/></inf></r>",
+   "alvo": "inf",
+   "exclusiva": false,
+   "comentarios": false,
+   "saida": "<inf xmlns=\"http://www.sped.fazenda.gov.br/nfse\" Id=\"X\" a=\"t&#x9;n&#xA;r&#xD;\" z=\"&amp;&lt;>&quot;\">t&#xD;e&amp;&lt;&gt;\"'&lt;cd&gt;&amp;<?pi dados?><v></v></inf>"
+  },
+  {
+   "xml": "<?xml version='1.0'?>\r\n<r xmlns='http://www.sped.fazenda.gov.br/nfse'>\r\n <inf Id='X' z='&amp;&lt;&gt;\"' a='t&#9;n&#10;r&#13;'>t&#13;e&amp;&lt;&gt;\"'<![CDATA[<cd>&]]><?pi dados?><v/></inf></r>",
+   "alvo": "inf",
+   "exclusiva": false,
+   "comentarios": true,
+   "saida": "<inf xmlns=\"http://www.sped.fazenda.gov.br/nfse\" Id=\"X\" a=\"t&#x9;n&#xA;r&#xD;\" z=\"&amp;&lt;>&quot;\">t&#xD;e&amp;&lt;&gt;\"'&lt;cd&gt;&amp;<?pi dados?><v></v></inf>"
+  },
+  {
+   "xml": "<?xml version='1.0'?>\r\n<r xmlns='http://www.sped.fazenda.gov.br/nfse'>\r\n <inf Id='X' z='&amp;&lt;&gt;\"' a='t&#9;n&#10;r&#13;'>t&#13;e&amp;&lt;&gt;\"'<![CDATA[<cd>&]]><?pi dados?><v/></inf></r>",
+   "alvo": "inf",
+   "exclusiva": true,
+   "comentarios": false,
+   "saida": "<inf xmlns=\"http://www.sped.fazenda.gov.br/nfse\" Id=\"X\" a=\"t&#x9;n&#xA;r&#xD;\" z=\"&amp;&lt;>&quot;\">t&#xD;e&amp;&lt;&gt;\"'&lt;cd&gt;&amp;<?pi dados?><v></v></inf>"
+  },
+  {
+   "xml": "<?xml version='1.0'?>\r\n<r xmlns='http://www.sped.fazenda.gov.br/nfse'>\r\n <inf Id='X' z='&amp;&lt;&gt;\"' a='t&#9;n&#10;r&#13;'>t&#13;e&amp;&lt;&gt;\"'<![CDATA[<cd>&]]><?pi dados?><v/></inf></r>",
+   "alvo": "inf",
+   "exclusiva": true,
+   "comentarios": true,
+   "saida": "<inf xmlns=\"http://www.sped.fazenda.gov.br/nfse\" Id=\"X\" a=\"t&#x9;n&#xA;r&#xD;\" z=\"&amp;&lt;>&quot;\">t&#xD;e&amp;&lt;&gt;\"'&lt;cd&gt;&amp;<?pi dados?><v></v></inf>"
+  },
+  {
+   "xml": "<r xmlns:a=\"http://a\" xmlns:b=\"http://b\"><e a:x=\"1\" b:x=\"2\" x=\"0\" xmlns=\"http://d\"><f xmlns:a=\"http://a\"><a:g/></f></e></r>",
+   "alvo": "e",
+   "exclusiva": false,
+   "comentarios": false,
+   "saida": "<e xmlns=\"http://d\" xmlns:a=\"http://a\" xmlns:b=\"http://b\" x=\"0\" a:x=\"1\" b:x=\"2\"><f><a:g></a:g></f></e>"
+  },
+  {
+   "xml": "<r xmlns:a=\"http://a\" xmlns:b=\"http://b\"><e a:x=\"1\" b:x=\"2\" x=\"0\" xmlns=\"http://d\"><f xmlns:a=\"http://a\"><a:g/></f></e></r>",
+   "alvo": "e",
+   "exclusiva": false,
+   "comentarios": true,
+   "saida": "<e xmlns=\"http://d\" xmlns:a=\"http://a\" xmlns:b=\"http://b\" x=\"0\" a:x=\"1\" b:x=\"2\"><f><a:g></a:g></f></e>"
+  },
+  {
+   "xml": "<r xmlns:a=\"http://a\" xmlns:b=\"http://b\"><e a:x=\"1\" b:x=\"2\" x=\"0\" xmlns=\"http://d\"><f xmlns:a=\"http://a\"><a:g/></f></e></r>",
+   "alvo": "e",
+   "exclusiva": true,
+   "comentarios": false,
+   "saida": "<e xmlns=\"http://d\" xmlns:a=\"http://a\" xmlns:b=\"http://b\" x=\"0\" a:x=\"1\" b:x=\"2\"><f><a:g></a:g></f></e>"
+  },
+  {
+   "xml": "<r xmlns:a=\"http://a\" xmlns:b=\"http://b\"><e a:x=\"1\" b:x=\"2\" x=\"0\" xmlns=\"http://d\"><f xmlns:a=\"http://a\"><a:g/></f></e></r>",
+   "alvo": "e",
+   "exclusiva": true,
+   "comentarios": true,
+   "saida": "<e xmlns=\"http://d\" xmlns:a=\"http://a\" xmlns:b=\"http://b\" x=\"0\" a:x=\"1\" b:x=\"2\"><f><a:g></a:g></f></e>"
+  },
+  {
+   "xml": "<NFSe xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infNFSe Id=\"NFS1\"><x>Débora —</x></infNFSe><Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\"><SignedInfo><Reference URI=\"#NFS1\"/></SignedInfo></Signature></NFSe>",
+   "alvo": "SignedInfo",
+   "exclusiva": false,
+   "comentarios": false,
+   "saida": "<SignedInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\"><Reference URI=\"#NFS1\"></Reference></SignedInfo>"
+  },
+  {
+   "xml": "<NFSe xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infNFSe Id=\"NFS1\"><x>Débora —</x></infNFSe><Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\"><SignedInfo><Reference URI=\"#NFS1\"/></SignedInfo></Signature></NFSe>",
+   "alvo": "SignedInfo",
+   "exclusiva": false,
+   "comentarios": true,
+   "saida": "<SignedInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\"><Reference URI=\"#NFS1\"></Reference></SignedInfo>"
+  },
+  {
+   "xml": "<NFSe xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infNFSe Id=\"NFS1\"><x>Débora —</x></infNFSe><Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\"><SignedInfo><Reference URI=\"#NFS1\"/></SignedInfo></Signature></NFSe>",
+   "alvo": "SignedInfo",
+   "exclusiva": true,
+   "comentarios": false,
+   "saida": "<SignedInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\"><Reference URI=\"#NFS1\"></Reference></SignedInfo>"
+  },
+  {
+   "xml": "<NFSe xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infNFSe Id=\"NFS1\"><x>Débora —</x></infNFSe><Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\"><SignedInfo><Reference URI=\"#NFS1\"/></SignedInfo></Signature></NFSe>",
+   "alvo": "SignedInfo",
+   "exclusiva": true,
+   "comentarios": true,
+   "saida": "<SignedInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\"><Reference URI=\"#NFS1\"></Reference></SignedInfo>"
+  }
+ ],
+ "assinada_externa": [
+  {
+   "algoritmo": "sha1",
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ></serv><valores><vServPrest><vServ>150.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><indTotTrib>0</indTotTrib></totTrib></trib></valores></infDPS><Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\"><SignedInfo><CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/><SignatureMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#rsa-sha1\"/><Reference URI=\"#DPS355030821122233300018100001000000000000042\"><Transforms><Transform Algorithm=\"http://www.w3.org/2000/09/xmldsig#enveloped-signature\"/><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms><DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/><DigestValue>35FbX0CkzF85W+vlg3saD88Iins=</DigestValue></Reference></SignedInfo><SignatureValue>W06lcyWJTVxQJdkIQoGtNu13jJlhbLEV6GpWAJehkdaV8wtlH7vcx/oxcr1t5k1NGZyIRMnfclz1HGYyZcdS0RbXFtjqUe3mFkx+yM+3iBSo1UkB1zNrMWipSrpH2w46lLuEeC2U0XbRdCmFOuSMBvaziF2GD2iLcshVvgjYKpN+1ewx0yuYVAC6ysg+23TH5vylvvfD3u5KBpUKsF8AI8mu6MnLJPgwvgcacz5Afx3yZjfjxyBZVivAN2pu/s/OLpaONLv9cVSzq07V1wul5ZOsbtfrdZqTBfxVu2ZEESH9l/H6XZX/9FwLfy+qHU0snwBBZLGc4xPjo8GnLR0zTw==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIC+jCCAeKgAwIBAgIUQgfnXKBmN4DRLusBJB897Lc5qxIwDQYJKoZIhvcNAQELBQAwNzELMAkGA1UEBhMCQlIxKDAmBgNVBAMMH0FTU0lOQURPIEVYVEVSTk86MTEyMjIzMzMwMDAxODEwHhcNMjYxMDAyMTIwMDAwWhcNMzYwOTI5MTIwMDAwWjA3MQswCQYDVQQGEwJCUjEoMCYGA1UEAwwfQVNTSU5BRE8gRVhURVJOTzoxMTIyMjMzMzAwMDE4MTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANPs7DGR+9qPP8XLkY+EAgRGWErzJuXiQ5VWJocQJsmScqR1LMJ2gJkMgrGSp4z43x3tB98e2LP7rEcXQNT3sx/wUoZ0qs4KuyybvTgn4m9wVBu5aNmDohpuxz3EYdHiQGwwxSD47m9+5+cWB924QPGfYEiXBtM5kmPpA9bvZhTroxNzHN9WzTe2M84rkhDhkhbv1R62kWEPPbQk4iuOfTWyT02H+vKzkpmKK8KU8HPHuQCBm/6MAc4p6l8KYch3m6SD/VWSqhW1RGTdyGJEKnDNe1T6CHTx0dixkDtsglekyAsIicZ0oD1MoheG6fqdgGWhS0CpkvifTTnUSYRkmV8CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAnEu1LC65WDAsKESMBmZpqE5Eex1hdPFAkyg2jq5i5TyrM21kgLySvntZSC8pGX3UairckfzNTfkt+r0xq1yMJXILBsFNj5hXNrYHrOAGX7aNlmnY+96vUt+J0m+nQLDx6HT9w6QzJ6P4ecnsp8T6lKl1B/weisH5IaMzpgLauF/C96TGSE8NKsvAiNA+jKDLN53fzzjpR7hwU46tnV3MJRfaXerOyKsPJ18fQ5t5RknI3Y8xam26PzDWUXhfEZaM8Y8UIsEqg+wKfdlhHzUdrxB0miAi3G2/3AXken6j7lEd0z9EDT+sY0vcFH15GknUouuk5Skcb2NKlyF7JBtZtg==</X509Certificate></X509Data></KeyInfo></Signature></DPS>"
+  },
+  {
+   "algoritmo": "sha256",
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ></serv><valores><vServPrest><vServ>150.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><indTotTrib>0</indTotTrib></totTrib></trib></valores></infDPS><Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\"><SignedInfo><CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/><SignatureMethod Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256\"/><Reference URI=\"#DPS355030821122233300018100001000000000000042\"><Transforms><Transform Algorithm=\"http://www.w3.org/2000/09/xmldsig#enveloped-signature\"/><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms><DigestMethod Algorithm=\"http://www.w3.org/2001/04/xmlenc#sha256\"/><DigestValue>Nnp6ogrEqKpuMtDNmFetDWI3ZtfBBNR/ftRbeZKSzV8=</DigestValue></Reference></SignedInfo><SignatureValue>hIGKzLFxG9BobjugA8o4Z1RwR0f4yT1Er/WnrBs8kx6AsvfspNidcAIjKk5OlvbTHozbmBlUl1LzvrPJuYuZhUshWOXdC6gqxbN372w+fjXzjhyWCeFH25JCYchlHSt04jczLzAxsDvH/rZqwkL4lSaggKA9uluoYvKKBLJnCXCVuTE+avUCSlwyTsrnwOINE7zNOZZUp97uSW+EbWZciwFoWgMOFCtwnnXewWJIt3izAop9SkfYkkZhy5qCVh8DbcFDo6m6XlxGocr7L9scex306yACADYoRs9DmCqPwQjkCHO5O4d/RAwV5eG33jNwp6uE0CjPuG9F3WFtLHm93w==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIC+jCCAeKgAwIBAgIUQgfnXKBmN4DRLusBJB897Lc5qxIwDQYJKoZIhvcNAQELBQAwNzELMAkGA1UEBhMCQlIxKDAmBgNVBAMMH0FTU0lOQURPIEVYVEVSTk86MTEyMjIzMzMwMDAxODEwHhcNMjYxMDAyMTIwMDAwWhcNMzYwOTI5MTIwMDAwWjA3MQswCQYDVQQGEwJCUjEoMCYGA1UEAwwfQVNTSU5BRE8gRVhURVJOTzoxMTIyMjMzMzAwMDE4MTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANPs7DGR+9qPP8XLkY+EAgRGWErzJuXiQ5VWJocQJsmScqR1LMJ2gJkMgrGSp4z43x3tB98e2LP7rEcXQNT3sx/wUoZ0qs4KuyybvTgn4m9wVBu5aNmDohpuxz3EYdHiQGwwxSD47m9+5+cWB924QPGfYEiXBtM5kmPpA9bvZhTroxNzHN9WzTe2M84rkhDhkhbv1R62kWEPPbQk4iuOfTWyT02H+vKzkpmKK8KU8HPHuQCBm/6MAc4p6l8KYch3m6SD/VWSqhW1RGTdyGJEKnDNe1T6CHTx0dixkDtsglekyAsIicZ0oD1MoheG6fqdgGWhS0CpkvifTTnUSYRkmV8CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAnEu1LC65WDAsKESMBmZpqE5Eex1hdPFAkyg2jq5i5TyrM21kgLySvntZSC8pGX3UairckfzNTfkt+r0xq1yMJXILBsFNj5hXNrYHrOAGX7aNlmnY+96vUt+J0m+nQLDx6HT9w6QzJ6P4ecnsp8T6lKl1B/weisH5IaMzpgLauF/C96TGSE8NKsvAiNA+jKDLN53fzzjpR7hwU46tnV3MJRfaXerOyKsPJ18fQ5t5RknI3Y8xam26PzDWUXhfEZaM8Y8UIsEqg+wKfdlhHzUdrxB0miAi3G2/3AXken6j7lEd0z9EDT+sY0vcFH15GknUouuk5Skcb2NKlyF7JBtZtg==</X509Certificate></X509Data></KeyInfo></Signature></DPS>"
+  }
+ ],
+ "adulterada_externa": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-10-02T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-10-01</dCompet><tpEmit>1</tpEmit><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ></serv><valores><vServPrest><vServ>15.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><indTotTrib>0</indTotTrib></totTrib></trib></valores></infDPS><Signature xmlns=\"http://www.w3.org/2000/09/xmldsig#\"><SignedInfo><CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/><SignatureMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#rsa-sha1\"/><Reference URI=\"#DPS355030821122233300018100001000000000000042\"><Transforms><Transform Algorithm=\"http://www.w3.org/2000/09/xmldsig#enveloped-signature\"/><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms><DigestMethod Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/><DigestValue>35FbX0CkzF85W+vlg3saD88Iins=</DigestValue></Reference></SignedInfo><SignatureValue>W06lcyWJTVxQJdkIQoGtNu13jJlhbLEV6GpWAJehkdaV8wtlH7vcx/oxcr1t5k1NGZyIRMnfclz1HGYyZcdS0RbXFtjqUe3mFkx+yM+3iBSo1UkB1zNrMWipSrpH2w46lLuEeC2U0XbRdCmFOuSMBvaziF2GD2iLcshVvgjYKpN+1ewx0yuYVAC6ysg+23TH5vylvvfD3u5KBpUKsF8AI8mu6MnLJPgwvgcacz5Afx3yZjfjxyBZVivAN2pu/s/OLpaONLv9cVSzq07V1wul5ZOsbtfrdZqTBfxVu2ZEESH9l/H6XZX/9FwLfy+qHU0snwBBZLGc4xPjo8GnLR0zTw==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIC+jCCAeKgAwIBAgIUQgfnXKBmN4DRLusBJB897Lc5qxIwDQYJKoZIhvcNAQELBQAwNzELMAkGA1UEBhMCQlIxKDAmBgNVBAMMH0FTU0lOQURPIEVYVEVSTk86MTEyMjIzMzMwMDAxODEwHhcNMjYxMDAyMTIwMDAwWhcNMzYwOTI5MTIwMDAwWjA3MQswCQYDVQQGEwJCUjEoMCYGA1UEAwwfQVNTSU5BRE8gRVhURVJOTzoxMTIyMjMzMzAwMDE4MTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANPs7DGR+9qPP8XLkY+EAgRGWErzJuXiQ5VWJocQJsmScqR1LMJ2gJkMgrGSp4z43x3tB98e2LP7rEcXQNT3sx/wUoZ0qs4KuyybvTgn4m9wVBu5aNmDohpuxz3EYdHiQGwwxSD47m9+5+cWB924QPGfYEiXBtM5kmPpA9bvZhTroxNzHN9WzTe2M84rkhDhkhbv1R62kWEPPbQk4iuOfTWyT02H+vKzkpmKK8KU8HPHuQCBm/6MAc4p6l8KYch3m6SD/VWSqhW1RGTdyGJEKnDNe1T6CHTx0dixkDtsglekyAsIicZ0oD1MoheG6fqdgGWhS0CpkvifTTnUSYRkmV8CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAnEu1LC65WDAsKESMBmZpqE5Eex1hdPFAkyg2jq5i5TyrM21kgLySvntZSC8pGX3UairckfzNTfkt+r0xq1yMJXILBsFNj5hXNrYHrOAGX7aNlmnY+96vUt+J0m+nQLDx6HT9w6QzJ6P4ecnsp8T6lKl1B/weisH5IaMzpgLauF/C96TGSE8NKsvAiNA+jKDLN53fzzjpR7hwU46tnV3MJRfaXerOyKsPJ18fQ5t5RknI3Y8xam26PzDWUXhfEZaM8Y8UIsEqg+wKfdlhHzUdrxB0miAi3G2/3AXken6j7lEd0z9EDT+sY0vcFH15GknUouuk5Skcb2NKlyF7JBtZtg==</X509Certificate></X509Data></KeyInfo></Signature></DPS>"
+}

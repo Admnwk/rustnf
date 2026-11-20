@@ -1,0 +1,37 @@
+[package]
+name = "rustnf-cli"
+description = "Binario rustnf: linha de comando, API HTTP e servidor MCP do emissor de NFS-e nacional."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[lib]
+name = "rustnf_cli"
+path = "src/lib.rs"
+
+[[bin]]
+name = "rustnf"
+path = "src/main.rs"
+
+[dependencies]
+rustnf = { path = "../rustnf", features = ["sefin", "danfse"] }
+async-trait = "0.1"
+axum = { version = "0.8", default-features = false, features = ["http1", "tokio", "matched-path"] }
+base64 = "0.22"
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+subtle = "2"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal", "net", "time"] }
+zeroize = "1"
+
+[dev-dependencies]
+rustnf = { path = "../rustnf", features = ["sefin", "danfse", "cert_a1_teste"] }
+tower = { version = "0.5", features = ["util"] }
+chrono = { version = "0.4", default-features = false, features = ["clock"] }

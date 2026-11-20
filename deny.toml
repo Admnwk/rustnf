@@ -1,0 +1,42 @@
+[advisories]
+version = 2
+ignore = [
+    # chrono sem mantenedor (aviso de manutencao, nao vulnerabilidade): troca para outra biblioteca de datas no ROADMAP.
+    { id = "RUSTSEC-2026-0543", reason = "chrono unmaintained; migracao planejada no ROADMAP" },
+    # Dependencias do Typst (feature `danfse`). Rever a cada versao nova do Typst (ROADMAP).
+    # quick-xml 0.38: so' entra pelo leitor de estilos de bibliografia (typst-library > hayagriva > citationberg).
+    # O modelo do DANFSe e' fixo, embutido no binario e nao usa bibliografia; o XML da NFS-e e' lido pelo roxmltree.
+    # A correcao (quick-xml >= 0.41) nao e' aceita por essas dependencias na versao atual.
+    { id = "RUSTSEC-2026-0194", reason = "quick-xml via citationberg (bibliografia do Typst): caminho que o DANFSe nao executa" },
+    { id = "RUSTSEC-2026-0195", reason = "quick-xml via citationberg (bibliografia do Typst): caminho que o DANFSe nao executa" },
+    # Sem mantenedor (nao e' vulnerabilidade), todas transitivas do Typst e sem substituto aceito por ele.
+    { id = "RUSTSEC-2025-0141", reason = "bincode unmaintained; transitiva do Typst" },
+    { id = "RUSTSEC-2024-0436", reason = "paste unmaintained; transitiva do Typst" },
+    { id = "RUSTSEC-2026-0206", reason = "rustybuzz unmaintained; transitiva do Typst" },
+    { id = "RUSTSEC-2026-0192", reason = "ttf-parser unmaintained; transitiva do Typst" },
+    { id = "RUSTSEC-2024-0449", reason = "unsafe-libyaml unmaintained; transitiva do Typst" },
+    { id = "RUSTSEC-2024-0320", reason = "yaml-rust unmaintained; transitiva do Typst" },
+]
+
+[licenses]
+version = 2
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Unicode-3.0",
+    "Unicode-DFS-2016",
+    "Zlib",
+    "CC0-1.0",
+    "OpenSSL",
+    "MPL-2.0",
+    # webpki-roots (raizes de CA do rustls): licenca de DADOS permissiva
+    "CDLA-Permissive-2.0",
+]
+confidence-threshold = 0.8
+
+[bans]
+multiple-versions = "warn"

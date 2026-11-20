@@ -1,0 +1,538 @@
+{
+ "_comentario": "Catalogo OFICIAL de atividades do Simples Nacional (cAtivSN, NT 2026.005) da base da Calculadora RTC da RFB. Extracao direta da fonte, sem interpretacao.",
+ "fonte": "https://github.com/ReceitaFederal/calculadora-rtc-regime-regular",
+ "commit": "f1eebd7ce3157423b1a6aaca7dc1d6c3395452c4",
+ "data_commit": "2026-11-19",
+ "ultima_migracao": "V0073",
+ "total": 15,
+ "atividades": [
+  {
+   "cativsn": "01",
+   "ordem": 1,
+   "descricao": "Revenda de mercadorias, venda de mercadorias industrializadas pelo contribuinte",
+   "anexo_sem_fator_r": "I",
+   "anexo_com_fator_r": null,
+   "rotulo": "I",
+   "rotulo_curto": "I",
+   "nao_tributavel": false,
+   "iss_no_simples": false,
+   "admite_beneficio_municipal": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "documentos": [
+    {
+     "modelo": "55",
+     "sigla": "NF-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    },
+    {
+     "modelo": "65",
+     "sigla": "NFC-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    }
+   ]
+  },
+  {
+   "cativsn": "02",
+   "ordem": 2,
+   "descricao": "Operações com os demais bens materiais, sem incidência de ICMS",
+   "anexo_sem_fator_r": "I",
+   "anexo_com_fator_r": null,
+   "rotulo": "I, menos ICMS",
+   "rotulo_curto": "I",
+   "nao_tributavel": false,
+   "iss_no_simples": false,
+   "admite_beneficio_municipal": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "documentos": [
+    {
+     "modelo": "55",
+     "sigla": "NF-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    },
+    {
+     "modelo": "65",
+     "sigla": "NFC-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    }
+   ]
+  },
+  {
+   "cativsn": "03",
+   "ordem": 3,
+   "descricao": "Venda de mercadorias industrializadas pelo contribuinte, com industrialização incentivada na Zona Franca de Manaus",
+   "anexo_sem_fator_r": "II",
+   "anexo_com_fator_r": null,
+   "rotulo": "II",
+   "rotulo_curto": "II",
+   "nao_tributavel": false,
+   "iss_no_simples": false,
+   "admite_beneficio_municipal": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "documentos": [
+    {
+     "modelo": "55",
+     "sigla": "NF-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    },
+    {
+     "modelo": "65",
+     "sigla": "NFC-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    }
+   ]
+  },
+  {
+   "cativsn": "04",
+   "ordem": 4,
+   "descricao": "Operações com os demais bens materiais, com industrialização incentivada na Zona Franca de Manaus, sem incidência de ICMS",
+   "anexo_sem_fator_r": "II",
+   "anexo_com_fator_r": null,
+   "rotulo": "II, menos ICMS",
+   "rotulo_curto": "II",
+   "nao_tributavel": false,
+   "iss_no_simples": false,
+   "admite_beneficio_municipal": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "documentos": [
+    {
+     "modelo": "55",
+     "sigla": "NF-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    },
+    {
+     "modelo": "65",
+     "sigla": "NFC-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    }
+   ]
+  },
+  {
+   "cativsn": "05",
+   "ordem": 5,
+   "descricao": "Prestação de serviços de transporte intermunicipal e interestadual de carga ou de passageiros autorizados no inciso VI do art. 17 da LC 123",
+   "anexo_sem_fator_r": "III",
+   "anexo_com_fator_r": null,
+   "rotulo": "III, menos ISS, mais ICMS do I",
+   "rotulo_curto": "III",
+   "nao_tributavel": false,
+   "iss_no_simples": false,
+   "admite_beneficio_municipal": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "documentos": [
+    {
+     "modelo": "57",
+     "sigla": "CT-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    },
+    {
+     "modelo": "63",
+     "sigla": "BP-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    },
+    {
+     "modelo": "67",
+     "sigla": "CT-e OS",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    },
+    {
+     "modelo": "93",
+     "sigla": "BP-e TM",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    }
+   ]
+  },
+  {
+   "cativsn": "06",
+   "ordem": 6,
+   "descricao": "Prestação de serviços de comunicação",
+   "anexo_sem_fator_r": "III",
+   "anexo_com_fator_r": null,
+   "rotulo": "III, menos ISS, mais ICMS do I",
+   "rotulo_curto": "III",
+   "nao_tributavel": false,
+   "iss_no_simples": false,
+   "admite_beneficio_municipal": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "documentos": [
+    {
+     "modelo": "62",
+     "sigla": "NFCom",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    }
+   ]
+  },
+  {
+   "cativsn": "07",
+   "ordem": 7,
+   "descricao": "Prestação de serviços, cessão de direitos, de uso ou de espaço com incidência do ISS, tributados exclusivamente pelo Anexo III",
+   "anexo_sem_fator_r": "III",
+   "anexo_com_fator_r": null,
+   "rotulo": "III",
+   "rotulo_curto": "III",
+   "nao_tributavel": false,
+   "iss_no_simples": true,
+   "admite_beneficio_municipal": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "documentos": [
+    {
+     "modelo": "91",
+     "sigla": "NFS-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    }
+   ]
+  },
+  {
+   "cativsn": "08",
+   "ordem": 8,
+   "descricao": "Prestação de serviços contábeis autorizados a pagar o ISS em valor fixo em guia do Município",
+   "anexo_sem_fator_r": "III",
+   "anexo_com_fator_r": null,
+   "rotulo": "III, menos o ISS",
+   "rotulo_curto": "III",
+   "nao_tributavel": false,
+   "iss_no_simples": false,
+   "admite_beneficio_municipal": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "documentos": [
+    {
+     "modelo": "91",
+     "sigla": "NFS-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    }
+   ]
+  },
+  {
+   "cativsn": "09",
+   "ordem": 9,
+   "descricao": "Prestação de serviços — Sujeitos ao Fator \"R\"",
+   "anexo_sem_fator_r": "V",
+   "anexo_com_fator_r": "III",
+   "rotulo": "III ou V",
+   "rotulo_curto": "III ou V",
+   "nao_tributavel": false,
+   "iss_no_simples": true,
+   "admite_beneficio_municipal": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "documentos": [
+    {
+     "modelo": "91",
+     "sigla": "NFS-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    }
+   ]
+  },
+  {
+   "cativsn": "10",
+   "ordem": 10,
+   "descricao": "Prestação de serviços de transporte municipal rodoviário, metroviário, ferroviário e aquaviário de passageiros relacionados no subitem 16.01 da lista anexa à LC 116/2003",
+   "anexo_sem_fator_r": "III",
+   "anexo_com_fator_r": null,
+   "rotulo": "III",
+   "rotulo_curto": "III",
+   "nao_tributavel": false,
+   "iss_no_simples": true,
+   "admite_beneficio_municipal": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "documentos": [
+    {
+     "modelo": "91",
+     "sigla": "NFS-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    }
+   ]
+  },
+  {
+   "cativsn": "11",
+   "ordem": 11,
+   "descricao": "Locação de bens móveis e operações com serviços, bens imateriais e direitos, inclusive com bens imóveis, sem incidência de ISS",
+   "anexo_sem_fator_r": "III",
+   "anexo_com_fator_r": null,
+   "rotulo": "III, menos o ISS",
+   "rotulo_curto": "III",
+   "nao_tributavel": false,
+   "iss_no_simples": false,
+   "admite_beneficio_municipal": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "documentos": [
+    {
+     "modelo": "91",
+     "sigla": "NFS-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    }
+   ]
+  },
+  {
+   "cativsn": "12",
+   "ordem": 12,
+   "descricao": "Prestação de serviços da área da construção civil relacionados nos subitens 7.02 e 7.05 da lista anexa à LC 116/2003",
+   "anexo_sem_fator_r": "III",
+   "anexo_com_fator_r": null,
+   "rotulo": "III",
+   "rotulo_curto": "III",
+   "nao_tributavel": false,
+   "iss_no_simples": true,
+   "admite_beneficio_municipal": true,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "documentos": [
+    {
+     "modelo": "91",
+     "sigla": "NFS-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    }
+   ]
+  },
+  {
+   "cativsn": "13",
+   "ordem": 13,
+   "descricao": "Prestação de serviços da área da construção civil relacionados nos subitens 7.02 e 7.05 da lista anexa à LC 116/2003",
+   "anexo_sem_fator_r": "IV",
+   "anexo_com_fator_r": null,
+   "rotulo": "IV",
+   "rotulo_curto": "IV",
+   "nao_tributavel": false,
+   "iss_no_simples": true,
+   "admite_beneficio_municipal": true,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "documentos": [
+    {
+     "modelo": "91",
+     "sigla": "NFS-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    }
+   ]
+  },
+  {
+   "cativsn": "14",
+   "ordem": 14,
+   "descricao": "Prestação de serviços",
+   "anexo_sem_fator_r": "IV",
+   "anexo_com_fator_r": null,
+   "rotulo": "IV",
+   "rotulo_curto": "IV",
+   "nao_tributavel": false,
+   "iss_no_simples": true,
+   "admite_beneficio_municipal": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "documentos": [
+    {
+     "modelo": "91",
+     "sigla": "NFS-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    }
+   ]
+  },
+  {
+   "cativsn": "90",
+   "ordem": 15,
+   "descricao": "Operações não Tributáveis",
+   "anexo_sem_fator_r": null,
+   "anexo_com_fator_r": null,
+   "rotulo": "Não tributável",
+   "rotulo_curto": "Não tributável",
+   "nao_tributavel": true,
+   "iss_no_simples": false,
+   "admite_beneficio_municipal": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "documentos": [
+    {
+     "modelo": "55",
+     "sigla": "NF-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    },
+    {
+     "modelo": "57",
+     "sigla": "CT-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    },
+    {
+     "modelo": "62",
+     "sigla": "NFCom",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    },
+    {
+     "modelo": "63",
+     "sigla": "BP-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    },
+    {
+     "modelo": "65",
+     "sigla": "NFC-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    },
+    {
+     "modelo": "67",
+     "sigla": "CT-e OS",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    },
+    {
+     "modelo": "91",
+     "sigla": "NFS-e",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    },
+    {
+     "modelo": "93",
+     "sigla": "BP-e TM",
+     "ini_vig": "2027-01-01",
+     "fim_vig": null
+    }
+   ]
+  }
+ ],
+ "tipos_receita_bruta": [
+  {
+   "tp_rbsn": 0,
+   "descricao": "Não é receita bruta",
+   "vedado_nao_tributavel": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "vocabulario": "CRT"
+  },
+  {
+   "tp_rbsn": 1,
+   "descricao": "Receita bruta - interna",
+   "vedado_nao_tributavel": true,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "vocabulario": "CRT"
+  },
+  {
+   "tp_rbsn": 2,
+   "descricao": "Receita bruta - interna sem cálculo de IBS e CBS",
+   "vedado_nao_tributavel": true,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "vocabulario": "CRT"
+  },
+  {
+   "tp_rbsn": 3,
+   "descricao": "Receita bruta - exportação direta",
+   "vedado_nao_tributavel": true,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "vocabulario": "CRT"
+  },
+  {
+   "tp_rbsn": 4,
+   "descricao": "Receita bruta - exportação indireta",
+   "vedado_nao_tributavel": true,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "vocabulario": "CRT"
+  },
+  {
+   "tp_rbsn": 5,
+   "descricao": "Receita bruta - mercado interno e exportação",
+   "vedado_nao_tributavel": true,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "vocabulario": "CRT"
+  },
+  {
+   "tp_rbsn": 9,
+   "descricao": "Fornecimento incompatível com SN",
+   "vedado_nao_tributavel": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "vocabulario": "CRT"
+  },
+  {
+   "tp_rbsn": 0,
+   "descricao": "Não é receita bruta",
+   "vedado_nao_tributavel": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "vocabulario": "NFSE"
+  },
+  {
+   "tp_rbsn": 1,
+   "descricao": "Receita bruta - interna",
+   "vedado_nao_tributavel": true,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "vocabulario": "NFSE"
+  },
+  {
+   "tp_rbsn": 2,
+   "descricao": "Receita bruta - interna sem cálculo de IBS e CBS",
+   "vedado_nao_tributavel": true,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "vocabulario": "NFSE"
+  },
+  {
+   "tp_rbsn": 3,
+   "descricao": "Receita bruta - exportação direta",
+   "vedado_nao_tributavel": true,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "vocabulario": "NFSE"
+  },
+  {
+   "tp_rbsn": 4,
+   "descricao": "Receita bruta - exportação indireta",
+   "vedado_nao_tributavel": true,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "vocabulario": "NFSE"
+  },
+  {
+   "tp_rbsn": 5,
+   "descricao": "Receita bruta - mercado interno e exportação",
+   "vedado_nao_tributavel": true,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "vocabulario": "NFSE"
+  },
+  {
+   "tp_rbsn": 9,
+   "descricao": "Fornecimento incompatível com SN",
+   "vedado_nao_tributavel": false,
+   "ini_vig": "2027-01-01",
+   "fim_vig": null,
+   "vocabulario": "NFSE"
+  }
+ ]
+}

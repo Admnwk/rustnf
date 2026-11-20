@@ -1,0 +1,13 @@
+# Termos proibidos em qualquer arquivo versionado e em qualquer mensagem de commit.
+# Uma expressao regular por linha (sem diferenciar maiusculas de minusculas); linhas com # sao comentario.
+# Cada termo e' escrito de forma que a propria expressao nao case com ela mesma (ex.: um colchete em volta de
+# uma letra), para que este arquivo possa ser varrido como qualquer outro.
+#
+# Quem mantem o projeto pode somar uma lista propria, guardada fora do repositorio: veja `higiene.rs`.
+
+# Caminho de maquina (letra de unidade seguida de barra invertida)
+\b[a-z]:\x5c
+
+# Rodape de ferramenta em mensagem de commit (o unico aceito e' o de coautoria do projeto, definido no teste)
+co-authored-b[y]
+generated wit[h]

@@ -1,0 +1,567 @@
+{
+ "_comentario": "Contrato de reforma::atividades_sn (catalogo cAtivSN do Simples Nacional). Esperado = o da PROPRIA RFB: testes Java de github.com/ReceitaFederal/calculadora-rtc-simples-nacional (commit a926d5a, v1.0.2) -- AtividadeSimplesControllerTest (AS) e Teste_DerivacaoAnexosSimples (DA) -- e a carga Flyway V0049/V0050/V0051/V0068/V0071 de calculadora-rtc-regime-regular (f1eebd7). 'ref' diz de onde veio cada caso. Data padrao dos testes RFB = 2027-01-01.",
+ "procedencia": {
+  "ultima_migracao": "V0073",
+  "total": 15
+ },
+ "ordem": [
+  "01",
+  "02",
+  "03",
+  "04",
+  "05",
+  "06",
+  "07",
+  "08",
+  "09",
+  "10",
+  "11",
+  "12",
+  "13",
+  "14",
+  "90"
+ ],
+ "anexo": [
+  {
+   "cativsn": "01",
+   "fator_r": null,
+   "esperado": "I",
+   "ref": "AS deveListarAsQuinzeAtividadesSemFiltro $[0].anexoSemFatorR"
+  },
+  {
+   "cativsn": "02",
+   "fator_r": true,
+   "esperado": "I",
+   "ref": "V0049: fator r nao muda atividade sem anexo do fator r"
+  },
+  {
+   "cativsn": "03",
+   "fator_r": null,
+   "esperado": "II",
+   "ref": "V0049"
+  },
+  {
+   "cativsn": "13",
+   "fator_r": null,
+   "esperado": "IV",
+   "ref": "V0049: construcao civil Anexo IV"
+  },
+  {
+   "cativsn": "12",
+   "fator_r": null,
+   "esperado": "III",
+   "ref": "V0049: construcao civil Anexo III"
+  },
+  {
+   "cativsn": "09",
+   "fator_r": true,
+   "esperado": "III",
+   "ref": "AS deveExporAtividade9SujeitaAFatorR + V0068 (LC 123 art. 18 par. 5o-J)"
+  },
+  {
+   "cativsn": "09",
+   "fator_r": false,
+   "esperado": "V",
+   "ref": "AS deveExporAtividade9SujeitaAFatorR + V0068 (par. 5o-M)"
+  },
+  {
+   "cativsn": "09",
+   "fator_r": null,
+   "erro": "fator_r",
+   "ref": "lib: 09 sem fator r nao tem anexo unico"
+  },
+  {
+   "cativsn": "90",
+   "fator_r": null,
+   "esperado": null,
+   "ref": "AS $[14].anexoSemFatorR nulo"
+  },
+  {
+   "cativsn": "15",
+   "fator_r": null,
+   "erro": "CATIVSN_DESCONHECIDO",
+   "ref": "V0049: so' 01-14 e 90"
+  },
+  {
+   "cativsn": "01",
+   "fator_r": null,
+   "data": "2026-12-31",
+   "erro": "CATIVSN_DESCONHECIDO",
+   "ref": "AS deveListarVazioParaDataAnteriorATodaVigencia"
+  }
+ ],
+ "modelos": [
+  {
+   "cativsn": "01",
+   "esperado": [
+    "55",
+    "65"
+   ],
+   "ref": "AS semTpDocDeveDevolverTpDocsAdmissiveis $[0]"
+  },
+  {
+   "cativsn": "05",
+   "esperado": [
+    "57",
+    "63",
+    "67",
+    "93"
+   ],
+   "ref": "AS $[4]"
+  },
+  {
+   "cativsn": "06",
+   "esperado": [
+    "62"
+   ],
+   "ref": "AS $[5]"
+  },
+  {
+   "cativsn": "09",
+   "esperado": [
+    "91"
+   ],
+   "ref": "AS $[8]"
+  },
+  {
+   "cativsn": "90",
+   "esperado": [
+    "55",
+    "57",
+    "62",
+    "63",
+    "65",
+    "67",
+    "91",
+    "93"
+   ],
+   "ref": "AS $[14] + V0051"
+  }
+ ],
+ "motivo": [
+  {
+   "cativsn": "01",
+   "documento": "55",
+   "esperado": null,
+   "ref": "AS comTpDoc55 $[0] admissivel"
+  },
+  {
+   "cativsn": "05",
+   "documento": "55",
+   "esperado": "CATIVSN_INADMISSIVEL_NO_DOCUMENTO",
+   "ref": "AS comTpDoc55 $[4]"
+  },
+  {
+   "cativsn": "09",
+   "documento": "nfe",
+   "esperado": "CATIVSN_INADMISSIVEL_NO_DOCUMENTO",
+   "ref": "AS comTpDoc55 $[8]"
+  },
+  {
+   "cativsn": "13",
+   "documento": "55",
+   "esperado": "CATIVSN_INADMISSIVEL_NO_DOCUMENTO",
+   "ref": "AS comTpDoc55 $[12]"
+  },
+  {
+   "cativsn": "90",
+   "documento": "55",
+   "esperado": null,
+   "ref": "AS comTpDoc55 $[14]"
+  },
+  {
+   "cativsn": "01",
+   "documento": "91",
+   "esperado": "CATIVSN_INADMISSIVEL_NO_DOCUMENTO",
+   "ref": "AS comTpDoc91 $[0]"
+  },
+  {
+   "cativsn": "04",
+   "documento": "nfse",
+   "esperado": "CATIVSN_INADMISSIVEL_NO_DOCUMENTO",
+   "ref": "AS comTpDoc91 $[3]"
+  },
+  {
+   "cativsn": "07",
+   "documento": "nfse",
+   "esperado": null,
+   "ref": "AS comTpDoc91 $[6]"
+  },
+  {
+   "cativsn": "12",
+   "documento": "91",
+   "esperado": null,
+   "ref": "AS comTpDoc91 $[11]"
+  },
+  {
+   "cativsn": "90",
+   "documento": "91",
+   "esperado": null,
+   "ref": "AS comTpDoc91 $[14]"
+  },
+  {
+   "cativsn": "02",
+   "documento": "65",
+   "esperado": null,
+   "ref": "V0050: 01-04 em NF-e e NFC-e"
+  },
+  {
+   "cativsn": "05",
+   "documento": "cte",
+   "esperado": null,
+   "ref": "V0051"
+  },
+  {
+   "cativsn": "06",
+   "documento": "nfcom",
+   "esperado": null,
+   "ref": "V0051"
+  },
+  {
+   "cativsn": null,
+   "documento": "55",
+   "esperado": "CATIVSN_AUSENTE",
+   "ref": "MotivoNaoCalculoSimplesEnum.CATIVSN_AUSENTE"
+  },
+  {
+   "cativsn": "  ",
+   "documento": "55",
+   "esperado": "CATIVSN_AUSENTE",
+   "ref": "MotivoNaoCalculoSimplesEnum.CATIVSN_AUSENTE"
+  },
+  {
+   "cativsn": "99",
+   "documento": "55",
+   "esperado": "CATIVSN_DESCONHECIDO",
+   "ref": "MotivoNaoCalculoSimplesEnum.CATIVSN_DESCONHECIDO"
+  },
+  {
+   "cativsn": "1",
+   "documento": "55",
+   "esperado": "CATIVSN_DESCONHECIDO",
+   "ref": "cAtivSN e' 2 caracteres com zero a esquerda (V0049)"
+  },
+  {
+   "cativsn": "01",
+   "documento": "55",
+   "data": "2026-12-31",
+   "esperado": "CATIVSN_DESCONHECIDO",
+   "ref": "vigencia 2027-01-01"
+  },
+  {
+   "cativsn": "90",
+   "documento": "55",
+   "cclasstrib": "000001",
+   "data": "2027-01-01",
+   "esperado": "CATIVSN_INCOMPATIVEL_CCLASSTRIB",
+   "ref": "AS cClassTribQueDeclaraReceita_marcaSomenteONaoTributavelIndisponivel $[14]"
+  },
+  {
+   "cativsn": "01",
+   "documento": "55",
+   "cclasstrib": "000001",
+   "data": "2027-01-01",
+   "esperado": null,
+   "ref": "AS idem $[0]"
+  },
+  {
+   "cativsn": "90",
+   "documento": "55",
+   "cclasstrib": "410001",
+   "data": "2027-01-01",
+   "esperado": null,
+   "ref": "AS cClassTribDeTpRBSN0e9 (tpRBSN 0)"
+  },
+  {
+   "cativsn": "90",
+   "documento": "55",
+   "cclasstrib": "010001",
+   "data": "2027-01-01",
+   "esperado": null,
+   "ref": "AS cClassTribDeTpRBSN0e9 (tpRBSN 9)"
+  },
+  {
+   "cativsn": "90",
+   "documento": "91",
+   "cclasstrib": "000001",
+   "data": "2027-03-15",
+   "esperado": "CATIVSN_INCOMPATIVEL_CCLASSTRIB",
+   "ref": "AS cClassTribResolvidoPelaLinhaDaCbs (grupo CBS)"
+  },
+  {
+   "cativsn": "90",
+   "documento": "55",
+   "cclasstrib": "999999",
+   "data": "2027-01-01",
+   "erro": "UB14-10/1023",
+   "ref": "AS deveRetornar400ParaCClassTribInexistente"
+  },
+  {
+   "cativsn": "90",
+   "documento": "55",
+   "cclasstrib": "220001",
+   "data": "2027-01-01",
+   "erro": "VSN-021",
+   "ref": "AS deveRetornar400ParaCClassTribForaDeVigenciaNaData (na lib o 000001 vige desde 2025-05-05 pelo CFF; 220001 encerrou em 2026-01-01)"
+  },
+  {
+   "cativsn": "01",
+   "documento": "55",
+   "cclasstrib": "220001",
+   "data": "2027-01-01",
+   "erro": "VSN-021",
+   "ref": "idem: o cClassTrib se confere para qualquer atividade, antes do cAtivSN"
+  },
+  {
+   "cativsn": null,
+   "documento": "55",
+   "cclasstrib": "999999",
+   "erro": "UB14-10/1023",
+   "ref": "idem: cClassTrib conferido antes do cAtivSN ausente"
+  },
+  {
+   "cativsn": "01",
+   "documento": "97",
+   "erro": "documento",
+   "ref": "CT-e Simplificado: sem cAtivSN admitido (AS tpDocValidoNaoHabilitado) -- a lib recusa o documento"
+  },
+  {
+   "cativsn": "01",
+   "documento": "abc",
+   "erro": "documento",
+   "ref": "AS deveRetornar400ParaTpDocMalFormado"
+  }
+ ],
+ "derivar": [
+  {
+   "cativsn": "09",
+   "anexos": [
+    "I",
+    "II"
+   ],
+   "disponivel": false,
+   "faltantes": [
+    "III",
+    "V"
+   ],
+   "modo": "INDISPONIVEL",
+   "ref": "DA teste_Atividade9_AnexosI_II"
+  },
+  {
+   "cativsn": "09",
+   "anexos": [
+    "I",
+    "V"
+   ],
+   "disponivel": true,
+   "faltantes": [
+    "III"
+   ],
+   "modo": "INDISPONIVEL",
+   "ref": "DA teste_Atividade9_AnexosI_V"
+  },
+  {
+   "cativsn": "09",
+   "anexos": [
+    "I",
+    "III"
+   ],
+   "disponivel": true,
+   "faltantes": [
+    "V"
+   ],
+   "modo": "OBRIGATORIO",
+   "ref": "DA teste_Atividade9_AnexosI_III"
+  },
+  {
+   "cativsn": "09",
+   "anexos": [
+    "III",
+    "V"
+   ],
+   "disponivel": true,
+   "faltantes": [],
+   "modo": "OPCIONAL",
+   "ref": "DA teste_Atividade9_AnexosIII_V"
+  },
+  {
+   "cativsn": "09",
+   "anexos": null,
+   "disponivel": true,
+   "faltantes": [],
+   "modo": "OPCIONAL",
+   "ref": "DA teste_Atividade9_SemParametro"
+  },
+  {
+   "cativsn": "09",
+   "anexos": [],
+   "disponivel": false,
+   "faltantes": [
+    "III",
+    "V"
+   ],
+   "modo": "INDISPONIVEL",
+   "ref": "DA teste_Atividade9_ConjuntoVazio"
+  },
+  {
+   "cativsn": "09",
+   "anexos": [
+    "V",
+    "III"
+   ],
+   "disponivel": true,
+   "faltantes": [],
+   "modo": "OPCIONAL",
+   "ref": "DA teste_AnexosFaltantes_SempreOrdenadosPorRomano"
+  },
+  {
+   "cativsn": "02",
+   "anexos": [
+    "I",
+    "II"
+   ],
+   "disponivel": true,
+   "faltantes": [],
+   "modo": "NAO_APLICAVEL",
+   "ref": "DA teste_Atividade2_AnexosI_II"
+  },
+  {
+   "cativsn": "02",
+   "anexos": [
+    "II",
+    "III"
+   ],
+   "disponivel": false,
+   "faltantes": [
+    "I"
+   ],
+   "modo": "NAO_APLICAVEL",
+   "ref": "DA teste_Atividade2_AnexosII_III"
+  },
+  {
+   "cativsn": "02",
+   "anexos": null,
+   "disponivel": true,
+   "faltantes": [],
+   "modo": "NAO_APLICAVEL",
+   "ref": "DA teste_Atividade2_SemParametro"
+  },
+  {
+   "cativsn": "90",
+   "anexos": null,
+   "disponivel": true,
+   "faltantes": [],
+   "modo": "NAO_APLICAVEL",
+   "ref": "DA teste_AtividadeSemAnexo_SemParametro"
+  },
+  {
+   "cativsn": "90",
+   "anexos": [],
+   "disponivel": true,
+   "faltantes": [],
+   "modo": "NAO_APLICAVEL",
+   "ref": "DA teste_AtividadeSemAnexo_ConjuntoVazio"
+  },
+  {
+   "cativsn": "90",
+   "anexos": [
+    "I",
+    "V"
+   ],
+   "disponivel": true,
+   "faltantes": [],
+   "modo": "NAO_APLICAVEL",
+   "ref": "DA teste_AtividadeSemAnexo_ComAnexosConfigurados"
+  },
+  {
+   "cativsn": "05",
+   "anexos": [
+    "I",
+    "V"
+   ],
+   "disponivel": false,
+   "faltantes": [
+    "III"
+   ],
+   "modo": "NAO_APLICAVEL",
+   "ref": "AS deveMarcarDisponibilidadeComFiltroDeAnexosIeV $[4]"
+  },
+  {
+   "cativsn": "01",
+   "anexos": [
+    "I",
+    "X"
+   ],
+   "erro": "anexos",
+   "ref": "AS deveRetornar400ComAnexoForaDoDominio"
+  },
+  {
+   "cativsn": "01",
+   "anexos": [
+    "i"
+   ],
+   "erro": "anexos",
+   "ref": "AS deveRetornar400ComAnexoMinusculo"
+  }
+ ],
+ "opcoes": [
+  {
+   "documento": "55",
+   "data": "2027-01-01",
+   "disponiveis": [
+    "01",
+    "02",
+    "03",
+    "04",
+    "90"
+   ],
+   "ref": "AS comTpDoc55DeveMarcarAdmissibilidadeConformeAWhitelist"
+  },
+  {
+   "documento": "91",
+   "data": "2027-01-01",
+   "disponiveis": [
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14",
+    "90"
+   ],
+   "ref": "AS comTpDoc91DeveMarcarVinculadasANfeNfceComoInadmissiveis"
+  },
+  {
+   "documento": "91",
+   "anexos": [
+    "II"
+   ],
+   "data": "2027-01-01",
+   "disponiveis": [
+    "90"
+   ],
+   "ref": "AS deveMarcarOsDoisMotivosQuandoInadmissivelEComAnexosFaltantes ($[12] 13 admissivel mas sem anexo IV)"
+  },
+  {
+   "documento": "55",
+   "cclasstrib": "000001",
+   "data": "2027-01-01",
+   "disponiveis": [
+    "01",
+    "02",
+    "03",
+    "04"
+   ],
+   "ref": "AS cClassTribQueDeclaraReceita"
+  },
+  {
+   "documento": "55",
+   "data": "2026-12-31",
+   "disponiveis": [],
+   "total": 0,
+   "ref": "AS deveListarVazioParaDataAnteriorATodaVigencia"
+  }
+ ]
+}

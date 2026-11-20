@@ -1,0 +1,5 @@
+# CPF e CNPJ ficticios que os testes e os contratos podem usar. Qualquer outro numero com digito verificador
+# valido em arquivo do repositorio reprova o teste de higiene: dado de pessoa ou empresa real nao entra aqui.
+11222333000181
+52998224725
+12345678909

@@ -1,0 +1,177 @@
+{
+ "_doc": "Contrato da tabela EMBARCADAS (rustnf::reforma::aliquotas, `aliquotas_com`): o que a biblioteca embarca de numero publicado (Senado/TCU) x o que o integrador informa em `publicadas`. NUMEROS DE EXEMPLO (a resolucao do Senado para 2027 ainda nao estava publicada ao escrever os casos; PRS 50/2026 na CAE). e = o resultado sem o campo motivo, ou a regra do ErroReforma; n_avisos = quantos avisos; aviso = trecho que um deles contem; fonte = trecho da fonte.",
+ "casos": [
+  {
+   "nome": "nada embarcado nem informado: 2027 recusa (estado de hoje)",
+   "emb": {},
+   "pub": {},
+   "data": "2027-01-01",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "0",
+    "confirmado": false,
+    "aplica": true
+   },
+   "n_avisos": 0
+  },
+  {
+   "nome": "embarcado e integrador calado: vale o embarcado, com a fonte dele",
+   "emb": {
+    "2027": {
+     "cbs_referencia": "11.3",
+     "fonte": "exemplo: Resolucao SF n. X/2026, DOU"
+    }
+   },
+   "pub": {},
+   "data": "2027-01-01",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "11.2",
+    "confirmado": true,
+    "aplica": true
+   },
+   "n_avisos": 0,
+   "fonte": "exemplo: Resolucao SF n. X/2026"
+  },
+  {
+   "nome": "integrador informa o mesmo numero em outra forma (cbs final): sem aviso",
+   "emb": {
+    "2027": {
+     "cbs_referencia": "11.3",
+     "fonte": "exemplo: Resolucao SF n. X/2026, DOU"
+    }
+   },
+   "pub": {
+    "2027": {
+     "cbs": "11.2"
+    }
+   },
+   "data": "2027-06-30",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "11.2",
+    "confirmado": true,
+    "aplica": true
+   },
+   "n_avisos": 0
+  },
+  {
+   "nome": "integrador informa outro numero: vale o do integrador, com aviso",
+   "emb": {
+    "2027": {
+     "cbs_referencia": "11.3",
+     "fonte": "exemplo: Resolucao SF n. X/2026, DOU"
+    }
+   },
+   "pub": {
+    "2027": {
+     "cbs_referencia": "11.5"
+    }
+   },
+   "data": "2027-06-30",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "11.4",
+    "confirmado": true,
+    "aplica": true
+   },
+   "n_avisos": 1,
+   "aviso": "(IBS UF 0.05%, IBS Mun 0.05%, CBS 11.4%) difere da publicada que a lib embarcou (IBS UF 0.05%, IBS Mun 0.05%, CBS 11.2%: "
+  },
+  {
+   "nome": "integrador informa so' outro ano: o ano calado cai no embarcado",
+   "emb": {
+    "2027": {
+     "cbs_referencia": "11.3",
+     "fonte": "exemplo: Resolucao SF n. X/2026, DOU"
+    }
+   },
+   "pub": {
+    "2028": {
+     "cbs_referencia": "12"
+    }
+   },
+   "data": "2027-03-01",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "11.2",
+    "confirmado": true,
+    "aplica": true
+   },
+   "n_avisos": 0
+  },
+  {
+   "nome": "integrador com troca ainda nao vigente: vale o do integrador (recusa), com aviso do embarcado",
+   "emb": {
+    "2027": {
+     "cbs_referencia": "11.3",
+     "fonte": "exemplo: Resolucao SF n. X/2026, DOU"
+    }
+   },
+   "pub": {
+    "2027": {
+     "trocas": [
+      {
+       "inicio": "2027-04-01",
+       "cbs_referencia": "11.3"
+      }
+     ]
+    }
+   },
+   "data": "2027-03-31",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "0",
+    "confirmado": false,
+    "aplica": true
+   },
+   "n_avisos": 1,
+   "aviso": "(sem numero vigente na data) difere da publicada"
+  },
+  {
+   "nome": "embarcado de 2027 nao cobre 2028",
+   "emb": {
+    "2027": {
+     "cbs_referencia": "11.3",
+     "fonte": "exemplo: Resolucao SF n. X/2026, DOU"
+    }
+   },
+   "pub": {},
+   "data": "2028-01-01",
+   "e": {
+    "ano": 2028,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "0",
+    "confirmado": false,
+    "aplica": true
+   },
+   "n_avisos": 0
+  },
+  {
+   "nome": "embarque errado do IBS fixado em lei quebra (contraprova do embarque)",
+   "emb": {
+    "2027": {
+     "cbs_referencia": "11.3",
+     "ibs_uf": "0.1",
+     "fonte": "exemplo errado"
+    }
+   },
+   "pub": {},
+   "data": "2027-01-01",
+   "e": "fixado_em_lei"
+  }
+ ]
+}

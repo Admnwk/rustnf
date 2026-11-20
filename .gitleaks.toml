@@ -1,0 +1,7 @@
+# Configuracao do gitleaks (varredura de segredo). Usa as regras padrao e registra uma unica excecao.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Blocos PEM de teste: corpos sem significado, usados so' para conferir a remontagem de PEM"
+paths = ['''crates/rustnf/tests/casos/pem\.json$''']

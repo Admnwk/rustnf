@@ -1,0 +1,378 @@
+{
+ "_doc": "Contrato da vigencia dentro do ano das aliquotas (rustnf::reforma::aliquotas). Numeros de exemplo (a resolucao do Senado para 2027 ainda nao estava publicada ao escrever os casos). e = o resultado sem o campo motivo, ou a regra do ErroReforma.",
+ "casos": [
+  {
+   "nome": "base do ano sem troca",
+   "pub": {
+    "2027": {
+     "cbs_referencia": "11.3"
+    }
+   },
+   "data": "2027-03-01",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "11.2",
+    "confirmado": true,
+    "aplica": true
+   }
+  },
+  {
+   "nome": "so' troca: antes do inicio nao ha CBS",
+   "pub": {
+    "2027": {
+     "trocas": [
+      {
+       "inicio": "2027-04-01",
+       "cbs_referencia": "11.3",
+       "fonte": "exemplo: vigencia apos noventena"
+      }
+     ]
+    }
+   },
+   "data": "2027-03-31",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "0",
+    "confirmado": false,
+    "aplica": true
+   },
+   "motivo": "a partir de 2027-04-01"
+  },
+  {
+   "nome": "so' troca: no dia do inicio vale",
+   "pub": {
+    "2027": {
+     "trocas": [
+      {
+       "inicio": "2027-04-01",
+       "cbs_referencia": "11.3",
+       "fonte": "exemplo: vigencia apos noventena"
+      }
+     ]
+    }
+   },
+   "data": "2027-04-01",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "11.2",
+    "confirmado": true,
+    "aplica": true
+   }
+  },
+  {
+   "nome": "base + troca: vespera fica na base",
+   "pub": {
+    "2027": {
+     "cbs_referencia": "11.3",
+     "trocas": [
+      {
+       "inicio": "2027-07-01",
+       "cbs_referencia": "11.0"
+      }
+     ]
+    }
+   },
+   "data": "2027-06-30",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "11.2",
+    "confirmado": true,
+    "aplica": true
+   }
+  },
+  {
+   "nome": "base + troca: a partir do inicio",
+   "pub": {
+    "2027": {
+     "cbs_referencia": "11.3",
+     "trocas": [
+      {
+       "inicio": "2027-07-01",
+       "cbs_referencia": "11.0"
+      }
+     ]
+    }
+   },
+   "data": "2027-07-01",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "10.9",
+    "confirmado": true,
+    "aplica": true
+   }
+  },
+  {
+   "nome": "duas trocas fora de ordem: a de abril",
+   "pub": {
+    "2027": {
+     "cbs_referencia": "11.3",
+     "trocas": [
+      {
+       "inicio": "2027-07-01",
+       "cbs_referencia": "11.0"
+      },
+      {
+       "inicio": "2027-04-01",
+       "cbs_referencia": "11.1"
+      }
+     ]
+    }
+   },
+   "data": "2027-05-15",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "11",
+    "confirmado": true,
+    "aplica": true
+   }
+  },
+  {
+   "nome": "duas trocas fora de ordem: a de julho",
+   "pub": {
+    "2027": {
+     "cbs_referencia": "11.3",
+     "trocas": [
+      {
+       "inicio": "2027-07-01",
+       "cbs_referencia": "11.0"
+      },
+      {
+       "inicio": "2027-04-01",
+       "cbs_referencia": "11.1"
+      }
+     ]
+    }
+   },
+   "data": "2027-12-31",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "10.9",
+    "confirmado": true,
+    "aplica": true
+   }
+  },
+  {
+   "nome": "troca com a CBS final vence a referencia de antes",
+   "pub": {
+    "2027": {
+     "cbs_referencia": "11.3",
+     "trocas": [
+      {
+       "inicio": "2027-07-01",
+       "cbs": "10.5"
+      }
+     ]
+    }
+   },
+   "data": "2027-07-01",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "10.5",
+    "confirmado": true,
+    "aplica": true
+   }
+  },
+  {
+   "nome": "troca com a referencia vence a CBS final de antes",
+   "pub": {
+    "2027": {
+     "cbs": "11",
+     "trocas": [
+      {
+       "inicio": "2027-07-01",
+       "cbs_referencia": "11.5"
+      }
+     ]
+    }
+   },
+   "data": "2027-07-01",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "11.4",
+    "confirmado": true,
+    "aplica": true
+   }
+  },
+  {
+   "nome": "2029: lei do ente muda o IBS UF no meio do ano",
+   "pub": {
+    "2029": {
+     "cbs": "11",
+     "ibs_uf": "9",
+     "ibs_mun": "3",
+     "trocas": [
+      {
+       "inicio": "2029-05-01",
+       "ibs_uf": "9.5",
+       "fonte": "exemplo: lei estadual"
+      }
+     ]
+    }
+   },
+   "data": "2029-05-01",
+   "e": {
+    "ano": 2029,
+    "ibs_uf": "9.5",
+    "ibs_mun": "3",
+    "cbs": "11",
+    "confirmado": true,
+    "aplica": true
+   }
+  },
+  {
+   "nome": "2029: antes da lei do ente",
+   "pub": {
+    "2029": {
+     "cbs": "11",
+     "ibs_uf": "9",
+     "ibs_mun": "3",
+     "trocas": [
+      {
+       "inicio": "2029-05-01",
+       "ibs_uf": "9.5",
+       "fonte": "exemplo: lei estadual"
+      }
+     ]
+    }
+   },
+   "data": "2029-04-30",
+   "e": {
+    "ano": 2029,
+    "ibs_uf": "9",
+    "ibs_mun": "3",
+    "cbs": "11",
+    "confirmado": true,
+    "aplica": true
+   }
+  },
+  {
+   "nome": "data so' com o ano = 01/01",
+   "pub": {
+    "2027": {
+     "cbs_referencia": "11.3",
+     "trocas": [
+      {
+       "inicio": "2027-07-01",
+       "cbs_referencia": "11.0"
+      }
+     ]
+    }
+   },
+   "data": "2027",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "11.2",
+    "confirmado": true,
+    "aplica": true
+   }
+  },
+  {
+   "nome": "chave do ano em texto (json)",
+   "pub": {
+    "2027": {
+     "cbs_referencia": "11.3",
+     "trocas": [
+      {
+       "inicio": "2027-07-01",
+       "cbs_referencia": "11.0"
+      }
+     ]
+    }
+   },
+   "data": "2027-08-01",
+   "e": {
+    "ano": 2027,
+    "ibs_uf": "0.05",
+    "ibs_mun": "0.05",
+    "cbs": "10.9",
+    "confirmado": true,
+    "aplica": true
+   }
+  },
+  {
+   "nome": "troca de outro ano",
+   "pub": {
+    "2027": {
+     "trocas": [
+      {
+       "inicio": "2028-01-01",
+       "cbs": "1"
+      }
+     ]
+    }
+   },
+   "data": "2027-05-01",
+   "e": "vigencia_fora_do_ano"
+  },
+  {
+   "nome": "duas trocas no mesmo dia",
+   "pub": {
+    "2027": {
+     "trocas": [
+      {
+       "inicio": "2027-04-01",
+       "cbs": "1"
+      },
+      {
+       "inicio": "2027-04-01",
+       "cbs": "2"
+      }
+     ]
+    }
+   },
+   "data": "2027-05-01",
+   "e": "vigencia_repetida"
+  },
+  {
+   "nome": "troca sem inicio valido",
+   "pub": {
+    "2027": {
+     "trocas": [
+      {
+       "inicio": "01/04/2027",
+       "cbs": "1"
+      }
+     ]
+    }
+   },
+   "data": "2027-05-01",
+   "e": "vigencia_invalida"
+  },
+  {
+   "nome": "troca nao muda o IBS que a lei fixa em 2027",
+   "pub": {
+    "2027": {
+     "cbs": "11",
+     "trocas": [
+      {
+       "inicio": "2027-04-01",
+       "ibs_uf": "0.07"
+      }
+     ]
+    }
+   },
+   "data": "2027-05-01",
+   "e": "fixado_em_lei"
+  }
+ ]
+}
