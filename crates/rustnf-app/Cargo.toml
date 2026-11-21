@@ -16,4 +16,8 @@ rustnf = { path = "../rustnf", features = ["sefin", "danfse"] }
 async-trait = "0.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+toml = "1"
 zeroize = "1"
+
+[target.'cfg(windows)'.dependencies]
+keyring = "4"

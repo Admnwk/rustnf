@@ -17,7 +17,15 @@
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 #![cfg_attr(test, allow(clippy::unwrap_used, clippy::expect_used, clippy::panic))]
 
+mod atomico;
+pub mod cofre;
+pub mod config;
 pub mod emissao;
 pub mod erro;
+pub mod notas;
 pub mod nucleo;
+pub mod pedido;
 pub mod segredo;
+
+#[cfg(test)]
+mod testes_comuns;
