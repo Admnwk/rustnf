@@ -58,6 +58,9 @@
   `pedido::cancelar_pedido_completo` e `pedido::Cancelada` (o resultado do cancelamento como dado tipado; `cancelar_pedido`
   continua devolvendo o JSON de sempre), `Notas::caminho_do_xml_guardado` e `Notas::guardar_danfse` (o PDF fica ao lado do
   XML e nao entra no indice nem na numeracao).
+* Cancelamento recusado por repeticao: se a nota ja tem o cancelamento registrado (envio anterior sem resposta, ou feito em
+  outro lugar), `cancelar_pedido` e `cancelar_pedido_completo` devolvem `registrado` com `recuperada`, marcam a pasta e
+  levam as mensagens da recusa em `alertas`. Antes, a nota ja cancelada aparecia como cancelamento recusado.
 * Configuracao: nova secao `[interface]` com `tema` (`sistema`, `claro` ou `escuro`).
 * `rustnf-app`: novo modulo `certificado` (abrir o A1 e montar o cliente da Sefin, antes dentro da linha de comando) e
   `cofre::cofre_do_ambiente` (a escolha do cofre por `RUSTNF_COFRE`), compartilhados pela linha de comando e pela

@@ -261,6 +261,10 @@ pub async fn cancelar_pedido(
 /// Como [`cancelar_pedido`], devolvendo o resultado do cliente como dado tipado (a rejeicao chega com os codigos e
 /// as descricoes, e a falta de resposta continua sendo "sem confirmacao") em vez de JSON ou erro. E' o que uma
 /// interface usa para mostrar cada desfecho. So' o cancelamento registrado marca a nota na pasta.
+///
+/// A Sefin recusa o evento repetido. Por isso, diante de uma recusa, a funcao confere se a nota JA tem o
+/// cancelamento (de um envio anterior cuja resposta se perdeu, ou feito em outro lugar): tendo, o desfecho e'
+/// "registrado" (`recuperada`), a pasta e' marcada e as mensagens da recusa viram alertas.
 pub async fn cancelar_pedido_completo(
     emissor: &dyn Emissor,
     chave: &str,
@@ -268,7 +272,15 @@ pub async fn cancelar_pedido_completo(
     justificativa: &str,
     notas: Option<&Notas>,
 ) -> Cancelada {
-    let resultado = emissor.cancelar(chave, motivo, justificativa).await;
+    let mut resultado = emissor.cancelar(chave, motivo, justificativa).await;
+    if resultado.status == Status::Rejeitada && emissor.cancelada(chave).await.status == Status::Ok
+    {
+        resultado.status = Status::Registrado;
+        resultado.recuperada = true;
+        resultado.frase = "A nota ja estava cancelada na Sefin.".into();
+        let recusa = std::mem::take(&mut resultado.erros);
+        resultado.alertas.extend(recusa);
+    }
     let marcada = match notas {
         Some(notas) if resultado.ok() => Some(notas.marcar_cancelada(chave).is_ok()),
         _ => None,
@@ -665,6 +677,39 @@ mod testes {
             ));
             assert_eq!(json.is_ok(), status == Status::Registrado, "{status:?}");
         }
+        // recusa de evento repetido com a nota JA cancelada: o desfecho e' "registrado", e a pasta e' marcada
+        let (_pasta, notas, chave) = pasta_com_a_nota("cancelar-repetido");
+        let repetido = DeCancelamento {
+            status: Status::Rejeitada,
+            cancelamentos: AtomicUsize::new(0),
+            cancelada: Status::Ok,
+        };
+        let c = bloquear(cancelar_pedido_completo(
+            &repetido,
+            &chave,
+            "1",
+            "justificativa de teste",
+            Some(&notas),
+        ));
+        assert_eq!(c.resultado.status, Status::Registrado);
+        assert!(c.resultado.recuperada);
+        assert!(c.resultado.erros.is_empty());
+        assert_eq!(c.resultado.alertas[0].codigo, "E0001");
+        assert_eq!(c.marcada, Some(true));
+        assert_eq!(
+            notas.listar().unwrap()[0].situacao,
+            crate::notas::Situacao::Cancelada
+        );
+        let json = bloquear(cancelar_pedido(
+            &repetido,
+            &chave,
+            "1",
+            "justificativa de teste",
+            None,
+        ))
+        .unwrap();
+        assert_eq!(json["status"], "registrado");
+        assert_eq!(json["recuperada"], true);
         // nota fora da pasta: o cancelamento vale, a marca nao
         let (_pasta, notas, _) = pasta_com_a_nota("cancelar-fora");
         let emissor = DeCancelamento {

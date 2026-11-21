@@ -235,8 +235,13 @@ impl TelaPrevia {
     // ---------------------------------------------------------------- desenho
 
     fn entrada(&self, c: CampoPrevia, id: &'static str) -> AnyElement {
+        // so' dinheiro alinha a direita; data e codigo se leem da esquerda
+        let dinheiro = !matches!(c, CampoPrevia::Data | CampoPrevia::ClassTrib);
         match self.entradas.get(&c) {
-            Some(e) => Input::new(e).id(id).text_right().into_any_element(),
+            Some(e) => Input::new(e)
+                .id(id)
+                .when(dinheiro, |i| i.text_right())
+                .into_any_element(),
             None => div().into_any_element(),
         }
     }

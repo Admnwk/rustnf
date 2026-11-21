@@ -309,6 +309,17 @@ impl ListaDeNotas {
     }
 }
 
+/// O texto do contador da lista: `1 nota`, `9 notas`, `1 de 9 notas`.
+#[must_use]
+pub fn contagem_de_notas(mostradas: usize, total: usize) -> String {
+    let nome = if total == 1 { "nota" } else { "notas" };
+    if mostradas == total {
+        format!("{total} {nome}")
+    } else {
+        format!("{mostradas} de {total} {nome}")
+    }
+}
+
 #[cfg(test)]
 mod testes {
     use std::time::Instant;
@@ -316,6 +327,14 @@ mod testes {
     use rustnf::chave_dfe::montar_nfse;
 
     use super::*;
+
+    #[test]
+    fn contador_concorda_em_numero() {
+        assert_eq!(contagem_de_notas(1, 1), "1 nota");
+        assert_eq!(contagem_de_notas(9, 9), "9 notas");
+        assert_eq!(contagem_de_notas(1, 9), "1 de 9 notas");
+        assert_eq!(contagem_de_notas(0, 1), "0 de 1 nota");
+    }
 
     fn registro(n: u64, emissao: &str, nome: &str, doc: &str, situacao: Situacao) -> Registro {
         Registro {

@@ -219,7 +219,9 @@ Sem `numero` no pedido, o `emitir` usa o proximo da serie. O numero so' avanca e
 (rejeitada ou pendente nao gasta numero) e nunca volta atras. Nota recuperada e' a que ja existia na Sefin com
 aquela serie e aquele numero de DPS: se os dados dela nao forem os do pedido (sobra de uma tentativa anterior), a
 resposta traz `recuperada_difere` com o que difere (tomador, valor, codigo do servico, competencia) e a nota do pedido
-NAO foi emitida; emita de novo, que o numero ja avancou. O `cancelar` marca a nota como cancelada no indice.
+NAO foi emitida; emita de novo, que o numero ja avancou. O `cancelar` marca a nota como cancelada no indice; se a Sefin
+recusar o pedido e a nota ja tiver o cancelamento registrado (envio anterior sem resposta, ou feito em outro lugar), a
+resposta e' `registrado` com `recuperada: true`, e as mensagens da recusa vem em `alertas`.
 `rustnf notas listar [--json]` lista as notas. As gravacoes sao atomicas (arquivo temporario e `rename`); o nome do
 arquivo vem so' da chave de acesso conferida.
 
@@ -395,9 +397,10 @@ e situacao. XML ausente ou ilegivel e' dito sem derrubar a tela. Dele saem:
   Em producao o botao so' habilita depois de marcar "Entendo que o cancelamento tem efeito fiscal". O envio e' feito fora
   da tela, pelo mesmo fluxo de certificado e senha da emissao. So' o cancelamento **registrado** marca a nota como cancelada
   na pasta; rejeitado mostra as mensagens da Sefin e nao marca. **Sem resposta**: o pedido tem sempre o mesmo identificador
-  (a chave da nota mais o tipo do evento), entao reenviar nao cria um segundo cancelamento; se o primeiro envio ja tiver sido
-  registrado, a Sefin pode recusar o reenvio por repeticao. Por isso o dialogo oferece "Tentar de novo" (o mesmo pedido) e
-  "Conferir na Sefin" (consulta o evento de cancelamento da nota);
+  (a chave da nota mais o tipo do evento), entao reenviar nao cria um segundo cancelamento. Se o primeiro envio ja tiver sido
+  registrado, a Sefin recusa o reenvio por repeticao: diante de uma recusa, o programa confere se a nota ja tem o
+  cancelamento e, tendo, mostra que ela ja estava cancelada e marca a pasta. O dialogo oferece "Tentar de novo" (o mesmo
+  pedido) e "Conferir na Sefin" (so' consulta o evento de cancelamento da nota);
 * **Usar como modelo**: leva tomador, servico, descricao e valor da nota para a Nova nota (o que o XML permite ler; o resto
   fica vazio e a conferencia da Nova nota aponta), com a competencia de hoje. Se a Nova nota tiver algo digitado, pergunta
   antes de substituir; com uma tentativa de emissao pendente, nao substitui.

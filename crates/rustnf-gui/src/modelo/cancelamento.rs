@@ -146,10 +146,10 @@ pub enum DesfechoDoCancelamento {
 pub const TEXTO_SEM_RESPOSTA: &str = "A Sefin Nacional não confirmou o cancelamento, e a consulta do evento também não o achou. Ele pode ter sido registrado mesmo assim.";
 
 /// Explica o que "Tentar de novo" faz no cancelamento.
-pub const EXPLICACAO_DE_TENTAR_DE_NOVO: &str = "Tentar de novo reenvia o mesmo pedido: a mesma nota, o mesmo motivo e a mesma justificativa. O pedido de cancelamento tem sempre o mesmo identificador (a chave da nota mais o tipo do evento), então ele não cria um segundo cancelamento; se o primeiro envio já tiver sido registrado, a Sefin pode recusar o reenvio por repetição, e a tela mostra essa recusa. Para ter certeza antes, use Conferir na Sefin.";
+pub const EXPLICACAO_DE_TENTAR_DE_NOVO: &str = "Tentar de novo reenvia o mesmo pedido: a mesma nota, o mesmo motivo e a mesma justificativa. O pedido de cancelamento tem sempre o mesmo identificador (a chave da nota mais o tipo do evento), então ele não cria um segundo cancelamento. Se o primeiro envio já tiver sido registrado, a Sefin recusa o reenvio por repetição; nesse caso a tela confere a nota e mostra que ela já está cancelada. Conferir na Sefin só consulta, sem reenviar.";
 
 /// O que a tela diz quando a conferencia achou o cancelamento ja registrado.
-pub const TEXTO_DA_RECUPERADA: &str = "O cancelamento já estava registrado na Sefin (a resposta do envio se perdeu) e foi achado pela consulta do evento.";
+pub const TEXTO_DA_RECUPERADA: &str = "O cancelamento já estava registrado na Sefin (de um envio anterior cuja resposta se perdeu, ou feito em outro lugar) e foi achado pela consulta do evento.";
 
 /// O aviso quando o cancelamento foi registrado mas a pasta nao foi atualizada.
 pub const AVISO_DA_PASTA: &str = "O cancelamento foi registrado na Sefin, mas a pasta de notas não pôde marcar esta nota como cancelada. Use Atualizar ou consulte a nota pela chave.";
@@ -430,7 +430,9 @@ mod testes {
     #[test]
     fn os_textos_dizem_o_que_o_codigo_faz() {
         assert!(EXPLICACAO_DE_TENTAR_DE_NOVO.contains("mesmo identificador"));
-        assert!(EXPLICACAO_DE_TENTAR_DE_NOVO.contains("pode recusar"));
+        assert!(EXPLICACAO_DE_TENTAR_DE_NOVO.contains("recusa o reenvio por repetição"));
+        assert!(EXPLICACAO_DE_TENTAR_DE_NOVO.contains("já está cancelada"));
+        assert!(TEXTO_DA_RECUPERADA.contains("já estava registrado"));
         assert!(TEXTO_SEM_RESPOSTA.contains("pode ter sido registrado"));
         assert!(AVISO_DA_PASTA.contains("marcar esta nota como cancelada"));
     }

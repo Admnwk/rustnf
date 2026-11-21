@@ -27,7 +27,7 @@ use super::cancelar::Cancelamento;
 use super::detalhe::{EventoDetalhe, VisaoDetalhe};
 use super::pecas::{cabecalho, estado_vazio, faixa, selo_da_situacao, Negrito as _};
 use crate::modelo::certificado::Gravidade;
-use crate::modelo::lista::{FiltroDeSituacao, ListaDeNotas};
+use crate::modelo::lista::{contagem_de_notas, FiltroDeSituacao, ListaDeNotas};
 use crate::modelo::nota::DadosNota;
 use crate::servicos::Servicos;
 use crate::telas::LARGURA_DA_LATERAL;
@@ -419,10 +419,8 @@ impl TelaNotas {
             }));
         let contagem = if self.lista.vazia() {
             String::new()
-        } else if self.lista.quantas() == self.lista.total() {
-            format!("{} notas", self.lista.total())
         } else {
-            format!("{} de {} notas", self.lista.quantas(), self.lista.total())
+            contagem_de_notas(self.lista.quantas(), self.lista.total())
         };
         h_flex()
             .gap_3()
