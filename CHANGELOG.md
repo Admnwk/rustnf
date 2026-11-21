@@ -1,6 +1,6 @@
 # Changelog
 
-## Próxima versão
+## 0.2.0 - 2026-11-21
 
 * DANFSe sem o Typst: o PDF passa a ser escrito direto pelo `krilla` (feature `danfse`), a partir da mesma lista de
   operações de desenho que `danfse::dados` já devolvia. O JSON de `dados` não mudou e o leiaute é o mesmo; o texto
@@ -17,6 +17,8 @@
   Rust (1.92) no lugar de "edição 2021".
 
 ## 0.1.0 - 2026-11-21
+
+Primeira versão pública.
 
 * Entrega: o CI passa a compilar e testar a interface de desktop no Windows (job `interface`); novo fluxo `release`
   que, com uma tag de versão, monta `rustnf.exe` e `rustnf-gui.exe` (Windows, com a biblioteca C dentro do executável:
@@ -89,10 +91,6 @@
   embutida).
 * Dependências novas: `toml`, e, só no Windows, `keyring-core` e `windows-native-keyring-store` (todas MIT OR
   Apache-2.0).
-
-## 0.1.0
-
-Primeira versão pública.
 
 * Biblioteca `rustnf`:
   * `nfse`: DPS do leiaute 1.01 (produção) e da produção restrita (NT 009), com as regras do Anexo I conferidas antes
