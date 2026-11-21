@@ -37,7 +37,9 @@
 4. Trocar o `chrono` (sem mantenedor, RUSTSEC-2026-0543) por uma biblioteca de datas mantida e tirar o `ignore` do `deny.toml`.
 5. Teste de ponta a ponta com TLS mutuo contra um servidor local de teste.
 6. A cada versao nova do Typst, rever os avisos de seguranca das dependencias dele registrados no `deny.toml` (hoje
-   dois do `quick-xml`, num caminho que o DANFSe nao executa, e seis de crates sem mantenedor).
+   dois do `quick-xml`, num caminho que o DANFSe nao executa, e seis de crates sem mantenedor). O mesmo a cada versao
+   nova do `gpui-kit`: hoje cinco crates sem mantenedor (tres deles so' no lado Linux do GPUI, que a interface nao
+   compila).
 
 ## Depois da v1
 
