@@ -12,8 +12,8 @@
 //!   SignedInfo se calculam com o elemento POSICIONADO no documento;
 //! - texto so' escapa `& < >` (+ `\r`): quem assina a string literal com `&quot;`/`&apos;` erra o digest
 //!   (a C14N escapa so' esses);
-//! - assinatura sem prefixo (`<Signature xmlns=...>`); `sha1` e' o padrao (e o das NFS-e autorizadas pela Sefin
-//!   Nacional); `sha256` por parametro (o XSD da NFS-e Nacional declara o algoritmo como anyURI).
+//! - assinatura sem prefixo (`<Signature xmlns=...>`); `sha256` e' o padrao; `sha1` (o das NFS-e autorizadas pela
+//!   Sefin Nacional) por parametro. O XSD da NFS-e Nacional declara o algoritmo como anyURI, sem fixar um.
 //!
 //! Limite declarado: o prefixo de um elemento sai do `lookup_prefix` da URI (documento que liga a MESMA URI a dois
 //! prefixos fica ambiguo); `xml:lang`/`xml:space` de ancestral fora do subconjunto nao sao herdados.
@@ -37,10 +37,11 @@ const EXC: &str = "http://www.w3.org/2001/10/xml-exc-c14n#";
 const EXC_COM: &str = "http://www.w3.org/2001/10/xml-exc-c14n#WithComments";
 pub const ENVELOPED: &str = "http://www.w3.org/2000/09/xmldsig#enveloped-signature";
 
-/// Algoritmo da assinatura: (SignatureMethod, DigestMethod).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// Algoritmo da assinatura: (SignatureMethod, DigestMethod). O padrao e' o SHA-256.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Algoritmo {
     Sha1,
+    #[default]
     Sha256,
 }
 
@@ -61,6 +62,15 @@ impl Algoritmo {
         match self {
             Algoritmo::Sha1 => "sha1",
             Algoritmo::Sha256 => "sha256",
+        }
+    }
+
+    /// O algoritmo pelo nome (`sha1` ou `sha256`); `None` para qualquer outro texto.
+    pub fn de_nome(nome: &str) -> Option<Self> {
+        match nome {
+            "sha1" => Some(Algoritmo::Sha1),
+            "sha256" => Some(Algoritmo::Sha256),
+            _ => None,
         }
     }
 }
@@ -356,9 +366,10 @@ pub fn assinar(
     };
     let valor = match algoritmo {
         // COM rng: o `sign` sem rng do rsa 0.9 nao faz blinding (`pkcs1v15/signing_key.rs:161` passa None;
-        // `algorithms/rsa.rs:49`). RUSTSEC-2023-0071 (Marvin) sem versao corrigida e rsa-sha1 e' imposicao do
-        // XSD (ring/aws-lc-rs nao assinam SHA-1): blinding e' a mitigacao. PKCS#1 v1.5 e' deterministico, a
-        // assinatura sai IGUAL byte a byte (o digest e a assinatura conferem em `tests/nfse_assinatura.rs`).
+        // `algorithms/rsa.rs:49`). RUSTSEC-2023-0071 (Marvin) sem versao corrigida, e o rsa-sha1 continua
+        // disponivel por parametro (ring/aws-lc-rs nao assinam SHA-1): blinding e' a mitigacao. PKCS#1 v1.5 e'
+        // deterministico, a assinatura sai IGUAL byte a byte (o digest e a assinatura conferem em
+        // `tests/nfse_assinatura.rs`).
         Algoritmo::Sha1 => SigningKey::<Sha1>::new(chave.clone())
             .sign_with_rng(&mut crate::aleatorio::sistema(), si_c14n.as_bytes())
             .to_vec(),

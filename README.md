@@ -144,6 +144,8 @@ $ rustnf cancelar --chave <chave> --motivo 1 --justificativa "Valor digitado err
   cair na regra E0008.
 * A emissao e' idempotente: resposta perdida, erro 5xx ou E0014 fazem a biblioteca consultar a DPS antes de reenviar o
   MESMO XML. Nunca renumere a DPS (`numero`) para "tentar de novo".
+* A DPS e os eventos sao assinados com RSA e SHA-256. `--assinatura sha1` (ou `RUSTNF_ASSINATURA`, ou
+  `[sefin].assinatura`) troca para SHA-1; o leiaute nao fixa o algoritmo.
 * Motivos de cancelamento: `1` erro na emissao, `2` servico nao prestado, `9` outros; a justificativa e' obrigatoria.
 * `--json` imprime o resultado completo (inclui a NFS-e lida e os alertas); sem ele, um resumo.
 
@@ -159,8 +161,8 @@ existir, valem os padroes e nada muda em relacao a usar so' opcoes. `rustnf conf
 `rustnf config mostrar [--json]` mostra a configuracao efetiva e de onde veio.
 
 **Precedencia**, em todo parametro: opcao da chamada > variavel de ambiente `RUSTNF_*` > arquivo > padrao. As
-variaveis: `RUSTNF_AMBIENTE`, `RUSTNF_PFX`, `RUSTNF_TEMPO_LIMITE_SEFIN`, `RUSTNF_FOLGA_RELOGIO`, `RUSTNF_SERIE`,
-`RUSTNF_NOTAS_PASTA`, `RUSTNF_CANHOTO`, `RUSTNF_ENDERECO`, `RUSTNF_PORTA`, `RUSTNF_LIMITE_CORPO`,
+variaveis: `RUSTNF_AMBIENTE`, `RUSTNF_PFX`, `RUSTNF_ASSINATURA`, `RUSTNF_TEMPO_LIMITE_SEFIN`, `RUSTNF_FOLGA_RELOGIO`,
+`RUSTNF_SERIE`, `RUSTNF_NOTAS_PASTA`, `RUSTNF_CANHOTO`, `RUSTNF_ENDERECO`, `RUSTNF_PORTA`, `RUSTNF_LIMITE_CORPO`,
 `RUSTNF_TEMPO_LIMITE` e `RUSTNF_ORIGENS_PERMITIDAS` (separadas por virgula). Campo desconhecido no arquivo e' recusado,
 e os valores sao conferidos (ambiente, codigo do municipio, CNPJ/CPF, numeros, anos de aliquota repetidos...) com a
 secao e o campo no erro.
@@ -168,7 +170,7 @@ secao e o campo no erro.
 | secao | campos |
 |---|---|
 | `[emitente]` | `cnpj` ou `cpf`, `nome`, `inscricao_municipal`, `municipio` (IBGE, 7 digitos), `op_simples` (1, 2 ou 3), `regime_apuracao` (0 = nao informar), `regime_especial`, `serie` |
-| `[sefin]` | `ambiente` (`producao` ou `restrita`), `pfx`, `tempo_limite_s`, `folga_relogio_s` |
+| `[sefin]` | `ambiente` (`producao` ou `restrita`), `pfx`, `assinatura` (`sha256` ou `sha1`), `tempo_limite_s`, `folga_relogio_s` |
 | `[notas]` | `pasta` (vazio = nao guardar) |
 | `[danfse]` | `canhoto` |
 | `[servidor]` | `endereco`, `porta`, `limite_corpo`, `tempo_limite_s`, `origens_permitidas` |

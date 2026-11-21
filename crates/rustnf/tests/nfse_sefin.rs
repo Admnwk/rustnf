@@ -12,7 +12,7 @@ use std::sync::{Arc, Mutex};
 use async_trait::async_trait;
 use chrono::Utc;
 use rustnf::assinatura::cert_a1::{self, Certificado};
-use rustnf::assinatura::xmldsig;
+use rustnf::assinatura::xmldsig::{self, Algoritmo};
 use rustnf::chave_dfe;
 use rustnf::nfse::sefin::{ClienteNfse, FalhaRede, Status, Transporte};
 use rustnf::nfse::{compactar, descompactar, Dps};
@@ -146,6 +146,52 @@ async fn emitir_autorizada_e_documento_assinado() {
     let enviado =
         descompactar(p[0].2.as_ref().unwrap()["dpsXmlGZipB64"].as_str().unwrap()).unwrap();
     assert!(xmldsig::conferido(&enviado));
+}
+
+const RSA_SHA1: &str = "http://www.w3.org/2000/09/xmldsig#rsa-sha1";
+const RSA_SHA256: &str = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+
+/// O XML que o cliente assinou e enviou no campo `campo` do primeiro pedido.
+fn enviado(f: &Falso, campo: &str) -> String {
+    descompactar(f.pedidos()[0].2.as_ref().unwrap()[campo].as_str().unwrap()).unwrap()
+}
+
+#[tokio::test]
+async fn a_assinatura_padrao_e_sha256_e_o_sha1_fica_por_parametro() {
+    let ch = chave();
+    let (c, f) = cli(vec![("POST", "/nfse".into(), ok_nfse(&ch))]);
+    assert_eq!(c.algoritmo, Algoritmo::Sha256);
+    assert_eq!(Algoritmo::default(), Algoritmo::Sha256);
+    assert!(c.emitir(&dps()).await.ok());
+    let dps_xml = enviado(&f, "dpsXmlGZipB64");
+    let conferencia = xmldsig::conferir(&dps_xml);
+    assert!(conferencia.len() == 1 && conferencia[0].ok && conferencia[0].algoritmo == "sha256");
+    assert!(dps_xml.contains(RSA_SHA256) && !dps_xml.contains(RSA_SHA1));
+
+    // o evento de cancelamento segue o mesmo padrao
+    let evento = j(201, json!({"eventoXmlGZipB64": compactar("<evento/>")}));
+    let (c, f) = cli(vec![("POST", "/eventos".into(), evento.clone())]);
+    c.cancelar(&ch, "1", "Valor digitado errado na nota").await;
+    let pedido = enviado(&f, "pedidoRegistroEventoXmlGZipB64");
+    assert!(pedido.contains(RSA_SHA256) && !pedido.contains(RSA_SHA1));
+
+    // SHA-1 continua disponivel, na DPS e no evento
+    let (mut c, f) = cli(vec![("POST", "/nfse".into(), ok_nfse(&ch))]);
+    c.algoritmo = Algoritmo::Sha1;
+    assert!(c.emitir(&dps()).await.ok());
+    let dps_xml = enviado(&f, "dpsXmlGZipB64");
+    assert!(xmldsig::conferido(&dps_xml));
+    assert!(dps_xml.contains(RSA_SHA1) && !dps_xml.contains(RSA_SHA256));
+    let (mut c, f) = cli(vec![("POST", "/eventos".into(), evento)]);
+    c.algoritmo = Algoritmo::Sha1;
+    c.cancelar(&ch, "1", "Valor digitado errado na nota").await;
+    let pedido = enviado(&f, "pedidoRegistroEventoXmlGZipB64");
+    assert!(pedido.contains(RSA_SHA1) && !pedido.contains(RSA_SHA256));
+
+    assert_eq!(Algoritmo::de_nome("sha256"), Some(Algoritmo::Sha256));
+    assert_eq!(Algoritmo::de_nome("sha1"), Some(Algoritmo::Sha1));
+    assert_eq!(Algoritmo::de_nome("SHA256"), None);
+    assert_eq!(Algoritmo::de_nome(""), None);
 }
 
 #[tokio::test]

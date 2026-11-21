@@ -242,6 +242,7 @@ pub struct ClienteNfse<T: Transporte> {
     pub certificado: Certificado,
     pub ambiente: u8,
     pub sefin: String,
+    /// Algoritmo da assinatura da DPS e dos eventos. Padrao: SHA-256; troque o campo para usar SHA-1.
     pub algoritmo: Algoritmo,
     pub ver_aplic: String,
     transporte: T,
@@ -283,7 +284,7 @@ impl<T: Transporte> ClienteNfse<T> {
             certificado,
             ambiente,
             sefin: base_segura(sefin.unwrap_or(s))?,
-            algoritmo: Algoritmo::Sha1,
+            algoritmo: Algoritmo::default(),
             ver_aplic: "rustnf".into(),
             transporte,
         })

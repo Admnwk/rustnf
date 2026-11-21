@@ -8,6 +8,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use rustnf::assinatura::cert_a1;
+use rustnf::assinatura::xmldsig::Algoritmo;
 use rustnf::nfse::sefin::ClienteNfse;
 use zeroize::Zeroizing;
 
@@ -57,9 +58,11 @@ pub(super) fn emissor(
     pfx: &str,
     senha: &Segredo,
     ambiente: Ambiente,
+    algoritmo: Algoritmo,
     tempo_limite: Duration,
 ) -> Result<Arc<dyn Emissor>, Erro> {
     let certificado = abrir(pfx, senha)?;
-    let cliente = ClienteNfse::real(certificado, ambiente.codigo(), None, None, tempo_limite)?;
+    let mut cliente = ClienteNfse::real(certificado, ambiente.codigo(), None, None, tempo_limite)?;
+    cliente.algoritmo = algoritmo;
     Ok(Arc::new(cliente))
 }

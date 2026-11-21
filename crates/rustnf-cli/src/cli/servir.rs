@@ -60,7 +60,13 @@ fn estado(args: &ArgServe, e: &Efetiva, cofre: &dyn Cofre) -> Result<Estado, Err
         }
     };
     let senha = resolver::senha(e, cofre, &args.senha, &pfx, false)?;
-    let emissor = super::certificado::emissor(&pfx, &senha, ambiente, resolver::tempo_sefin(e))?;
+    let emissor = super::certificado::emissor(
+        &pfx,
+        &senha,
+        ambiente,
+        resolver::assinatura(e, args.assinatura),
+        resolver::tempo_sefin(e),
+    )?;
     Ok(Estado::com_emissao(config, emissor, token))
 }
 

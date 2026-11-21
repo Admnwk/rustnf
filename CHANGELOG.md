@@ -20,6 +20,9 @@
   `cancelar` marca a nota como cancelada; `calcular` usa as `[[aliquotas]]` quando o JSON nao traz `publicadas`.
   Comandos novos: `config mostrar`, `config caminho`, `senha guardar`, `senha apagar` e `notas listar`. Sem arquivo
   de configuracao e sem as opcoes novas, o comportamento e' o de antes.
+* Assinatura da DPS e dos eventos: o padrao passa a ser RSA com SHA-256 (era SHA-1). O SHA-1 continua disponivel:
+  `--assinatura sha1`, `RUSTNF_ASSINATURA=sha1`, `[sefin] assinatura = "sha1"` ou, na biblioteca, o campo
+  `ClienteNfse::algoritmo`. A conferencia de assinaturas continua aceitando SHA-1, SHA-256 e SHA-512.
 * Dependencias novas: `toml`, e, so' no Windows, `keyring-core` e `windows-native-keyring-store` (todas MIT OR
   Apache-2.0).
 

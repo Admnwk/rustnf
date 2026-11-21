@@ -8,10 +8,11 @@
 use std::sync::Arc;
 use std::time::Duration;
 
+use rustnf::assinatura::xmldsig::Algoritmo;
 use rustnf_app::cofre::{chave_do_certificado, Cofre};
 use rustnf_app::config::Efetiva;
 
-use super::{certificado, Ambiente, ArgSefin};
+use super::{certificado, Ambiente, ArgSefin, Assinatura};
 use crate::emissao::Emissor;
 use crate::erro::Erro;
 use crate::segredo::Segredo;
@@ -39,6 +40,11 @@ pub(super) fn ambiente(e: &Efetiva, opcao: Option<Ambiente>) -> Result<Ambiente,
         "informe --ambiente producao|restrita (ou RUSTNF_AMBIENTE, ou [sefin].ambiente no arquivo de configuracao)"
             .into(),
     ))
+}
+
+/// O algoritmo da assinatura: opcao, variavel ou arquivo; sem nenhum deles, o padrao (SHA-256).
+pub(super) fn assinatura(e: &Efetiva, opcao: Option<Assinatura>) -> Algoritmo {
+    opcao.map_or_else(|| e.config.sefin.algoritmo(), Assinatura::algoritmo)
 }
 
 /// O caminho do certificado: opcao, variavel ou arquivo.
@@ -83,7 +89,13 @@ pub(super) fn emissor(
     let pfx = pfx(e, sefin.pfx.as_deref())?;
     let ambiente = ambiente(e, sefin.ambiente)?;
     let senha = senha(e, cofre, &sefin.senha, &pfx, stdin_ocupado)?;
-    certificado::emissor(&pfx, &senha, ambiente, tempo_sefin(e))
+    certificado::emissor(
+        &pfx,
+        &senha,
+        ambiente,
+        assinatura(e, sefin.assinatura),
+        tempo_sefin(e),
+    )
 }
 
 #[cfg(test)]
@@ -131,6 +143,37 @@ mod testes {
         assert_eq!(
             ambiente(&efetiva(None, &env), None).unwrap(),
             Ambiente::Restrita,
+            "variavel sem arquivo"
+        );
+    }
+
+    #[test]
+    fn assinatura_opcao_vence_variavel_vence_arquivo_e_o_padrao_e_sha256() {
+        let arq = Some("[sefin]\nassinatura = \"sha1\"\n");
+        let env = [("RUSTNF_ASSINATURA", "sha256")];
+        assert_eq!(
+            assinatura(&efetiva(arq, &env), Some(Assinatura::Sha1)),
+            Algoritmo::Sha1,
+            "opcao"
+        );
+        assert_eq!(
+            assinatura(&efetiva(arq, &env), None),
+            Algoritmo::Sha256,
+            "variavel"
+        );
+        assert_eq!(
+            assinatura(&efetiva(arq, &[]), None),
+            Algoritmo::Sha1,
+            "arquivo"
+        );
+        assert_eq!(
+            assinatura(&efetiva(None, &[]), None),
+            Algoritmo::Sha256,
+            "padrao"
+        );
+        assert_eq!(
+            assinatura(&efetiva(None, &[("RUSTNF_ASSINATURA", "sha1")]), None),
+            Algoritmo::Sha1,
             "variavel sem arquivo"
         );
     }

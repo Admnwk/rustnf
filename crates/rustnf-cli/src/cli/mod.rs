@@ -22,6 +22,7 @@ use std::net::IpAddr;
 use std::path::PathBuf;
 
 use clap::{Args, Parser, Subcommand, ValueEnum};
+use rustnf::assinatura::xmldsig::Algoritmo;
 
 pub use comandos::{emitir_valor, executar, executar_com, VARIAVEL_COFRE};
 pub use servir::{servir, servir_ate};
@@ -206,6 +207,26 @@ impl Ambiente {
     }
 }
 
+/// Algoritmo da assinatura da DPS e dos eventos.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+pub enum Assinatura {
+    /// RSA com SHA-256 (o padrao).
+    Sha256,
+    /// RSA com SHA-1.
+    Sha1,
+}
+
+impl Assinatura {
+    /// O algoritmo da biblioteca.
+    #[must_use]
+    pub fn algoritmo(self) -> Algoritmo {
+        match self {
+            Self::Sha256 => Algoritmo::Sha256,
+            Self::Sha1 => Algoritmo::Sha1,
+        }
+    }
+}
+
 /// De onde vem a senha do certificado. Nao existe opcao para passar a senha como argumento.
 #[derive(Debug, Args)]
 pub struct ArgSenha {
@@ -230,6 +251,9 @@ pub struct ArgSefin {
     /// configuracao e obrigatoria.
     #[arg(long, value_enum)]
     pub ambiente: Option<Ambiente>,
+    /// Algoritmo da assinatura. Sem a opcao vale RUSTNF_ASSINATURA ou `[sefin].assinatura`; padrao sha256.
+    #[arg(long, value_enum)]
+    pub assinatura: Option<Assinatura>,
 }
 
 /// `rustnf emitir`.
@@ -313,6 +337,9 @@ pub struct ArgServe {
     /// Ambiente da Sefin Nacional.
     #[arg(long, value_enum)]
     pub ambiente: Option<Ambiente>,
+    /// Algoritmo da assinatura (padrao sha256).
+    #[arg(long, value_enum)]
+    pub assinatura: Option<Assinatura>,
     /// Variavel de ambiente com o token Bearer das rotas de emissao (no minimo 32 caracteres).
     #[arg(long, value_name = "VARIAVEL")]
     pub token_env: Option<String>,

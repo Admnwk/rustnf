@@ -12,7 +12,7 @@ use super::arquivo::{LerAmbiente, VARIAVEL_CONFIG};
 use super::{Config, ErroConfig};
 
 /// Variaveis de ambiente que sobrescrevem o arquivo, uma por parametro. `RUSTNF_CONFIG` indica o proprio arquivo.
-pub const VARIAVEIS: [&str; 13] = [
+pub const VARIAVEIS: [&str; 14] = [
     "RUSTNF_AMBIENTE",
     "RUSTNF_PFX",
     "RUSTNF_TEMPO_LIMITE_SEFIN",
@@ -26,6 +26,7 @@ pub const VARIAVEIS: [&str; 13] = [
     "RUSTNF_ORIGENS_PERMITIDAS",
     VARIAVEL_CONFIG,
     "RUSTNF_SERIE",
+    "RUSTNF_ASSINATURA",
 ];
 
 /// A configuracao depois da precedencia ambiente > arquivo > padrao.
@@ -101,6 +102,9 @@ impl Efetiva {
             "RUSTNF_FOLGA_RELOGIO",
             &mut config.sefin.folga_relogio_s,
         )?;
+        if let Some(v) = le("RUSTNF_ASSINATURA")? {
+            config.sefin.assinatura = v;
+        }
         if let Some(v) = le("RUSTNF_NOTAS_PASTA")? {
             config.notas.pasta = v;
         }
