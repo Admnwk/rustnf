@@ -822,13 +822,15 @@ mod testes {
 
     #[test]
     fn o_servidor_e_o_que_a_tela_nao_edita_sobrevivem_ao_salvar() {
-        let mut c = Config::default();
-        c.servidor = Servidor {
-            endereco: "10.0.0.5".into(),
-            porta: 9999,
-            limite_corpo: 2048,
-            tempo_limite_s: 15,
-            origens_permitidas: vec!["https://app.exemplo.com.br".into()],
+        let mut c = Config {
+            servidor: Servidor {
+                endereco: "10.0.0.5".into(),
+                porta: 9999,
+                limite_corpo: 2048,
+                tempo_limite_s: 15,
+                origens_permitidas: vec!["https://app.exemplo.com.br".into()],
+            },
+            ..Config::default()
         };
         c.aliquotas.push(Aliquota {
             ano: 2028,

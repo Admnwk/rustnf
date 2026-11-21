@@ -411,7 +411,13 @@ impl Raiz {
         let (grav, texto) = match (&motivo, alterado) {
             (None, _) => (Gravidade::Aviso, "Há alterações não salvas.".to_string()),
             (Some(m), true) => (Gravidade::Erro, m.clone()),
-            (Some(_), false) => (Gravidade::Neutro, "Tudo salvo.".to_string()),
+            (Some(_), false) => match self.formulario.erros().primeira() {
+                Some(p) => (
+                    Gravidade::Erro,
+                    format!("O arquivo tem valores a corrigir: {p}"),
+                ),
+                None => (Gravidade::Neutro, "Tudo salvo.".to_string()),
+            },
         };
         let cor = super::pecas::cor_da(grav, cx);
         h_flex()

@@ -65,10 +65,12 @@ fn abrir(
     })
 }
 
+type Resposta = Result<(u16, Vec<u8>), FalhaRede>;
+
 /// Transporte falso: uma resposta fixa, e a lista do que foi pedido.
 #[derive(Clone)]
 struct Falso {
-    resposta: Arc<Mutex<Result<(u16, Vec<u8>), FalhaRede>>>,
+    resposta: Arc<Mutex<Resposta>>,
     pedidos: Arc<Mutex<Vec<String>>>,
 }
 

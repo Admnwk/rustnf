@@ -16,10 +16,12 @@ use crate::testes_comuns::{servicos_de_teste, PastaTemporaria};
 const SENHA: &str = "senha-do-teste-123";
 const CNPJ: &str = "11222333000181";
 
+type Resposta = Result<(u16, Vec<u8>), FalhaRede>;
+
 /// Transporte falso: uma resposta fixa para qualquer pedido, e a lista do que foi pedido.
 #[derive(Clone)]
 struct Falso {
-    resposta: Arc<Mutex<Result<(u16, Vec<u8>), FalhaRede>>>,
+    resposta: Arc<Mutex<Resposta>>,
     pedidos: Arc<Mutex<Vec<String>>>,
 }
 

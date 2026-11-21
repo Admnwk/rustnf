@@ -39,7 +39,7 @@ impl CampoAliquota {
     pub fn rotulo(self) -> &'static str {
         match self {
             Self::Ano => "Ano",
-            Self::CbsReferencia => "CBS de referência (%)",
+            Self::CbsReferencia => "CBS ref. (%)",
             Self::Cbs => "CBS (%)",
             Self::IbsUf => "IBS estadual (%)",
             Self::IbsMun => "IBS municipal (%)",

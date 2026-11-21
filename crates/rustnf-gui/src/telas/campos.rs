@@ -56,7 +56,6 @@ impl Raiz {
         let d = &self.formulario.dados;
         let op = d.op_simples;
         let municipio = self.formulario.rotulo_do_municipio();
-        let tema = cx.theme();
         let rotulo_municipio = municipio.texto();
         let achou = matches!(
             municipio,
@@ -69,7 +68,6 @@ impl Raiz {
                 SharedString::from(t)
             }
         });
-        let _ = tema;
 
         let mut forma = v_form()
             .columns(2)
