@@ -1,30 +1,30 @@
 rustnf
-Copyright (c) Os autores do rustnf. Licenca: Mozilla Public License 2.0 (arquivo LICENSE).
+Copyright (c) Os autores do rustnf. Licença: Mozilla Public License 2.0 (arquivo LICENSE).
 
-Material de terceiros distribuido com o codigo-fonte e embutido nos binarios (itens 1 a 3: feature `danfse`; item 4: `rustnf-gui`):
+Material de terceiros distribuído com o código-fonte e embutido nos binários (itens 1 a 3: feature `danfse`; item 4: `rustnf-gui`):
 
 1. Liberation Sans, Regular e Bold
    (crates/rustnf/dados/fontes/LiberationSans-Regular.ttf e LiberationSans-Bold.ttf)
    Digitized data copyright (c) 2010 Google Corporation, with Reserved Font Arimo, Tinos and Cousine.
    Copyright (c) 2012 Red Hat, Inc., with Reserved Font Name Liberation.
-   Licenca: SIL Open Font License 1.1; o texto integral esta em
-   crates/rustnf/dados/fontes/Liberation-LICENSE.txt. As fontes seguem sem modificacao. A tabela
-   crates/rustnf/dados/fontes/LiberationSans-larguras.json guarda so' as larguras de avanco extraidas delas.
+   Licença: SIL Open Font License 1.1; o texto integral está em
+   crates/rustnf/dados/fontes/Liberation-LICENSE.txt. As fontes seguem sem modificação. A tabela
+   crates/rustnf/dados/fontes/LiberationSans-larguras.json guarda só as larguras de avanço extraídas delas.
 
 2. Logotipo da NFS-e (crates/rustnf/dados/danfse_logo_nfse.png)
-   Marca do governo federal da NFS-e Padrao Nacional, usada no cabecalho do DANFSe para identificar o documento,
-   conforme a Nota Tecnica 008 do Comite Gestor da NFS-e. A marca pertence aos seus titulares; esta licenca
-   nao concede direito sobre ela.
+   Marca do governo federal da NFS-e Padrão Nacional, usada no cabeçalho do DANFSe para identificar o documento,
+   conforme a Nota Técnica 008 do Comitê Gestor da NFS-e. A marca pertence aos seus titulares; esta licença
+   não concede direito sobre ela.
 
-3. Tabela de municipios (crates/rustnf/dados/municipios.csv)
-   Codigo IBGE, UF e nome, a partir do Plano Geral de Codigos Nacionais (PGCN), dados abertos da ANATEL.
+3. Tabela de municípios (crates/rustnf/dados/municipios.csv)
+   Código IBGE, UF e nome, a partir do Plano Geral de Códigos Nacionais (PGCN), dados abertos da ANATEL.
 
-4. Icones da interface de desktop (`rustnf-gui`, so' no executavel `rustnf-gui`; embutidos pelo crate `gpui-kit-assets`,
-   Apache-2.0, que reune um subconjunto dos icones Lucide)
-   Lucide: ISC License, Copyright (c) 2026 Lucide Icons and Contributors. Os icones derivados do projeto Feather
-   (Copyright (c) 2013-present Cole Bemis) estao sob a licenca MIT. Permissao para usar, copiar, modificar e distribuir
-   com ou sem custo, desde que este aviso de copyright e de permissao acompanhe todas as copias.
-   Texto das licencas: arquivo LICENSE-LUCIDE do crate `gpui-kit-assets` (publicado em crates.io).
+4. Ícones da interface de desktop (`rustnf-gui`, só no executável `rustnf-gui`; embutidos pelo crate `gpui-kit-assets`,
+   Apache-2.0, que reúne um subconjunto dos ícones Lucide)
+   Lucide: ISC License, Copyright (c) 2026 Lucide Icons and Contributors. Os ícones derivados do projeto Feather
+   (Copyright (c) 2013-present Cole Bemis) estão sob a licença MIT. Permissão para usar, copiar, modificar e distribuir
+   com ou sem custo, desde que este aviso de copyright e de permissão acompanhe todas as cópias.
+   Texto das licenças: arquivo LICENSE-LUCIDE do crate `gpui-kit-assets` (publicado em crates.io).
 
-As bibliotecas Rust usadas pela feature (Typst e dependencias) tem licencas proprias, conferidas pelo `cargo deny`
-(veja deny.toml).
+As bibliotecas Rust usadas pela feature (`krilla`, `skrifa` e dependências) têm licenças próprias, conferidas pelo
+`cargo deny` (veja deny.toml).

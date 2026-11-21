@@ -6,8 +6,8 @@
 //!
 //! * [`dados`] devolve o que sera impresso: o conteudo ja formatado, o leiaute (topo de cada bloco, linhas
 //!   quebradas) e a pagina como uma lista de operacoes de desenho em cm. E' texto puro (JSON), sem I/O;
-//! * [`pdf`] compila o modelo Typst embutido sobre esse JSON, com a Liberation Sans e o logotipo da NFS-e tambem
-//!   embutidos, e devolve os bytes do PDF.
+//! * [`pdf`] escreve essa pagina direto em um PDF (A4, uma pagina, texto selecionavel), com a Liberation Sans
+//!   embutida no binario e em subconjunto, e devolve os bytes. A mesma entrada gera sempre os mesmos bytes.
 //!
 //! ```ignore
 //! let pdf = rustnf::danfse::pdf(&xml_nfse, &rustnf::danfse::Opcoes::default())?;
@@ -18,8 +18,8 @@
 //! com "..." antes do desenho. Onde o XSD da NFS-e e a NT divergem de outro gerador, vale o XSD/NT.
 //! Valores em inteiros de ponto fixo, arredondamento meio-para-cima; nada de ponto flutuante nas contas de dinheiro.
 
-mod compilar;
 mod conteudo;
+mod escritor;
 mod formato;
 mod leiaute;
 mod medidas;
@@ -53,7 +53,7 @@ pub enum ErroDanfse {
     SemChave,
     /// A chave nao coube no QR.
     Qr(String),
-    /// O Typst recusou o modelo ou a montagem do PDF falhou.
+    /// A montagem do PDF falhou (fonte, pagina ou operacao de desenho recusada).
     Pdf(String),
 }
 
@@ -148,7 +148,7 @@ pub fn dados(xml_nfse: &str, op: &Opcoes) -> Result<Value, ErroDanfse> {
 ///
 /// # Errors
 ///
-/// [`ErroDanfse`] como em [`dados`], ou [`ErroDanfse::Pdf`] se o Typst falhar.
+/// [`ErroDanfse`] como em [`dados`], ou [`ErroDanfse::Pdf`] se a escrita do PDF falhar.
 pub fn pdf(xml_nfse: &str, op: &Opcoes) -> Result<Vec<u8>, ErroDanfse> {
-    compilar::pdf(&dados(xml_nfse, op)?)
+    escritor::pdf(&dados(xml_nfse, op)?)
 }
