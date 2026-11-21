@@ -66,14 +66,18 @@ certo. Correção é bem-vinda por pedido de mudança, com a fonte oficial citad
 | `rustnf dps montar` | lê o JSON de um pedido e escreve o XML da DPS (não assinado) |
 | `rustnf dps conferir` | confere as regras do Anexo I e diz "ok" ou a recusa (campo e motivo) |
 | `rustnf calcular` | prévia da base de cálculo e do IBS/CBS (Reforma Tributária, LC 214/2025), como a calculadora da Receita Federal |
-| `rustnf danfse` | gera o DANFSe em PDF (NT 008) a partir do XML da NFS-e autorizada |
+| `rustnf danfse` | gera o DANFSe em PDF (NT 008) a partir do XML da NFS-e autorizada, ou de uma nota da pasta de notas (`--chave`) |
 | `rustnf emitir` | monta, assina com o certificado A1 e envia a DPS à Sefin Nacional (idempotente) |
 | `rustnf consultar` | consulta uma NFS-e pela chave de acesso |
 | `rustnf cancelar` | cancela uma NFS-e (evento 101101) |
 | `rustnf serve` | sobe a API HTTP e o servidor MCP |
 | `rustnf config mostrar` / `caminho` | a configuração efetiva e de onde veio; o arquivo em uso |
 | `rustnf senha guardar` / `apagar` | guarda a senha do certificado no cofre do sistema (Windows) |
-| `rustnf notas listar` | lista as notas autorizadas guardadas na pasta de notas |
+| `rustnf notas listar` | lista as notas guardadas na pasta de notas, com filtro por período, situação e texto; em texto, JSON ou CSV |
+| `rustnf notas exportar` | copia para uma pasta os XML das notas de um mês e a lista delas em CSV (o que vai para a contabilidade) |
+| `rustnf notas reindexar` | refaz o índice da pasta de notas a partir dos XML guardados |
+| `rustnf certificado mostrar` | mostra o titular, o documento, a validade e os avisos do certificado A1 |
+| `rustnf sefin testar` | testa a conexão com a Sefin Nacional e a aceitação do certificado |
 
 Nenhuma regra fiscal mora no binário: ele lê a entrada, chama a biblioteca (`crates/rustnf`) e escreve a saída. A
 biblioteca monta a DPS (leiaute 1.01 de produção e NT 009 de produção restrita), confere as regras antes do envio,
@@ -171,6 +175,17 @@ $ rustnf danfse nfse.xml -o danfse.pdf --situacao cancelada --sem-canhoto
 `--situacao` aceita `valida` (padrão), `cancelada` e `substituida` (marca d'água da NT 008). `-o -` escreve o PDF no
 stdout.
 
+Com a [pasta de notas](#pasta-de-notas) configurada, basta a chave de acesso (colada com ou sem espaços):
+
+```
+$ rustnf danfse --chave <chave>
+<pasta>/2026/10/<chave>.pdf
+$ rustnf danfse --chave <chave> -o danfse.pdf
+```
+
+O PDF sai do XML guardado, com a marca de cancelada quando a nota está cancelada na pasta. Sem `-o`, ele fica ao lado
+do XML e o caminho dele sai no stdout.
+
 ### Emitir, consultar e cancelar
 
 Precisam do certificado A1 (`.pfx`/`.p12`), do ambiente e da senha. **A senha nunca vem por argumento** (apareceria na
@@ -256,6 +271,33 @@ $ rustnf senha apagar --config rustnf.toml
 
 A senha continua **impossível** de passar por argumento.
 
+### Conferir o certificado e a conexão
+
+```
+$ rustnf certificado mostrar --config rustnf.toml
+Certificado OK: OFICINA TESTE (11.***.***/****-81), valido ate 20/11/2027.
+titular: OFICINA TESTE
+documento: 11222333000181
+emissor: AC EXEMPLO (ICP-Brasil)
+validade: de 2026-11-20 a 2027-11-20 (364 dias)
+
+$ rustnf sefin testar --config rustnf.toml
+Conexao com o SEFIN ok, certificado aceito.
+ambiente: restrita
+```
+
+* **`certificado mostrar`** abre o `.pfx` e não usa a rede. Os avisos (vence em 30 dias ou menos, não é da
+  ICP-Brasil, é de outro CNPJ que o do `[emitente]`) saem no stderr. O CPF do titular aparece mascarado. Sai com
+  código 3 quando o certificado não assina hoje (vencido ou ainda não válido), o que serve para um aviso agendado:
+  com `--json`, o campo `dias_restantes` diz quanto falta.
+* **`sefin testar`** faz **uma chamada real** à Sefin Nacional do ambiente configurado: a consulta de uma chave que
+  não existe. A resposta "não encontrada" prova que a conexão e o certificado foram aceitos; nada é emitido nem
+  alterado. Sai com código 3 se o certificado não assina hoje (nesse caso nada vai para a rede) e com 4 se a Sefin
+  não respondeu ou recusou o certificado.
+
+As duas aceitam `--pfx`, `--senha-env`, `--senha-stdin` e `--json`, com as mesmas regras de
+[Emitir, consultar e cancelar](#emitir-consultar-e-cancelar).
+
 ### Pasta de notas
 
 Com `[notas].pasta`, o `emitir` guarda cada nota autorizada, sem banco de dados:
@@ -264,6 +306,7 @@ Com `[notas].pasta`, o `emitir` guarda cada nota autorizada, sem banco de dados:
 <pasta>/<AAAA>/<MM>/<chave>.xml   o XML da NFS-e autorizada que a Sefin devolve
 <pasta>/indice.json               chave, numero, serie, data, valor, situacao, documento e nome do tomador
 <pasta>/estado.json               o ultimo numero de DPS usado em cada serie
+<pasta>/<AAAA>/<MM>/<chave>.pdf   o DANFSe, quando ja foi gerado para a nota (nao entra no indice)
 ```
 
 Sem `numero` no pedido, o `emitir` usa o próximo da série. O número só avança em nota autorizada ou recuperada
@@ -273,9 +316,28 @@ resposta traz `recuperada_difere` com o que difere (tomador, valor, código do s
 NÃO foi emitida; emita de novo, que o número já avançou. O `cancelar` marca a nota como cancelada no índice; se a Sefin
 recusar o pedido e a nota já tiver o cancelamento registrado (envio anterior sem resposta, ou feito em outro lugar), a
 resposta é `registrado` com `recuperada: true`, e as mensagens da recusa vêm em `alertas`.
-`rustnf notas listar [--json]` lista as notas. As gravações são atômicas (arquivo temporário e `rename`); o nome do
-arquivo vem só da chave de acesso conferida. A emissão e o cancelamento pela API HTTP e pelo MCP usam a mesma pasta,
-do mesmo jeito.
+As gravações são atômicas (arquivo temporário e `rename`); o nome do arquivo vem só da chave de acesso conferida. A
+emissão e o cancelamento pela API HTTP e pelo MCP usam a mesma pasta, do mesmo jeito.
+
+```
+$ rustnf notas listar                                       # todas, da mais recente para a mais antiga
+$ rustnf notas listar --de 2026-10-01 --ate 2026-10-31      # um periodo (os dois dias inclusive)
+$ rustnf notas listar --situacao cancelada --busca "padaria"
+$ rustnf notas listar --csv > notas.csv                     # para planilha
+$ rustnf notas exportar --mes 2026-10 --para contador/2026-10
+$ rustnf notas reindexar
+```
+
+* **`listar`** filtra por período (`--de`, `--ate`), por situação (`--situacao autorizada|cancelada`) e por texto
+  (`--busca`: nome do tomador sem acento, CPF/CNPJ dele, número da NFS-e ou da DPS, ou uma chave de acesso colada); os
+  filtros valem juntos. `--json` e `--csv` trocam a saída. O CSV usa `;` como separador, vírgula decimal no valor e uma
+  linha de títulos; texto que uma planilha leria como fórmula ganha um apóstrofo na frente.
+* **`exportar`** copia para a pasta de destino o XML de cada nota do mês (`<chave>.xml`) e a lista delas
+  (`notas.csv`). São cópias: nada sai da pasta de notas.
+* **`reindexar`** refaz o `indice.json` a partir dos XML guardados, para quando o índice se perde ou fica ilegível. O
+  índice que havia fica copiado como `indice.anterior.json`. O XML não diz se a nota foi cancelada: a marca de
+  cancelada é aproveitada do índice anterior quando ele ainda é legível; se não for, todas voltam como autorizadas e o
+  comando avisa. A numeração da DPS não muda.
 
 ## API HTTP
 

@@ -24,7 +24,7 @@ use std::path::PathBuf;
 use clap::{Args, Parser, Subcommand, ValueEnum};
 use rustnf::assinatura::xmldsig::Algoritmo;
 
-pub use comandos::{emitir_valor, executar, executar_com, VARIAVEL_COFRE};
+pub use comandos::{emitir_valor, executar, executar_com, testar_conexao, VARIAVEL_COFRE};
 pub use servir::{servir, servir_ate};
 
 /// Emissor de NFS-e nacional: monta a DPS, calcula a previa do IBS/CBS, gera o DANFSe, emite pela Sefin Nacional e
@@ -80,6 +80,60 @@ pub enum Comando {
         #[command(subcommand)]
         acao: AcaoNotas,
     },
+    /// O certificado A1: de quem e', ate quando vale e se assina hoje.
+    Certificado {
+        /// O que fazer.
+        #[command(subcommand)]
+        acao: AcaoCertificado,
+    },
+    /// A Sefin Nacional: teste da conexao com o certificado.
+    Sefin {
+        /// O que fazer.
+        #[command(subcommand)]
+        acao: AcaoSefin,
+    },
+}
+
+/// `rustnf certificado ...`.
+#[derive(Debug, Subcommand)]
+pub enum AcaoCertificado {
+    /// Abre o certificado e mostra titular, documento, emissor, validade e os avisos. Nao usa a rede. Saida 3 se o
+    /// certificado nao assina hoje (vencido ou ainda nao valido).
+    Mostrar(ArgCertificado),
+}
+
+/// `rustnf certificado mostrar`.
+#[derive(Debug, Args)]
+pub struct ArgCertificado {
+    /// Arquivo do certificado A1 (.pfx ou .p12). Sem a opcao vale RUSTNF_PFX ou `[sefin].pfx`.
+    #[arg(long, value_name = "ARQUIVO")]
+    pub pfx: Option<String>,
+    /// Senha do certificado. Sem as duas opcoes, vale a senha guardada no cofre do sistema.
+    #[command(flatten)]
+    pub senha: ArgSenha,
+    /// Saida em JSON.
+    #[arg(long)]
+    pub json: bool,
+}
+
+/// `rustnf sefin ...`.
+#[derive(Debug, Subcommand)]
+pub enum AcaoSefin {
+    /// Confere o certificado e faz uma chamada real a Sefin Nacional (a consulta de uma chave que nao existe): diz
+    /// se a conexao e o certificado foram aceitos. Nao emite nem altera nada. Saida 3 se o certificado nao assina
+    /// hoje, 4 se a Sefin nao respondeu ou recusou o certificado.
+    Testar(ArgTestar),
+}
+
+/// `rustnf sefin testar`.
+#[derive(Debug, Args)]
+pub struct ArgTestar {
+    /// Certificado, senha e ambiente.
+    #[command(flatten)]
+    pub sefin: ArgSefin,
+    /// Saida em JSON.
+    #[arg(long)]
+    pub json: bool,
 }
 
 /// `rustnf config ...`.
@@ -132,7 +186,45 @@ pub enum AcaoNotas {
         /// Saida em JSON.
         #[arg(long)]
         json: bool,
+        /// Saida em CSV para planilha: separador `;`, valor com virgula decimal e uma linha de titulos.
+        #[arg(long, conflicts_with = "json")]
+        csv: bool,
+        /// So' as notas emitidas a partir deste dia (inclusive).
+        #[arg(long, value_name = "AAAA-MM-DD")]
+        de: Option<String>,
+        /// So' as notas emitidas ate este dia (inclusive).
+        #[arg(long, value_name = "AAAA-MM-DD")]
+        ate: Option<String>,
+        /// So' as notas nesta situacao.
+        #[arg(long, value_enum)]
+        situacao: Option<SituacaoDaNota>,
+        /// So' as notas que casam com o texto: nome do tomador (sem acento), CPF/CNPJ dele, numero da NFS-e ou da
+        /// DPS, ou uma chave de acesso.
+        #[arg(long, value_name = "TEXTO")]
+        busca: Option<String>,
     },
+    /// Copia para uma pasta os XML das notas de um mes e a lista delas em CSV (`notas.csv`): o que se manda para a
+    /// contabilidade. Nada sai da pasta de notas.
+    Exportar {
+        /// O mes das notas.
+        #[arg(long, value_name = "AAAA-MM")]
+        mes: String,
+        /// A pasta de destino (criada se faltar).
+        #[arg(long, value_name = "PASTA")]
+        para: String,
+    },
+    /// Refaz o indice da pasta de notas a partir dos XML guardados (indice perdido ou ilegivel). O indice anterior
+    /// fica copiado ao lado; a numeracao da DPS nao muda.
+    Reindexar,
+}
+
+/// Situacao de uma nota na pasta de notas.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
+pub enum SituacaoDaNota {
+    /// Autorizada.
+    Autorizada,
+    /// Cancelada.
+    Cancelada,
 }
 
 /// `rustnf dps ...`.
@@ -174,14 +266,24 @@ pub enum SituacaoArg {
 /// `rustnf danfse`.
 #[derive(Debug, Args)]
 pub struct ArgDanfse {
-    /// XML da NFS-e autorizada; `-` le do stdin.
-    pub nfse: String,
-    /// PDF de saida; `-` escreve no stdout.
-    #[arg(short = 'o', long = "saida", value_name = "ARQUIVO.pdf")]
-    pub saida: String,
-    /// Situacao da nota (marca d'agua).
-    #[arg(long, value_enum, default_value = "valida")]
-    pub situacao: SituacaoArg,
+    /// XML da NFS-e autorizada; `-` le do stdin. Dispensado com `--chave`.
+    #[arg(required_unless_present = "chave", conflicts_with = "chave")]
+    pub nfse: Option<String>,
+    /// Chave de acesso de uma nota da pasta de notas: o DANFSe sai do XML guardado nela.
+    #[arg(long, value_name = "CHAVE")]
+    pub chave: Option<String>,
+    /// PDF de saida; `-` escreve no stdout. Com `--chave` e sem esta opcao, o PDF fica ao lado do XML, na pasta de
+    /// notas, e o caminho dele sai no stdout.
+    #[arg(
+        short = 'o',
+        long = "saida",
+        value_name = "ARQUIVO.pdf",
+        required_unless_present = "chave"
+    )]
+    pub saida: Option<String>,
+    /// Situacao da nota (marca d'agua). Sem a opcao: valida; com `--chave`, a situacao da nota na pasta.
+    #[arg(long, value_enum)]
+    pub situacao: Option<SituacaoArg>,
     /// Sem o canhoto de cientificacao no rodape (sem a opcao vale `[danfse].canhoto`).
     #[arg(long)]
     pub sem_canhoto: bool,

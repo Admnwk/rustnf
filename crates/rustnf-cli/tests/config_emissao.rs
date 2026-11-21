@@ -204,3 +204,49 @@ async fn senha_guardar_confere_a_senha_grava_no_cofre_e_o_emitir_a_usa() {
     assert_eq!(erro.codigo_saida(), 2);
     assert!(erro.to_string().contains("--senha-env"));
 }
+
+#[tokio::test]
+async fn testar_conexao_diz_se_a_sefin_aceitou_o_certificado() {
+    use rustnf::assinatura::cert_a1;
+    use rustnf::nfse::sefin::{ClienteNfse, FalhaRede};
+    use rustnf_cli::cli::testar_conexao;
+
+    let cliente = |falso: Falso| ClienteNfse::com_transporte(a1(), 2, None, falso).unwrap();
+    // a Sefin responde "nao achei" a chave de teste: resposta de negocio, a conexao e o certificado valem
+    let falso = Falso::default();
+    let v = testar_conexao(&cliente(falso.clone())).await.unwrap();
+    assert_eq!(v["ok"], true);
+    assert_eq!(v["ambiente"], "restrita");
+    assert!(
+        v["frase"].as_str().unwrap().contains("certificado aceito"),
+        "{v}"
+    );
+    let chamadas = falso.chamadas();
+    assert_eq!(chamadas.len(), 1);
+    assert!(
+        chamadas[0].0 == "GET" && chamadas[0].1.ends_with(&"0".repeat(50)),
+        "{chamadas:?}"
+    );
+
+    // sem rede e certificado recusado: saida 4
+    let sem_rede = Falso::novo(vec![(
+        "GET",
+        "/nfse/".into(),
+        Resp::F(FalhaRede::Rede("sem conexao".into())),
+    )]);
+    let erro = testar_conexao(&cliente(sem_rede)).await.unwrap_err();
+    assert_eq!(erro.codigo_saida(), 4, "{erro}");
+    let recusado = Falso::novo(vec![("GET", "/nfse/".into(), json_resp(403, json!({})))]);
+    let erro = testar_conexao(&cliente(recusado)).await.unwrap_err();
+    assert_eq!(erro.codigo_saida(), 4, "{erro}");
+    assert!(erro.to_string().contains("403"), "{erro}");
+
+    // certificado vencido: saida 3, e nada vai para a rede
+    let p = Pasta::nova();
+    let vencido = cert_a1::carregar(&std::fs::read(pfx_vencido(&p)).unwrap(), "teste").unwrap();
+    let falso = Falso::default();
+    let cliente = ClienteNfse::com_transporte(vencido, 1, None, falso.clone()).unwrap();
+    let erro = testar_conexao(&cliente).await.unwrap_err();
+    assert_eq!(erro.codigo_saida(), 3, "{erro}");
+    assert!(falso.chamadas().is_empty());
+}

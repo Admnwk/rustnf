@@ -8,11 +8,13 @@ use std::path::Path;
 
 use rustnf_app::cofre::{chave_do_certificado, Cofre};
 use rustnf_app::config::{caminho_do_arquivo, Efetiva};
-use rustnf_app::notas::Notas;
+use rustnf_app::notas::{Filtro, Notas, Situacao, INDICE_ANTERIOR, LISTA_CSV};
 use serde_json::json;
 
 use super::comandos::{escrever_json, escrever_stdout};
-use super::{certificado, resolver, AcaoConfig, AcaoNotas, AcaoSenha, ArgCofre, ArgGuardar};
+use super::{
+    certificado, resolver, AcaoConfig, AcaoNotas, AcaoSenha, ArgCofre, ArgGuardar, SituacaoDaNota,
+};
 use crate::erro::Erro;
 
 /// Acha o arquivo, aplica o ambiente e confere os valores.
@@ -114,18 +116,82 @@ fn guardar_senha(a: &ArgGuardar, e: &Efetiva, cofre: &dyn Cofre) -> Result<(), E
     Ok(())
 }
 
+/// A pasta de notas da configuracao; sem ela, erro de uso.
+pub(super) fn notas_exigida(e: &Efetiva) -> Result<Notas, Erro> {
+    notas_da(e)?.ok_or_else(|| {
+        Erro::Uso(
+            "sem pasta de notas: configure [notas].pasta no arquivo ou RUSTNF_NOTAS_PASTA".into(),
+        )
+    })
+}
+
 pub(super) fn notas(acao: AcaoNotas, explicito: Option<&Path>) -> Result<(), Erro> {
     let e = carregar(explicito)?;
-    let Some(notas) = notas_da(&e)? else {
-        return Err(Erro::Uso(
-            "sem pasta de notas: configure [notas].pasta no arquivo ou RUSTNF_NOTAS_PASTA".into(),
-        ));
-    };
+    let notas = notas_exigida(&e)?;
     match acao {
-        AcaoNotas::Listar { json } => {
-            let lista = notas.listar()?;
+        AcaoNotas::Exportar { mes, para } => {
+            let lista = Filtro::do_mes(&mes)?.aplicar(notas.listar()?);
+            if lista.is_empty() {
+                eprintln!("nenhuma nota nesse mes: nada foi copiado");
+                return Ok(());
+            }
+            let feito = notas.exportar(&lista, Path::new(&para))?;
+            for chave in &feito.sem_xml {
+                eprintln!("aviso: a nota {chave} esta na lista, mas o XML dela nao esta na pasta de notas");
+            }
+            escrever_stdout(
+                format!(
+                    "{} nota(s) na lista ({LISTA_CSV}), {} XML copiado(s)\n",
+                    lista.len(),
+                    feito.copiadas
+                )
+                .as_bytes(),
+            )
+        }
+        AcaoNotas::Reindexar => {
+            let feito = notas.reindexar()?;
+            if feito.indice_ilegivel {
+                eprintln!(
+                    "aviso: o indice que havia estava ilegivel (ficou guardado como {INDICE_ANTERIOR}). O XML nao diz se a nota foi cancelada: todas voltaram como autorizadas; confira as canceladas na Sefin"
+                );
+            }
+            if feito.ignorados > 0 {
+                eprintln!(
+                    "aviso: {} arquivo(s) .xml ficaram de fora (nao sao uma NFS-e legivel, ou estao fora da pasta do mes)",
+                    feito.ignorados
+                );
+            }
+            escrever_stdout(
+                format!(
+                    "indice refeito: {} nota(s), {} cancelada(s)\n",
+                    feito.notas, feito.canceladas
+                )
+                .as_bytes(),
+            )
+        }
+        AcaoNotas::Listar {
+            json,
+            csv,
+            de,
+            ate,
+            situacao,
+            busca,
+        } => {
+            let filtro = Filtro::novo(
+                de.as_deref(),
+                ate.as_deref(),
+                situacao.map(|s| match s {
+                    SituacaoDaNota::Autorizada => Situacao::Autorizada,
+                    SituacaoDaNota::Cancelada => Situacao::Cancelada,
+                }),
+                busca.as_deref().unwrap_or(""),
+            )?;
+            let lista = filtro.aplicar(notas.listar()?);
             if json {
                 return escrever_json(&serde_json::to_value(&lista)?);
+            }
+            if csv {
+                return escrever_stdout(rustnf_app::notas::csv(&lista).as_bytes());
             }
             if lista.is_empty() {
                 eprintln!("nenhuma nota na pasta");

@@ -9,6 +9,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
+use rustnf::assinatura::cert_a1::Certificado;
 use rustnf::assinatura::xmldsig::Algoritmo;
 use rustnf_app::certificado;
 
@@ -43,6 +44,11 @@ pub(super) const SEM_SENHA: &str = "informe a senha do certificado por --senha-e
 /// So' confere que a senha abre o certificado.
 pub(super) fn conferir(pfx: &str, senha: &Segredo) -> Result<(), Erro> {
     certificado::conferir(&arquivo(pfx)?, senha)
+}
+
+/// Abre o .pfx com a senha.
+pub(super) fn abrir(pfx: &str, senha: &Segredo) -> Result<Certificado, Erro> {
+    certificado::abrir(&arquivo(pfx)?, senha)
 }
 
 /// Abre o .pfx e monta o cliente da Sefin para o ambiente.

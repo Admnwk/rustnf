@@ -14,6 +14,20 @@
   `publicadas`, como o `rustnf calcular` já fazia.
 * MCP: ferramenta nova `consultar_nfse` (consulta pela chave de acesso), só com `--permitir-emissao` e o Bearer, como
   o `GET /nfse/{chave}` da API HTTP.
+* Linha de comando, o que a interface de desktop já fazia e faltava nela:
+  * `rustnf certificado mostrar`: titular, documento, emissor, validade, dias restantes e avisos do certificado A1,
+    sem usar a rede; código de saída 3 quando ele não assina hoje, para servir a um aviso agendado;
+  * `rustnf sefin testar`: uma chamada real à Sefin Nacional (a consulta de uma chave que não existe) que diz se a
+    conexão e o certificado foram aceitos;
+  * `rustnf danfse --chave <chave>`: o DANFSe de uma nota da pasta de notas, a partir do XML guardado, com a marca de
+    cancelada quando a nota está cancelada na pasta;
+  * `rustnf notas listar` com `--de`, `--ate`, `--situacao`, `--busca` e saída `--csv` para planilha;
+  * `rustnf notas exportar --mes AAAA-MM --para <pasta>`: copia os XML do mês e a lista em CSV, para a contabilidade;
+  * `rustnf notas reindexar`: refaz o índice da pasta de notas a partir dos XML guardados, guardando o índice anterior
+    ao lado.
+* Biblioteca: `Certificado::resumo` (e `resumo_de_agora`) devolve o que se mostra de um certificado aberto, com o CPF
+  mascarado. Camada de aplicação: `notas::Filtro`, `notas::csv`, `Notas::registro`, `Notas::exportar` e
+  `Notas::reindexar`.
 
 ## 0.2.0 - 2026-11-21
 
