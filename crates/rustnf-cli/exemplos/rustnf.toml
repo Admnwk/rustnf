@@ -1,0 +1,49 @@
+# Arquivo de configuracao do rustnf (so' dados ficticios).
+#
+# Onde ele mora: `--config <arquivo>`, a variavel de ambiente RUSTNF_CONFIG ou o local padrao
+# (no Windows %APPDATA%/rustnf/rustnf.toml; nos outros sistemas $XDG_CONFIG_HOME/rustnf/rustnf.toml ou
+# $HOME/.config/rustnf/rustnf.toml). `rustnf config caminho` mostra o que vale.
+#
+# Precedencia de cada parametro: opcao da linha de comando > variavel de ambiente RUSTNF_* > este arquivo > padrao.
+# Toda secao e todo campo sao opcionais; campo desconhecido e' recusado.
+#
+# NAO existe campo de senha nem de token: a senha do certificado fica no cofre do sistema
+# (`rustnf senha guardar`) ou vem de --senha-env / --senha-stdin.
+
+# Dados do prestador. Completam o pedido da DPS so' onde o pedido nao traz o campo (nunca sobrescrevem).
+[emitente]
+cnpj = "11222333000181"          # ou cpf = "..."; so' um dos dois
+nome = "OFICINA TESTE"
+inscricao_municipal = "123456"
+municipio = "3550308"            # codigo IBGE, 7 digitos
+op_simples = 3                   # 1 nao optante, 2 MEI, 3 ME/EPP
+regime_apuracao = 1              # regime de apuracao do Simples Nacional; 0 = nao informar
+regime_especial = 0              # regime especial de tributacao; 0 = nenhum
+serie = "1"                      # serie da DPS (ate 5 digitos)
+
+[sefin]
+ambiente = "restrita"            # producao | restrita
+pfx = "certificado.pfx"          # caminho do certificado A1; a senha NAO vem para ca
+tempo_limite_s = 60              # tempo limite de cada chamada a Sefin Nacional
+folga_relogio_s = 60             # segundos tirados do relogio no dhEmi que o pedido nao traz
+
+[notas]
+pasta = "notas"                  # vazio = nao guardar; guarda o XML, o indice e a numeracao da DPS
+
+[danfse]
+canhoto = true                   # canhoto de cientificacao no rodape
+
+[servidor]
+endereco = "127.0.0.1"
+porta = 8080
+limite_corpo = 1048576           # bytes
+tempo_limite_s = 60
+origens_permitidas = []          # por exemplo ["https://app.exemplo.com.br"]
+
+# Aliquotas publicadas por ano (percentual, texto decimal), usadas pela previa do IBS/CBS (`rustnf calcular`) quando o
+# pedido nao traz `publicadas`. 2027-2028: cbs_referencia (a biblioteca tira 0,1 ponto percentual) ou cbs;
+# 2029 em diante: cbs, ibs_uf e ibs_mun. Os numeros abaixo sao de exemplo.
+[[aliquotas]]
+ano = 2027
+cbs_referencia = "8.8"
+fonte = "exemplo: norma ficticia de aliquotas"

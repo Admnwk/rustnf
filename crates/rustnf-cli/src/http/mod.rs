@@ -13,7 +13,7 @@ use std::time::Duration;
 
 use axum::body::Body;
 use axum::extract::{Request, State};
-use axum::http::header::{CONTENT_TYPE, ORIGIN, WWW_AUTHENTICATE};
+use axum::http::header::{CONTENT_TYPE, ORIGIN};
 use axum::http::{HeaderValue, StatusCode};
 use axum::middleware::{self, Next};
 use axum::response::{IntoResponse, Response};
@@ -24,7 +24,6 @@ use serde_json::{json, Value};
 pub use auth::Token;
 
 use crate::emissao::Emissor;
-use crate::erro::Erro;
 
 /// Ajustes do servidor.
 #[derive(Debug, Clone)]
@@ -94,19 +93,6 @@ pub(crate) fn resposta_json(status: StatusCode, corpo: &Value) -> Response {
         corpo.to_string(),
     )
         .into_response()
-}
-
-impl IntoResponse for Erro {
-    fn into_response(self) -> Response {
-        let status =
-            StatusCode::from_u16(self.status_http()).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
-        let mut r = resposta_json(status, &self.envelope());
-        if self == Erro::NaoAutorizado {
-            r.headers_mut()
-                .insert(WWW_AUTHENTICATE, HeaderValue::from_static("Bearer"));
-        }
-        r
-    }
 }
 
 /// O roteador completo. Serve em memoria nos testes (`tower::ServiceExt::oneshot`) e, em producao, por

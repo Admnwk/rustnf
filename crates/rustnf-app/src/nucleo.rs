@@ -7,6 +7,7 @@
 
 use rustnf::danfse::{self, Opcoes, Situacao};
 use rustnf::nfse::{self, base, Dps};
+use rustnf::reforma::aliquotas::Publicadas;
 use rustnf::reforma::previa::{self, EntradaBase, EntradaTributos};
 use serde::Deserialize;
 use serde_json::{json, Map, Value};
@@ -100,6 +101,16 @@ fn completar_base(tributos: &mut Value, bases: Option<&previa::Bases>) -> Result
 ///
 /// [`Erro::Entrada`] se nao vier nem `base` nem `tributos`; [`Erro::Recusa`] se a biblioteca nao puder calcular.
 pub fn calcular(op: &Operacao) -> Result<Value, Erro> {
+    calcular_com(op, &Publicadas::new())
+}
+
+/// Como [`calcular`], com `padrao` como as aliquotas publicadas de `tributos` quando o pedido nao traz as suas
+/// (`publicadas`). O que o pedido traz vale sobre o `padrao`.
+///
+/// # Errors
+///
+/// Os mesmos de [`calcular`].
+pub fn calcular_com(op: &Operacao, padrao: &Publicadas) -> Result<Value, Erro> {
     if op.base.is_none() && op.tributos.is_none() {
         return Err(Erro::Entrada(
             "informe \"base\" e/ou \"tributos\" no JSON".into(),
@@ -115,7 +126,10 @@ pub fn calcular(op: &Operacao) -> Result<Value, Erro> {
     if let Some(t) = &op.tributos {
         let mut t = t.clone();
         completar_base(&mut t, bases.as_ref())?;
-        let entrada: EntradaTributos = serde_json::from_value(t)?;
+        let mut entrada: EntradaTributos = serde_json::from_value(t)?;
+        if entrada.publicadas.is_none() && !padrao.is_empty() {
+            entrada.publicadas = Some(padrao.clone());
+        }
         saida.insert(
             "tributos".into(),
             serde_json::to_value(previa::tributos(&entrada)?)?,

@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/rustnf", "crates/rustnf-cli"]
+members = ["crates/rustnf", "crates/rustnf-app", "crates/rustnf-cli"]
 
 [workspace.package]
 version = "0.1.0"

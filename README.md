@@ -19,6 +19,9 @@ Emissor aberto de NFS-e do padrao nacional (Sefin Nacional / ADN), escrito em Ru
 | `rustnf consultar` | consulta uma NFS-e pela chave de acesso |
 | `rustnf cancelar` | cancela uma NFS-e (evento 101101) |
 | `rustnf serve` | sobe a API HTTP e o servidor MCP |
+| `rustnf config mostrar` / `caminho` | a configuracao efetiva e de onde veio; o arquivo em uso |
+| `rustnf senha guardar` / `apagar` | guarda a senha do certificado no cofre do sistema (Windows) |
+| `rustnf notas listar` | lista as notas autorizadas guardadas na pasta de notas |
 
 Nenhuma regra fiscal mora no binario: ele le a entrada, chama a biblioteca (`crates/rustnf`) e escreve a saida. A
 biblioteca monta a DPS (leiaute 1.01 de producao e NT 009 de producao restrita), confere as regras antes do envio,
@@ -36,7 +39,9 @@ cd rustnf
 cargo build --release -p rustnf-cli
 ```
 
-O executavel fica em `target/release/rustnf` (`rustnf.exe` no Windows). Nao e' preciso nenhum programa externo: o
+O executavel fica em `target/release/rustnf` (`rustnf.exe` no Windows). A biblioteca e a camada de aplicacao
+(`crates/rustnf-app`: operacoes, configuracao, cofre e pasta de notas, sem tela nem servidor) sao compartilhadas pelo
+binario e por qualquer interface que use o mesmo arquivo de configuracao. Nao e' preciso nenhum programa externo: o
 Typst, as fontes e o logotipo do DANFSe vao dentro do binario. A primeira compilacao e' demorada por causa do Typst.
 
 ## Linha de comando
@@ -116,13 +121,81 @@ $ rustnf cancelar --chave <chave> --motivo 1 --justificativa "Valor digitado err
     --pfx certificado.pfx --senha-env SENHA_A1 --ambiente restrita
 ```
 
-* `--ambiente producao|restrita` e' obrigatorio e prevalece sobre o `ambiente` do pedido.
+* `--ambiente producao|restrita` prevalece sobre o `ambiente` do pedido. Sem arquivo de configuracao ele e' obrigatorio;
+  com arquivo (ou `RUSTNF_AMBIENTE`), vale o `[sefin].ambiente`. `--pfx` segue a mesma regra.
+* Sem `--senha-env` nem `--senha-stdin`, a senha vem do cofre do sistema, se houver uma guardada (veja
+  [Configuracao](#configuracao)).
 * Sem `emissao` (`dhEmi`) no pedido, vale "agora menos 60 s" (`--folga-relogio`), para o relogio local adiantado nao
   cair na regra E0008.
 * A emissao e' idempotente: resposta perdida, erro 5xx ou E0014 fazem a biblioteca consultar a DPS antes de reenviar o
   MESMO XML. Nunca renumere a DPS (`numero`) para "tentar de novo".
 * Motivos de cancelamento: `1` erro na emissao, `2` servico nao prestado, `9` outros; a justificativa e' obrigatoria.
 * `--json` imprime o resultado completo (inclui a NFS-e lida e os alertas); sem ele, um resumo.
+
+## Configuracao
+
+Um arquivo TOML unico, lido pela linha de comando e por qualquer outra interface. Exemplo comentado, so' com dados
+ficticios: [`crates/rustnf-cli/exemplos/rustnf.toml`](crates/rustnf-cli/exemplos/rustnf.toml).
+
+**Onde ele mora.** `--config <arquivo>` (arquivo inexistente e' erro); sem a opcao, a variavel de ambiente
+`RUSTNF_CONFIG` (inexistente tambem e' erro); sem ela, o local padrao: no Windows `%APPDATA%\rustnf\rustnf.toml`, nos
+outros sistemas `$XDG_CONFIG_HOME/rustnf/rustnf.toml` ou `$HOME/.config/rustnf/rustnf.toml`. Se nem o local padrao
+existir, valem os padroes e nada muda em relacao a usar so' opcoes. `rustnf config caminho` mostra o que vale e
+`rustnf config mostrar [--json]` mostra a configuracao efetiva e de onde veio.
+
+**Precedencia**, em todo parametro: opcao da chamada > variavel de ambiente `RUSTNF_*` > arquivo > padrao. As
+variaveis: `RUSTNF_AMBIENTE`, `RUSTNF_PFX`, `RUSTNF_TEMPO_LIMITE_SEFIN`, `RUSTNF_FOLGA_RELOGIO`, `RUSTNF_SERIE`,
+`RUSTNF_NOTAS_PASTA`, `RUSTNF_CANHOTO`, `RUSTNF_ENDERECO`, `RUSTNF_PORTA`, `RUSTNF_LIMITE_CORPO`,
+`RUSTNF_TEMPO_LIMITE` e `RUSTNF_ORIGENS_PERMITIDAS` (separadas por virgula). Campo desconhecido no arquivo e' recusado,
+e os valores sao conferidos (ambiente, codigo do municipio, CNPJ/CPF, numeros, anos de aliquota repetidos...) com a
+secao e o campo no erro.
+
+| secao | campos |
+|---|---|
+| `[emitente]` | `cnpj` ou `cpf`, `nome`, `inscricao_municipal`, `municipio` (IBGE, 7 digitos), `op_simples` (1, 2 ou 3), `regime_apuracao` (0 = nao informar), `regime_especial`, `serie` |
+| `[sefin]` | `ambiente` (`producao` ou `restrita`), `pfx`, `tempo_limite_s`, `folga_relogio_s` |
+| `[notas]` | `pasta` (vazio = nao guardar) |
+| `[danfse]` | `canhoto` |
+| `[servidor]` | `endereco`, `porta`, `limite_corpo`, `tempo_limite_s`, `origens_permitidas` |
+| `[[aliquotas]]` | `ano`, `cbs_referencia`, `cbs`, `ibs_uf`, `ibs_mun`, `fonte` (uma tabela por ano) |
+
+* **`[emitente]`** completa o pedido da DPS no `emitir`, so' nos campos que o pedido nao traz (nunca sobrescreve):
+  `prestador.documento`, `nome`, `im`, `op_simples`, `apuracao_sn`, `regime_especial`, `cmun_emissor` e `serie`.
+* **`[[aliquotas]]`** valem no `calcular` quando o JSON nao traz `publicadas`: sem elas, a previa de 2027 em diante usa
+  o que a biblioteca assume; com elas, usa o numero publicado.
+* **`[servidor]`** e' o que `rustnf serve` usa quando a opcao nao e' dada.
+* **Sem segredo no arquivo.** Nao existe campo de senha nem de token; `senha` ou `token` no arquivo e' recusado como
+  campo desconhecido.
+
+### Cofre da senha do certificado
+
+A senha do certificado vem de `--senha-env`, de `--senha-stdin` ou, na falta das duas, do **cofre do sistema**. No
+Windows e' o Gerenciador de Credenciais (servico `rustnf`; o item e' identificado pelo CNPJ do `[emitente]` ou, sem
+ele, pelo nome do arquivo `.pfx`). Nos outros sistemas o cofre nao e' usado: continue com variavel de ambiente ou stdin.
+`RUSTNF_COFRE=desligado` desliga o cofre.
+
+```
+$ rustnf senha guardar --config rustnf.toml --senha-env SENHA_A1     # confere que a senha abre o .pfx e grava
+$ rustnf emitir pedido.json --config rustnf.toml                    # sem --senha-env: usa o cofre
+$ rustnf senha apagar --config rustnf.toml
+```
+
+A senha continua **impossivel** de passar por argumento.
+
+### Pasta de notas
+
+Com `[notas].pasta`, o `emitir` guarda cada nota autorizada, sem banco de dados:
+
+```
+<pasta>/<AAAA>/<MM>/<chave>.xml   o XML da NFS-e autorizada que a Sefin devolve
+<pasta>/indice.json               chave, numero, serie, data, valor, situacao, documento e nome do tomador
+<pasta>/estado.json               o ultimo numero de DPS usado em cada serie
+```
+
+Sem `numero` no pedido, o `emitir` usa o proximo da serie. O numero so' avanca em nota autorizada ou recuperada
+(rejeitada ou pendente nao gasta numero) e nunca volta atras. O `cancelar` marca a nota como cancelada no indice.
+`rustnf notas listar [--json]` lista as notas. As gravacoes sao atomicas (arquivo temporario e `rename`); o nome do
+arquivo vem so' da chave de acesso conferida.
 
 ## API HTTP
 

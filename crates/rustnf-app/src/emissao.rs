@@ -113,14 +113,24 @@ pub fn resultado_json(r: &Resultado) -> Result<Value, Erro> {
 /// # Errors
 ///
 /// Como [`resultado_json`], mais a recusa da propria montagem.
-pub async fn emitir(
+pub async fn emitir(emissor: &dyn Emissor, dps: Dps, folga_segundos: u32) -> Result<Value, Erro> {
+    resultado_json(&enviar(emissor, dps, folga_segundos).await?)
+}
+
+/// Como [`emitir`], devolvendo o resultado inteiro do cliente (com o XML da nota autorizada em `xml_retorno`), para
+/// quem precisa guardar a nota.
+///
+/// # Errors
+///
+/// So' a recusa da propria montagem; o que a Sefin responde vem em [`Resultado::status`].
+pub async fn enviar(
     emissor: &dyn Emissor,
     mut dps: Dps,
     folga_segundos: u32,
-) -> Result<Value, Erro> {
+) -> Result<Resultado, Erro> {
     nucleo::preparar_emissao(&mut dps, emissor.ambiente(), folga_segundos);
     nucleo::conferir_dps(&dps)?;
-    resultado_json(&emissor.emitir(&dps).await)
+    Ok(emissor.emitir(&dps).await)
 }
 
 /// Consulta a NFS-e pela chave de acesso.

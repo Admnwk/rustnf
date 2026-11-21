@@ -22,7 +22,17 @@ Vale o que esta no codigo da versao mais recente do ramo principal; nao ha verso
 Como o codigo os trata:
 
 * a senha do certificado nunca vem por argumento de linha de comando (apareceria na lista de processos e no historico
-  do shell): so' por variavel de ambiente (`--senha-env`) ou pelo stdin (`--senha-stdin`);
+  do shell): so' por variavel de ambiente (`--senha-env`), pelo stdin (`--senha-stdin`) ou pelo **cofre do sistema**;
+* no Windows a senha pode ficar no Gerenciador de Credenciais (`rustnf senha guardar`, servico `rustnf`): o sistema a
+  protege por usuario e ela nunca e' gravada em arquivo do projeto. Antes de guardar, o programa confere que a senha abre
+  o certificado. `rustnf senha apagar` a remove; `RUSTNF_COFRE=desligado` desliga o cofre. Nos outros sistemas o cofre
+  nao e' usado. Quem tem acesso a sessao do usuario no Windows tem acesso ao item: o cofre protege a senha em repouso,
+  nao de um processo rodando como o proprio usuario;
+* o **arquivo de configuracao** (`rustnf.toml`) nao tem campo de senha nem de token: `senha` ou `token` nele e' recusado
+  como campo desconhecido, e a mensagem de erro nao repete o valor lido. `rustnf config mostrar` nunca mostra segredo;
+* a **pasta de notas** guarda so' o XML das notas autorizadas e o indice (sem certificado, senha nem token); o nome de
+  cada arquivo e' montado so' com a chave de acesso conferida (50 posicoes, `0-9A-Z`), entao nada vindo de fora vira
+  pedaco de caminho (`..` ou separador); toda gravacao e' atomica;
 * senha e token ficam em um tipo com `Debug` redigido e sao zerados da memoria quando soltos;
 * o token e' comparado em tempo constante e precisa ter ao menos 32 caracteres; sem ele, `--permitir-emissao` recusa
   subir;

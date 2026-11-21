@@ -38,6 +38,9 @@ fn gravar(nome: &str, conteudo: &[u8]) -> String {
 
 fn rodar(args: &[&str], stdin: Option<&str>, env: &[(&str, &str)]) -> Saida {
     let mut cmd = Command::new(env!("CARGO_BIN_EXE_rustnf"));
+    let vazia = pasta().join("vazia");
+    std::fs::create_dir_all(&vazia).unwrap();
+    isolar(&mut cmd, &vazia);
     cmd.args(args)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -487,7 +490,9 @@ fn http_get(endereco: &str, rota: &str) -> (u16, String) {
 
 #[test]
 fn serve_sobe_em_porta_livre_e_responde_health() {
-    let filho = Command::new(env!("CARGO_BIN_EXE_rustnf"))
+    let mut cmd = Command::new(env!("CARGO_BIN_EXE_rustnf"));
+    isolar(&mut cmd, &pasta().join("vazia"));
+    let filho = cmd
         .args(["serve", "--porta", "0"])
         .stdin(Stdio::null())
         .stdout(Stdio::null())

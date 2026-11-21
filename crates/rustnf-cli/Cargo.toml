@@ -21,7 +21,7 @@ path = "src/main.rs"
 
 [dependencies]
 rustnf = { path = "../rustnf", features = ["sefin", "danfse"] }
-async-trait = "0.1"
+rustnf-app = { path = "../rustnf-app" }
 axum = { version = "0.8", default-features = false, features = ["http1", "tokio", "matched-path"] }
 base64 = "0.22"
 clap = { version = "4", features = ["derive"] }
@@ -32,6 +32,7 @@ tokio = { version = "1", features = ["rt-multi-thread", "macros", "signal", "net
 zeroize = "1"
 
 [dev-dependencies]
+async-trait = "0.1"
 rustnf = { path = "../rustnf", features = ["sefin", "danfse", "cert_a1_teste"] }
 tower = { version = "0.5", features = ["util"] }
 chrono = { version = "0.4", default-features = false, features = ["clock"] }

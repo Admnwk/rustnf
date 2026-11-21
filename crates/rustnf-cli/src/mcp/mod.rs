@@ -31,7 +31,7 @@ use axum::response::{IntoResponse, Response};
 use base64::Engine;
 use serde_json::{json, Map, Value};
 
-use crate::erro::Erro;
+use crate::erro::{Erro, ErroHttp};
 use crate::http::auth::bearer;
 use crate::http::{resposta_json, Estado};
 
@@ -418,13 +418,13 @@ pub async fn tratar(estado: &Estado, cabecalhos: &HeaderMap, corpo: &[u8]) -> Re
         if cabecalhos.contains_key(AUTHORIZATION) {
             match bearer(cabecalhos) {
                 Some(t) if em.token.confere(t) => autenticado = true,
-                _ => return Erro::NaoAutorizado.into_response(),
+                _ => return ErroHttp(Erro::NaoAutorizado).into_response(),
             }
         }
     }
     match processar(estado, cabecalhos, corpo, autenticado).await {
         Saida::Aceito => StatusCode::ACCEPTED.into_response(),
         Saida::Rpc(status, corpo) => resposta_json(status, &corpo),
-        Saida::Http(e) => e.into_response(),
+        Saida::Http(e) => ErroHttp(e).into_response(),
     }
 }

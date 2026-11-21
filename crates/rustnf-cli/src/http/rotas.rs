@@ -18,10 +18,10 @@ use serde_json::json;
 use super::auth::bearer;
 use super::{resposta_json, Emissao, Estado};
 use crate::emissao;
-use crate::erro::Erro;
+use crate::erro::{Erro, ErroHttp};
 use crate::nucleo::{self, SituacaoNota};
 
-type Resposta = Result<Response, Erro>;
+type Resposta = Result<Response, ErroHttp>;
 
 /// Le o corpo ate o teto; passou dele, 413 sem ler o resto quando o `Content-Length` ja avisa.
 async fn ler_corpo(cabecalhos: &HeaderMap, corpo: Body, limite: usize) -> Result<Vec<u8>, Erro> {
@@ -53,8 +53,8 @@ fn exigir_token<'a>(estado: &'a Estado, cabecalhos: &HeaderMap) -> Result<&'a Em
     }
 }
 
-pub(super) async fn nao_encontrado() -> Erro {
-    Erro::NaoEncontrada("rota inexistente".into())
+pub(super) async fn nao_encontrado() -> ErroHttp {
+    ErroHttp(Erro::NaoEncontrada("rota inexistente".into()))
 }
 
 pub(super) async fn health(State(estado): State<Arc<Estado>>) -> Response {
@@ -122,7 +122,7 @@ pub(super) async fn danfse(
     let canhoto = match parametro(&uri, "canhoto") {
         None | Some("true") => true,
         Some("false") => false,
-        Some(_) => return Err(Erro::Entrada("canhoto: use true ou false".into())),
+        Some(_) => return Err(Erro::Entrada("canhoto: use true ou false".into()).into()),
     };
     let bytes = ler_corpo(&cabecalhos, corpo, estado.config.limite_corpo).await?;
     let xml = String::from_utf8(bytes)

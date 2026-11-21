@@ -5,21 +5,35 @@
 //! `rustnf serve`: monta o estado, escuta e para limpo no Ctrl+C.
 
 use std::future::Future;
+use std::net::IpAddr;
+use std::path::Path;
 use std::time::Duration;
 
+use rustnf_app::cofre::Cofre;
+use rustnf_app::config::Efetiva;
 use tokio::net::TcpListener;
 
-use super::{certificado, ArgServe};
+use super::{configuracao, resolver, ArgServe};
 use crate::erro::Erro;
 use crate::http::{roteador, Config, Estado, Token};
 
-fn estado(args: &ArgServe) -> Result<Estado, Erro> {
-    let config = Config {
-        limite_corpo: args.limite_corpo,
-        tempo_limite: Duration::from_secs(args.tempo_limite),
-        origens_permitidas: args.origem_permitida.clone(),
-        folga_relogio: args.folga_relogio,
-    };
+/// Ajustes do servidor: opcao > variavel > arquivo > padrao.
+fn ajustes(args: &ArgServe, e: &Efetiva) -> Config {
+    let s = &e.config.servidor;
+    Config {
+        limite_corpo: args.limite_corpo.unwrap_or(s.limite_corpo),
+        tempo_limite: Duration::from_secs(args.tempo_limite.unwrap_or(s.tempo_limite_s)),
+        origens_permitidas: if args.origem_permitida.is_empty() {
+            s.origens_permitidas.clone()
+        } else {
+            args.origem_permitida.clone()
+        },
+        folga_relogio: args.folga_relogio.unwrap_or(e.config.sefin.folga_relogio_s),
+    }
+}
+
+fn estado(args: &ArgServe, e: &Efetiva, cofre: &dyn Cofre) -> Result<Estado, Erro> {
+    let config = ajustes(args, e);
     if !args.permitir_emissao {
         if args.pfx.is_some() || args.token_env.is_some() {
             return Err(Erro::Uso(
@@ -28,12 +42,14 @@ fn estado(args: &ArgServe) -> Result<Estado, Erro> {
         }
         return Ok(Estado::somente_leitura(config));
     }
-    let (Some(pfx), Some(ambiente), Some(variavel)) = (&args.pfx, args.ambiente, &args.token_env)
-    else {
+    let Some(variavel) = &args.token_env else {
         return Err(Erro::Uso(
-            "--permitir-emissao exige --pfx, --ambiente e --token-env".into(),
+            "--permitir-emissao exige --token-env (e certificado e ambiente: --pfx e --ambiente, ou o arquivo de configuracao)"
+                .into(),
         ));
     };
+    let pfx = resolver::pfx(e, args.pfx.as_deref())?;
+    let ambiente = resolver::ambiente(e, args.ambiente)?;
     // sem token valido o servidor nao sobe: a emissao nunca fica aberta
     let token = match std::env::var(variavel) {
         Ok(t) if !t.is_empty() => Token::novo(t)?,
@@ -43,9 +59,22 @@ fn estado(args: &ArgServe) -> Result<Estado, Erro> {
             )))
         }
     };
-    let senha = certificado::senha(&args.senha, false)?;
-    let emissor = certificado::emissor(pfx, &senha, ambiente)?;
+    let senha = resolver::senha(e, cofre, &args.senha, &pfx, false)?;
+    let emissor = super::certificado::emissor(&pfx, &senha, ambiente, resolver::tempo_sefin(e))?;
     Ok(Estado::com_emissao(config, emissor, token))
+}
+
+/// Endereco e porta de escuta: opcao > variavel > arquivo > padrao.
+fn escuta(args: &ArgServe, e: &Efetiva) -> Result<(IpAddr, u16), Erro> {
+    let s = &e.config.servidor;
+    let endereco = match args.endereco {
+        Some(a) => a,
+        None => s
+            .endereco
+            .parse()
+            .map_err(|_| Erro::Uso("[servidor].endereco invalido".into()))?,
+    };
+    Ok((endereco, args.porta.unwrap_or(s.porta)))
 }
 
 /// Escuta ate `parada` terminar.
@@ -53,8 +82,9 @@ fn estado(args: &ArgServe) -> Result<Estado, Erro> {
 /// # Errors
 ///
 /// [`Erro::Uso`] se as opcoes forem invalidas, [`Erro::Entrada`] se nao der para escutar ou abrir o certificado.
-pub async fn servir(args: ArgServe) -> Result<(), Erro> {
-    servir_ate(args, async {
+pub async fn servir(args: ArgServe, config: Option<&Path>, cofre: &dyn Cofre) -> Result<(), Erro> {
+    let efetiva = configuracao::carregar(config)?;
+    servir_ate(args, &efetiva, cofre, async {
         let _ = tokio::signal::ctrl_c().await;
     })
     .await
@@ -67,17 +97,18 @@ pub async fn servir(args: ArgServe) -> Result<(), Erro> {
 /// Os mesmos de [`servir`].
 pub async fn servir_ate(
     args: ArgServe,
+    efetiva: &Efetiva,
+    cofre: &dyn Cofre,
     parada: impl Future<Output = ()> + Send + 'static,
 ) -> Result<(), Erro> {
-    let estado = estado(&args)?;
+    let estado = estado(&args, efetiva, cofre)?;
     let com_emissao = estado.emissao.is_some();
-    let listener = TcpListener::bind((args.endereco, args.porta))
-        .await
-        .map_err(|_| {
-            Erro::Entrada("nao foi possivel escutar no endereco e porta pedidos".into())
-        })?;
+    let (endereco, porta) = escuta(&args, efetiva)?;
+    let listener = TcpListener::bind((endereco, porta)).await.map_err(|_| {
+        Erro::Entrada("nao foi possivel escutar no endereco e porta pedidos".into())
+    })?;
     let local = listener.local_addr().map_err(|_| Erro::Interno)?;
-    if !args.endereco.is_loopback() {
+    if !endereco.is_loopback() {
         eprintln!("aviso: fora do proprio computador o trafego nao e' cifrado; ponha um proxy com TLS na frente");
     }
     eprintln!(
@@ -94,4 +125,111 @@ pub async fn servir_ate(
         .map_err(|_| Erro::Interno)?;
     eprintln!("rustnf: servidor parado");
     Ok(())
+}
+
+#[cfg(test)]
+mod testes {
+    use std::collections::HashMap;
+    use std::ffi::OsString;
+
+    use clap::Parser;
+    use rustnf_app::config::Config;
+
+    use super::*;
+    use crate::cli::{Cli, Comando};
+
+    fn args(linha: &[&str]) -> ArgServe {
+        let mut todos = vec!["rustnf", "serve"];
+        todos.extend(linha);
+        match Cli::try_parse_from(todos).unwrap().comando {
+            Comando::Serve(a) => a,
+            outro => panic!("esperava serve: {outro:?}"),
+        }
+    }
+
+    fn efetiva(arquivo: &str, env: &[(&str, &str)]) -> Efetiva {
+        let mapa: HashMap<String, String> = env
+            .iter()
+            .map(|(k, v)| ((*k).to_string(), (*v).to_string()))
+            .collect();
+        Efetiva::de(Config::de_texto(arquivo).unwrap(), None, &move |n| {
+            mapa.get(n).map(OsString::from)
+        })
+        .unwrap()
+    }
+
+    #[test]
+    fn porta_opcao_vence_ambiente_vence_arquivo_vence_padrao() {
+        let arq = "[servidor]\nporta = 3000\n";
+        let env = [("RUSTNF_PORTA", "2000")];
+        assert_eq!(
+            escuta(&args(&["--porta", "1000"]), &efetiva(arq, &env))
+                .unwrap()
+                .1,
+            1000
+        );
+        assert_eq!(escuta(&args(&[]), &efetiva(arq, &env)).unwrap().1, 2000);
+        assert_eq!(escuta(&args(&[]), &efetiva(arq, &[])).unwrap().1, 3000);
+        assert_eq!(escuta(&args(&[]), &efetiva("", &[])).unwrap().1, 8080);
+    }
+
+    #[test]
+    fn endereco_segue_a_mesma_ordem() {
+        let arq = "[servidor]\nendereco = \"10.0.0.2\"\n";
+        let env = [("RUSTNF_ENDERECO", "10.0.0.3")];
+        let e = |a: &ArgServe, f: &Efetiva| escuta(a, f).unwrap().0.to_string();
+        assert_eq!(
+            e(&args(&["--endereco", "10.0.0.1"]), &efetiva(arq, &env)),
+            "10.0.0.1"
+        );
+        assert_eq!(e(&args(&[]), &efetiva(arq, &env)), "10.0.0.3");
+        assert_eq!(e(&args(&[]), &efetiva(arq, &[])), "10.0.0.2");
+        assert_eq!(e(&args(&[]), &efetiva("", &[])), "127.0.0.1");
+    }
+
+    #[test]
+    fn folga_limite_tempo_e_origens_seguem_a_ordem() {
+        let arq =
+            "[sefin]\nfolga_relogio_s = 30\n[servidor]\nlimite_corpo = 5000\ntempo_limite_s = 7\n\
+                   origens_permitidas = [\"https://arquivo.exemplo.com.br\"]\n";
+        let env = [
+            ("RUSTNF_FOLGA_RELOGIO", "20"),
+            (
+                "RUSTNF_ORIGENS_PERMITIDAS",
+                "https://ambiente.exemplo.com.br",
+            ),
+        ];
+        let c = ajustes(
+            &args(&["--folga-relogio", "10", "--limite-corpo", "9"]),
+            &efetiva(arq, &env),
+        );
+        assert_eq!(c.folga_relogio, 10, "opcao");
+        assert_eq!(c.limite_corpo, 9, "opcao");
+        assert_eq!(c.tempo_limite, Duration::from_secs(7), "arquivo");
+        assert_eq!(
+            c.origens_permitidas,
+            ["https://ambiente.exemplo.com.br"],
+            "ambiente"
+        );
+
+        let c = ajustes(
+            &args(&["--origem-permitida", "https://opcao.exemplo.com.br"]),
+            &efetiva(arq, &env),
+        );
+        assert_eq!(c.folga_relogio, 20, "ambiente");
+        assert_eq!(
+            c.origens_permitidas,
+            ["https://opcao.exemplo.com.br"],
+            "opcao"
+        );
+
+        let c = ajustes(&args(&[]), &efetiva(arq, &[]));
+        assert_eq!(c.folga_relogio, 30, "arquivo");
+        assert_eq!(c.origens_permitidas, ["https://arquivo.exemplo.com.br"]);
+
+        let c = ajustes(&args(&[]), &efetiva("", &[]));
+        assert_eq!((c.folga_relogio, c.limite_corpo), (60, 1024 * 1024));
+        assert_eq!(c.tempo_limite, Duration::from_secs(60));
+        assert!(c.origens_permitidas.is_empty());
+    }
 }

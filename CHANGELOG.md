@@ -1,5 +1,28 @@
 # Changelog
 
+## Proxima versao
+
+* Novo crate `rustnf-app` (`crates/rustnf-app`): a camada de aplicacao, sem tela, sem servidor e sem `clap`, que a linha
+  de comando e qualquer interface de desktop compartilham. Recebeu `nucleo`, `emissao`, `segredo` e o erro (sem o status
+  HTTP, que ficou no binario); ganhou:
+  * `config`: arquivo de configuracao TOML unico (`[emitente]`, `[sefin]`, `[notas]`, `[danfse]`, `[servidor]`,
+    `[[aliquotas]]`), com padrao em tudo, campo desconhecido recusado, conferencia dos valores (erro com secao e
+    campo), gravacao atomica e a completude do pedido da DPS com o `[emitente]`. Nao ha campo de senha nem de token;
+  * `cofre`: trait `Cofre`, o cofre do sistema (Gerenciador de Credenciais, no Windows) e um cofre em memoria para
+    teste;
+  * `notas`: pasta de notas sem banco (`<AAAA>/<MM>/<chave>.xml`, `indice.json`, `estado.json`) com numeracao da DPS
+    que so' avanca em nota autorizada ou recuperada;
+  * `pedido`: o fluxo de emitir e cancelar com a configuracao e a pasta de notas.
+* Binario `rustnf`: opcao global `--config`; precedencia opcao > variavel de ambiente `RUSTNF_*` > arquivo > padrao em
+  todo parametro; `--ambiente`, `--pfx` e os ajustes de `serve` passam a poder vir do arquivo; a senha do certificado,
+  na falta de `--senha-env` e `--senha-stdin`, vem do cofre do sistema (continua impossivel passa-la por argumento);
+  `emitir` completa o pedido com o `[emitente]`, usa o proximo numero da pasta de notas e guarda a nota autorizada;
+  `cancelar` marca a nota como cancelada; `calcular` usa as `[[aliquotas]]` quando o JSON nao traz `publicadas`.
+  Comandos novos: `config mostrar`, `config caminho`, `senha guardar`, `senha apagar` e `notas listar`. Sem arquivo
+  de configuracao e sem as opcoes novas, o comportamento e' o de antes.
+* Dependencias novas: `toml`, e, so' no Windows, `keyring-core` e `windows-native-keyring-store` (todas MIT OR
+  Apache-2.0).
+
 ## 0.1.0
 
 Primeira versao publica.
