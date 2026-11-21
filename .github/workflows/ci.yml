@@ -6,6 +6,10 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  # Sem informacao de depuracao: cada binario de teste liga o Typst inteiro, e com ela o disco do executor enche
+  # no meio da ligacao.
+  CARGO_PROFILE_DEV_DEBUG: 0
+  CARGO_PROFILE_TEST_DEBUG: 0
 
 jobs:
   verificar:
