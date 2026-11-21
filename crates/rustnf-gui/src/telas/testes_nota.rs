@@ -281,6 +281,85 @@ pub(super) fn pendencias(cx: &mut TestAppContext, c: &Cenario) -> Vec<CampoNota>
     })
 }
 
+/// Guarda na pasta de notas do ensaio a NFS-e de exemplo (tomador com endereco), com chave de digito certo e o tomador
+/// trocado por um CNPJ que confere (o do exemplo e' ficticio e nao passa no digito verificador).
+fn guardar_nota_com_endereco(c: &Cenario) {
+    let original = include_str!("../../../rustnf-cli/exemplos/nfse.xml");
+    let lida = rustnf::nfse::leitura::ler_nfse(original).unwrap();
+    let chave = rustnf::chave_dfe::montar_nfse(3_550_308, CNPJ, 7, "2610", Some(1), 2).unwrap();
+    let xml = original
+        .replace(&lida.chave, &chave)
+        .replace("<CNPJ>33444555000172</CNPJ>", "<CNPJ>11222333000181</CNPJ>");
+    let n = rustnf::nfse::leitura::ler_nfse(&xml).unwrap();
+    assert_eq!(n.tomador_documento, "11222333000181");
+    assert_eq!(n.tomador_cep, "05422030");
+    Notas::abrir(&c.notas)
+        .unwrap()
+        .guardar(&rustnf_app::notas::Registro::da_nfse(&n), &xml)
+        .unwrap();
+}
+
+#[gpui_kit::test]
+fn tomador_ja_usado_completa_os_campos_vazios(cx: &mut TestAppContext) {
+    let c = cenario(cx, "restrita", &[Desfecho::Autorizada], true, 1120.);
+    guardar_nota_com_endereco(&c);
+    // o nome digitado antes do documento fica; o resto vem da nota anterior
+    digitar(cx, &c, "nota-tomador-nome", "Nome digitado");
+    digitar(cx, &c, "nota-tomador-documento", "11222333000181");
+    esperar(cx, &c, "o tomador da pasta", |n| {
+        n.tomador_preenchido.is_some()
+    });
+    cx.update(|cx| {
+        let n = c.nova.read(cx);
+        assert_eq!(n.dados.tomador_nome, "Nome digitado");
+        assert_eq!(n.dados.end_cep, "05422-030");
+        assert_eq!(n.dados.end_logradouro, "Rua");
+        assert_eq!(n.dados.end_numero, "2176");
+        assert_eq!(n.dados.end_bairro, "Centro");
+        assert_eq!(n.dados.end_municipio, "3503208");
+        let aviso = n.tomador_preenchido.clone().unwrap();
+        assert!(aviso.contains("NFS-e nº 25"), "{aviso}");
+    });
+    // os campos da tela mostram o que veio, com a mascara
+    cx.update_window(c.janela.into(), |_, window, cx| {
+        window.render_frame(cx);
+        assert_eq!(window.find("nota-end-cep").value(), Some("05422-030"));
+        assert_eq!(
+            window.find("nota-tomador-nome").value(),
+            Some("Nome digitado")
+        );
+    })
+    .unwrap();
+    assert!(!pendencias(cx, &c).contains(&CampoNota::EnderecoCep));
+
+    // outro documento, que nao esta na pasta: nada vem, e o aviso sai
+    digitar(cx, &c, "nota-tomador-documento", "52998224725");
+    cx.run_until_parked();
+    std::thread::sleep(Duration::from_millis(200));
+    cx.run_until_parked();
+    cx.update(|cx| {
+        let n = c.nova.read(cx);
+        assert!(n.tomador_preenchido.is_none());
+        // o que ja estava no formulario fica: so' o documento mudou
+        assert_eq!(n.dados.end_cep, "05422-030");
+    });
+
+    // "Limpar" e documento pela metade: nada e' procurado
+    cx.update_window(c.janela.into(), |_, window, cx| {
+        c.nova.update(cx, |n, cx| n.limpar(window, cx));
+    })
+    .unwrap();
+    cx.run_until_parked();
+    digitar(cx, &c, "nota-tomador-documento", "11222333");
+    std::thread::sleep(Duration::from_millis(200));
+    cx.run_until_parked();
+    cx.update(|cx| {
+        let n = c.nova.read(cx);
+        assert!(n.tomador_preenchido.is_none());
+        assert_eq!(n.dados.end_cep, "");
+    });
+}
+
 #[gpui_kit::test]
 fn preencher_ver_a_pendencia_sumir_emitir_e_a_nota_fica_na_pasta(cx: &mut TestAppContext) {
     let c = cenario(cx, "restrita", &[Desfecho::Autorizada], true, 1120.);

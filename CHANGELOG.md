@@ -41,7 +41,15 @@
     ação não tinha tecla);
   * período na tela Notas ("Todo o período", "Este mês", "Mês passado", "Este ano"), junto com a busca e o filtro;
   * "Exportar a lista", na tela Notas: grava numa pasta escolhida o XML de cada nota da lista e a lista em CSV;
-  * a coluna DPS da lista não quebra mais um número de DPS longo em duas linhas: o meio dá lugar a reticências.
+  * a coluna DPS da lista não quebra mais um número de DPS longo em duas linhas: o meio dá lugar a reticências;
+  * tomador já usado: na Nova nota, ao digitar o CPF ou CNPJ completo de quem já recebeu nota, os campos vazios do
+    tomador (nome, inscrição municipal, e-mail, telefone) e o endereço vêm da nota mais recente dele na pasta de
+    notas, com um aviso de qual nota. O que a pessoa já digitou fica; com parte do endereço digitada, o endereço não
+    é mexido.
+* Biblioteca: a NFS-e lida (`nfse::leitura::Nfse`) traz também a inscrição municipal, o e-mail, o telefone e o
+  endereço nacional do tomador (`tomador_im`, `tomador_email`, `tomador_fone`, `tomador_cep`, `tomador_municipio`,
+  `tomador_logradouro`, `tomador_numero`, `tomador_complemento`, `tomador_bairro`). O JSON de `emitir` e de
+  `consultar` (linha de comando, API HTTP e MCP) ganha esses campos em `nfse`.
 * Biblioteca: `Certificado::resumo` (e `resumo_de_agora`) devolve o que se mostra de um certificado aberto, com o CPF
   mascarado. Camada de aplicação: `notas::Filtro`, `notas::csv`, `Notas::registro`, `Notas::exportar` e
   `Notas::reindexar`.

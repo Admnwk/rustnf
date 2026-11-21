@@ -28,6 +28,7 @@ use crate::modelo::nota::{CampoNota, DadosNota, SecaoNota};
 use crate::modelo::pedido::{Contexto, PedidoCongelado};
 use crate::modelo::previa::{self, PreviaIbsCbs};
 use crate::modelo::sugestao::{self, Servico, Sugestao};
+use crate::modelo::tomador;
 use crate::servicos::Servicos;
 use crate::telas::senha::DialogoSenha;
 
@@ -143,6 +144,10 @@ pub(super) struct NovaNota {
     pub(super) sub_senha: Option<Subscription>,
     pub(super) rolagem: ScrollHandle,
     pub(super) copiada: bool,
+    /// O ultimo documento de tomador procurado na pasta de notas (para nao procurar de novo a cada tecla).
+    tomador_buscado: Option<String>,
+    /// Os dados do tomador vieram de uma nota anterior: a frase diz de qual.
+    pub(super) tomador_preenchido: Option<String>,
     carregada: bool,
     subs: Vec<Subscription>,
 }
@@ -256,6 +261,8 @@ impl NovaNota {
             sub_senha: None,
             rolagem: ScrollHandle::new(),
             copiada: false,
+            tomador_buscado: None,
+            tomador_preenchido: None,
             carregada: false,
             subs: Vec::new(),
         };
@@ -473,6 +480,58 @@ impl NovaNota {
         }
         self.marcas.remove(&campo);
         self.mudou(cx);
+        if campo == CampoNota::TomadorDocumento {
+            self.procurar_tomador(window, cx);
+        }
+    }
+
+    /// Com o CPF/CNPJ completo e valido, procura na pasta de notas (fora da tela) a nota mais recente desse tomador e
+    /// completa os campos vazios do tomador e do endereco. O que a pessoa digitou fica.
+    fn procurar_tomador(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let Some(documento) = tomador::documento_completo(&self.dados) else {
+            self.tomador_buscado = None;
+            self.tomador_preenchido = None;
+            return;
+        };
+        if self.tomador_buscado.as_deref() == Some(documento.as_str()) {
+            return;
+        }
+        self.tomador_buscado = Some(documento.clone());
+        self.tomador_preenchido = None;
+        let servicos = Arc::clone(&self.servicos);
+        let config = self.config.clone();
+        let doc = documento.clone();
+        cx.spawn_in(window, async move |this, cx| {
+            let achado = cx
+                .background_spawn(async move { servicos.tomador_conhecido(&config, &doc) })
+                .await;
+            this.update_in(cx, |this, window, cx| {
+                let Some(conhecido) = achado else {
+                    return;
+                };
+                // a pessoa mudou o documento (ou o formulario travou) enquanto a pasta era lida
+                if this.travado()
+                    || tomador::documento_completo(&this.dados).as_deref()
+                        != Some(documento.as_str())
+                {
+                    return;
+                }
+                let feitos = conhecido.completar(&mut this.dados);
+                if feitos.is_empty() {
+                    return;
+                }
+                for campo in feitos {
+                    let texto = this.dados.texto(campo);
+                    this.por_no_campo(campo, &texto, window, cx);
+                    this.marcas.remove(&campo);
+                }
+                this.mudou(cx);
+                this.tomador_preenchido = Some(conhecido.aviso());
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
     }
 
     pub(super) fn ao_sair(&mut self, campo: CampoNota, cx: &mut Context<Self>) {
@@ -517,6 +576,8 @@ impl NovaNota {
         cx: &mut Context<Self>,
     ) {
         self.dados = dados;
+        self.tomador_buscado = None;
+        self.tomador_preenchido = None;
         self.sincronizar(window, cx);
         self.federais_abertas = !(self.dados.irrf.is_empty()
             && self.dados.csll.is_empty()
@@ -710,6 +771,8 @@ impl NovaNota {
             return;
         }
         self.dados = self.ctx.nota_nova();
+        self.tomador_buscado = None;
+        self.tomador_preenchido = None;
         self.sincronizar(window, cx);
         self.tocados.clear();
         self.marcas.clear();

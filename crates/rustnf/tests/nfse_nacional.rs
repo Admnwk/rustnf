@@ -280,6 +280,71 @@ fn mensagens_erros_em_texto_e_vazios() {
 }
 
 #[test]
+fn leitura_traz_o_contato_e_o_endereco_do_tomador_como_a_dps_os_escreve() {
+    // a DPS "completa" do contrato tem tomador com IM, e-mail, telefone e endereco nacional
+    let caso = casos()["dps"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|c| c["nome"] == "completa")
+        .unwrap()
+        .clone();
+    let dps: Dps = serde_json::from_value(caso["entrada"].clone()).unwrap();
+    let xml_dps = montar(&dps).unwrap();
+    let corpo = xml_dps
+        .strip_prefix(r#"<?xml version="1.0" encoding="UTF-8"?>"#)
+        .unwrap_or(&xml_dps);
+    let nfse = format!(
+        "<NFSe xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infNFSe Id=\"NFS{}\">\
+         <nNFSe>1</nNFSe>{corpo}</infNFSe></NFSe>",
+        "1".repeat(50)
+    );
+    let n = ler_nfse(&nfse).unwrap();
+    let t = &caso["entrada"]["tomador"];
+    let e = &t["endereco"];
+    let so_digitos =
+        |v: &Value| -> String { txt(v).chars().filter(char::is_ascii_digit).collect() };
+    // o texto sai como a DPS o grava: a normalizacao da biblioteca (Latin-1, travessao vira hifen) vale nos dois lados
+    let gravado = |v: &Value| texto(&txt(v), "x", Txt::max(300)).unwrap();
+    assert_eq!(n.tomador_nome, gravado(&t["nome"]));
+    assert_eq!(n.tomador_im, gravado(&t["im"]));
+    assert_eq!(n.tomador_email, gravado(&t["email"]));
+    assert_eq!(n.tomador_fone, so_digitos(&t["fone"]));
+    assert_eq!(n.tomador_cep, so_digitos(&e["cep"]));
+    assert_eq!(n.tomador_municipio, txt(&e["cmun"]));
+    assert_eq!(n.tomador_logradouro, gravado(&e["logradouro"]));
+    assert_eq!(n.tomador_numero, gravado(&e["numero"]));
+    assert_eq!(n.tomador_complemento, gravado(&e["complemento"]));
+    assert_eq!(n.tomador_bairro, gravado(&e["bairro"]));
+
+    // a DPS minima (sem endereco nem contato): os campos ficam vazios
+    let minima: Dps = serde_json::from_value(casos()["dps"][0]["entrada"].clone()).unwrap();
+    let xml = montar(&minima).unwrap();
+    let corpo = xml
+        .strip_prefix(r#"<?xml version="1.0" encoding="UTF-8"?>"#)
+        .unwrap_or(&xml);
+    let n = ler_nfse(&format!(
+        "<NFSe xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infNFSe Id=\"NFS{}\">{corpo}</infNFSe></NFSe>",
+        "1".repeat(50)
+    ))
+    .unwrap();
+    assert!(!n.tomador_nome.is_empty());
+    for vazio in [
+        &n.tomador_im,
+        &n.tomador_email,
+        &n.tomador_fone,
+        &n.tomador_cep,
+        &n.tomador_municipio,
+        &n.tomador_logradouro,
+        &n.tomador_numero,
+        &n.tomador_complemento,
+        &n.tomador_bairro,
+    ] {
+        assert!(vazio.is_empty(), "{vazio}");
+    }
+}
+
+#[test]
 fn leitor_recusa_dtd() {
     assert!(ler_nfse("<!DOCTYPE a [<!ENTITY x \"y\">]><NFSe/>").is_err());
 }
