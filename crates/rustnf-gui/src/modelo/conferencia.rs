@@ -942,7 +942,8 @@ mod testes {
     #[test]
     fn recusas_reais_da_biblioteca_caem_no_campo_da_tela() {
         let ctx = ctx_do_caso();
-        let casos: Vec<(&str, Box<dyn Fn(&mut DadosNota)>, CampoNota, &str)> = vec![
+        type Ajuste = Box<dyn Fn(&mut DadosNota)>;
+        let casos: Vec<(&str, Ajuste, CampoNota, &str)> = vec![
             (
                 "competencia depois da emissao",
                 Box::new(|d| {

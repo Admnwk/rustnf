@@ -41,10 +41,10 @@ impl NovaNota {
             caixa.w_full().rounded_lg().border_1().border_color(borda)
         };
         caixa
+            .child(self.bloco_de_emitir(cx))
             .child(self.bloco_de_pendencias(cx))
             .child(self.bloco_de_valores(cx))
             .child(self.bloco_do_ibscbs(cx))
-            .child(self.bloco_de_emitir(cx))
             .into_any_element()
     }
 
@@ -384,7 +384,7 @@ impl NovaNota {
                         .xsmall()
                         .mt(px(1.)),
                     )
-                    .child(div().flex_1().child(m))
+                    .child(div().flex_1().min_w_0().child(m))
             }))
             .child(
                 h_flex()

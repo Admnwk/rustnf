@@ -115,6 +115,8 @@ fn cenario_com_altura(
     largura: f32,
     altura: f32,
 ) -> Cenario {
+    // a rede roda em outra linha (o runtime proprio): o agendador do teste precisa saber
+    cx.executor().allow_parking();
     let pasta = PastaTemporaria::nova("janela-nota");
     let pfx = pasta.certificado("a.pfx", CNPJ, SENHA, 365);
     let arquivo = arquivo_de_ensaio(&pasta, &pfx, ambiente, completo);

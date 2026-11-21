@@ -104,6 +104,7 @@ impl NovaNota {
             tentativa: tentativa.clone(),
         };
         self.erro_senha = None;
+        self.recuperado = false;
         self.rejeicao = None;
         self.recusa = None;
         self.desistencia = None;

@@ -377,7 +377,7 @@ cargo run -p rustnf-gui                      # modo de depuracao
 cargo run -p rustnf-gui -- --config rustnf.toml
 cargo build --release -p rustnf-gui          # no Windows, precisa do fxc.exe do Windows SDK
 
-# sem falar com a Sefin: --resultado autorizada (padrao), rejeitada ou sem-resposta
+# sem falar com a Sefin: --resultado autorizada (padrao), rejeitada ou sem-resposta; --atraso-ms 1200 e a demora do "envio"
 cargo run -p rustnf-gui --features demonstracao --example demonstracao -- --config ensaio.toml --resultado autorizada
 ```
 

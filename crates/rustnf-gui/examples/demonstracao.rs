@@ -7,7 +7,7 @@
 //!
 //! ```text
 //! cargo run -p rustnf-gui --features demonstracao --example demonstracao -- \
-//!     --config rustnf.toml [--resultado autorizada|rejeitada|sem-resposta]
+//!     --config rustnf.toml [--resultado autorizada|rejeitada|sem-resposta] [--atraso-ms 1200]
 //! ```
 //!
 //! `autorizada` (padrao) autoriza a nota; `rejeitada` devolve duas mensagens de rejeicao; `sem-resposta` deixa a
@@ -27,9 +27,18 @@ fn main() -> ExitCode {
 
     let mut resto = Vec::new();
     let mut resultado = "autorizada".to_string();
+    let mut atraso_ms: u64 = 1200;
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
-        if a == "--resultado" {
+        if a == "--atraso-ms" {
+            match args.next().and_then(|v| v.parse().ok()) {
+                Some(v) => atraso_ms = v,
+                None => {
+                    eprintln!("demonstracao: --atraso-ms precisa de um numero");
+                    return ExitCode::from(2);
+                }
+            }
+        } else if a == "--resultado" {
             match args.next() {
                 Some(v) => resultado = v,
                 None => {
@@ -59,7 +68,7 @@ fn main() -> ExitCode {
     let base = Servicos::do_sistema(config);
     // o emissor de demonstracao fala o mesmo ambiente que a configuracao (o selo mostra "Demonstracao" por cima)
     let ambiente = base.carregar().map_or(2, |carga| carga.ambiente.codigo());
-    let emissor = EmissorDemonstracao::novo(ambiente, &roteiro, Duration::from_millis(1200));
+    let emissor = EmissorDemonstracao::novo(ambiente, &roteiro, Duration::from_millis(atraso_ms));
     let servicos = base.com_fabrica(FabricaDemonstracao::nova(emissor));
     rustnf_gui::telas::executar_com(Arc::new(servicos));
     ExitCode::SUCCESS

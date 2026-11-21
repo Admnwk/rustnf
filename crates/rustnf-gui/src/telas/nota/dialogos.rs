@@ -217,10 +217,16 @@ impl NovaNota {
             let erro = nova.read(cx).erro_senha.clone();
             let desligado = nova.read(cx).servicos.cofre_desligado();
             let nova_usar = nova.clone();
+            let nova_enter = nova.clone();
             let nova_fechou = nova.clone();
             dialog
                 .title("Senha do certificado")
                 .w(px(460.))
+                // Enter usa a senha digitada (o dialogo so' fecha se ela for usada)
+                .on_ok(move |_, window, cx| {
+                    nova_enter.update(cx, |n, cx| n.usar_senha(window, cx));
+                    false
+                })
                 .on_close(move |_, _, cx| {
                     nova_fechou.update(cx, |n, _| {
                         n.senha_pedida = None;

@@ -159,6 +159,10 @@ fn nfse_autorizada(dps: &Dps, ambiente: u8) -> Option<(String, String)> {
         )
     });
     let valor = dps.valores.servico.as_str();
+    let id_da_dps = format!(
+        "{cmun}2{documento:0>14}{:0>5}{numero:0>15}",
+        dps.serie.as_str().trim()
+    );
     let xml = format!(
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?><NFSe xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.00\">\
 <infNFSe Id=\"NFS{chave}\"><xLocEmi>Demonstracao</xLocEmi><xLocPrestacao>Demonstracao</xLocPrestacao>\
@@ -173,11 +177,11 @@ fn nfse_autorizada(dps: &Dps, ambiente: u8) -> Option<(String, String)> {
 <serv><locPrest><cLocPrestacao>{cmun}</cLocPrestacao></locPrest><cServ><cTribNac>{ctribnac}</cTribNac>\
 <xDescServ>{descricao}</xDescServ></cServ></serv>\
 <valores><vServPrest><vServ>{valor}</vServ></vServPrest></valores></infDPS></DPS></infNFSe></NFSe>",
-        trib = esc(&rustnf::nfse::ctribnac::descricao(&so_digitos(dps.servico.ctribnac.as_str()))),
+        trib = esc(rustnf::nfse::ctribnac::descricao(&so_digitos(dps.servico.ctribnac.as_str()))),
         documento = esc(&documento),
         im = esc(&dps.prestador.pessoa.im),
         emitente = esc(&dps.prestador.pessoa.nome),
-        id = format!("{cmun}2{documento:0>14}{:0>5}{numero:0>15}", dps.serie.as_str().trim()),
+        id = id_da_dps,
         serie = esc(dps.serie.as_str().trim()),
         ctribnac = esc(&so_digitos(dps.servico.ctribnac.as_str())),
         descricao = esc(&dps.servico.descricao),
