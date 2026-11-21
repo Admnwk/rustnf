@@ -339,7 +339,12 @@ impl TelaConsultar {
 impl Render for TelaConsultar {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
         let estado = self.estado_da_chave();
-        let erro = if self.tocada { estado.mensagem() } else { None };
+        // chave inteira que nao confere diz o motivo na hora; o que ainda falta digitar so' aparece depois de passar pelo campo
+        let erro = if self.tocada || matches!(estado, EstadoDaChave::Invalida(_)) {
+            estado.mensagem()
+        } else {
+            None
+        };
         let ocupada = matches!(self.fase, Fase::Trabalhando(_));
         let pode = estado.valida() && !ocupada;
         let ajuda = if estado == EstadoDaChave::Valida {
