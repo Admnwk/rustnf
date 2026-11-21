@@ -7,6 +7,21 @@ Emissor aberto de NFS-e do padrao nacional (Sefin Nacional / ADN), escrito em Ru
 > prefeitura. Ele segue a documentacao publica (fontes em `docs/FONTES.md`); a responsabilidade pelo uso em producao e'
 > de quem o opera. Emitir ou cancelar nota em producao tem efeito fiscal. Teste antes na producao restrita.
 
+## Estado
+
+**Nenhuma nota real foi emitida com este codigo ate agora**, nem em producao restrita. O que existe hoje:
+
+| parte | como foi conferida | o que falta |
+|---|---|---|
+| XML da DPS e regras antes do envio | contratos em `crates/rustnf/tests/casos/`, comparados texto a texto; regras lidas no Anexo I oficial | a Sefin Nacional aceitar uma DPS gerada aqui |
+| assinatura | conferida pelo proprio verificador e por um XML assinado fora da biblioteca | a Sefin Nacional validar uma assinatura feita aqui |
+| cliente da Sefin Nacional | transporte falso (resposta perdida, 5xx, E0014, consulta, cancelamento) | uma chamada real, com TLS mutuo e certificado A1 |
+| previa do IBS/CBS | casos de teste da calculadora oficial da Receita Federal | comparar com os valores de uma NFS-e autorizada |
+| DANFSe | contrato de conteudo e leiaute | comparar com um DANFSe emitido pelo portal |
+
+Se voce testar, conte como foi: abra um relato pelo modelo **"Relato de emissao"** (aba Issues), mesmo quando der
+certo. Correcao e' bem-vinda por pedido de mudanca, com a fonte oficial citada e um caso no contrato (veja
+`CONTRIBUTING.md`). Comece sempre pela producao restrita.
 ## O que faz
 
 | comando | o que faz |

@@ -1,0 +1,83 @@
+name: Relato de emissao
+description: Voce testou emitir, consultar ou cancelar uma NFS-e com o rustnf. Conte como foi, tenha dado certo ou nao.
+title: "Relato: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por testar. O projeto ainda nao tem nota real emitida, entao todo relato ajuda, inclusive o de sucesso.
+
+        **Nao anexe certificado, senha, token, nem XML ou PDF com dado de pessoa ou empresa real.** Antes de colar
+        qualquer trecho, troque nomes e documentos pelos ficticios de `crates/rustnf/tests/higiene_documentos.txt`.
+  - type: dropdown
+    id: ambiente
+    attributes:
+      label: Ambiente
+      options:
+        - Producao restrita
+        - Producao
+    validations:
+      required: true
+  - type: dropdown
+    id: operacao
+    attributes:
+      label: O que voce fez
+      options:
+        - Emitir
+        - Consultar
+        - Cancelar
+        - Outro (explique abaixo)
+    validations:
+      required: true
+  - type: dropdown
+    id: resultado
+    attributes:
+      label: Resultado
+      options:
+        - Deu certo (nota autorizada, consulta ou cancelamento aceito)
+        - A Sefin Nacional rejeitou
+        - O rustnf recusou antes de enviar
+        - Erro de rede, de certificado ou do programa
+    validations:
+      required: true
+  - type: input
+    id: municipio
+    attributes:
+      label: Municipio do prestador (codigo IBGE de 7 digitos)
+      placeholder: "3550308"
+    validations:
+      required: true
+  - type: input
+    id: versao
+    attributes:
+      label: Versao do rustnf ou commit
+      description: A saida de `rustnf --version`, ou o hash do commit.
+    validations:
+      required: true
+  - type: input
+    id: regime
+    attributes:
+      label: Regime do prestador
+      description: Nao optante, MEI ou ME/EPP do Simples Nacional.
+  - type: textarea
+    id: retorno
+    attributes:
+      label: Codigo e mensagem de retorno
+      description: O codigo (por exemplo E0312) e o texto que a Sefin Nacional ou o rustnf devolveu.
+      render: text
+  - type: textarea
+    id: detalhe
+    attributes:
+      label: O que voce esperava e o que aconteceu
+      description: O comando usado (sem a senha), o codigo de servico, e o trecho do pedido ou do XML que interessa, ja com os dados trocados por ficticios.
+    validations:
+      required: true
+  - type: checkboxes
+    id: cuidado
+    attributes:
+      label: Antes de enviar
+      options:
+        - label: Nao anexei certificado, senha nem token.
+          required: true
+        - label: Troquei nomes, documentos e enderecos reais por ficticios.
+          required: true
