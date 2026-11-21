@@ -87,6 +87,33 @@ pub struct Nfse {
     pub descricao_servico: String,
     pub tomador_documento: String,
     pub tomador_nome: String,
+    /// Inscricao municipal do tomador (`toma/IM`).
+    #[serde(default)]
+    pub tomador_im: String,
+    /// `toma/email`.
+    #[serde(default)]
+    pub tomador_email: String,
+    /// `toma/fone`, so' digitos (como a DPS o escreve).
+    #[serde(default)]
+    pub tomador_fone: String,
+    /// CEP do endereco nacional do tomador (`toma/end/endNac/CEP`).
+    #[serde(default)]
+    pub tomador_cep: String,
+    /// Municipio (IBGE) do endereco nacional do tomador (`toma/end/endNac/cMun`).
+    #[serde(default)]
+    pub tomador_municipio: String,
+    /// `toma/end/xLgr`.
+    #[serde(default)]
+    pub tomador_logradouro: String,
+    /// `toma/end/nro`.
+    #[serde(default)]
+    pub tomador_numero: String,
+    /// `toma/end/xCpl`.
+    #[serde(default)]
+    pub tomador_complemento: String,
+    /// `toma/end/xBairro`.
+    #[serde(default)]
+    pub tomador_bairro: String,
     pub valor_servico: String,
     pub base_calculo: String,
     pub aliquota_aplicada: String,
@@ -159,6 +186,15 @@ pub fn ler_nfse(xml: &str) -> Result<Nfse, ErroLeitura> {
         descricao_servico: t(dps, "serv/cServ/xDescServ"),
         tomador_documento: ou(ou(t(toma, "CNPJ"), t(toma, "CPF")), t(toma, "NIF")),
         tomador_nome: t(toma, "xNome"),
+        tomador_im: t(toma, "IM"),
+        tomador_email: t(toma, "email"),
+        tomador_fone: t(toma, "fone"),
+        tomador_cep: t(toma, "end/endNac/CEP"),
+        tomador_municipio: t(toma, "end/endNac/cMun"),
+        tomador_logradouro: t(toma, "end/xLgr"),
+        tomador_numero: t(toma, "end/nro"),
+        tomador_complemento: t(toma, "end/xCpl"),
+        tomador_bairro: t(toma, "end/xBairro"),
         valor_servico: t(dps, "valores/vServPrest/vServ"),
         base_calculo: t(Some(inf), "valores/vBC"),
         aliquota_aplicada: t(Some(inf), "valores/pAliqAplic"),

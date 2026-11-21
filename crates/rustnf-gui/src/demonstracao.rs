@@ -311,10 +311,36 @@ fn nfse_autorizada(dps: &Dps, ambiente: u8) -> Option<(String, String)> {
     let doc_tag = tag_do_documento(&documento);
     let tomador = dps.tomador.as_ref().map_or_else(String::new, |t| {
         let tag = tag_do_documento(&t.documento);
+        let opcional = |nome: &str, valor: &str| {
+            if valor.trim().is_empty() {
+                String::new()
+            } else {
+                format!("<{nome}>{}</{nome}>", esc(valor.trim()))
+            }
+        };
+        // o endereco nacional como a DPS o escreve (endNac, depois logradouro, numero, complemento e bairro)
+        let endereco = t
+            .endereco
+            .as_ref()
+            .filter(|e| !e.cmun.trim().is_empty())
+            .map_or_else(String::new, |e| {
+                format!(
+                    "<end><endNac><cMun>{}</cMun><CEP>{}</CEP></endNac>{}{}{}{}</end>",
+                    esc(e.cmun.trim()),
+                    so_digitos(&e.cep),
+                    opcional("xLgr", &e.logradouro),
+                    opcional("nro", &e.numero),
+                    opcional("xCpl", &e.complemento),
+                    opcional("xBairro", &e.bairro),
+                )
+            });
         format!(
-            "<toma><{tag}>{}</{tag}><xNome>{}</xNome></toma>",
+            "<toma><{tag}>{}</{tag}>{}<xNome>{}</xNome>{endereco}{}{}</toma>",
             esc(&t.documento),
-            esc(&t.nome)
+            opcional("IM", &t.im),
+            esc(&t.nome),
+            opcional("fone", &so_digitos(&t.fone)),
+            opcional("email", &t.email),
         )
     });
     let valor = dps.valores.servico.as_str();

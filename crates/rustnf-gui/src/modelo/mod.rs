@@ -28,3 +28,4 @@ pub mod previa_avulsa;
 pub mod rascunho;
 pub mod reaproveitar;
 pub mod sugestao;
+pub mod tomador;

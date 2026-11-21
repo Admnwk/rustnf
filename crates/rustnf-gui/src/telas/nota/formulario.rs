@@ -229,6 +229,9 @@ impl NovaNota {
                     .col_span(1),
                 ),
         );
+        if let Some(aviso) = self.tomador_preenchido.clone() {
+            cartao = cartao.child(faixa(Gravidade::Ok, aviso, cx).id("tomador-preenchido"));
+        }
         let municipio = ajuda_do_municipio(
             &self.dados.end_municipio,
             Some("Código IBGE de 7 dígitos.".into()),

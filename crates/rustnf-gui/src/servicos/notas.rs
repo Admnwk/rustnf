@@ -21,6 +21,8 @@ use crate::modelo::cancelamento::DesfechoDoCancelamento;
 use crate::modelo::consulta::{DesfechoDaConsulta, NotaConsultada};
 use crate::modelo::detalhe::LeituraDoXml;
 use crate::modelo::mascara::frase;
+use crate::modelo::tomador::TomadorConhecido;
+use rustnf::nfse::leitura::ler_nfse;
 
 /// O que se pede ao sistema para fazer com um arquivo.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -121,6 +123,26 @@ impl Servicos {
         self.notas_da(config)?
             .exportar(registros, destino)
             .map_err(|_| ErroTela::GravacaoDoArquivo)
+    }
+
+    /// O tomador de documento `documento` (so' letras e digitos) pela nota mais recente dele na pasta de notas.
+    /// `None`: nenhuma nota dele, ou a pasta (ou o XML) nao pode ser lida; a Nova nota so' deixa de completar.
+    #[must_use]
+    pub fn tomador_conhecido(&self, config: &Config, documento: &str) -> Option<TomadorConhecido> {
+        let notas = self.notas_da(config).ok()?;
+        let mesmo = |r: &Registro| {
+            r.tomador_documento
+                .chars()
+                .filter(char::is_ascii_alphanumeric)
+                .map(|c| c.to_ascii_uppercase())
+                .collect::<String>()
+                == documento
+        };
+        // a lista vem da mais recente para a mais antiga
+        let registro = notas.listar().ok()?.into_iter().find(mesmo)?;
+        let xml = notas.ler_xml(&registro.chave).ok()?;
+        let nfse = ler_nfse(&xml).ok()?;
+        Some(TomadorConhecido::da_nfse(&nfse, &registro.emissao))
     }
 
     /// O XML guardado de uma nota da pasta, inteiro.
