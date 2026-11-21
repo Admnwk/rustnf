@@ -10,10 +10,14 @@ mod campos;
 mod configuracoes;
 mod inicio;
 mod layout;
+mod nota;
+mod nota_vazia;
 mod pecas;
 mod raiz;
 #[cfg(test)]
 mod testes;
+#[cfg(test)]
+mod testes_nota;
 
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -28,7 +32,22 @@ pub use raiz::{Raiz, Secao, Tela};
 
 use crate::servicos::Servicos;
 
-actions!(rustnf_gui, [SalvarConfiguracao, DescartarConfiguracao]);
+actions!(
+    rustnf_gui,
+    [
+        SalvarConfiguracao,
+        DescartarConfiguracao,
+        IrParaNovaNota,
+        EmitirNota
+    ]
+);
+
+/// Largura da barra lateral.
+const LARGURA_DA_LATERAL: f32 = 224.0;
+
+/// Largura minima da area de conteudo para o painel de conferencia ficar ao lado do formulario; abaixo disso ele vai
+/// para baixo.
+const LARGURA_PARA_PAINEL_AO_LADO: f32 = 880.0;
 
 /// Tamanho inicial da janela.
 const LARGURA: f32 = 1120.0;
@@ -38,18 +57,30 @@ const ALTURA: f32 = 780.0;
 const LARGURA_MINIMA: f32 = 940.0;
 const ALTURA_MINIMA: f32 = 620.0;
 
-/// Registra os atalhos de teclado: Ctrl+S salva nas Configuracoes.
+/// Registra os atalhos de teclado: Ctrl+S salva nas Configuracoes, Ctrl+N abre a Nova nota e Ctrl+Enter emite nela.
 pub fn registrar_atalhos(cx: &mut App) {
-    cx.bind_keys([KeyBinding::new("ctrl-s", SalvarConfiguracao, Some("Raiz"))]);
+    cx.bind_keys([
+        KeyBinding::new("ctrl-s", SalvarConfiguracao, Some("Raiz")),
+        KeyBinding::new("ctrl-n", IrParaNovaNota, Some("Raiz")),
+        KeyBinding::new("ctrl-enter", EmitirNota, Some("NovaNota")),
+    ]);
 }
 
-/// As opcoes da janela principal: barra de titulo propria, tamanho inicial e minimo.
+/// As opcoes da janela principal: barra de titulo propria, tamanho inicial e minimo. Na demonstracao o titulo leva
+/// "(demonstracao)".
 #[must_use]
-pub fn opcoes_da_janela(cx: &App) -> WindowOptions {
+pub fn opcoes_da_janela(cx: &App, demonstracao: bool) -> WindowOptions {
     let base = TitleBar::window_options();
     WindowOptions {
         titlebar: Some(TitlebarOptions {
-            title: Some("rustnf".into()),
+            title: Some(
+                if demonstracao {
+                    "rustnf (demonstração)"
+                } else {
+                    "rustnf"
+                }
+                .into(),
+            ),
             ..TitleBar::title_bar_options()
         }),
         window_bounds: Some(WindowBounds::centered(size(px(LARGURA), px(ALTURA)), cx)),
@@ -74,7 +105,7 @@ pub fn abrir_janela(
     servicos: Arc<Servicos>,
     cx: &mut App,
 ) -> gpui_kit::Result<(gpui_kit::AnyWindowHandle, Entity<Raiz>)> {
-    let opcoes = opcoes_da_janela(cx);
+    let opcoes = opcoes_da_janela(cx, servicos.demonstracao());
     gpui_kit::open_window(opcoes, cx, move |window, cx| {
         cx.new(|cx: &mut Context<Raiz>| Raiz::new(servicos, window, cx))
     })
@@ -82,7 +113,11 @@ pub fn abrir_janela(
 
 /// Abre a janela e roda ate ela ser fechada.
 pub fn executar(config: Option<PathBuf>) {
-    let servicos = Arc::new(Servicos::do_sistema(config));
+    executar_com(Arc::new(Servicos::do_sistema(config)));
+}
+
+/// Abre a janela com os `servicos` dados e roda ate ela ser fechada.
+pub fn executar_com(servicos: Arc<Servicos>) {
     gpui_kit::application()
         .with_assets(gpui_kit::assets::Assets)
         .run(move |cx| {

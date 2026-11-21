@@ -29,6 +29,12 @@ use rustnf_app::segredo::Segredo;
 use crate::modelo::ambiente::Ambiente;
 use crate::modelo::campo::Campo;
 use crate::modelo::certificado::{avaliar, testar, EstadoCertificado, InfoCertificado};
+use crate::modelo::nota::DadosNota;
+use crate::modelo::rascunho;
+
+mod emitir;
+
+pub use emitir::{emitir, FabricaDeEmissor, FabricaReal, FabricaSemEmissor};
 
 /// Leitura de variavel de ambiente (os testes trocam o ambiente).
 pub type LerAmbiente = Arc<dyn Fn(&str) -> Option<OsString> + Send + Sync>;
@@ -241,6 +247,7 @@ pub struct Servicos {
     cofre_desligado: bool,
     conexao: Arc<dyn Conexao>,
     relogio: Relogio,
+    fabrica: Arc<dyn FabricaDeEmissor>,
 }
 
 impl Servicos {
@@ -256,6 +263,7 @@ impl Servicos {
             cofre_desligado: desligado,
             conexao: Arc::new(ConexaoReal),
             relogio: Arc::new(Utc::now),
+            fabrica: Arc::new(FabricaReal),
         }
     }
 
@@ -276,6 +284,7 @@ impl Servicos {
             cofre_desligado,
             conexao,
             relogio,
+            fabrica: Arc::new(FabricaSemEmissor),
         }
     }
 
@@ -347,6 +356,14 @@ impl Servicos {
             ErroConfig::Invalido { .. } => ErroTela::Valor(texto_da_configuracao(&e)),
             _ => ErroTela::Gravacao,
         })
+    }
+
+    /// A configuracao que vale de verdade: o arquivo com as variaveis `RUSTNF_*` por cima, como a linha de comando a
+    /// usaria. Se alguma variavel nao serve, vale o arquivo.
+    #[must_use]
+    pub fn efetiva(&self, config: &Config) -> Config {
+        Efetiva::de(config.clone(), self.local_do_arquivo(), &*self.env)
+            .map_or_else(|_| config.clone(), |e| e.config)
     }
 
     /// Confere que a pasta das notas serve (cria se faltar).
@@ -462,6 +479,52 @@ impl Servicos {
         self.cofre.apagar(&chave).map_err(ErroTela::Cofre)
     }
 
+    /// Le o rascunho da Nova nota, na pasta de notas. Sem pasta, sem arquivo, arquivo ilegivel ou de versao
+    /// desconhecida: `None` (a tela comeca vazia, sem erro).
+    #[must_use]
+    pub fn ler_rascunho(&self, config: &Config) -> Option<DadosNota> {
+        use std::io::Read as _;
+        let pasta = config.notas.pasta.trim();
+        if pasta.is_empty() {
+            return None;
+        }
+        let arquivo = std::fs::File::open(Path::new(pasta).join(rascunho::ARQUIVO)).ok()?;
+        let mut bytes = Vec::new();
+        arquivo
+            .take(rascunho::LIMITE + 1)
+            .read_to_end(&mut bytes)
+            .ok()?;
+        if bytes.len() as u64 > rascunho::LIMITE {
+            return None;
+        }
+        rascunho::decodificar(&bytes)
+    }
+
+    /// Grava o rascunho da Nova nota na pasta de notas, de forma atomica.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroTela::Pasta`] se nao ha pasta ou nao foi possivel gravar.
+    pub fn gravar_rascunho(&self, config: &Config, dados: &DadosNota) -> Result<(), ErroTela> {
+        let pasta = config.notas.pasta.trim();
+        if pasta.is_empty() {
+            return Err(ErroTela::Pasta);
+        }
+        rustnf_app::atomico::gravar(
+            &Path::new(pasta).join(rascunho::ARQUIVO),
+            &rascunho::codificar(dados),
+        )
+        .map_err(|_| ErroTela::Pasta)
+    }
+
+    /// Apaga o rascunho (nao e' erro se ele nao existe).
+    pub fn apagar_rascunho(&self, config: &Config) {
+        let pasta = config.notas.pasta.trim();
+        if !pasta.is_empty() {
+            let _ = std::fs::remove_file(Path::new(pasta).join(rascunho::ARQUIVO));
+        }
+    }
+
     /// Abre o certificado e reune o que o teste de conexao precisa.
     ///
     /// # Errors
@@ -509,3 +572,5 @@ fn texto_da_configuracao(e: &ErroConfig) -> String {
 
 #[cfg(test)]
 mod testes;
+#[cfg(test)]
+mod testes_emissao;

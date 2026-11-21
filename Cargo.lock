@@ -7580,6 +7580,8 @@ dependencies = [
  "gpui-kit",
  "rustnf",
  "rustnf-app",
+ "serde",
+ "serde_json",
  "tokio",
 ]
 

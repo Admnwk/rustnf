@@ -88,6 +88,16 @@ impl Ambiente {
     }
 }
 
+/// O selo da demonstracao (so' o exemplo com a feature `demonstracao` o mostra): cor propria, diferente das duas do
+/// ambiente, para ninguem tomar o teste por producao ou por producao restrita.
+pub const SELO_DA_DEMONSTRACAO: &str = "Demonstração: nada é enviado";
+
+/// As cores do selo da demonstracao.
+pub const CORES_DA_DEMONSTRACAO: CoresDoSelo = CoresDoSelo {
+    fundo: 0x0052_3A9E,
+    texto: 0x00FF_FFFF,
+};
+
 /// Preferencia de tema (`[interface].tema`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Tema {
@@ -189,6 +199,15 @@ mod testes {
         for a in [Ambiente::Producao, Ambiente::Restrita] {
             let c = a.cores();
             assert!(contraste(c.fundo, c.texto) >= 5.0, "{a:?}");
+        }
+        assert!(contraste(CORES_DA_DEMONSTRACAO.fundo, CORES_DA_DEMONSTRACAO.texto) >= 5.0);
+    }
+
+    #[test]
+    fn o_selo_da_demonstracao_nao_se_confunde_com_os_dois_reais() {
+        for a in [Ambiente::Producao, Ambiente::Restrita] {
+            assert_ne!(a.cores().fundo, CORES_DA_DEMONSTRACAO.fundo);
+            assert_ne!(a.selo(), SELO_DA_DEMONSTRACAO);
         }
     }
 }

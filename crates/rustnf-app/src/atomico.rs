@@ -12,7 +12,11 @@ static CONTADOR: AtomicU64 = AtomicU64::new(0);
 
 /// Grava `bytes` em `destino`: cria a pasta se faltar, escreve um arquivo temporario na mesma pasta, forca a ida ao
 /// disco e troca de nome por cima do destino. Se algo falhar, o temporario e' apagado e o destino fica como estava.
-pub(crate) fn gravar(destino: &Path, bytes: &[u8]) -> std::io::Result<()> {
+///
+/// # Errors
+///
+/// O erro de E/S da criacao da pasta, da escrita ou da troca de nome.
+pub fn gravar(destino: &Path, bytes: &[u8]) -> std::io::Result<()> {
     let pasta = match destino.parent() {
         Some(p) if !p.as_os_str().is_empty() => p,
         _ => Path::new("."),

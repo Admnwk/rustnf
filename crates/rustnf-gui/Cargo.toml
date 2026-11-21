@@ -15,10 +15,23 @@ workspace = true
 name = "rustnf-gui"
 path = "src/main.rs"
 
+[features]
+# O emissor de demonstracao (sem rede) e o exemplo `demonstracao`. Desligada por padrao: o executavel normal nao tem
+# como entrar nesse modo.
+demonstracao = []
+
+[[example]]
+name = "demonstracao"
+path = "examples/demonstracao.rs"
+required-features = ["demonstracao"]
+
 [dependencies]
 rustnf = { path = "../rustnf", features = ["sefin", "danfse"] }
 rustnf-app = { path = "../rustnf-app" }
+async-trait = "0.1"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 tokio = { version = "1", features = ["rt-multi-thread", "time", "net"] }
 
 [target.'cfg(windows)'.dependencies]
@@ -26,7 +39,6 @@ gpui-kit = "=0.10.0"
 
 [dev-dependencies]
 rustnf = { path = "../rustnf", features = ["sefin", "danfse", "cert_a1_teste"] }
-async-trait = "0.1"
 
 [target.'cfg(windows)'.dev-dependencies]
 gpui-kit = { version = "=0.10.0", features = ["test-support"] }

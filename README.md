@@ -18,7 +18,7 @@ Emissor aberto de NFS-e do padrao nacional (Sefin Nacional / ADN), escrito em Ru
 | cliente da Sefin Nacional | transporte falso (resposta perdida, 5xx, E0014, consulta, cancelamento) | uma chamada real, com TLS mutuo e certificado A1 |
 | previa do IBS/CBS | casos de teste da calculadora oficial da Receita Federal | comparar com os valores de uma NFS-e autorizada |
 | DANFSe | contrato de conteudo e leiaute | comparar com um DANFSe emitido pelo portal |
-| interface de desktop (`rustnf-gui`, so' Windows) | testes do modelo (mascaras, conferencia, ida e volta com o arquivo de configuracao) e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuracao | emitir, consultar, cancelar e ver a previa pela janela (hoje ela so' configura); uma chamada real a Sefin pelo botao "Testar conexao"; exame da janela em outras escalas de tela |
+| interface de desktop (`rustnf-gui`, so' Windows) | testes do modelo (mascaras, conferencia, pedido, previa, sugestao, rascunho e desfechos da emissao), da emissao com emissor de demonstracao e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuracao e pelo exemplo de demonstracao | **emitir uma nota real pela janela: nenhuma foi emitida, so' o emissor de demonstracao respondeu**; consultar, cancelar, lista de notas, DANFSe e previa avulsa pela janela; uma chamada real a Sefin pelo botao "Testar conexao"; exame da janela em outras escalas de tela |
 
 Se voce testar, conte como foi: abra um relato pelo modelo **"Relato de emissao"** (aba Issues), mesmo quando der
 certo. Correcao e' bem-vinda por pedido de mudanca, com a fonte oficial citada e um caso no contrato (veja
@@ -333,13 +333,52 @@ O que ja faz: primeiro uso em tres passos (emitente, certificado, pasta das nota
 (emitente, Sefin Nacional com ambiente, certificado, senha, assinatura, tempo limite e folga do relogio, notas, canhoto do
 DANFSe, aliquotas por ano e tema); botoes "Testar certificado" (abre o `.pfx`, sem rede) e "Testar conexao com a Sefin"
 (chamada real a Sefin Nacional, so' quando voce clica); selo fixo do ambiente (Producao ou Producao restrita) e estado
-do certificado no rodape. O que ainda **nao** faz: montar e emitir nota, consultar, cancelar e a previa do IBS/CBS (por
-enquanto, use a linha de comando para isso).
+do certificado no rodape; e a **Nova nota** (abaixo). O que ainda **nao** faz: consultar, cancelar, listar as notas e
+abrir o DANFSe, e a previa do IBS/CBS avulsa (por enquanto, use a linha de comando para isso).
+
+### Nova nota
+
+Item "Nova nota" da barra lateral (Ctrl+N; o Inicio tem o botao "Emitir uma nota"). Com a configuracao incompleta ela so'
+explica o que falta. O prestador, a serie, o municipio emissor e o regime vem do `[emitente]`; o numero da DPS vem da pasta
+de notas e a data e hora de emissao sao automaticas. O formulario cobre o **caso comum**, em uma pagina:
+
+* **tomador** (CNPJ ou CPF com conferencia dos digitos, endereco nacional; ou "nota sem tomador identificado");
+* **servico**: busca na Lista Nacional por texto ou por codigo, descricao, municipio da prestacao, NBS e codigos opcionais;
+* **valores**: valor do servico, descontos e competencia (dinheiro no formato `1.234,56`);
+* **ISS**: tributavel no municipio ou nao incidencia, retencao pelo tomador, aliquota e os tributos aproximados que o
+  regime do emitente pede (percentual do Simples Nacional, ou totais por esfera);
+* **tributos federais** (opcional): IRRF, CSLL, contribuicao previdenciaria e PIS/COFINS;
+* **IBS/CBS**: `cIndOp`, `cClassTrib` (o CST sai dele) e consumidor final, com a **sugestao da correlacao do Anexo VIII**
+  (NBS, `cIndOp` e `cClassTrib`): ela so' propoe, so' preenche campo vazio e nao escolhe calada quando ha mais de uma
+  classificacao. A biblioteca aceita a nota sem este grupo, entao a tela o deixa desligavel.
+
+Um painel fixo ao lado (embaixo, em janela estreita) mostra, enquanto voce digita, as **pendencias** (clique leva ao campo),
+o resumo de valores com o valor liquido estimado, a **previa do IBS/CBS** (com as `[[aliquotas]]` da configuracao; sem
+aliquota para o ano, ela diz isso e aponta a aba Aliquotas) e o botao Emitir, desligado com o motivo ao lado enquanto
+houver pendencia. O erro aparece embaixo do campo, so' depois de voce passar por ele. O rascunho e' salvo sozinho na pasta
+de notas (`rascunho.json`) e volta ao reabrir; "Limpar" pergunta antes.
+
+Emitir abre uma confirmacao com o ambiente em destaque; **em producao ela so' habilita depois de marcar "Entendo que esta
+nota tem valor fiscal"**. O envio roda fora da tela e o pedido enviado fica congelado (mesmo numero de DPS, mesma data e
+hora): se a Sefin nao responder, o formulario trava e "Tentar de novo" reenvia exatamente o mesmo pedido (a biblioteca
+recupera a nota se ela ja existir); "Desistir desta tentativa" avisa que a nota pode ter sido autorizada. Se a Sefin
+rejeitar, os dados ficam e as mensagens aparecem no painel. Sem senha no cofre, a tela a pede (so' para aquela emissao;
+nao e' guardada). O que a tela nao cobre (tomador no exterior, intermediario, comercio exterior, obra, evento, locacao,
+deducoes, reembolsos, substituicao, beneficio municipal, suspensao, imunidade, destinatario diferente do tomador) se emite
+pela linha de comando com o JSON completo. **Nenhuma nota real foi emitida por esta interface.**
+
+Para clicar em tudo sem falar com a Sefin, ha o exemplo `demonstracao` (feature `demonstracao`, desligada por padrao; o
+executavel normal nao tem como entrar nesse modo). Ele abre a mesma janela com um emissor que nao usa a rede, com selo e
+titulo proprios, e a nota "autorizada" entra de verdade na pasta de notas do arquivo de configuracao: use uma pasta de
+ensaio.
 
 ```
 cargo run -p rustnf-gui                      # modo de depuracao
 cargo run -p rustnf-gui -- --config rustnf.toml
 cargo build --release -p rustnf-gui          # no Windows, precisa do fxc.exe do Windows SDK
+
+# sem falar com a Sefin: --resultado autorizada (padrao), rejeitada ou sem-resposta
+cargo run -p rustnf-gui --features demonstracao --example demonstracao -- --config ensaio.toml --resultado autorizada
 ```
 
 A compilacao **release** no Windows precisa do `fxc.exe` (compilador de shaders do Windows SDK): deixe-o no `PATH` ou
