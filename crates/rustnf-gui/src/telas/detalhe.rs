@@ -98,6 +98,8 @@ pub(super) struct VisaoDetalhe {
     conteudo: Conteudo,
     danfse: Danfse,
     copiada: bool,
+    /// O XML da nota mostrada foi copiado para a area de transferencia.
+    xml_copiado: bool,
     guardando: bool,
     /// Falha de uma acao (mostrar na pasta, guardar...).
     erro: Option<String>,
@@ -125,6 +127,7 @@ impl VisaoDetalhe {
             conteudo: Conteudo::Vazio,
             danfse: Danfse::Parado,
             copiada: false,
+            xml_copiado: false,
             guardando: false,
             erro: None,
             versao: 0,
@@ -142,8 +145,15 @@ impl VisaoDetalhe {
         self.versao += 1;
         self.danfse = Danfse::Parado;
         self.copiada = false;
+        self.xml_copiado = false;
         self.guardando = false;
         self.erro = None;
+    }
+
+    /// O XML da nota mostrada foi copiado (o botao "Copiar o XML" mostra isso).
+    #[cfg(test)]
+    pub(super) fn xml_copiado(&self) -> bool {
+        self.xml_copiado
     }
 
     /// Nao ha nota escolhida.
@@ -281,6 +291,52 @@ impl VisaoDetalhe {
             self.copiada = true;
             cx.notify();
         }
+    }
+
+    /// "Copiar o XML": poe na area de transferencia o XML da nota, inteiro. Nota da pasta: le o arquivo guardado, fora
+    /// da linha da tela. Nota que veio da consulta: o XML ja esta na memoria.
+    fn copiar_xml(&mut self, cx: &mut Context<Self>) {
+        let chave = match &self.conteudo {
+            Conteudo::Lida {
+                origem: Origem::Consulta { nota, .. },
+                ..
+            } => {
+                cx.write_to_clipboard(ClipboardItem::new_string(nota.xml.clone()));
+                self.xml_copiado = true;
+                cx.notify();
+                return;
+            }
+            Conteudo::Lida {
+                detalhe,
+                origem: Origem::Pasta,
+            } => detalhe.chave.clone(),
+            _ => return,
+        };
+        self.erro = None;
+        let versao = self.versao;
+        let servicos = Arc::clone(&self.servicos);
+        let config = self.config.clone();
+        cx.spawn(async move |this, cx| {
+            let r = cx
+                .background_spawn(async move { servicos.xml_da_nota(&config, &chave) })
+                .await;
+            this.update(cx, |this, cx| {
+                // a pessoa escolheu outra nota enquanto o arquivo era lido: nao copia o XML da anterior
+                if this.versao != versao {
+                    return;
+                }
+                match r {
+                    Ok(xml) => {
+                        cx.write_to_clipboard(ClipboardItem::new_string(xml));
+                        this.xml_copiado = true;
+                    }
+                    Err(e) => this.erro = Some(e.texto()),
+                }
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
     }
 
     /// Pede ao sistema que abra (ou mostre) o arquivo, se o servico de abrir arquivos deixar.
@@ -611,6 +667,24 @@ impl VisaoDetalhe {
                         .icon(IconName::FolderOpen)
                         .outline()
                         .on_click(cx.listener(|this, _, _, cx| this.mostrar_na_pasta(cx))),
+                )
+            })
+            .when(com_xml, |d| {
+                let copiado = self.xml_copiado;
+                d.child(
+                    Button::new("copiar-xml")
+                        .label(if copiado {
+                            "XML copiado"
+                        } else {
+                            "Copiar o XML"
+                        })
+                        .icon(if copiado {
+                            IconName::Check
+                        } else {
+                            IconName::Copy
+                        })
+                        .outline()
+                        .on_click(cx.listener(|this, _, _, cx| this.copiar_xml(cx))),
                 )
             })
             .when(pode_modelo, |d| {

@@ -213,6 +213,39 @@ fn configuracoes_digita_salva_e_o_arquivo_fica_igual_ao_da_linha_de_comando(
     assert_eq!(lido.emitente.serie, "7");
     assert_eq!(lido.servidor.porta, 9090);
     cx.update(|cx| assert!(!raiz.read(cx).formulario.alterado()));
+
+    // Ctrl+Shift+D descarta o que foi digitado e nao salvo: o campo volta ao valor do arquivo
+    digitar(cx, janela, "nome", "NOME QUE NAO FICA", true);
+    cx.update(|cx| assert!(raiz.read(cx).formulario.alterado()));
+    cx.update_window(janela.into(), |_, window, cx| {
+        window.press("ctrl-shift-d", cx);
+    })
+    .unwrap();
+    cx.run_until_parked();
+    cx.update(|cx| assert!(!raiz.read(cx).formulario.alterado()));
+    cx.update_window(janela.into(), |_, window, cx| {
+        window.render_frame(cx);
+        assert_eq!(window.find("nome").value(), Some("OFICINA NOVA LTDA"));
+    })
+    .unwrap();
+    assert_eq!(
+        Config::ler(&arquivo).unwrap().emitente.nome,
+        "OFICINA NOVA LTDA"
+    );
+    // fora das Configuracoes o atalho nao faz nada
+    cx.update(|cx| {
+        raiz.update(cx, |r, cx| {
+            r.tela = Tela::Inicio;
+            cx.notify();
+        });
+    });
+    cx.update_window(janela.into(), |_, window, cx| {
+        window.render_frame(cx);
+        window.press("ctrl-shift-d", cx);
+    })
+    .unwrap();
+    cx.run_until_parked();
+    cx.update(|cx| assert_eq!(raiz.read(cx).tela, Tela::Inicio));
 }
 
 #[gpui_kit::test]

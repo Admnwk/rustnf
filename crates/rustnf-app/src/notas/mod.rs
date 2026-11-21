@@ -31,7 +31,7 @@ use std::path::{Path, PathBuf};
 use rustnf::chave_dfe;
 use serde::{Deserialize, Serialize};
 
-pub use filtro::{sem_acento, Filtro};
+pub use filtro::{chave_da_busca, sem_acento, Filtro};
 pub use manutencao::{csv, Exportadas, Reindexado, INDICE_ANTERIOR, LISTA_CSV};
 pub use registro::{Registro, Situacao};
 

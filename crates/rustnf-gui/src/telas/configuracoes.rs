@@ -509,7 +509,7 @@ impl Raiz {
                             .py_6()
                             .child(cabecalho(
                                 "Configurações",
-                                "O mesmo arquivo que a linha de comando lê. Salve com Ctrl+S.",
+                                "O mesmo arquivo que a linha de comando lê. Salve com Ctrl+S; descarte o que mudou com Ctrl+Shift+D.",
                                 cx,
                             ))
                             .when_some(arquivo, |d, (nome, novo)| {

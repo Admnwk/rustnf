@@ -6,9 +6,8 @@
 //! CPF mascarado, valor e situacao), a busca por texto e o filtro por situacao. Sem janela: a tela so' desenha o que
 //! `visiveis` devolve.
 
-use rustnf_app::notas::{Registro, Situacao};
+use rustnf_app::notas::{chave_da_busca, Registro, Situacao};
 
-use super::chave;
 use super::mascara::{
     centavos_para_dinheiro, dinheiro_para_centavos, documento_para_resumo, iso_para_data_br,
     limpar_documento,
@@ -88,23 +87,8 @@ struct Palheiro {
     documento: String,
 }
 
-/// Minusculas e sem acento (so' as letras do portugues): a busca nao distingue `Joao` de `JOÃO`.
-#[must_use]
-pub fn sem_acento(texto: &str) -> String {
-    texto
-        .chars()
-        .flat_map(char::to_lowercase)
-        .map(|c| match c {
-            'á' | 'à' | 'â' | 'ã' | 'ä' => 'a',
-            'é' | 'è' | 'ê' | 'ë' => 'e',
-            'í' | 'ì' | 'î' | 'ï' => 'i',
-            'ó' | 'ò' | 'ô' | 'õ' | 'ö' => 'o',
-            'ú' | 'ù' | 'û' | 'ü' => 'u',
-            'ç' => 'c',
-            outro => outro,
-        })
-        .collect()
-}
+/// Minusculas e sem acento: a mesma regra da busca da pasta de notas na linha de comando.
+pub use rustnf_app::notas::sem_acento;
 
 fn so_digitos(texto: &str) -> String {
     texto.chars().filter(char::is_ascii_digit).collect()
@@ -165,16 +149,15 @@ struct Palavra {
     digitos: String,
 }
 
-/// O texto da busca, ja separado em palavras. Um termo com 20 digitos ou mais e' parte de uma chave de acesso.
+/// O texto da busca, ja separado em palavras. Uma chave de acesso colada (inteira ou o comeco dela, com 20 posicoes ou
+/// mais) acha a nota pela chave; a regra e' a de `rustnf_app::notas::chave_da_busca`, a mesma da linha de comando.
 struct Termo {
     palavras: Vec<Palavra>,
     chave_inteira: Option<String>,
 }
 
 fn termo(busca: &str) -> Termo {
-    let digitos = chave::limpar(busca);
-    let chave_inteira = (digitos.len() >= 20 && digitos.chars().all(|c| c.is_ascii_alphanumeric()))
-        .then_some(digitos);
+    let chave_inteira = chave_da_busca(busca);
     let palavras = sem_acento(busca)
         .split_whitespace()
         .map(|p| Palavra {
@@ -327,6 +310,7 @@ mod testes {
     use rustnf::chave_dfe::montar_nfse;
 
     use super::*;
+    use crate::modelo::chave;
 
     #[test]
     fn contador_concorda_em_numero() {
@@ -463,6 +447,37 @@ mod testes {
         // "55" aparece em quase toda chave, mas a busca curta nao olha a chave
         l.definir_busca("55");
         assert_eq!(l.quantas(), 0);
+    }
+
+    #[test]
+    fn nome_comprido_com_numero_no_meio_continua_busca_por_nome() {
+        let reg = vec![
+            registro(
+                1,
+                "2026-10-02T10:00:00-03:00",
+                "Clinica 24 Horas Sao Paulo Centro Ltda",
+                "11222333000181",
+                Situacao::Autorizada,
+            ),
+            registro(
+                2,
+                "2026-10-03T10:00:00-03:00",
+                "Maria de Teste",
+                "52998224725",
+                Situacao::Autorizada,
+            ),
+        ];
+        let mut l = ListaDeNotas::nova(&reg);
+        // 25 letras e digitos a partir do "24": nao e' uma chave de acesso, e' o nome
+        l.definir_busca("24 horas sao paulo centro ltda");
+        assert_eq!(l.quantas(), 1);
+        assert_eq!(l.linha(0).unwrap().numero, "1");
+        l.definir_busca("Clinica 24 Horas Sao Paulo Centro");
+        assert_eq!(l.quantas(), 1);
+        // a chave colada (inteira, com ou sem grupos) continua achando a nota
+        l.definir_busca(&reg[1].chave);
+        assert_eq!(l.quantas(), 1);
+        assert_eq!(l.linha(0).unwrap().numero, "2");
     }
 
     #[test]

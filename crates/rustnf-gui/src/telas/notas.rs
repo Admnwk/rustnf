@@ -7,6 +7,7 @@
 //! A lista, a busca e o filtro moram em `modelo::lista`; aqui so' ha desenho e ligacao de eventos.
 
 use std::ops::Range;
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use gpui_kit::component::button::{Button, ButtonVariants as _, Toggle, ToggleGroup};
@@ -29,7 +30,7 @@ use super::pecas::{cabecalho, estado_vazio, faixa, selo_da_situacao, Negrito as 
 use crate::modelo::certificado::Gravidade;
 use crate::modelo::lista::{contagem_de_notas, FiltroDeSituacao, ListaDeNotas};
 use crate::modelo::nota::DadosNota;
-use crate::servicos::Servicos;
+use crate::servicos::{Destino, Servicos};
 use crate::telas::LARGURA_DA_LATERAL;
 
 /// Largura minima da area de conteudo para o detalhe ficar ao lado da lista; abaixo disso ele e' uma pagina.
@@ -98,9 +99,7 @@ impl TelaNotas {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Self {
-        let busca = cx.new(|cx| {
-            InputState::new(window, cx).placeholder("Buscar por nome, CPF/CNPJ ou número")
-        });
+        let busca = cx.new(|cx| InputState::new(window, cx).placeholder("Nome, CPF/CNPJ ou nº"));
         let detalhe = {
             let servicos = Arc::clone(&servicos);
             cx.new(|cx| VisaoDetalhe::new(servicos, cancelamento, window, cx))
@@ -270,6 +269,17 @@ impl TelaNotas {
         cx.notify();
     }
 
+    /// "Abrir a pasta": pede ao sistema que abra a pasta de notas inteira no gerenciador de arquivos.
+    fn abrir_a_pasta(&mut self, cx: &mut Context<Self>) {
+        let pasta = PathBuf::from(self.config.notas.pasta.trim());
+        if pasta.as_os_str().is_empty() {
+            return;
+        }
+        if self.servicos.abridor().pedir(Destino::Abrir, &pasta) {
+            cx.open_with_system(&pasta);
+        }
+    }
+
     fn limpar_a_busca(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         self.busca.update(cx, |e, cx| e.set_value("", window, cx));
         self.lista.definir_busca("");
@@ -426,8 +436,9 @@ impl TelaNotas {
             .gap_3()
             .items_center()
             .flex_wrap()
+            // a busca encolhe (ate 200 px) antes de a barra quebrar em duas linhas
             .child(
-                div().w(px(340.)).child(
+                div().flex_1().min_w(px(200.)).max_w(px(340.)).child(
                     Input::new(&self.busca)
                         .id("busca-de-notas")
                         .prefix(Icon::new(IconName::Search).small()),
@@ -442,6 +453,14 @@ impl TelaNotas {
                     .child(contagem),
             )
             .child(div().flex_1())
+            .child(
+                Button::new("abrir-pasta-de-notas")
+                    .label("Abrir a pasta")
+                    .icon(IconName::FolderOpen)
+                    .outline()
+                    .small()
+                    .on_click(cx.listener(|this, _, _, cx| this.abrir_a_pasta(cx))),
+            )
             .child(
                 Button::new("atualizar-notas")
                     .label("Atualizar")
