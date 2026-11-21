@@ -3,7 +3,7 @@ resolver = "2"
 members = ["crates/rustnf", "crates/rustnf-app", "crates/rustnf-cli", "crates/rustnf-gui"]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 license = "MPL-2.0"
 authors = ["Os autores do rustnf"]

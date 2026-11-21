@@ -87,8 +87,9 @@ calcula é a Sefin Nacional): `calcular` é só uma prévia; vale o que voltar n
 
 Cada versão publicada traz, na página de Releases, um `.zip` para Windows (64 bits) com `rustnf.exe` (linha de comando)
 e `rustnf-gui.exe` (interface de desktop), e um `.tar.gz` com a linha de comando para Linux. Não há instalador:
-descompacte e execute. No Windows (10 ou 11) não é preciso instalar mais nada: a biblioteca C vai dentro do
-executável. Para emitir você precisa do seu certificado A1 (`.pfx`) e da senha dele.
+descompacte e execute. As versões anteriores continuam na mesma página, para quem preferir. No Windows (10 ou 11)
+não é preciso instalar mais nada: a biblioteca C vai dentro do executável. Para emitir você precisa do seu certificado
+A1 (`.pfx`) e da senha dele.
 
 O executável **não tem assinatura de código**. No primeiro uso o Windows pode mostrar "O Windows protegeu o
 computador" (SmartScreen): clique em "Mais informações" e depois em "Executar assim mesmo". Antes, confira o
@@ -299,7 +300,7 @@ limpo.
 
 ```
 $ curl -s http://127.0.0.1:8080/health
-{"emissao":false,"status":"ok","versao":"0.1.0"}
+{"emissao":false,"status":"ok","versao":"0.2.0"}
 
 $ curl -s -X POST http://127.0.0.1:8080/calcular -H 'Content-Type: application/json' \
     --data-binary @crates/rustnf-cli/exemplos/calculo.json
