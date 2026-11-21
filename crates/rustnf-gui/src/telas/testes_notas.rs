@@ -364,6 +364,83 @@ fn abrir_a_pasta_de_notas_e_copiar_o_xml_da_nota(cx: &mut TestAppContext) {
     cx.update(|cx| assert!(!notas.read(cx).detalhe.read(cx).xml_copiado()));
 }
 
+/// Hoje em Brasilia, `AAAA-MM-DD` (a mesma conta do contexto da tela).
+fn hoje_iso() -> String {
+    (chrono::Utc::now() - chrono::Duration::hours(3))
+        .format("%Y-%m-%d")
+        .to_string()
+}
+
+/// Como `semear`, com a nota emitida hoje (o periodo da lista conta a partir de hoje).
+fn semear_hoje(c: &Cenario, numero: u64, documento: &str, nome: &str) -> String {
+    let mut d = dps(numero, documento, nome, "100.00", CNPJ);
+    d.emissao = Some(format!("{}T10:00:00-03:00", hoje_iso()));
+    let (chave, xml) = autorizar(c, &d);
+    let nfse = rustnf::nfse::leitura::ler_nfse(&xml).unwrap();
+    Notas::abrir(&c.notas)
+        .unwrap()
+        .guardar(&Registro::da_nfse(&nfse), &xml)
+        .unwrap();
+    chave
+}
+
+#[gpui_kit::test]
+fn periodo_da_lista_e_exportar_o_que_esta_nela(cx: &mut TestAppContext) {
+    let c = cenario(cx, "restrita", &[Desfecho::Autorizada], true, 1120.);
+    let maria = semear_hoje(&c, 1, "52998224725", "Maria de Teste");
+    let oficina = semear_hoje(&c, 2, "11222333000181", "Oficina Exemplo Ltda");
+    ir_para(cx, &c, Tela::Notas);
+    esperar_a_lista(cx, &c, 2);
+    let notas = tela_notas(cx, &c);
+    // "Mes passado" (o terceiro): nenhuma, e nada a exportar; "Este mes" (o segundo): as duas
+    clicar(cx, &c, "periodo-notas-2");
+    cx.update(|cx| assert_eq!(notas.read(cx).lista.quantas(), 0));
+    // o estado "nenhuma nota encontrada" (o suporte de teste acha o botao dele, nao o painel)
+    assert!(existe(cx, &c, "notas-limpar-busca"));
+    clicar(cx, &c, "periodo-notas-1");
+    cx.update(|cx| assert_eq!(notas.read(cx).lista.quantas(), 2));
+    // a busca vale junto: so' a Maria vai para a exportacao
+    digitar(cx, &c, "busca-de-notas", "maria");
+    cx.update(|cx| assert_eq!(notas.read(cx).lista.quantas(), 1));
+
+    let destino = c._pasta.caminho().join("para o contador");
+    clicar(cx, &c, "exportar-notas");
+    assert!(cx.did_prompt_for_paths(), "pergunta a pasta de destino");
+    let escolhida = destino.clone();
+    cx.simulate_path_prompt_response(move |_| Some(vec![escolhida]));
+    esperar_ate(cx, "a exportacao", |cx| {
+        cx.run_until_parked();
+        cx.update(|cx| notas.read(cx).exportacao.is_some())
+    });
+    cx.update(|cx| {
+        let (grav, texto) = notas.read(cx).exportacao.clone().unwrap();
+        assert_eq!(grav, crate::modelo::certificado::Gravidade::Ok, "{texto}");
+        assert!(
+            texto.contains("1 nota") && texto.contains("para o contador"),
+            "{texto}"
+        );
+    });
+    assert!(destino.join(format!("{maria}.xml")).is_file());
+    assert!(!destino.join(format!("{oficina}.xml")).exists());
+    let lista = std::fs::read_to_string(destino.join("notas.csv")).unwrap();
+    assert_eq!(lista.lines().count(), 2, "titulos e a Maria: {lista}");
+    assert!(
+        lista.contains("Maria de Teste") && lista.contains(&maria),
+        "{lista}"
+    );
+    // depois de gravar, a pasta exportada e' aberta; a pasta de notas fica como estava
+    assert!(c
+        .abridor
+        .pedidos()
+        .contains(&(Destino::Abrir, destino.clone())));
+    assert_eq!(Notas::abrir(&c.notas).unwrap().listar().unwrap().len(), 2);
+
+    // lista vazia: o botao nao pergunta nada
+    clicar(cx, &c, "periodo-notas-2");
+    clicar(cx, &c, "exportar-notas");
+    assert!(!cx.did_prompt_for_paths());
+}
+
 // ---------------------------------------------------------------- DANFSe
 
 #[gpui_kit::test]

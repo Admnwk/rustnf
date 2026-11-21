@@ -48,6 +48,67 @@ impl FiltroDeSituacao {
     }
 }
 
+/// O periodo da lista, contado a partir de hoje: o que se pede para fechar o mes com a contabilidade.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum Periodo {
+    /// Sem limite de data.
+    #[default]
+    Todo,
+    /// Do dia 1 do mes de hoje em diante.
+    EsteMes,
+    /// O mes anterior ao de hoje, inteiro.
+    MesPassado,
+    /// Do dia 1 de janeiro do ano de hoje em diante.
+    EsteAno,
+}
+
+impl Periodo {
+    /// Os periodos, na ordem em que a tela os mostra.
+    pub const TODOS: [Periodo; 4] = [Self::Todo, Self::EsteMes, Self::MesPassado, Self::EsteAno];
+
+    /// O rotulo do periodo.
+    #[must_use]
+    pub fn rotulo(self) -> &'static str {
+        match self {
+            Self::Todo => "Todo o período",
+            Self::EsteMes => "Este mês",
+            Self::MesPassado => "Mês passado",
+            Self::EsteAno => "Este ano",
+        }
+    }
+
+    /// O primeiro e o ultimo dia (`AAAA-MM-DD`, os dois inclusive) do periodo, contado a partir de `hoje`
+    /// (`AAAA-MM-DD`). `None` e' sem limite; `hoje` que nao e' uma data deixa o periodo sem limite.
+    #[must_use]
+    pub fn intervalo(self, hoje: &str) -> (Option<String>, Option<String>) {
+        let ano = hoje.get(0..4).and_then(|a| a.parse::<u32>().ok());
+        let mes = hoje
+            .get(5..7)
+            .and_then(|m| m.parse::<u32>().ok())
+            .filter(|m| (1..=12).contains(m));
+        let (Some(ano), Some(mes)) = (ano, mes) else {
+            return (None, None);
+        };
+        // o fim do mes como dia 31: a comparacao e' de texto, e nenhum dia passa de 31
+        let do_mes = |a: u32, m: u32| {
+            (
+                Some(format!("{a:04}-{m:02}-01")),
+                Some(format!("{a:04}-{m:02}-31")),
+            )
+        };
+        match self {
+            Self::Todo => (None, None),
+            Self::EsteMes => do_mes(ano, mes),
+            Self::MesPassado if mes == 1 => do_mes(ano - 1, 12),
+            Self::MesPassado => do_mes(ano, mes - 1),
+            Self::EsteAno => (
+                Some(format!("{ano:04}-01-01")),
+                Some(format!("{ano:04}-12-31")),
+            ),
+        }
+    }
+}
+
 /// O rotulo da situacao de uma nota.
 #[must_use]
 pub fn rotulo_da_situacao(situacao: Situacao) -> &'static str {
@@ -85,6 +146,8 @@ struct Palheiro {
     nome: String,
     numeros: String,
     documento: String,
+    /// O dia da emissao, `AAAA-MM-DD`, para o periodo.
+    dia: String,
 }
 
 /// Minusculas e sem acento: a mesma regra da busca da pasta de notas na linha de comando.
@@ -126,8 +189,16 @@ impl LinhaDeNota {
                 nome: sem_acento(&r.tomador_nome),
                 numeros: format!("{} {}", so_digitos(&r.numero), so_digitos(&r.numero_dps)),
                 documento: so_digitos(&r.tomador_documento),
+                dia: r.emissao.get(..10).unwrap_or(&r.emissao).to_string(),
             },
         }
+    }
+
+    /// O dia da emissao esta no intervalo (as pontas inclusive).
+    fn no_periodo(&self, intervalo: &(Option<String>, Option<String>)) -> bool {
+        let dia = self.palheiro.dia.as_str();
+        intervalo.0.as_deref().is_none_or(|de| dia >= de)
+            && intervalo.1.as_deref().is_none_or(|ate| dia <= ate)
     }
 
     /// A linha casa com o termo (todas as palavras dele, em qualquer ordem, no nome, no documento ou nos numeros).
@@ -176,8 +247,13 @@ fn termo(busca: &str) -> Termo {
 #[derive(Debug, Clone, Default)]
 pub struct ListaDeNotas {
     linhas: Vec<LinhaDeNota>,
+    /// Os registros do indice, na mesma ordem das linhas (para exportar o que esta na lista).
+    registros: Vec<Registro>,
     busca: String,
     filtro: FiltroDeSituacao,
+    periodo: Periodo,
+    /// Hoje, `AAAA-MM-DD`: a referencia do periodo.
+    hoje: String,
     visiveis: Vec<usize>,
 }
 
@@ -185,35 +261,67 @@ impl ListaDeNotas {
     /// A lista dos registros do indice, da nota mais recente para a mais antiga (data, depois chave).
     #[must_use]
     pub fn nova(registros: &[Registro]) -> Self {
-        let mut ordem: Vec<&Registro> = registros.iter().collect();
+        let mut ordem: Vec<Registro> = registros.to_vec();
         ordem.sort_by(|a, b| (&b.emissao, &b.chave).cmp(&(&a.emissao, &a.chave)));
         let mut lista = Self {
-            linhas: ordem.into_iter().map(LinhaDeNota::do_registro).collect(),
+            linhas: ordem.iter().map(LinhaDeNota::do_registro).collect(),
+            registros: ordem,
             ..Self::default()
         };
         lista.refazer();
         lista
     }
 
-    /// A lista nova com a busca e o filtro que a antiga tinha (a tela recarrega sem perder o que a pessoa escolheu).
+    /// A lista nova com a busca, o filtro e o periodo que a antiga tinha (a tela recarrega sem perder o que a pessoa
+    /// escolheu).
     #[must_use]
     pub fn recarregada(&self, registros: &[Registro]) -> Self {
         let mut nova = Self::nova(registros);
         nova.busca.clone_from(&self.busca);
         nova.filtro = self.filtro;
+        nova.periodo = self.periodo;
+        nova.hoje.clone_from(&self.hoje);
         nova.refazer();
         nova
     }
 
     fn refazer(&mut self) {
         let termo = termo(&self.busca);
+        let intervalo = self.periodo.intervalo(&self.hoje);
         self.visiveis = self
             .linhas
             .iter()
             .enumerate()
-            .filter(|(_, l)| self.filtro.deixa_passar(l.situacao) && l.casa(&termo))
+            .filter(|(_, l)| {
+                self.filtro.deixa_passar(l.situacao) && l.no_periodo(&intervalo) && l.casa(&termo)
+            })
             .map(|(i, _)| i)
             .collect();
+    }
+
+    /// Muda o periodo, contado a partir de `hoje` (`AAAA-MM-DD`).
+    pub fn definir_periodo(&mut self, periodo: Periodo, hoje: &str) {
+        if self.periodo != periodo || self.hoje != hoje {
+            self.periodo = periodo;
+            self.hoje = hoje.to_string();
+            self.refazer();
+        }
+    }
+
+    /// O periodo.
+    #[must_use]
+    pub fn periodo(&self) -> Periodo {
+        self.periodo
+    }
+
+    /// Os registros do indice das notas que passam pela busca, pelo filtro e pelo periodo, na ordem da lista: o que
+    /// "Exportar a lista" grava.
+    #[must_use]
+    pub fn registros_visiveis(&self) -> Vec<Registro> {
+        self.visiveis
+            .iter()
+            .filter_map(|i| self.registros.get(*i).cloned())
+            .collect()
     }
 
     /// Muda o texto da busca.
@@ -503,6 +611,68 @@ mod testes {
     }
 
     #[test]
+    fn o_periodo_conta_a_partir_de_hoje_e_vira_o_ano() {
+        let dia = |s: &str| Some(s.to_string());
+        assert_eq!(Periodo::Todo.intervalo("2026-11-21"), (None, None));
+        assert_eq!(
+            Periodo::EsteMes.intervalo("2026-11-21"),
+            (dia("2026-11-01"), dia("2026-11-31"))
+        );
+        assert_eq!(
+            Periodo::MesPassado.intervalo("2026-11-21"),
+            (dia("2026-10-01"), dia("2026-10-31"))
+        );
+        assert_eq!(
+            Periodo::MesPassado.intervalo("2027-01-05"),
+            (dia("2026-12-01"), dia("2026-12-31")),
+            "em janeiro, o mes passado e' dezembro do ano anterior"
+        );
+        assert_eq!(
+            Periodo::EsteAno.intervalo("2026-11-21"),
+            (dia("2026-01-01"), dia("2026-12-31"))
+        );
+        // hoje que nao e' uma data: sem limite, em vez de esconder tudo
+        assert_eq!(Periodo::EsteMes.intervalo(""), (None, None));
+        assert_eq!(Periodo::EsteMes.intervalo("2026-13-01"), (None, None));
+        assert_eq!(Periodo::TODOS[2].rotulo(), "Mês passado");
+    }
+
+    #[test]
+    fn o_periodo_combina_com_a_busca_e_o_filtro_e_a_exportacao_leva_o_que_passa() {
+        // amostra: 02/10 Maria (autorizada), 05/11 Oficina (cancelada), 05/11 Joao (autorizada), 20/09 sem documento
+        let mut l = ListaDeNotas::nova(&amostra());
+        l.definir_periodo(Periodo::EsteMes, "2026-11-21");
+        assert_eq!(l.periodo(), Periodo::EsteMes);
+        assert_eq!(l.quantas(), 2);
+        l.definir_periodo(Periodo::MesPassado, "2026-11-21");
+        assert_eq!(l.quantas(), 1);
+        assert_eq!(l.linha(0).unwrap().tomador, "Maria de Teste");
+        l.definir_periodo(Periodo::EsteAno, "2026-11-21");
+        assert_eq!(l.quantas(), 4);
+        // com o filtro e a busca
+        l.definir_periodo(Periodo::EsteMes, "2026-11-21");
+        l.definir_filtro(FiltroDeSituacao::Autorizadas);
+        assert_eq!(l.quantas(), 1);
+        assert_eq!(l.linha(0).unwrap().tomador, "João da Silva");
+        let exportar = l.registros_visiveis();
+        assert_eq!(exportar.len(), 1);
+        assert_eq!(exportar[0].tomador_nome, "João da Silva");
+        assert_eq!(exportar[0].chave, l.linha(0).unwrap().chave);
+        // um mes sem nota: sem resultado, e nada a exportar
+        l.definir_filtro(FiltroDeSituacao::Todas);
+        l.definir_periodo(Periodo::EsteMes, "2026-12-01");
+        assert!(l.sem_resultado());
+        assert!(l.registros_visiveis().is_empty());
+        // de volta a todo o periodo: tudo, na ordem da lista
+        l.definir_periodo(Periodo::Todo, "2026-12-01");
+        let todas = l.registros_visiveis();
+        assert_eq!(todas.len(), 4);
+        for (i, r) in todas.iter().enumerate() {
+            assert_eq!(r.chave, l.linha(i).unwrap().chave);
+        }
+    }
+
+    #[test]
     fn recarregar_guarda_a_busca_e_o_filtro() {
         let mut l = ListaDeNotas::nova(&amostra());
         l.definir_busca("maria");
@@ -515,9 +685,11 @@ mod testes {
             "52998224725",
             Situacao::Autorizada,
         ));
+        l.definir_periodo(Periodo::EsteAno, "2026-11-21");
         let nova = l.recarregada(&mais);
         assert_eq!(nova.busca(), "maria");
         assert_eq!(nova.filtro(), FiltroDeSituacao::Autorizadas);
+        assert_eq!(nova.periodo(), Periodo::EsteAno);
         assert_eq!(nova.quantas(), 2);
         assert_eq!(nova.total(), 5);
     }
