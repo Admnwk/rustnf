@@ -26,5 +26,5 @@ Material de terceiros distribuido com o codigo-fonte e embutido nos binarios (it
    com ou sem custo, desde que este aviso de copyright e de permissao acompanhe todas as copias.
    Texto das licencas: arquivo LICENSE-LUCIDE do crate `gpui-kit-assets` (publicado em crates.io).
 
-As bibliotecas Rust usadas pela feature (Typst e dependencias) tem licencas proprias, conferidas pelo `cargo deny`
-(veja deny.toml).
+As bibliotecas Rust usadas pela feature (`krilla`, `skrifa` e dependencias) tem licencas proprias, conferidas pelo
+`cargo deny` (veja deny.toml).

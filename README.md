@@ -82,7 +82,7 @@ O executavel fica em `target/release/rustnf` (`rustnf.exe` no Windows). A interf
 para Windows (veja [Interface de desktop](#interface-de-desktop)). A biblioteca e a camada de aplicacao
 (`crates/rustnf-app`: operacoes, configuracao, cofre e pasta de notas, sem tela nem servidor) sao compartilhadas pelo
 binario e por qualquer interface que use o mesmo arquivo de configuracao. Nao e' preciso nenhum programa externo: o
-Typst, as fontes e o logotipo do DANFSe vao dentro do binario. A primeira compilacao e' demorada por causa do Typst.
+DANFSe em PDF e' escrito pelo proprio binario, com as fontes embutidas.
 
 ## Linha de comando
 

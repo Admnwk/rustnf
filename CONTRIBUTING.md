@@ -31,8 +31,7 @@ cargo clippy --workspace --all-targets --all-features -- -D warnings
 cargo deny check licenses advisories
 ```
 
-A feature `danfse` embute o Typst e demora para compilar na primeira vez. Rode `cargo` com poucos nucleos se a maquina
-for compartilhada (`CARGO_BUILD_JOBS=2` e `RUST_TEST_THREADS=2`).
+Rode `cargo` com poucos nucleos se a maquina for compartilhada (`CARGO_BUILD_JOBS=2` e `RUST_TEST_THREADS=2`).
 
 ## Testar em producao restrita e relatar
 

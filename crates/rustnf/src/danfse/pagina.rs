@@ -3,7 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 //! Pagina: as operacoes de desenho (retangulo, linha, texto, imagem, QR, marca d'agua) em cm, na ordem em que o
-//! modelo Typst as executa.
+//! escritor de PDF as executa.
 
 use serde_json::{json, Value};
 

@@ -6,6 +6,9 @@
   em `tests/casos/`.
 * Cliente da Sefin Nacional (feature `sefin`), testado com transporte falso.
 * DANFSe em PDF (feature `danfse`, NT 008): conteudo, leiaute e pagina conferidos por contrato em `tests/casos/danfse.json`.
+* Motor de PDF do DANFSe com menos dependencias: a pagina, que a biblioteca ja calcula como lista de operacoes de
+  desenho, passa a ser escrita direto em PDF com o `krilla` (sem o Typst, sem fonte do sistema, mesma entrada gera os
+  mesmos bytes). A arvore de dependencias da biblioteca com `sefin` e `danfse` caiu de 387 para 207 crates.
 * Previa do IBS/CBS do servico (`reforma::previa`): base de calculo e tributos, com os casos de teste da calculadora
   oficial como contrato. Fora dela, com recusa explicita: compra governamental, tributacao regular e cClassTrib de
   aliquota fixa ou uniforme setorial sem a aliquota informada.
@@ -47,18 +50,8 @@
    Bearer fixo; ferramenta de consulta da NFS-e.
 4. Trocar o `chrono` (sem mantenedor, RUSTSEC-2026-0543) por uma biblioteca de datas mantida e tirar o `ignore` do `deny.toml`.
 5. Teste de ponta a ponta com TLS mutuo contra um servidor local de teste.
-6. A cada versao nova do Typst, rever os avisos de seguranca das dependencias dele registrados no `deny.toml` (hoje
-   dois do `quick-xml`, num caminho que o DANFSe nao executa, e seis de crates sem mantenedor). O mesmo a cada versao
-   nova do `gpui-kit`: hoje cinco crates sem mantenedor (tres deles so' no lado Linux do GPUI, que a interface nao
-   compila).
-
-## Depois da v1
-
-* Motor de PDF do DANFSe com menos dependencias. Hoje o PDF sai pelo Typst (cerca de 280 crates). A pagina ja e'
-  calculada pela biblioteca como uma lista de operacoes de desenho (texto medido, linhas, imagem), entao da para
-  escreve-la direto com uma biblioteca de PDF (`krilla`, a que o proprio Typst usa por baixo, cerca de 90 crates) ou,
-  no limite, com `pdf-writer` (meia duzia de crates, com a fonte e a imagem embutidas a mao). O contrato de
-  `tests/casos/danfse.json` nao muda; muda so' quem transforma a pagina em PDF.
+6. A cada versao nova do `gpui-kit`, rever os oito crates sem mantenedor que ele traz e que estao registrados no
+   `deny.toml` (tres deles so' no lado Linux do GPUI, que a interface nao compila).
 
 ## Fora da v1
 

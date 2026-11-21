@@ -2,6 +2,17 @@
 
 ## Proxima versao
 
+* DANFSe sem o Typst: o PDF passa a ser escrito direto pelo `krilla` (feature `danfse`), a partir da mesma lista de
+  operacoes de desenho que `danfse::dados` ja devolvia. O JSON de `dados` nao mudou e o leiaute e' o mesmo; o texto
+  segue selecionavel e copiavel (Liberation Sans embutida em subconjunto), e a mesma entrada passa a gerar sempre os
+  mesmos bytes. A diferenca visivel e' so' o contorno das letras: o desenho nao aplica mais o kerning do Typst. A
+  arvore de dependencias da biblioteca com `sefin` e `danfse` caiu de 387 para 207 crates: o DANFSe acrescentava 215
+  e passa a acrescentar 35 (o `Cargo.lock` do workspace foi de 1044 para 935). No `deny.toml` sairam cinco excecoes
+  de seguranca que so' existiam por causa do Typst (duas do `quick-xml` e tres de crates sem mantenedor) e duas
+  licencas que nenhuma dependencia usa mais.
+
+## 0.1.0 - 2026-11-21
+
 * Entrega: o CI passa a compilar e testar a interface de desktop no Windows (job `interface`); novo fluxo `release`
   que, com uma tag de versao, monta `rustnf.exe` e `rustnf-gui.exe` (Windows, com a biblioteca C dentro do executavel:
   quem baixa nao precisa instalar nada) e `rustnf` (Linux), confere as dependencias dos executaveis, calcula os
