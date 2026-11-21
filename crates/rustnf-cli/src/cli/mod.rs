@@ -52,7 +52,7 @@ pub enum Comando {
     },
     /// Previa do IBS/CBS: base de calculo e tributos, como a calculadora da Receita Federal.
     Calcular(ArgCalcular),
-    /// Gera o DANFSe em PDF a partir do XML da NFS-e autorizada.
+    /// Gera o DANFSe em PDF a partir do XML da NFS-e autorizada ou de uma nota da pasta de notas (`--chave`).
     Danfse(ArgDanfse),
     /// Monta, assina com o certificado A1 e envia a DPS a Sefin Nacional.
     Emitir(ArgEmitir),
@@ -234,6 +234,9 @@ pub enum AcaoDps {
     Montar {
         /// JSON de `rustnf::nfse::Dps`; `-` le do stdin.
         pedido: String,
+        /// Recusa (saida 3) o pedido com campo desconhecido; sem a opcao, ele e' ignorado com um aviso no stderr.
+        #[arg(long)]
+        estrito: bool,
     },
     /// So' confere as regras: diz "ok" ou a recusa (campo e motivo).
     Conferir {
@@ -242,6 +245,16 @@ pub enum AcaoDps {
         /// Saida em JSON.
         #[arg(long)]
         json: bool,
+        /// Recusa (saida 3) o pedido com campo desconhecido; sem a opcao, ele e' ignorado com um aviso no stderr.
+        #[arg(long)]
+        estrito: bool,
+    },
+    /// Imprime o JSON Schema do pedido da DPS: os campos que existem, com a descricao de cada um.
+    Esquema {
+        /// O schema do pedido de emissao: nao exige o prestador, o municipio emissor nem o numero, que a
+        /// configuracao pode completar.
+        #[arg(long)]
+        emissao: bool,
     },
 }
 
@@ -369,6 +382,10 @@ pub struct ArgEmitir {
     /// Segundos subtraidos do relogio ao preencher o `dhEmi` que o pedido nao traz (regra E0008). Padrao: 60.
     #[arg(long, value_name = "SEGUNDOS")]
     pub folga_relogio: Option<u32>,
+    /// Recusa (saida 3), antes de qualquer envio, o pedido com campo desconhecido; sem a opcao, ele e' ignorado
+    /// com um aviso no stderr.
+    #[arg(long)]
+    pub estrito: bool,
     /// Saida em JSON.
     #[arg(long)]
     pub json: bool,

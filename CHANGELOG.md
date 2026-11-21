@@ -25,6 +25,12 @@
   * `rustnf notas exportar --mes AAAA-MM --para <pasta>`: copia os XML do mês e a lista em CSV, para a contabilidade;
   * `rustnf notas reindexar`: refaz o índice da pasta de notas a partir dos XML guardados, guardando o índice anterior
     ao lado.
+* Campo de nome errado no pedido da DPS deixa de ser ignorado em silêncio. `rustnf dps montar`, `dps conferir` e
+  `emitir` avisam no stderr o caminho de cada campo que a DPS não conhece, e a resposta em JSON (linha de comando, API
+  HTTP e MCP) traz a lista em `campos_desconhecidos`. Com `--estrito` (ou `?estrito=true` em `/dps/conferir`,
+  `/dps/montar` e `/emitir`), o pedido é recusado antes de qualquer envio. O padrão continua aceitando o pedido, para
+  não quebrar quem já usa.
+* `rustnf dps esquema` imprime o JSON Schema do pedido da DPS (`--emissao` para o do `emitir`).
 * Biblioteca: `Certificado::resumo` (e `resumo_de_agora`) devolve o que se mostra de um certificado aberto, com o CPF
   mascarado. Camada de aplicação: `notas::Filtro`, `notas::csv`, `Notas::registro`, `Notas::exportar` e
   `Notas::reindexar`.

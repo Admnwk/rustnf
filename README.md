@@ -65,6 +65,7 @@ certo. Correção é bem-vinda por pedido de mudança, com a fonte oficial citad
 |---|---|
 | `rustnf dps montar` | lê o JSON de um pedido e escreve o XML da DPS (não assinado) |
 | `rustnf dps conferir` | confere as regras do Anexo I e diz "ok" ou a recusa (campo e motivo) |
+| `rustnf dps esquema` | imprime o JSON Schema do pedido da DPS |
 | `rustnf calcular` | prévia da base de cálculo e do IBS/CBS (Reforma Tributária, LC 214/2025), como a calculadora da Receita Federal |
 | `rustnf danfse` | gera o DANFSe em PDF (NT 008) a partir do XML da NFS-e autorizada, ou de uma nota da pasta de notas (`--chave`) |
 | `rustnf emitir` | monta, assina com o certificado A1 e envia a DPS à Sefin Nacional (idempotente) |
@@ -146,8 +147,24 @@ $ rustnf dps conferir pedido-com-erro.json --json     # saida 3
 ```
 
 O JSON do pedido tem a forma de `rustnf::nfse::Dps` (veja `crates/rustnf/tests/casos/nfse_nacional.json` para dezenas
-de casos). Valores aceitam número ou texto. Atenção: campo desconhecido no pedido é ignorado em silêncio; confira o
-nome do campo.
+de casos). Valores aceitam número ou texto. `rustnf dps esquema` imprime o JSON Schema do pedido, com a descrição de
+cada campo (`--emissao` para o do `emitir`, que não exige o que a configuração completa).
+
+**Campo de nome errado.** Um campo que a DPS não conhece (erro de digitação, campo no grupo errado) não entra no XML.
+O programa não o ignora calado: `dps montar`, `dps conferir` e `emitir` avisam no stderr, com o caminho
+(`valores.desconto_incondicional`), e a saída `--json` traz a lista em `campos_desconhecidos`. Com `--estrito`, o
+pedido é **recusado** (código 3) antes de qualquer envio:
+
+```
+$ rustnf dps conferir pedido.json
+ok
+aviso: campo desconhecido no pedido, ignorado: valores.desconto_incondicional (confira o nome)
+
+$ rustnf dps conferir pedido.json --estrito          # saida 3
+erro: valores.desconto_incondicional: campo desconhecido no pedido: confira o nome
+```
+
+Em produção, prefira `rustnf emitir --estrito`: sem ele a nota sai sem o valor do campo errado.
 
 ### Prévia do IBS/CBS
 
@@ -217,6 +234,8 @@ $ rustnf cancelar --chave <chave> --motivo 1 --justificativa "Valor digitado err
   `[sefin].assinatura`) troca para SHA-1; o leiaute não fixa o algoritmo.
 * Motivos de cancelamento: `1` erro na emissão, `2` serviço não prestado, `9` outros; a justificativa é obrigatória.
 * `--json` imprime o resultado completo (inclui a NFS-e lida e os alertas); sem ele, um resumo.
+* `--estrito` recusa, antes de abrir o certificado, o pedido com campo desconhecido (veja
+  [Montar e conferir a DPS](#montar-e-conferir-a-dps)).
 
 ## Configuração
 
@@ -402,6 +421,10 @@ nos casos descritos em [Pasta de notas](#pasta-de-notas)). No `/cancelar`, o can
 pasta. O servidor emite uma nota por vez, para duas emissões simultâneas não pegarem o mesmo número. Sem `[emitente]`
 e sem pasta de notas, o pedido precisa vir completo, com o `numero`.
 
+Campo que a DPS não conhece: `/dps/conferir`, `/dps/montar` e `/emitir` devolvem a lista em `campos_desconhecidos`
+(a nota é emitida sem eles). Com `?estrito=true` na rota, o pedido é recusado (422, com o campo) antes de qualquer
+envio: `POST /emitir?estrito=true`.
+
 Segurança: escuta em `127.0.0.1` por padrão (fora dele o tráfego é HTTP puro: ponha um proxy com TLS na frente); sem
 CORS; cabeçalho `Origin` de fora do próprio computador recebe 403; teto de corpo e tempo limite por requisição; token
 comparado em tempo constante; o PDF é gerado fora do laço assíncrono. Todo erro tem o envelope único:
@@ -432,7 +455,8 @@ a versão e as capacidades em `_meta` e os cabeçalhos `MCP-Protocol-Version`, `
 | `consultar_nfse` | consulta pela chave de acesso; só com `--permitir-emissao` e o Bearer |
 | `cancelar_nfse` | cancela como o `POST /cancelar`; só com `--permitir-emissao` e o Bearer |
 
-Recusa de regra fiscal volta como resultado da ferramenta com `isError: true`, não como erro de protocolo. Sem o
+Recusa de regra fiscal volta como resultado da ferramenta com `isError: true`, não como erro de protocolo. Campo que
+a DPS não conhece volta listado em `campos_desconhecidos`, em `conferir_dps` e em `emitir_nfse`. Sem o
 Bearer, `tools/list` mostra só as quatro de leitura. Cada ferramenta tem `inputSchema` (JSON Schema). Exemplo:
 
 ```

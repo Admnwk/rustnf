@@ -50,6 +50,69 @@ pub fn ler_dps(texto: &str) -> Result<Dps, Erro> {
     Ok(serde_json::from_str(texto)?)
 }
 
+fn comparar(dado: &Value, modelo: &Value, caminho: &str, saida: &mut Vec<String>) {
+    match (dado, modelo) {
+        (Value::Object(d), Value::Object(m)) => {
+            for (nome, valor) in d {
+                let aqui = if caminho.is_empty() {
+                    nome.clone()
+                } else {
+                    format!("{caminho}.{nome}")
+                };
+                match m.get(nome) {
+                    Some(conhecido) => comparar(valor, conhecido, &aqui, saida),
+                    None => saida.push(aqui),
+                }
+            }
+        }
+        (Value::Array(d), Value::Array(m)) => {
+            for (i, (valor, conhecido)) in d.iter().zip(m).enumerate() {
+                comparar(valor, conhecido, &format!("{caminho}[{i}]"), saida);
+            }
+        }
+        _ => {}
+    }
+}
+
+/// Os campos do JSON do `pedido` que a DPS nao le, em ordem alfabetica: nome que nao existe naquele lugar (erro de
+/// digitacao, campo de outro grupo). A leitura da DPS os ignora em silencio; aqui eles sao apontados pelo caminho
+/// (`tomador.endereco.cepp`, `valores.deducao.documentos[1].valor`). Pedido que nem chega a ser lido como DPS
+/// devolve a lista vazia: quem diz esse erro e' a leitura.
+#[must_use]
+pub fn campos_desconhecidos(pedido: &Value) -> Vec<String> {
+    // a DPS lida e escrita de volta traz todos os campos que ela conhece: o que sobra no pedido e' desconhecido
+    let Ok(conhecido) =
+        serde_json::from_value::<Dps>(pedido.clone()).and_then(|dps| serde_json::to_value(&dps))
+    else {
+        return Vec::new();
+    };
+    let mut saida = Vec::new();
+    comparar(pedido, &conhecido, "", &mut saida);
+    saida.sort();
+    saida
+}
+
+/// Recusa o pedido que tem campo desconhecido, com o primeiro no `campo` e os demais na mensagem.
+///
+/// # Errors
+///
+/// [`Erro::Recusa`] quando [`campos_desconhecidos`] acha algum.
+pub fn recusar_desconhecidos(pedido: &Value) -> Result<(), Erro> {
+    let achados = campos_desconhecidos(pedido);
+    let Some(primeiro) = achados.first() else {
+        return Ok(());
+    };
+    let mensagem = if achados.len() == 1 {
+        "campo desconhecido no pedido: confira o nome".to_string()
+    } else {
+        format!(
+            "campo desconhecido no pedido: confira o nome (tambem: {})",
+            achados[1..].join(", ")
+        )
+    };
+    Err(Erro::recusa(primeiro.as_str(), mensagem))
+}
+
 /// Le o JSON de `calcular`.
 ///
 /// # Errors

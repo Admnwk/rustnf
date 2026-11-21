@@ -80,28 +80,6 @@ pub(super) async fn calcular(
     Ok(resposta_json(StatusCode::OK, &v))
 }
 
-pub(super) async fn dps_conferir(
-    State(estado): State<Arc<Estado>>,
-    cabecalhos: HeaderMap,
-    corpo: Body,
-) -> Resposta {
-    let bytes = ler_corpo(&cabecalhos, corpo, estado.config.limite_corpo).await?;
-    let dps: Dps = json_de(&bytes)?;
-    nucleo::conferir_dps(&dps)?;
-    Ok(resposta_json(StatusCode::OK, &nucleo::ok_simples()))
-}
-
-pub(super) async fn dps_montar(
-    State(estado): State<Arc<Estado>>,
-    cabecalhos: HeaderMap,
-    corpo: Body,
-) -> Resposta {
-    let bytes = ler_corpo(&cabecalhos, corpo, estado.config.limite_corpo).await?;
-    let dps: Dps = json_de(&bytes)?;
-    let xml = nucleo::montar_dps(&dps)?;
-    Ok(resposta_json(StatusCode::OK, &json!({"xml": xml})))
-}
-
 /// Valor de um parametro da query (`?situacao=cancelada&canhoto=false`); valores simples, sem percentual.
 fn parametro<'a>(uri: &'a Uri, nome: &str) -> Option<&'a str> {
     uri.query()?
@@ -109,6 +87,63 @@ fn parametro<'a>(uri: &'a Uri, nome: &str) -> Option<&'a str> {
         .filter_map(|par| par.split_once('='))
         .find(|(k, _)| *k == nome)
         .map(|(_, v)| v)
+}
+
+/// `?estrito=true`: recusar o pedido com campo desconhecido.
+fn estrito(uri: &Uri) -> Result<bool, Erro> {
+    match parametro(uri, "estrito") {
+        None | Some("false") => Ok(false),
+        Some("true") => Ok(true),
+        Some(_) => Err(Erro::Entrada("estrito: use true ou false".into())),
+    }
+}
+
+/// Os campos do pedido que a DPS nao le; com `?estrito=true`, o pedido que tem algum e' recusado.
+fn desconhecidos(uri: &Uri, pedido: &Value) -> Result<Vec<String>, Erro> {
+    if estrito(uri)? {
+        nucleo::recusar_desconhecidos(pedido)?;
+    }
+    Ok(nucleo::campos_desconhecidos(pedido))
+}
+
+/// Poe `campos_desconhecidos` na resposta, quando ha algum.
+fn com_desconhecidos(mut resposta: Value, campos: Vec<String>) -> Value {
+    if !campos.is_empty() {
+        resposta["campos_desconhecidos"] = json!(campos);
+    }
+    resposta
+}
+
+pub(super) async fn dps_conferir(
+    State(estado): State<Arc<Estado>>,
+    uri: Uri,
+    cabecalhos: HeaderMap,
+    corpo: Body,
+) -> Resposta {
+    let bytes = ler_corpo(&cabecalhos, corpo, estado.config.limite_corpo).await?;
+    let dps: Dps = json_de(&bytes)?;
+    let campos = desconhecidos(&uri, &json_de(&bytes)?)?;
+    nucleo::conferir_dps(&dps)?;
+    Ok(resposta_json(
+        StatusCode::OK,
+        &com_desconhecidos(nucleo::ok_simples(), campos),
+    ))
+}
+
+pub(super) async fn dps_montar(
+    State(estado): State<Arc<Estado>>,
+    uri: Uri,
+    cabecalhos: HeaderMap,
+    corpo: Body,
+) -> Resposta {
+    let bytes = ler_corpo(&cabecalhos, corpo, estado.config.limite_corpo).await?;
+    let dps: Dps = json_de(&bytes)?;
+    let campos = desconhecidos(&uri, &json_de(&bytes)?)?;
+    let xml = nucleo::montar_dps(&dps)?;
+    Ok(resposta_json(
+        StatusCode::OK,
+        &com_desconhecidos(json!({"xml": xml}), campos),
+    ))
 }
 
 pub(super) async fn danfse(
@@ -148,12 +183,15 @@ pub(super) async fn danfse(
 
 pub(super) async fn emitir(
     State(estado): State<Arc<Estado>>,
+    uri: Uri,
     cabecalhos: HeaderMap,
     corpo: Body,
 ) -> Resposta {
     let em = exigir_token(&estado, &cabecalhos)?;
     let bytes = ler_corpo(&cabecalhos, corpo, estado.config.limite_corpo).await?;
     let pedido: Value = json_de(&bytes)?;
+    // com `?estrito=true`, o campo desconhecido recusa o pedido antes de qualquer envio
+    desconhecidos(&uri, &pedido)?;
     let r = estado.emitir(em, pedido).await?;
     Ok(resposta_json(StatusCode::OK, &r))
 }
