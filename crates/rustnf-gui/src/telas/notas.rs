@@ -18,9 +18,9 @@ use gpui_kit::component::{
 use gpui_kit::prelude::FluentBuilder as _;
 use gpui_kit::{
     div, px, uniform_list, AnyElement, AppContext as _, Context, Entity, EventEmitter, FocusHandle,
-    InteractiveElement as _, IntoElement, KeyDownEvent, ParentElement as _, Render, ScrollStrategy,
-    SharedString, StatefulInteractiveElement as _, Styled as _, Subscription,
-    UniformListScrollHandle, Window,
+    InteractiveElement as _, IntoElement, KeyDownEvent, ParentElement as _, PathPromptOptions,
+    Render, ScrollStrategy, SharedString, StatefulInteractiveElement as _, Styled as _,
+    Subscription, UniformListScrollHandle, Window,
 };
 use rustnf_app::config::Config;
 
@@ -28,7 +28,7 @@ use super::cancelar::Cancelamento;
 use super::detalhe::{EventoDetalhe, VisaoDetalhe};
 use super::pecas::{cabecalho, estado_vazio, faixa, selo_da_situacao, Negrito as _};
 use crate::modelo::certificado::Gravidade;
-use crate::modelo::lista::{contagem_de_notas, FiltroDeSituacao, ListaDeNotas};
+use crate::modelo::lista::{contagem_de_notas, FiltroDeSituacao, ListaDeNotas, Periodo};
 use crate::modelo::nota::DadosNota;
 use crate::servicos::{Destino, Servicos};
 use crate::telas::LARGURA_DA_LATERAL;
@@ -86,6 +86,10 @@ pub(super) struct TelaNotas {
     rolagem: UniformListScrollHandle,
     foco: FocusHandle,
     versao: u64,
+    /// "Exportar a lista" esta gravando.
+    pub(super) exportando: bool,
+    /// O que a ultima exportacao fez (ou por que falhou).
+    pub(super) exportacao: Option<(Gravidade, String)>,
     _subs: Vec<Subscription>,
 }
 
@@ -141,6 +145,8 @@ impl TelaNotas {
             rolagem: UniformListScrollHandle::new(),
             foco: cx.focus_handle(),
             versao: 0,
+            exportando: false,
+            exportacao: None,
             _subs: vec![s1, s2],
         }
     }
@@ -269,6 +275,87 @@ impl TelaNotas {
         cx.notify();
     }
 
+    /// Muda o periodo da lista, contado a partir de hoje.
+    pub(super) fn escolher_periodo(&mut self, periodo: Periodo, cx: &mut Context<Self>) {
+        let hoje = self.servicos.contexto_da_nota(&self.config).hoje_iso;
+        self.lista.definir_periodo(periodo, &hoje);
+        self.em_foco = None;
+        self.exportacao = None;
+        cx.notify();
+    }
+
+    /// "Exportar a lista": pergunta a pasta de destino e grava nela o que esta na lista.
+    fn exportar(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if self.exportando || self.lista.quantas() == 0 {
+            return;
+        }
+        let recebe = cx.prompt_for_paths(PathPromptOptions {
+            files: false,
+            directories: true,
+            multiple: false,
+            prompt: Some("Exportar para esta pasta".into()),
+        });
+        cx.spawn_in(window, async move |this, cx| {
+            if let Ok(Ok(Some(caminhos))) = recebe.await {
+                if let Some(destino) = caminhos.into_iter().next() {
+                    this.update(cx, |this, cx| this.exportar_para(destino, cx))
+                        .ok();
+                }
+            }
+        })
+        .detach();
+    }
+
+    /// Grava em `destino`, fora da linha da tela, o XML de cada nota da lista e a lista em CSV (`notas.csv`); depois
+    /// abre a pasta. Nada sai da pasta de notas.
+    pub(super) fn exportar_para(&mut self, destino: PathBuf, cx: &mut Context<Self>) {
+        let registros = self.lista.registros_visiveis();
+        if self.exportando || registros.is_empty() {
+            return;
+        }
+        self.exportando = true;
+        self.exportacao = None;
+        cx.notify();
+        let servicos = Arc::clone(&self.servicos);
+        let config = self.config.clone();
+        let pasta = destino.clone();
+        cx.spawn(async move |this, cx| {
+            let quantas = registros.len();
+            let r = cx
+                .background_spawn(async move { servicos.exportar_notas(&config, &registros, &pasta) })
+                .await;
+            this.update(cx, |this, cx| {
+                this.exportando = false;
+                let nome = destino
+                    .file_name()
+                    .map_or_else(String::new, |n| n.to_string_lossy().into_owned());
+                this.exportacao = Some(match r {
+                    Ok(feito) if feito.sem_xml.is_empty() => {
+                        if this.servicos.abridor().pedir(Destino::Abrir, &destino) {
+                            cx.open_with_system(&destino);
+                        }
+                        (
+                            Gravidade::Ok,
+                            format!("{} exportada(s) para a pasta {nome}: os XML e a lista notas.csv.", contagem_de_notas(quantas, quantas)),
+                        )
+                    }
+                    Ok(feito) => (
+                        Gravidade::Aviso,
+                        format!(
+                            "{} exportada(s) para a pasta {nome}, mas {} sem o XML na pasta de notas: elas estão na lista notas.csv, sem o arquivo.",
+                            contagem_de_notas(quantas, quantas),
+                            contagem_de_notas(feito.sem_xml.len(), feito.sem_xml.len())
+                        ),
+                    ),
+                    Err(e) => (Gravidade::Erro, e.texto()),
+                });
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
+    }
+
     /// "Abrir a pasta": pede ao sistema que abra a pasta de notas inteira no gerenciador de arquivos.
     fn abrir_a_pasta(&mut self, cx: &mut Context<Self>) {
         let pasta = PathBuf::from(self.config.notas.pasta.trim());
@@ -339,11 +426,15 @@ impl TelaNotas {
                     .child(l.numero.clone()),
             )
             .child(
+                // numa linha so': numero de DPS comprido perde o meio, nunca a serie nem o fim do numero
                 div()
                     .w(px(84.))
                     .flex_shrink_0()
                     .text_xs()
                     .text_color(muted)
+                    .overflow_hidden()
+                    .whitespace_nowrap()
+                    .text_ellipsis_middle()
                     .child(l.dps.clone()),
             )
             .child(
@@ -474,6 +565,51 @@ impl TelaNotas {
             .into_any_element()
     }
 
+    /// A segunda linha da barra: o periodo e "Exportar a lista".
+    fn barra_do_periodo(&mut self, cx: &mut Context<Self>) -> AnyElement {
+        let atual = self.lista.periodo();
+        let periodo = ToggleGroup::new("periodo-de-notas")
+            .segmented()
+            .single()
+            .children(Periodo::TODOS.iter().enumerate().map(|(i, p)| {
+                Toggle::new(SharedString::from(format!("periodo-notas-{i}")))
+                    .label(p.rotulo())
+                    .checked(atual == *p)
+            }))
+            .on_click(cx.listener(|this, estados: &Vec<bool>, _, cx| {
+                if let Some(i) = estados.iter().position(|e| *e) {
+                    if let Some(p) = Periodo::TODOS.get(i) {
+                        this.escolher_periodo(*p, cx);
+                    }
+                }
+            }));
+        let sem_notas = self.lista.quantas() == 0;
+        v_flex()
+            .gap_2()
+            .child(
+                h_flex()
+                    .gap_3()
+                    .items_center()
+                    .flex_wrap()
+                    .child(periodo)
+                    .child(div().flex_1())
+                    .child(
+                        Button::new("exportar-notas")
+                            .label("Exportar a lista")
+                            .icon(IconName::FolderOpen)
+                            .outline()
+                            .small()
+                            .loading(self.exportando)
+                            .disabled(self.exportando || sem_notas)
+                            .on_click(cx.listener(|this, _, window, cx| this.exportar(window, cx))),
+                    ),
+            )
+            .when_some(self.exportacao.clone(), |d, (grav, texto)| {
+                d.child(faixa(grav, texto, cx).id("exportacao-de-notas"))
+            })
+            .into_any_element()
+    }
+
     fn corpo_da_lista(&mut self, cx: &mut Context<Self>) -> AnyElement {
         let muted = cx.theme().muted_foreground;
         match self.carga.clone() {
@@ -569,6 +705,7 @@ impl TelaNotas {
                 cx,
             ))
             .child(self.barra(cx))
+            .child(self.barra_do_periodo(cx))
             .child(div().flex_1().min_h_0().child(corpo))
             .into_any_element()
     }

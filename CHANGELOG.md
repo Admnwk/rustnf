@@ -38,7 +38,10 @@
   * "Abrir a pasta", na tela Notas, mostra a pasta de notas no gerenciador de arquivos;
   * "Copiar o XML", no detalhe da nota, põe o XML inteiro na área de transferência;
   * Ctrl+Shift+D descarta, nas Configurações, o que foi alterado e não foi salvo (o botão "Descartar" já existia; a
-    ação não tinha tecla).
+    ação não tinha tecla);
+  * período na tela Notas ("Todo o período", "Este mês", "Mês passado", "Este ano"), junto com a busca e o filtro;
+  * "Exportar a lista", na tela Notas: grava numa pasta escolhida o XML de cada nota da lista e a lista em CSV;
+  * a coluna DPS da lista não quebra mais um número de DPS longo em duas linhas: o meio dá lugar a reticências.
 * Biblioteca: `Certificado::resumo` (e `resumo_de_agora`) devolve o que se mostra de um certificado aberto, com o CPF
   mascarado. Camada de aplicação: `notas::Filtro`, `notas::csv`, `Notas::registro`, `Notas::exportar` e
   `Notas::reindexar`.

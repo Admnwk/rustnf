@@ -12,7 +12,7 @@ use std::sync::Arc;
 
 use rustnf_app::config::Config;
 use rustnf_app::emissao::consultar_completa;
-use rustnf_app::notas::{Notas, Registro, Situacao};
+use rustnf_app::notas::{Exportadas, Notas, Registro, Situacao};
 use rustnf_app::nucleo::{gerar_danfse, SituacaoNota};
 use rustnf_app::pedido::cancelar_pedido_completo;
 
@@ -104,6 +104,23 @@ impl Servicos {
         let xml = notas.ler_xml(chave).ok();
         let leitura = LeituraDoXml::do_xml(xml.as_deref(), registro.situacao);
         Ok(NotaDaPasta { registro, leitura })
+    }
+
+    /// "Exportar a lista": copia para `destino` o XML de cada nota de `registros` e grava la a lista delas em CSV
+    /// (`notas.csv`). Nada sai da pasta de notas.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroTela::Pasta`] ou [`ErroTela::GravacaoDoArquivo`].
+    pub fn exportar_notas(
+        &self,
+        config: &Config,
+        registros: &[Registro],
+        destino: &Path,
+    ) -> Result<Exportadas, ErroTela> {
+        self.notas_da(config)?
+            .exportar(registros, destino)
+            .map_err(|_| ErroTela::GravacaoDoArquivo)
     }
 
     /// O XML guardado de uma nota da pasta, inteiro.
