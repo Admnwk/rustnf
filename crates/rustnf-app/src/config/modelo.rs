@@ -21,6 +21,8 @@ pub struct Config {
     pub danfse: Danfse,
     /// API HTTP e MCP.
     pub servidor: Servidor,
+    /// Preferencias da interface de desktop (a linha de comando nao as usa).
+    pub interface: Interface,
     /// Aliquotas publicadas por ano, para a previa do IBS/CBS.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub aliquotas: Vec<Aliquota>,
@@ -123,6 +125,25 @@ pub struct Danfse {
 impl Default for Danfse {
     fn default() -> Self {
         Self { canhoto: true }
+    }
+}
+
+/// Os temas aceitos em `[interface].tema`.
+pub const TEMAS: [&str; 3] = ["sistema", "claro", "escuro"];
+
+/// `[interface]`: preferencias da interface de desktop.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct Interface {
+    /// Tema da interface: `sistema` (segue o do Windows, padrao), `claro` ou `escuro`.
+    pub tema: String,
+}
+
+impl Default for Interface {
+    fn default() -> Self {
+        Self {
+            tema: TEMAS[0].into(),
+        }
     }
 }
 

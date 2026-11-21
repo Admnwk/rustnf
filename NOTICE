@@ -1,7 +1,7 @@
 rustnf
 Copyright (c) Os autores do rustnf. Licenca: Mozilla Public License 2.0 (arquivo LICENSE).
 
-Material de terceiros distribuido com o codigo-fonte e embutido no binario da feature `danfse`:
+Material de terceiros distribuido com o codigo-fonte e embutido nos binarios (itens 1 a 3: feature `danfse`; item 4: `rustnf-gui`):
 
 1. Liberation Sans, Regular e Bold
    (crates/rustnf/dados/fontes/LiberationSans-Regular.ttf e LiberationSans-Bold.ttf)
@@ -18,6 +18,13 @@ Material de terceiros distribuido com o codigo-fonte e embutido no binario da fe
 
 3. Tabela de municipios (crates/rustnf/dados/municipios.csv)
    Codigo IBGE, UF e nome, a partir do Plano Geral de Codigos Nacionais (PGCN), dados abertos da ANATEL.
+
+4. Icones da interface de desktop (`rustnf-gui`, so' no executavel `rustnf-gui`; embutidos pelo crate `gpui-kit-assets`,
+   Apache-2.0, que reune um subconjunto dos icones Lucide)
+   Lucide: ISC License, Copyright (c) 2026 Lucide Icons and Contributors. Os icones derivados do projeto Feather
+   (Copyright (c) 2013-present Cole Bemis) estao sob a licenca MIT. Permissao para usar, copiar, modificar e distribuir
+   com ou sem custo, desde que este aviso de copyright e de permissao acompanhe todas as copias.
+   Texto das licencas: arquivo LICENSE-LUCIDE do crate `gpui-kit-assets` (publicado em crates.io).
 
 As bibliotecas Rust usadas pela feature (Typst e dependencias) tem licencas proprias, conferidas pelo `cargo deny`
 (veja deny.toml).

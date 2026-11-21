@@ -20,6 +20,9 @@ use crate::segredo::Segredo;
 /// Nome do servico sob o qual os itens ficam no cofre.
 pub const SERVICO: &str = "rustnf";
 
+/// Variavel que desliga o cofre do sistema (servidor sem sessao de usuario, por exemplo): `desligado`.
+pub const VARIAVEL_COFRE: &str = "RUSTNF_COFRE";
+
 /// Por que o cofre nao respondeu. A mensagem nunca leva a chave do item nem o segredo.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[non_exhaustive]
@@ -106,6 +109,22 @@ pub fn chave_do_certificado(emitente: &Emitente, pfx: &str) -> Option<String> {
     }
     let nome = Path::new(pfx).file_name()?.to_string_lossy().into_owned();
     (!nome.is_empty()).then_some(nome)
+}
+
+/// O cofre desta execucao: o do sistema, ou nenhum com `RUSTNF_COFRE=desligado`.
+#[must_use]
+pub fn cofre_do_ambiente() -> Box<dyn Cofre> {
+    cofre_conforme(std::env::var(VARIAVEL_COFRE).ok().as_deref())
+}
+
+/// O cofre para o valor de `RUSTNF_COFRE`: `desligado` recusa tudo; qualquer outro valor (ou nenhum) usa o do
+/// sistema.
+#[must_use]
+pub fn cofre_conforme(valor: Option<&str>) -> Box<dyn Cofre> {
+    match valor {
+        Some("desligado") => Box::new(CofreDesligado),
+        _ => Box::new(CofreDoSistema),
+    }
 }
 
 /// Cofre so' em memoria, para teste.
@@ -254,6 +273,17 @@ mod testes {
         assert!(c.ler("11222333000181").unwrap().is_none());
         // apagar item ausente nao e' erro
         c.apagar("11222333000181").unwrap();
+    }
+
+    #[test]
+    fn cofre_desligado_pela_variavel_recusa_tudo() {
+        let c = cofre_conforme(Some("desligado"));
+        assert_eq!(c.ler("x").map(|_| ()), Err(ErroCofre::Desligado));
+        assert_eq!(
+            c.guardar("x", &Segredo::novo("s".into())),
+            Err(ErroCofre::Desligado)
+        );
+        assert_eq!(c.apagar("x"), Err(ErroCofre::Desligado));
     }
 
     #[test]

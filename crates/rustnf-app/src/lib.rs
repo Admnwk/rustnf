@@ -12,12 +12,14 @@
 //! * [`segredo`] -- senha em memoria, com `Debug` redigido;
 //! * [`config`] -- o arquivo de configuracao (TOML), comum a todas as interfaces;
 //! * [`cofre`] -- onde a senha do certificado fica guardada;
+//! * [`certificado`] -- abrir o certificado A1 e montar o cliente da Sefin Nacional;
 //! * [`notas`] -- a pasta de notas autorizadas e a numeracao da DPS.
 #![forbid(unsafe_code)]
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 #![cfg_attr(test, allow(clippy::unwrap_used, clippy::expect_used, clippy::panic))]
 
 mod atomico;
+pub mod certificado;
 pub mod cofre;
 pub mod config;
 pub mod emissao;

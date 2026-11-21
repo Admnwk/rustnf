@@ -24,7 +24,7 @@ mod formato;
 mod leiaute;
 mod medidas;
 mod metrica;
-mod municipio;
+pub mod municipio;
 mod pagina;
 mod qr;
 mod tabelas;

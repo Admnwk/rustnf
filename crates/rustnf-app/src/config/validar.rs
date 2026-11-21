@@ -10,7 +10,7 @@ use std::net::IpAddr;
 use rustnf::assinatura::xmldsig::Algoritmo;
 use rustnf::chave_dfe::{cnpj_valido, cpf_valido};
 
-use super::modelo::{Aliquota, Config, Emitente, Sefin, Servidor};
+use super::modelo::{Aliquota, Config, Emitente, Interface, Sefin, Servidor, TEMAS};
 use super::ErroConfig;
 
 type Resultado = Result<(), ErroConfig>;
@@ -28,6 +28,7 @@ impl Config {
         emitente(&self.emitente)?;
         sefin(&self.sefin)?;
         servidor(&self.servidor)?;
+        interface(&self.interface)?;
         aliquotas(&self.aliquotas)
     }
 }
@@ -156,6 +157,17 @@ fn servidor(s: &Servidor) -> Resultado {
                 "cada origem tem a forma esquema://endereco, com http ou https, e nao tem espacos",
             ));
         }
+    }
+    Ok(())
+}
+
+fn interface(i: &Interface) -> Resultado {
+    if !TEMAS.contains(&i.tema.as_str()) {
+        return Err(ErroConfig::invalido(
+            "interface",
+            "tema",
+            "use \"sistema\", \"claro\" ou \"escuro\"",
+        ));
     }
     Ok(())
 }
@@ -299,6 +311,19 @@ mod testes {
             campo_do_erro(&c),
             ("servidor".into(), "origens_permitidas".into())
         );
+    }
+
+    #[test]
+    fn tema_da_interface_so_aceita_os_tres_conhecidos() {
+        for ok in ["sistema", "claro", "escuro"] {
+            let mut c = Config::default();
+            c.interface.tema = ok.into();
+            assert_eq!(c.validar(), Ok(()), "{ok}");
+        }
+        let mut c = Config::default();
+        assert_eq!(c.interface.tema, "sistema");
+        c.interface.tema = "azul".into();
+        assert_eq!(campo_do_erro(&c), ("interface".into(), "tema".into()));
     }
 
     #[test]

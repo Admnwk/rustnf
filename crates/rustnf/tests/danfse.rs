@@ -240,3 +240,21 @@ fn pdf_recusa_o_que_nao_e_nfse() {
     .unwrap_err();
     assert!(matches!(e, ErroDanfse::NaoENfse(_)), "{e}");
 }
+
+#[test]
+fn consulta_publica_de_municipio_pela_tabela_embutida() {
+    use rustnf::danfse::municipio::buscar;
+    assert_eq!(
+        buscar("4106902"),
+        Some(("CURITIBA".to_string(), "PR".to_string()))
+    );
+    assert_eq!(
+        buscar("3550308"),
+        Some(("SÃO PAULO".to_string(), "SP".to_string()))
+    );
+    // codigo que nao consta, curto demais ou com sobra: sem resposta
+    assert_eq!(buscar("0000000"), None);
+    assert_eq!(buscar("35503"), None);
+    assert_eq!(buscar(" 3550308"), None);
+    assert_eq!(buscar(""), None);
+}

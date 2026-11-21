@@ -18,23 +18,31 @@
   certificado (Gerenciador de Credenciais do Windows) e pasta de notas com a numeracao da DPS. A linha de comando ja usa
   tudo isso; a interface de desktop vai usar a mesma camada e o mesmo arquivo.
 
+* Interface de desktop (`crates/rustnf-gui`, GPUI, so' Windows): primeiro uso em tres passos, Inicio, Configuracoes
+  completas (emitente, Sefin Nacional, certificado e senha no cofre, notas, DANFSe, aliquotas, tema), teste do certificado
+  e da conexao com a Sefin, selo do ambiente e estado do certificado sempre visiveis. Usa a mesma camada de aplicacao e o
+  mesmo arquivo de configuracao do binario.
+
 ## Proximo
 
-1. Cofre do sistema tambem no Linux e no macOS (hoje so' o Windows); aliquotas do arquivo de
+1. Interface de desktop, proximas telas: **Nova nota** (montar e conferir a DPS, emitir), **Notas** (a pasta de notas: listar,
+   abrir o XML e o DANFSe, cancelar), **Consultar** (por chave de acesso) e **Previa** do IBS/CBS. Hoje a janela so'
+   configura; nada disso aparece nela antes de funcionar. Tambem faltam: icone e empacotamento do executavel, e a versao
+   de `rustnf-gui` para outros sistemas quando o GPUI tiver janela neles.
+2. Cofre do sistema tambem no Linux e no macOS (hoje so' o Windows); aliquotas do arquivo de
    configuracao tambem na API HTTP e no MCP (hoje so' no `calcular` da linha de comando); trava que reserve o numero da
    DPS entre processos (hoje a trava protege a consistencia dos arquivos, nao a reserva do numero).
-2. MCP: respostas em fluxo (SSE) e `subscriptions/listen`, se algum cliente precisar; autorizacao OAuth no lugar do
+3. MCP: respostas em fluxo (SSE) e `subscriptions/listen`, se algum cliente precisar; autorizacao OAuth no lugar do
    Bearer fixo; ferramenta de consulta da NFS-e.
-3. Trocar o `chrono` (sem mantenedor, RUSTSEC-2026-0543) por uma biblioteca de datas mantida e tirar o `ignore` do `deny.toml`.
-4. Teste de ponta a ponta com TLS mutuo contra um servidor local de teste.
-5. A cada versao nova do Typst, rever os avisos de seguranca das dependencias dele registrados no `deny.toml` (hoje
+4. Trocar o `chrono` (sem mantenedor, RUSTSEC-2026-0543) por uma biblioteca de datas mantida e tirar o `ignore` do `deny.toml`.
+5. Teste de ponta a ponta com TLS mutuo contra um servidor local de teste.
+6. A cada versao nova do Typst, rever os avisos de seguranca das dependencias dele registrados no `deny.toml` (hoje
    dois do `quick-xml`, num caminho que o DANFSe nao executa, e seis de crates sem mantenedor).
 
 ## Depois da v1
 
-* Interface visual de desktop, em Rust (GPUI), em outro crate: montar e conferir a DPS, ver a previa do IBS/CBS, emitir,
-  consultar, cancelar e abrir o DANFSe, usando a mesma camada de aplicacao (`rustnf-app`) e o mesmo arquivo de
-  configuracao do binario.
+* Interface de desktop: as telas de montar e conferir a DPS, ver a previa do IBS/CBS, emitir, consultar, cancelar e abrir
+  o DANFSe (a configuracao ja esta feita, veja "Feito").
 * Motor de PDF do DANFSe com menos dependencias. Hoje o PDF sai pelo Typst (cerca de 280 crates). A pagina ja e'
   calculada pela biblioteca como uma lista de operacoes de desenho (texto medido, linhas, imagem), entao da para
   escreve-la direto com uma biblioteca de PDF (`krilla`, a que o proprio Typst usa por baixo, cerca de 90 crates) ou,

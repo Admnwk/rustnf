@@ -7,7 +7,7 @@
 use std::io::Write;
 use std::path::Path;
 
-use rustnf_app::cofre::{Cofre, CofreDesligado, CofreDoSistema};
+use rustnf_app::cofre::{cofre_do_ambiente, Cofre};
 use rustnf_app::config::Efetiva;
 use rustnf_app::pedido;
 use serde_json::{json, Value};
@@ -21,8 +21,7 @@ use crate::entrada;
 use crate::erro::Erro;
 use crate::nucleo::{self, SituacaoNota};
 
-/// Variavel que desliga o cofre do sistema (servidor sem sessao de usuario, por exemplo): `desligado`.
-pub const VARIAVEL_COFRE: &str = "RUSTNF_COFRE";
+pub use rustnf_app::cofre::VARIAVEL_COFRE;
 
 pub(super) fn escrever_stdout(bytes: &[u8]) -> Result<(), Erro> {
     let mut saida = std::io::stdout().lock();
@@ -35,14 +34,6 @@ pub(super) fn escrever_stdout(bytes: &[u8]) -> Result<(), Erro> {
 pub(super) fn escrever_json(v: &Value) -> Result<(), Erro> {
     let texto = serde_json::to_string_pretty(v)?;
     escrever_stdout(format!("{texto}\n").as_bytes())
-}
-
-/// O cofre desta execucao: o do sistema, ou nenhum com `RUSTNF_COFRE=desligado`.
-fn cofre_do_ambiente() -> Box<dyn Cofre> {
-    match std::env::var(VARIAVEL_COFRE).as_deref() {
-        Ok("desligado") => Box::new(CofreDesligado),
-        _ => Box::new(CofreDoSistema),
-    }
 }
 
 /// Executa o subcomando. O `Err` vira diagnostico no stderr e o codigo de saida em `main`.

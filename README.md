@@ -18,6 +18,7 @@ Emissor aberto de NFS-e do padrao nacional (Sefin Nacional / ADN), escrito em Ru
 | cliente da Sefin Nacional | transporte falso (resposta perdida, 5xx, E0014, consulta, cancelamento) | uma chamada real, com TLS mutuo e certificado A1 |
 | previa do IBS/CBS | casos de teste da calculadora oficial da Receita Federal | comparar com os valores de uma NFS-e autorizada |
 | DANFSe | contrato de conteudo e leiaute | comparar com um DANFSe emitido pelo portal |
+| interface de desktop (`rustnf-gui`, so' Windows) | testes do modelo (mascaras, conferencia, ida e volta com o arquivo de configuracao) e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuracao | emitir, consultar, cancelar e ver a previa pela janela (hoje ela so' configura); uma chamada real a Sefin pelo botao "Testar conexao"; exame da janela em outras escalas de tela |
 
 Se voce testar, conte como foi: abra um relato pelo modelo **"Relato de emissao"** (aba Issues), mesmo quando der
 certo. Correcao e' bem-vinda por pedido de mudanca, com a fonte oficial citada e um caso no contrato (veja
@@ -56,7 +57,8 @@ cd rustnf
 cargo build --release -p rustnf-cli
 ```
 
-O executavel fica em `target/release/rustnf` (`rustnf.exe` no Windows). A biblioteca e a camada de aplicacao
+O executavel fica em `target/release/rustnf` (`rustnf.exe` no Windows). A interface de desktop e' outro executavel, so'
+para Windows (veja [Interface de desktop](#interface-de-desktop)). A biblioteca e a camada de aplicacao
 (`crates/rustnf-app`: operacoes, configuracao, cofre e pasta de notas, sem tela nem servidor) sao compartilhadas pelo
 binario e por qualquer interface que use o mesmo arquivo de configuracao. Nao e' preciso nenhum programa externo: o
 Typst, as fontes e o logotipo do DANFSe vao dentro do binario. A primeira compilacao e' demorada por causa do Typst.
@@ -176,6 +178,7 @@ secao e o campo no erro.
 | `[notas]` | `pasta` (vazio = nao guardar) |
 | `[danfse]` | `canhoto` |
 | `[servidor]` | `endereco`, `porta`, `limite_corpo`, `tempo_limite_s`, `origens_permitidas` |
+| `[interface]` | `tema` (`sistema`, `claro` ou `escuro`; padrao `sistema`): preferencia da interface de desktop, a linha de comando nao a usa |
 | `[[aliquotas]]` | `ano`, `cbs_referencia`, `cbs`, `ibs_uf`, `ibs_mun`, `fonte` (uma tabela por ano) |
 
 * **`[emitente]`** completa o pedido da DPS no `emitir`, so' nos campos que o pedido nao traz (nunca sobrescreve):
@@ -183,6 +186,7 @@ secao e o campo no erro.
 * **`[[aliquotas]]`** valem no `calcular` quando o JSON nao traz `publicadas`: sem elas, a previa de 2027 em diante usa
   o que a biblioteca assume; com elas, usa o numero publicado.
 * **`[servidor]`** e' o que `rustnf serve` usa quando a opcao nao e' dada.
+* **`[interface]`** guarda so' o tema da interface de desktop; `sistema` segue o tema do Windows.
 * **Sem segredo no arquivo.** Nao existe campo de senha nem de token; `senha` ou `token` no arquivo e' recusado como
   campo desconhecido.
 
@@ -317,6 +321,33 @@ $ curl -s -X POST http://127.0.0.1:8080/mcp \
 Fora do que foi implementado: respostas em fluxo (SSE) e `subscriptions/listen`, `GET`/`DELETE` no endpoint (405),
 recursos, modelos de mensagem, logging, tarefas e autorizacao OAuth (as ferramentas de emissao usam o Bearer fixo do operador).
 
+## Interface de desktop
+
+`rustnf-gui` e' uma janela para configurar o rustnf sem editar o arquivo TOML. **So' existe para Windows** nesta versao
+(o GPUI usado so' tem janela no Windows); em outro sistema o executavel avisa e sai com codigo 2. Ela le e grava o **mesmo
+arquivo de configuracao** da linha de comando (`--config <arquivo>`, depois `RUSTNF_CONFIG`, depois o local padrao) e
+guarda a senha do certificado no Gerenciador de Credenciais do Windows, nunca no arquivo. Aceita so' `--config`,
+`--version` e `--help`; `RUSTNF_COFRE=desligado` desliga o cofre (a janela avisa que a senha nao sera guardada).
+
+O que ja faz: primeiro uso em tres passos (emitente, certificado, pasta das notas); Inicio com o resumo; Configuracoes
+(emitente, Sefin Nacional com ambiente, certificado, senha, assinatura, tempo limite e folga do relogio, notas, canhoto do
+DANFSe, aliquotas por ano e tema); botoes "Testar certificado" (abre o `.pfx`, sem rede) e "Testar conexao com a Sefin"
+(chamada real a Sefin Nacional, so' quando voce clica); selo fixo do ambiente (Producao ou Producao restrita) e estado
+do certificado no rodape. O que ainda **nao** faz: montar e emitir nota, consultar, cancelar e a previa do IBS/CBS (por
+enquanto, use a linha de comando para isso).
+
+```
+cargo run -p rustnf-gui                      # modo de depuracao
+cargo run -p rustnf-gui -- --config rustnf.toml
+cargo build --release -p rustnf-gui          # no Windows, precisa do fxc.exe do Windows SDK
+```
+
+A compilacao **release** no Windows precisa do `fxc.exe` (compilador de shaders do Windows SDK): deixe-o no `PATH` ou
+aponte a variavel `GPUI_FXC_PATH` para ele. O modo de depuracao nao precisa. A primeira compilacao e' demorada (centenas
+de crates). O mapa da camada de janela: `crates/rustnf-gui/src/modelo` (estado dos formularios, mascaras, conferencia
+campo a campo, passos do primeiro uso; sem janela e testavel em qualquer sistema), `src/servicos.rs` (arquivo, cofre,
+certificado, conexao) e `src/telas` (so' desenho).
+
 ## Ambientes
 
 | ambiente | `--ambiente` | `tpAmb` | Sefin Nacional |
@@ -340,6 +371,8 @@ cargo test -p rustnf --test reforma_previa
 cargo test -p rustnf --test nfse_sefin
 cargo test -p rustnf --test danfse
 cargo test -p rustnf-cli
+cargo test -p rustnf-app
+cargo test -p rustnf-gui
 cargo test -p rustnf --test higiene
 ```
 
