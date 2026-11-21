@@ -1,5 +1,20 @@
 # Changelog
 
+## Próxima versão
+
+* A API HTTP e o MCP passam a emitir e a cancelar pelo mesmo caminho da linha de comando e da interface. Em
+  `POST /emitir` e em `emitir_nfse`, o `[emitente]` da configuração completa o que o pedido não traz e, com
+  `[notas].pasta`, o número da DPS pode faltar (vale o próximo da série) e a nota autorizada é guardada na pasta; a
+  resposta ganha `guardada`, `numero_dps`, `aviso` e `recuperada_difere`, como no `rustnf emitir`. Em `POST /cancelar`
+  e em `cancelar_nfse`, o cancelamento registrado marca a nota na pasta, e a recusa de um cancelamento repetido é
+  conferida na Sefin antes de virar erro. Antes, uma nota emitida pelo servidor não entrava na pasta nem na
+  numeração. Sem `[emitente]` e sem pasta de notas na configuração, nada muda.
+* O servidor emite uma nota por vez: duas emissões simultâneas não pegam mais o mesmo número de DPS.
+* `POST /calcular` e `calcular_cbs_ibs` usam as `[[aliquotas]]` da configuração quando o pedido não traz
+  `publicadas`, como o `rustnf calcular` já fazia.
+* MCP: ferramenta nova `consultar_nfse` (consulta pela chave de acesso), só com `--permitir-emissao` e o Bearer, como
+  o `GET /nfse/{chave}` da API HTTP.
+
 ## 0.2.0 - 2026-11-21
 
 * DANFSe sem o Typst: o PDF passa a ser escrito direto pelo `krilla` (feature `danfse`), a partir da mesma lista de

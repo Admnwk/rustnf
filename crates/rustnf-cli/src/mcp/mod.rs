@@ -36,7 +36,7 @@ use crate::http::auth::bearer;
 use crate::http::{resposta_json, Estado};
 
 pub use ferramentas::{buscar, listar, Ferramenta};
-pub use schemas::{cancelamento, danfse, dps, operacao};
+pub use schemas::{cancelamento, consulta, danfse, dps, dps_de_emissao, operacao};
 
 /// Revisao da especificacao implementada por inteiro.
 pub const VERSAO_MODERNA: &str = "2026-07-28";
@@ -238,7 +238,7 @@ fn inicializar(id: &Value, params: Option<&Value>) -> Saida {
             "protocolVersion": VERSAO_LEGADA,
             "capabilities": {"tools": {"listChanged": false}},
             "serverInfo": identidade(),
-            "instructions": "Emissor de NFS-e nacional. Ferramentas de leitura sempre; emitir_nfse e cancelar_nfse so' com o servidor iniciado com emissao e o Bearer do operador.",
+            "instructions": "Emissor de NFS-e nacional. Ferramentas de leitura sempre; emitir_nfse, consultar_nfse e cancelar_nfse so' com o servidor iniciado com emissao e o Bearer do operador.",
         }),
     )
 }
@@ -251,7 +251,7 @@ fn descobrir(id: &Value) -> Saida {
             json!({
                 "supportedVersions": [VERSAO_MODERNA, VERSAO_LEGADA],
                 "capabilities": {"tools": {}},
-                "instructions": "Emissor de NFS-e nacional. Ferramentas de leitura sempre; emitir_nfse e cancelar_nfse so' com o servidor iniciado com emissao e o Bearer do operador.",
+                "instructions": "Emissor de NFS-e nacional. Ferramentas de leitura sempre; emitir_nfse, consultar_nfse e cancelar_nfse so' com o servidor iniciado com emissao e o Bearer do operador.",
             }),
             "public",
         ),

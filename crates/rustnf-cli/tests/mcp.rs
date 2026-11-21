@@ -11,6 +11,7 @@ use axum::body::Body;
 use axum::http::{Request, StatusCode};
 use base64::Engine;
 use comum::*;
+use rustnf_app::notas::Notas;
 use serde_json::{json, Value};
 
 const MODERNA: &str = "2026-07-28";
@@ -195,8 +196,23 @@ async fn tools_list_com_emissao_so_mostra_as_de_emissao_com_o_bearer() {
     .await;
     assert_eq!(st, StatusCode::OK);
     let n = nomes(&json_do_corpo(&corpo));
-    assert_eq!(n.len(), 6);
-    assert!(n.contains(&"emitir_nfse".to_string()) && n.contains(&"cancelar_nfse".to_string()));
+    assert_eq!(n.len(), 7);
+    for nome in ["emitir_nfse", "consultar_nfse", "cancelar_nfse"] {
+        assert!(n.contains(&nome.to_string()), "faltou {nome}: {n:?}");
+    }
+    // a emissao nao exige o numero da DPS: a pasta de notas do servidor pode dar o proximo
+    let v = json_do_corpo(&corpo);
+    let exigidos = |nome: &str| {
+        v["result"]["tools"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|t| t["name"] == nome)
+            .unwrap()["inputSchema"]["required"]
+            .to_string()
+    };
+    assert!(exigidos("conferir_dps").contains("numero"));
+    assert!(!exigidos("emitir_nfse").contains("numero"));
 
     let (st, _, _) = enviar(
         &app,
@@ -407,6 +423,126 @@ async fn ferramentas_de_emissao_so_executam_com_a_opcao_e_o_bearer() {
     )
     .await;
     assert_eq!(json_do_corpo(&corpo)["result"]["isError"], true);
+}
+
+/// Chama uma ferramenta com o Bearer e devolve o `result`.
+async fn chamar(app: &axum::Router, nome: &str, argumentos: Value) -> Value {
+    let a = auth();
+    let (st, _, corpo) = enviar(
+        app,
+        moderna(
+            "tools/call",
+            json!({"name": nome, "arguments": argumentos}),
+            &[("authorization", a.as_str())],
+        ),
+    )
+    .await;
+    assert_eq!(st, StatusCode::OK, "{}", String::from_utf8_lossy(&corpo));
+    json_do_corpo(&corpo)["result"].clone()
+}
+
+#[tokio::test]
+async fn emitir_consultar_e_cancelar_usam_o_emitente_e_a_pasta_de_notas() {
+    let p = Pasta::nova();
+    let pasta = p.caminho("notas");
+    let notas = Notas::abrir(&pasta).unwrap();
+    notas.confirmar_numero("1", 41).unwrap();
+    let (ch, autorizada) = autorizada_completa(42);
+    let falso = Falso::novo(vec![
+        ("POST", "/nfse".into(), autorizada),
+        ("GET", format!("/nfse/{ch}"), nota(&ch)),
+        ("POST", "/eventos".into(), evento_registrado()),
+    ]);
+    let app = app_emissao_com_pasta(falso.clone(), &pasta);
+
+    let r = chamar(&app, "emitir_nfse", pedido_sem_emitente()).await;
+    assert_eq!(r["isError"], false, "{r}");
+    assert_eq!(r["structuredContent"]["status"], "autorizada");
+    assert_eq!(r["structuredContent"]["guardada"], true, "{r}");
+    assert_eq!(r["structuredContent"]["numero_dps"], 42, "{r}");
+    let xml = dps_enviada(&falso, 0);
+    assert!(
+        xml.contains("<CNPJ>11222333000181</CNPJ>") && xml.contains("<nDPS>42</nDPS>"),
+        "{xml}"
+    );
+    assert!(notas.ler_xml(&ch).is_ok());
+    assert_eq!(notas.proximo_numero("1").unwrap(), 43);
+
+    let r = chamar(&app, "consultar_nfse", json!({"chave": ch})).await;
+    assert_eq!(r["isError"], false, "{r}");
+    assert_eq!(r["structuredContent"]["chave"], ch);
+    assert_eq!(r["structuredContent"]["nfse"]["numero"], "77");
+
+    let r = chamar(
+        &app,
+        "cancelar_nfse",
+        json!({"chave": ch, "motivo": "1", "justificativa": "Valor digitado errado na nota"}),
+    )
+    .await;
+    assert_eq!(r["isError"], false, "{r}");
+    assert_eq!(r["structuredContent"]["status"], "registrado");
+    assert_eq!(notas.listar().unwrap()[0].situacao.texto(), "cancelada");
+}
+
+#[tokio::test]
+async fn consultar_nfse_e_ferramenta_de_emissao() {
+    let ch = chave();
+    // servidor sem emissao: a ferramenta nao existe
+    let (st, _, corpo) = enviar(
+        &app_leitura(),
+        moderna(
+            "tools/call",
+            json!({"name": "consultar_nfse", "arguments": {"chave": ch}}),
+            &[],
+        ),
+    )
+    .await;
+    assert_eq!(st, StatusCode::OK);
+    assert_eq!(json_do_corpo(&corpo)["error"]["code"], -32602);
+
+    // com emissao e sem Bearer: 401, e nada sai para a rede
+    let falso = Falso::default();
+    let app = app_emissao(falso.clone());
+    let (st, _, _) = enviar(
+        &app,
+        moderna(
+            "tools/call",
+            json!({"name": "consultar_nfse", "arguments": {"chave": ch}}),
+            &[],
+        ),
+    )
+    .await;
+    assert_eq!(st, StatusCode::UNAUTHORIZED);
+    assert!(falso.chamadas().is_empty());
+
+    // nota que a Sefin nao acha e campo desconhecido: resultado com isError, nao erro de protocolo
+    let r = chamar(&app, "consultar_nfse", json!({"chave": ch})).await;
+    assert_eq!(r["isError"], true, "{r}");
+    let r = chamar(&app, "consultar_nfse", json!({"chave": ch, "outro": 1})).await;
+    assert_eq!(r["isError"], true, "{r}");
+}
+
+#[tokio::test]
+async fn calcular_cbs_ibs_usa_as_aliquotas_da_configuracao() {
+    let args = json!({"tributos": {"data": "2027-06-01", "cst": "000", "cclass_trib": "000001", "base": "100.00"}});
+    let chamada = || {
+        moderna(
+            "tools/call",
+            json!({"name": "calcular_cbs_ibs", "arguments": args}),
+            &[],
+        )
+    };
+    // sem aliquotas na configuracao, a previa de 2027 recusa
+    let (_, _, corpo) = enviar(&app_leitura(), chamada()).await;
+    assert_eq!(json_do_corpo(&corpo)["result"]["isError"], true);
+    // com as do arquivo (cbs_referencia 8,8): 8,8 - 0,1 = 8,7
+    let (_, _, corpo) = enviar(&app_leitura_com_aliquotas(), chamada()).await;
+    let r = &json_do_corpo(&corpo)["result"];
+    assert_eq!(r["isError"], false, "{r}");
+    assert_eq!(
+        r["structuredContent"]["tributos"]["cbs"]["aliquota"],
+        "8.70"
+    );
 }
 
 #[tokio::test]

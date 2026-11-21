@@ -40,7 +40,7 @@ fn estado(args: &ArgServe, e: &Efetiva, cofre: &dyn Cofre) -> Result<Estado, Err
                 "--pfx e --token-env so' valem com --permitir-emissao".into(),
             ));
         }
-        return Ok(Estado::somente_leitura(config));
+        return Ok(Estado::somente_leitura(config).com_aliquotas(e.config.publicadas()));
     }
     let Some(variavel) = &args.token_env else {
         return Err(Erro::Uso(
@@ -67,7 +67,11 @@ fn estado(args: &ArgServe, e: &Efetiva, cofre: &dyn Cofre) -> Result<Estado, Err
         resolver::assinatura(e, args.assinatura),
         resolver::tempo_sefin(e),
     )?;
-    Ok(Estado::com_emissao(config, emissor, token))
+    // o mesmo arquivo de configuracao da linha de comando: emitente, pasta de notas e aliquotas
+    Ok(Estado::com_emissao(config, emissor, token)
+        .com_aliquotas(e.config.publicadas())
+        .com_emitente(e.config.emitente.clone())
+        .com_notas(configuracao::notas_da(e)?))
 }
 
 /// Endereco e porta de escuta: opcao > variavel > arquivo > padrao.

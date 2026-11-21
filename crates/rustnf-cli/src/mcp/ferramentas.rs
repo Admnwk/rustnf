@@ -29,7 +29,7 @@ pub struct Ferramenta {
     schema: fn() -> Value,
 }
 
-const FERRAMENTAS: [Ferramenta; 6] = [
+const FERRAMENTAS: [Ferramenta; 7] = [
     Ferramenta {
         nome: "calcular_cbs_ibs",
         titulo: "Previa do IBS e da CBS",
@@ -61,14 +61,21 @@ const FERRAMENTAS: [Ferramenta; 6] = [
     Ferramenta {
         nome: "emitir_nfse",
         titulo: "Emitir a NFS-e",
-        descricao: "Monta, assina com o certificado A1 do servidor e envia a DPS a Sefin Nacional. Operacao com efeito fiscal.",
+        descricao: "Monta, assina com o certificado A1 do servidor e envia a DPS a Sefin Nacional. O emitente da configuracao do servidor completa o que o pedido nao traz; com pasta de notas configurada, o numero da DPS pode faltar (vale o proximo da serie) e a nota autorizada e' guardada. Operacao com efeito fiscal.",
         emissao: true,
-        schema: schemas::dps,
+        schema: schemas::dps_de_emissao,
+    },
+    Ferramenta {
+        nome: "consultar_nfse",
+        titulo: "Consultar a NFS-e",
+        descricao: "Consulta uma NFS-e na Sefin Nacional pela chave de acesso, com o certificado A1 do servidor. Nao altera nada.",
+        emissao: true,
+        schema: schemas::consulta,
     },
     Ferramenta {
         nome: "cancelar_nfse",
         titulo: "Cancelar a NFS-e",
-        descricao: "Registra o cancelamento (evento 101101) da NFS-e. Operacao com efeito fiscal.",
+        descricao: "Registra o cancelamento (evento 101101) da NFS-e e, com pasta de notas configurada, marca a nota como cancelada nela. Operacao com efeito fiscal.",
         emissao: true,
         schema: schemas::cancelamento,
     },
@@ -127,6 +134,12 @@ struct PedidoDanfse {
     canhoto: Option<bool>,
 }
 
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct PedidoConsulta {
+    chave: String,
+}
+
 async fn danfse(args: Value) -> Result<Value, Erro> {
     let p: PedidoDanfse = argumentos(args)?;
     let situacao = p
@@ -157,7 +170,8 @@ async fn rodar(f: &Ferramenta, estado: &Estado, args: Value) -> Result<Value, Er
     match f.nome {
         "calcular_cbs_ibs" => {
             let op: nucleo::Operacao = argumentos(args)?;
-            let v = nucleo::calcular(&op)?;
+            // sem `publicadas` no pedido, valem as `[[aliquotas]]` da configuracao
+            let v = nucleo::calcular_com(&op, &estado.aliquotas)?;
             let recusado = v["recusado"].as_bool().unwrap_or(false);
             Ok(resultado_estruturado(v, recusado))
         }
@@ -173,15 +187,19 @@ async fn rodar(f: &Ferramenta, estado: &Estado, args: Value) -> Result<Value, Er
         "gerar_danfse" => danfse(args).await,
         "emitir_nfse" => {
             let em = estado.emissao.as_ref().ok_or(Erro::Interno)?;
-            let dps: Dps = argumentos(args)?;
-            let v = emissao::emitir(em.emissor.as_ref(), dps, estado.config.folga_relogio).await?;
+            let v = estado.emitir(em, args).await?;
+            Ok(resultado_estruturado(v, false))
+        }
+        "consultar_nfse" => {
+            let em = estado.emissao.as_ref().ok_or(Erro::Interno)?;
+            let p: PedidoConsulta = argumentos(args)?;
+            let v = emissao::consultar(em.emissor.as_ref(), &p.chave).await?;
             Ok(resultado_estruturado(v, false))
         }
         "cancelar_nfse" => {
             let em = estado.emissao.as_ref().ok_or(Erro::Interno)?;
             let p: nucleo::PedidoCancelamento = argumentos(args)?;
-            let v = emissao::cancelar(em.emissor.as_ref(), &p.chave, &p.motivo, &p.justificativa)
-                .await?;
+            let v = estado.cancelar(em, &p).await?;
             Ok(resultado_estruturado(v, false))
         }
         _ => Err(Erro::Interno),

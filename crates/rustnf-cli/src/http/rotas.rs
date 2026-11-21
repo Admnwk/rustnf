@@ -13,7 +13,7 @@ use axum::http::{HeaderMap, HeaderValue, StatusCode, Uri};
 use axum::response::{IntoResponse, Response};
 use rustnf::nfse::Dps;
 use serde::de::DeserializeOwned;
-use serde_json::json;
+use serde_json::{json, Value};
 
 use super::auth::bearer;
 use super::{resposta_json, Emissao, Estado};
@@ -75,7 +75,9 @@ pub(super) async fn calcular(
 ) -> Resposta {
     let bytes = ler_corpo(&cabecalhos, corpo, estado.config.limite_corpo).await?;
     let op: nucleo::Operacao = json_de(&bytes)?;
-    Ok(resposta_json(StatusCode::OK, &nucleo::calcular(&op)?))
+    // sem `publicadas` no pedido, valem as `[[aliquotas]]` da configuracao
+    let v = nucleo::calcular_com(&op, &estado.aliquotas)?;
+    Ok(resposta_json(StatusCode::OK, &v))
 }
 
 pub(super) async fn dps_conferir(
@@ -151,8 +153,8 @@ pub(super) async fn emitir(
 ) -> Resposta {
     let em = exigir_token(&estado, &cabecalhos)?;
     let bytes = ler_corpo(&cabecalhos, corpo, estado.config.limite_corpo).await?;
-    let dps: Dps = json_de(&bytes)?;
-    let r = emissao::emitir(em.emissor.as_ref(), dps, estado.config.folga_relogio).await?;
+    let pedido: Value = json_de(&bytes)?;
+    let r = estado.emitir(em, pedido).await?;
     Ok(resposta_json(StatusCode::OK, &r))
 }
 
@@ -164,7 +166,7 @@ pub(super) async fn cancelar(
     let em = exigir_token(&estado, &cabecalhos)?;
     let bytes = ler_corpo(&cabecalhos, corpo, estado.config.limite_corpo).await?;
     let p: nucleo::PedidoCancelamento = json_de(&bytes)?;
-    let r = emissao::cancelar(em.emissor.as_ref(), &p.chave, &p.motivo, &p.justificativa).await?;
+    let r = estado.cancelar(em, &p).await?;
     Ok(resposta_json(StatusCode::OK, &r))
 }
 

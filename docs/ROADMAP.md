@@ -18,8 +18,9 @@
   especificação 2026-07-28 com compatibilidade para `initialize` da 2025-11-25).
 
 * Camada de aplicação (`crates/rustnf-app`) compartilhada: operações, arquivo de configuração TOML, cofre da senha do
-  certificado (Gerenciador de Credenciais do Windows) e pasta de notas com a numeração da DPS. A linha de comando já usa
-  tudo isso; a interface de desktop vai usar a mesma camada e o mesmo arquivo.
+  certificado (Gerenciador de Credenciais do Windows) e pasta de notas com a numeração da DPS. A linha de comando, a
+  API HTTP, o MCP e a interface de desktop usam a mesma camada e o mesmo arquivo: emitente, numeração, pasta de notas
+  e alíquotas valem igual nas quatro.
 
 * Interface de desktop (`crates/rustnf-gui`, GPUI, só Windows): primeiro uso em três passos, Início, Configurações
   completas (emitente, Sefin Nacional, certificado e senha no cofre, notas, DANFSe, alíquotas, tema), teste do certificado
@@ -43,11 +44,11 @@
    obra, evento, locação, deduções, reembolsos, substituição, benefício municipal, suspensão, imunidade e destinatário
    diferente do tomador) seguem pela linha de comando. Faltam: ícone do executável, assinatura de código (sem ela o
    Windows avisa no primeiro uso) e a versão de `rustnf-gui` para outros sistemas quando o GPUI tiver janela neles.
-2. Cofre do sistema também no Linux e no macOS (hoje só o Windows); alíquotas do arquivo de
-   configuração também na API HTTP e no MCP (hoje só no `calcular` da linha de comando); trava que reserve o número da
-   DPS entre processos (hoje a trava protege a consistência dos arquivos, não a reserva do número).
+2. Cofre do sistema também no Linux e no macOS (hoje só o Windows); trava que reserve o número da DPS entre processos
+   (hoje a trava protege a consistência dos arquivos, não a reserva do número; dentro do servidor, as emissões já
+   entram uma por vez).
 3. MCP: respostas em fluxo (SSE) e `subscriptions/listen`, se algum cliente precisar; autorização OAuth no lugar do
-   Bearer fixo; ferramenta de consulta da NFS-e.
+   Bearer fixo.
 4. Trocar o `chrono` (sem mantenedor, RUSTSEC-2026-0543) por uma biblioteca de datas mantida e tirar o `ignore` do `deny.toml`.
 5. Teste de ponta a ponta com TLS mútuo contra um servidor local de teste.
 6. A cada versão nova do `gpui-kit`, rever os oito crates sem mantenedor que ele traz e que estão registrados no
