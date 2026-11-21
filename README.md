@@ -382,7 +382,7 @@ limpo.
 
 ```
 $ curl -s http://127.0.0.1:8080/health
-{"emissao":false,"status":"ok","versao":"0.2.0"}
+{"emissao":false,"status":"ok","versao":"0.3.0"}
 
 $ curl -s -X POST http://127.0.0.1:8080/calcular -H 'Content-Type: application/json' \
     --data-binary @crates/rustnf-cli/exemplos/calculo.json
