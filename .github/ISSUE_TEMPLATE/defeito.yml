@@ -1,0 +1,34 @@
+name: Defeito
+description: Algo no rustnf nao faz o que a documentacao ou a norma oficial diz.
+title: "Defeito: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Para problema de seguranca, nao abra issue: use o relato privado (veja o `SECURITY.md`).
+
+        **Nao anexe certificado, senha, token, nem XML ou PDF com dado de pessoa ou empresa real.**
+  - type: textarea
+    id: o_que
+    attributes:
+      label: O que acontece
+      description: O comando ou a chamada, a entrada (com dados ficticios) e a saida.
+    validations:
+      required: true
+  - type: textarea
+    id: esperado
+    attributes:
+      label: O que deveria acontecer
+      description: Se for regra fiscal, cite a fonte oficial (documento, versao, item ou codigo da regra).
+    validations:
+      required: true
+  - type: input
+    id: versao
+    attributes:
+      label: Versao do rustnf ou commit
+    validations:
+      required: true
+  - type: input
+    id: sistema
+    attributes:
+      label: Sistema operacional

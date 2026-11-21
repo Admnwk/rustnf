@@ -34,6 +34,20 @@ cargo deny check licenses advisories
 A feature `danfse` embute o Typst e demora para compilar na primeira vez. Rode `cargo` com poucos nucleos se a maquina
 for compartilhada (`CARGO_BUILD_JOBS=2` e `RUST_TEST_THREADS=2`).
 
+## Testar em producao restrita e relatar
+
+O projeto ainda nao tem nota real emitida (veja "Estado" no `README.md`). O teste que mais ajuda e' o seu:
+
+1. Use a **producao restrita** (`--ambiente restrita`), com o seu certificado A1. Nada ali tem efeito fiscal. Nem todo
+   municipio esta ativo nesse ambiente, e muitos nao cadastram la os codigos de servico: as recusas E0037 e E0312
+   costumam ser do cadastro do ambiente, nao da sua nota.
+2. Confira antes de enviar: `rustnf dps conferir pedido.json`.
+3. Emita: `rustnf emitir pedido.json --pfx certificado.pfx --senha-env SENHA_DO_A1 --ambiente restrita`.
+4. Abra um relato pelo modelo **"Relato de emissao"**, tenha dado certo ou nao: ambiente, municipio, versao, o
+   codigo e a mensagem que a Sefin Nacional devolveu.
+
+No relato, **nunca** anexe certificado, senha, token, nem XML ou PDF com dado de pessoa ou empresa real. Troque
+nomes e documentos pelos ficticios de `crates/rustnf/tests/higiene_documentos.txt` antes de colar qualquer trecho.
 ## Estilo do codigo
 
 * Rust sem `unsafe`; sem `unwrap`, `expect` nem `panic!` fora de teste; erro tipado (enum com `Display` e
