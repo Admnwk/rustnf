@@ -5,19 +5,26 @@
 //! A execucao de cada subcomando: ler a entrada, chamar o nucleo, escrever a saida.
 
 use std::io::Write;
+use std::path::Path;
 
+use rustnf_app::cofre::{Cofre, CofreDesligado, CofreDoSistema};
+use rustnf_app::config::Efetiva;
+use rustnf_app::pedido;
 use serde_json::{json, Value};
 
 use super::{
-    certificado, servir, AcaoDps, ArgCalcular, ArgCancelar, ArgConsultar, ArgDanfse, ArgEmitir,
-    ArgSefin, Cli, Comando, SituacaoArg,
+    configuracao, resolver, servir, AcaoDps, ArgCalcular, ArgCancelar, ArgConsultar, ArgDanfse,
+    ArgEmitir, ArgSefin, Cli, Comando, SituacaoArg,
 };
-use crate::emissao;
+use crate::emissao::{self, Emissor};
 use crate::entrada;
 use crate::erro::Erro;
 use crate::nucleo::{self, SituacaoNota};
 
-fn escrever_stdout(bytes: &[u8]) -> Result<(), Erro> {
+/// Variavel que desliga o cofre do sistema (servidor sem sessao de usuario, por exemplo): `desligado`.
+pub const VARIAVEL_COFRE: &str = "RUSTNF_COFRE";
+
+pub(super) fn escrever_stdout(bytes: &[u8]) -> Result<(), Erro> {
     let mut saida = std::io::stdout().lock();
     saida
         .write_all(bytes)
@@ -25,9 +32,17 @@ fn escrever_stdout(bytes: &[u8]) -> Result<(), Erro> {
         .map_err(|_| Erro::Interno)
 }
 
-fn escrever_json(v: &Value) -> Result<(), Erro> {
+pub(super) fn escrever_json(v: &Value) -> Result<(), Erro> {
     let texto = serde_json::to_string_pretty(v)?;
     escrever_stdout(format!("{texto}\n").as_bytes())
+}
+
+/// O cofre desta execucao: o do sistema, ou nenhum com `RUSTNF_COFRE=desligado`.
+fn cofre_do_ambiente() -> Box<dyn Cofre> {
+    match std::env::var(VARIAVEL_COFRE).as_deref() {
+        Ok("desligado") => Box::new(CofreDesligado),
+        _ => Box::new(CofreDoSistema),
+    }
 }
 
 /// Executa o subcomando. O `Err` vira diagnostico no stderr e o codigo de saida em `main`.
@@ -36,14 +51,29 @@ fn escrever_json(v: &Value) -> Result<(), Erro> {
 ///
 /// Qualquer [`Erro`]; o codigo de saida sai de [`Erro::codigo_saida`].
 pub async fn executar(cli: Cli) -> Result<(), Erro> {
-    match cli.comando {
+    let cofre = cofre_do_ambiente();
+    executar_com(cli, cofre.as_ref()).await
+}
+
+/// Como [`executar`], com o cofre dado por quem chama (os testes passam um cofre em memoria).
+///
+/// # Errors
+///
+/// Os mesmos de [`executar`].
+pub async fn executar_com(cli: Cli, cofre: &dyn Cofre) -> Result<(), Erro> {
+    let Cli { config, comando } = cli;
+    let config = config.as_deref();
+    match comando {
         Comando::Dps { acao } => dps(acao),
-        Comando::Calcular(a) => calcular(&a),
-        Comando::Danfse(a) => danfse(&a),
-        Comando::Emitir(a) => emitir(a).await,
-        Comando::Consultar(a) => consultar(a).await,
-        Comando::Cancelar(a) => cancelar(a).await,
-        Comando::Serve(a) => servir(a).await,
+        Comando::Calcular(a) => calcular(&a, config),
+        Comando::Danfse(a) => danfse(&a, config),
+        Comando::Emitir(a) => emitir(a, config, cofre).await,
+        Comando::Consultar(a) => consultar(a, config, cofre).await,
+        Comando::Cancelar(a) => cancelar(a, config, cofre).await,
+        Comando::Serve(a) => servir(a, config, cofre).await,
+        Comando::Config { acao } => configuracao::config(acao, config),
+        Comando::Senha { acao } => configuracao::senha(acao, config, cofre),
+        Comando::Notas { acao } => configuracao::notas(acao, config),
     }
 }
 
@@ -74,9 +104,11 @@ fn dps(acao: AcaoDps) -> Result<(), Erro> {
     }
 }
 
-fn calcular(a: &ArgCalcular) -> Result<(), Erro> {
+fn calcular(a: &ArgCalcular, config: Option<&Path>) -> Result<(), Erro> {
     let op = nucleo::ler_operacao(&entrada::ler_texto(&a.operacao, "a operacao")?)?;
-    let v = nucleo::calcular(&op)?;
+    // sem `publicadas` no pedido, valem as `[[aliquotas]]` da configuracao
+    let publicadas = configuracao::carregar(config)?.config.publicadas();
+    let v = nucleo::calcular_com(&op, &publicadas)?;
     escrever_json(&v)?;
     if v["recusado"].as_bool() == Some(true) {
         return Err(Erro::recusa(
@@ -87,14 +119,15 @@ fn calcular(a: &ArgCalcular) -> Result<(), Erro> {
     Ok(())
 }
 
-fn danfse(a: &ArgDanfse) -> Result<(), Erro> {
+fn danfse(a: &ArgDanfse, config: Option<&Path>) -> Result<(), Erro> {
     let xml = entrada::ler_texto(&a.nfse, "o XML da NFS-e")?;
     let situacao = match a.situacao {
         SituacaoArg::Valida => SituacaoNota::Valida,
         SituacaoArg::Cancelada => SituacaoNota::Cancelada,
         SituacaoArg::Substituida => SituacaoNota::Substituida,
     };
-    let pdf = nucleo::gerar_danfse(&xml, situacao, !a.sem_canhoto)?;
+    let canhoto = !a.sem_canhoto && configuracao::carregar(config)?.config.danfse.canhoto;
+    let pdf = nucleo::gerar_danfse(&xml, situacao, canhoto)?;
     if a.saida == "-" {
         return escrever_stdout(&pdf);
     }
@@ -105,6 +138,9 @@ fn danfse(a: &ArgDanfse) -> Result<(), Erro> {
 }
 
 fn imprimir(v: &Value, json: bool) -> Result<(), Erro> {
+    if let Some(aviso) = v.get("aviso").and_then(Value::as_str) {
+        eprintln!("aviso: {aviso}");
+    }
     if json {
         escrever_json(v)
     } else {
@@ -114,27 +150,64 @@ fn imprimir(v: &Value, json: bool) -> Result<(), Erro> {
 
 fn emissor_de(
     sefin: &ArgSefin,
+    efetiva: &Efetiva,
+    cofre: &dyn Cofre,
     stdin_ocupado: bool,
-) -> Result<std::sync::Arc<dyn emissao::Emissor>, Erro> {
-    let senha = certificado::senha(&sefin.senha, stdin_ocupado)?;
-    certificado::emissor(&sefin.pfx, &senha, sefin.ambiente)
+) -> Result<std::sync::Arc<dyn Emissor>, Erro> {
+    resolver::emissor(efetiva, cofre, sefin, stdin_ocupado)
 }
 
-async fn emitir(a: ArgEmitir) -> Result<(), Erro> {
-    let dps = nucleo::ler_dps(&entrada::ler_texto(&a.pedido, "o pedido")?)?;
-    let emissor = emissor_de(&a.sefin, a.pedido == "-")?;
-    let v = emissao::emitir(emissor.as_ref(), dps, a.folga_relogio).await?;
+/// A emissao a partir do JSON do pedido: completa o pedido com o `[emitente]`, numera e guarda a nota pela pasta
+/// de notas da configuracao e emite. `folga` e' a opcao da chamada; sem ela vale a da configuracao.
+///
+/// # Errors
+///
+/// Como [`rustnf_app::pedido::emitir_pedido`].
+pub async fn emitir_valor(
+    emissor: &dyn Emissor,
+    pedido: Value,
+    efetiva: &Efetiva,
+    folga: Option<u32>,
+) -> Result<Value, Erro> {
+    let notas = configuracao::notas_da(efetiva)?;
+    pedido::emitir_pedido(
+        emissor,
+        pedido,
+        &efetiva.config.emitente,
+        folga.unwrap_or(efetiva.config.sefin.folga_relogio_s),
+        notas.as_ref(),
+    )
+    .await
+}
+
+async fn emitir(a: ArgEmitir, config: Option<&Path>, cofre: &dyn Cofre) -> Result<(), Erro> {
+    let texto = entrada::ler_texto(&a.pedido, "o pedido")?;
+    // erro de sintaxe do JSON antes de qualquer outra coisa, como sempre foi
+    let pedido: Value = serde_json::from_str(&texto)?;
+    let efetiva = configuracao::carregar(config)?;
+    let emissor = emissor_de(&a.sefin, &efetiva, cofre, a.pedido == "-")?;
+    let v = emitir_valor(emissor.as_ref(), pedido, &efetiva, a.folga_relogio).await?;
     imprimir(&v, a.json)
 }
 
-async fn consultar(a: ArgConsultar) -> Result<(), Erro> {
-    let emissor = emissor_de(&a.sefin, false)?;
+async fn consultar(a: ArgConsultar, config: Option<&Path>, cofre: &dyn Cofre) -> Result<(), Erro> {
+    let efetiva = configuracao::carregar(config)?;
+    let emissor = emissor_de(&a.sefin, &efetiva, cofre, false)?;
     let v = emissao::consultar(emissor.as_ref(), &a.chave).await?;
     imprimir(&v, a.json)
 }
 
-async fn cancelar(a: ArgCancelar) -> Result<(), Erro> {
-    let emissor = emissor_de(&a.sefin, false)?;
-    let v = emissao::cancelar(emissor.as_ref(), &a.chave, &a.motivo, &a.justificativa).await?;
+async fn cancelar(a: ArgCancelar, config: Option<&Path>, cofre: &dyn Cofre) -> Result<(), Erro> {
+    let efetiva = configuracao::carregar(config)?;
+    let emissor = emissor_de(&a.sefin, &efetiva, cofre, false)?;
+    let notas = configuracao::notas_da(&efetiva)?;
+    let v = pedido::cancelar_pedido(
+        emissor.as_ref(),
+        &a.chave,
+        &a.motivo,
+        &a.justificativa,
+        notas.as_ref(),
+    )
+    .await?;
     imprimir(&v, a.json)
 }

@@ -145,7 +145,7 @@ fn servidor(s: &Servidor) -> Resultado {
             return Err(ErroConfig::invalido(
                 sec,
                 "origens_permitidas",
-                "cada origem comeca com http:// ou https://, sem espacos",
+                "cada origem tem a forma esquema://endereco, com http ou https, e nao tem espacos",
             ));
         }
     }

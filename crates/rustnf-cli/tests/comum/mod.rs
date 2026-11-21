@@ -5,7 +5,9 @@
 //! Ajudantes dos testes de integracao: contratos da biblioteca, transporte falso da Sefin e roteador em memoria.
 #![allow(dead_code, unreachable_pub)]
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+use std::process::Command;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -116,6 +118,8 @@ pub type Roteiro = Vec<(&'static str, String, Resp)>;
 pub struct Falso {
     roteiro: Arc<Mutex<Roteiro>>,
     pub pedidos: Arc<Mutex<Vec<(String, String)>>>,
+    /// Os corpos enviados, na ordem das chamadas.
+    pub corpos: Arc<Mutex<Vec<Vec<u8>>>>,
     pub atraso: Duration,
 }
 
@@ -143,13 +147,14 @@ impl Transporte for Falso {
         &self,
         metodo: &str,
         url: &str,
-        _corpo: Option<Vec<u8>>,
+        corpo: Option<Vec<u8>>,
         _aceita: &str,
     ) -> Result<(u16, Vec<u8>), FalhaRede> {
         self.pedidos
             .lock()
             .unwrap()
             .push((metodo.into(), url.into()));
+        self.corpos.lock().unwrap().push(corpo.unwrap_or_default());
         if !self.atraso.is_zero() {
             tokio::time::sleep(self.atraso).await;
         }
@@ -243,4 +248,96 @@ pub fn json_do_corpo(corpo: &[u8]) -> Value {
             String::from_utf8_lossy(corpo)
         )
     })
+}
+
+/// Variaveis que mudam o comportamento do binario: o teste as tira do ambiente para nao depender da maquina.
+const VARIAVEIS_DO_RUSTNF: [&str; 14] = [
+    "RUSTNF_CONFIG",
+    "RUSTNF_AMBIENTE",
+    "RUSTNF_PFX",
+    "RUSTNF_TEMPO_LIMITE_SEFIN",
+    "RUSTNF_FOLGA_RELOGIO",
+    "RUSTNF_NOTAS_PASTA",
+    "RUSTNF_CANHOTO",
+    "RUSTNF_ENDERECO",
+    "RUSTNF_PORTA",
+    "RUSTNF_LIMITE_CORPO",
+    "RUSTNF_TEMPO_LIMITE",
+    "RUSTNF_ORIGENS_PERMITIDAS",
+    "RUSTNF_SERIE",
+    "RUSTNF_COFRE",
+];
+
+/// Isola o processo do computador de quem roda o teste: sem variaveis `RUSTNF_*`, com a pasta de configuracao do
+/// usuario apontando para uma pasta vazia (`vazia`) e com o cofre do sistema desligado.
+pub fn isolar(cmd: &mut Command, vazia: &Path) {
+    for v in VARIAVEIS_DO_RUSTNF {
+        cmd.env_remove(v);
+    }
+    cmd.env("APPDATA", vazia)
+        .env("XDG_CONFIG_HOME", vazia)
+        .env("HOME", vazia)
+        .env("RUSTNF_COFRE", "desligado");
+}
+
+/// Pasta nova em std::env::temp_dir() com nome unico, apagada no fim.
+static CONTADOR: AtomicU64 = AtomicU64::new(0);
+
+/// Pasta nova em `std::env::temp_dir()`, apagada no fim.
+pub struct Pasta(pub PathBuf);
+
+impl Pasta {
+    pub fn nova() -> Self {
+        let p = std::env::temp_dir().join(format!(
+            "rustnf-cli-config-{}-{}",
+            std::process::id(),
+            CONTADOR.fetch_add(1, Ordering::Relaxed)
+        ));
+        std::fs::create_dir_all(&p).unwrap();
+        Self(p)
+    }
+
+    pub fn caminho(&self, nome: &str) -> PathBuf {
+        self.0.join(nome)
+    }
+
+    pub fn texto(&self, nome: &str) -> String {
+        self.caminho(nome).to_string_lossy().into_owned()
+    }
+
+    pub fn escrever(&self, nome: &str, conteudo: &[u8]) -> String {
+        std::fs::write(self.caminho(nome), conteudo).unwrap();
+        self.texto(nome)
+    }
+}
+
+impl Drop for Pasta {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.0);
+    }
+}
+
+pub fn exemplo() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("exemplos")
+        .join("rustnf.toml")
+}
+
+pub fn pfx_de_teste(pasta: &Pasta) -> String {
+    let bytes = cert_a1::gerar_teste(
+        "11222333000181",
+        "OFICINA TESTE",
+        "teste",
+        365,
+        true,
+        false,
+        Utc::now(),
+    )
+    .unwrap();
+    pasta.escrever("teste.pfx", &bytes)
+}
+
+/// Texto TOML com o caminho entre aspas simples (literal): serve para caminho do Windows, com barra invertida.
+pub fn toml_com_pfx(pfx: &str, extra: &str) -> String {
+    format!("[sefin]\nambiente = \"restrita\"\npfx = '{pfx}'\n{extra}")
 }

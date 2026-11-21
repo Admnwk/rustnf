@@ -17,21 +17,39 @@ use crate::entrada;
 use crate::erro::Erro;
 use crate::segredo::Segredo;
 
-/// Tempo limite de cada chamada a Sefin Nacional.
-const TEMPO_SEFIN: Duration = Duration::from_secs(60);
-
-/// A senha, da variavel de ambiente ou do stdin. `stdin_ocupado` avisa que o stdin ja serve a outra entrada.
-pub(super) fn senha(arg: &ArgSenha, stdin_ocupado: bool) -> Result<Segredo, Erro> {
+/// A senha dada pela chamada: variavel de ambiente ou stdin. `None` se a chamada nao deu nenhuma das duas.
+/// `stdin_ocupado` avisa que o stdin ja serve a outra entrada.
+pub(super) fn senha_explicita(
+    arg: &ArgSenha,
+    stdin_ocupado: bool,
+) -> Result<Option<Segredo>, Erro> {
     match (&arg.senha_env, arg.senha_stdin) {
-        (Some(variavel), false) => entrada::senha_do_ambiente(variavel),
+        (Some(variavel), false) => entrada::senha_do_ambiente(variavel).map(Some),
         (None, true) if stdin_ocupado => Err(Erro::Uso(
             "o stdin ja esta lendo o pedido: passe a senha por --senha-env".into(),
         )),
-        (None, true) => entrada::senha_do_stdin(),
+        (None, true) => entrada::senha_do_stdin().map(Some),
+        (None, false) => Ok(None),
         _ => Err(Erro::Uso(
-            "informe a senha do certificado por --senha-env <VARIAVEL> ou --senha-stdin".into(),
+            "use so' uma origem de senha: --senha-env ou --senha-stdin".into(),
         )),
     }
+}
+
+/// Texto do erro quando nenhuma origem de senha existe.
+pub(super) const SEM_SENHA: &str = "informe a senha do certificado por --senha-env <VARIAVEL> ou --senha-stdin (ou guarde-a no cofre do sistema com `rustnf senha guardar`)";
+
+fn abrir(pfx: &str, senha: &Segredo) -> Result<rustnf::assinatura::cert_a1::Certificado, Erro> {
+    if pfx == "-" {
+        return Err(Erro::Uso("--pfx precisa de um arquivo, nao de '-'".into()));
+    }
+    let bytes = Zeroizing::new(entrada::ler_bytes(pfx, "o certificado")?);
+    cert_a1::carregar(&bytes, senha.expor()).map_err(|e| Erro::Entrada(e.to_string()))
+}
+
+/// So' confere que a senha abre o certificado.
+pub(super) fn conferir(pfx: &str, senha: &Segredo) -> Result<(), Erro> {
+    abrir(pfx, senha).map(|_| ())
 }
 
 /// Abre o .pfx e monta o cliente da Sefin para o ambiente.
@@ -39,13 +57,9 @@ pub(super) fn emissor(
     pfx: &str,
     senha: &Segredo,
     ambiente: Ambiente,
+    tempo_limite: Duration,
 ) -> Result<Arc<dyn Emissor>, Erro> {
-    if pfx == "-" {
-        return Err(Erro::Uso("--pfx precisa de um arquivo, nao de '-'".into()));
-    }
-    let bytes = Zeroizing::new(entrada::ler_bytes(pfx, "o certificado")?);
-    let certificado =
-        cert_a1::carregar(&bytes, senha.expor()).map_err(|e| Erro::Entrada(e.to_string()))?;
-    let cliente = ClienteNfse::real(certificado, ambiente.codigo(), None, None, TEMPO_SEFIN)?;
+    let certificado = abrir(pfx, senha)?;
+    let cliente = ClienteNfse::real(certificado, ambiente.codigo(), None, None, tempo_limite)?;
     Ok(Arc::new(cliente))
 }
