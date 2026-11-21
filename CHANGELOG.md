@@ -47,6 +47,9 @@
     tomador (nome, inscrição municipal, e-mail, telefone) e o endereço vêm da nota mais recente dele na pasta de
     notas, com um aviso de qual nota. O que a pessoa já digitou fica; com parte do endereço digitada, o endereço não
     é mexido.
+* `rustnf-gui.exe` ganha ícone (o da janela e o do arquivo) e a versão nas propriedades do arquivo (aba "Detalhes"),
+  gerada a partir da versão do pacote. O CI e o fluxo de release conferem os dois no executável, e a release só sai
+  se a versão gravada for a da tag.
 * Biblioteca: a NFS-e lida (`nfse::leitura::Nfse`) traz também a inscrição municipal, o e-mail, o telefone e o
   endereço nacional do tomador (`tomador_im`, `tomador_email`, `tomador_fone`, `tomador_cep`, `tomador_municipio`,
   `tomador_logradouro`, `tomador_numero`, `tomador_complemento`, `tomador_bairro`). O JSON de `emitir` e de

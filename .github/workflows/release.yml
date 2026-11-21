@@ -37,6 +37,16 @@ jobs:
             $de_fora = $dlls | Where-Object { $_ -match '^(vcruntime|msvcp|vcomp|ucrtbased)' }
             if ($de_fora) { throw "$exe depende de biblioteca que nao vem com o Windows: $($de_fora -join ', ')" }
           }
+      - name: Conferir o icone e a versao da interface
+        shell: pwsh
+        run: |
+          $versao = (cargo metadata --no-deps --format-version 1 | ConvertFrom-Json).packages |
+            Where-Object name -eq 'rustnf-gui' | Select-Object -ExpandProperty version
+          # com tag, a versao do pacote tem de ser a da tag
+          if ($env:GITHUB_REF_TYPE -eq 'tag' -and "v$versao" -ne $env:GITHUB_REF_NAME) {
+            throw "a tag $env:GITHUB_REF_NAME nao e' a versao do pacote ($versao)"
+          }
+          ./.github/conferir_recursos.ps1 -Exe target/release/rustnf-gui.exe -Versao $versao
       - name: Empacotar
         shell: pwsh
         run: |

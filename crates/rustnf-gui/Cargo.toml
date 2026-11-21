@@ -25,6 +25,10 @@ name = "demonstracao"
 path = "examples/demonstracao.rs"
 required-features = ["demonstracao"]
 
+[build-dependencies]
+# Icone e versao no executavel do Windows (o mesmo crate que o GPUI usa para o manifesto dele).
+embed-resource = "3"
+
 [dependencies]
 rustnf = { path = "../rustnf", features = ["sefin", "danfse"] }
 rustnf-app = { path = "../rustnf-app" }

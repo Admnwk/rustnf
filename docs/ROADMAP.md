@@ -42,8 +42,8 @@
 
 1. Interface de desktop: os casos de emissão fora do caso comum (tomador no exterior, intermediário, comércio exterior,
    obra, evento, locação, deduções, reembolsos, substituição, benefício municipal, suspensão, imunidade e destinatário
-   diferente do tomador) seguem pela linha de comando. Faltam: ícone do executável, assinatura de código (sem ela o
-   Windows avisa no primeiro uso) e a versão de `rustnf-gui` para outros sistemas quando o GPUI tiver janela neles.
+   diferente do tomador) seguem pela linha de comando. Faltam: assinatura de código (sem ela o Windows avisa no
+   primeiro uso) e a versão de `rustnf-gui` para outros sistemas quando o GPUI tiver janela neles.
 2. Cofre do sistema também no Linux e no macOS (hoje só o Windows); trava que reserve o número da DPS entre processos
    (hoje a trava protege a consistência dos arquivos, não a reserva do número; dentro do servidor, as emissões já
    entram uma por vez).
