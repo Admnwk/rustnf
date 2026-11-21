@@ -84,6 +84,23 @@ fn linha_do_erro(texto: &str, posicao: usize) -> usize {
     ate.iter().filter(|b| **b == b'\n').count() + 1
 }
 
+/// O que o analisador disse, sem o valor lido: nos erros de tipo e de valor ele repete o que estava no arquivo.
+fn sem_o_valor(mensagem: &str) -> String {
+    const COM_VALOR: [&str; 4] = [
+        "invalid type",
+        "invalid value",
+        "invalid length",
+        "unknown variant",
+    ];
+    let Some(prefixo) = COM_VALOR.iter().find(|p| mensagem.starts_with(**p)) else {
+        return mensagem.to_string();
+    };
+    match mensagem.rsplit_once(", expected ") {
+        Some((_, esperado)) => format!("{prefixo}, expected {esperado}"),
+        None => (*prefixo).to_string(),
+    }
+}
+
 impl Config {
     /// Le o arquivo TOML. Nao confere os valores: veja [`Config::validar`].
     ///
@@ -102,7 +119,7 @@ impl Config {
     pub fn de_texto(texto: &str) -> Result<Self, ErroConfig> {
         toml::from_str(texto).map_err(|e| ErroConfig::Sintaxe {
             linha: e.span().map(|s| linha_do_erro(texto, s.start)),
-            mensagem: e.message().to_string(),
+            mensagem: sem_o_valor(e.message()),
         })
     }
 
@@ -283,6 +300,27 @@ mod testes {
             Config::de_texto("[servidor\n"),
             Err(ErroConfig::Sintaxe { .. })
         ));
+    }
+
+    #[test]
+    fn erro_de_tipo_nao_repete_o_valor_lido() {
+        for texto in [
+            "[servidor]\nporta = \"s3gr3d0\"\n",
+            "[sefin]\npfx = 918273645\n",
+            "[emitente]\nop_simples = \"s3gr3d0\"\n",
+            "[servidor]\norigens_permitidas = \"s3gr3d0\"\n",
+            "[servidor]\nporta = 918273645\n",
+        ] {
+            match Config::de_texto(texto) {
+                Err(ErroConfig::Sintaxe { mensagem, linha }) => {
+                    assert_eq!(linha, Some(2), "{texto}");
+                    assert!(mensagem.contains("expected"), "{texto}: {mensagem}");
+                    assert!(!mensagem.contains("s3gr3d0"), "{mensagem}");
+                    assert!(!mensagem.contains("918273645"), "{mensagem}");
+                }
+                outro => panic!("{texto}: esperava Sintaxe, veio {outro:?}"),
+            }
+        }
     }
 
     #[test]

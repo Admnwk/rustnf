@@ -20,4 +20,5 @@ toml = "1"
 zeroize = "1"
 
 [target.'cfg(windows)'.dependencies]
-keyring = "4"
+keyring-core = "1"
+windows-native-keyring-store = { version = "1", default-features = false }

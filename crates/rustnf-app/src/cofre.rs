@@ -171,18 +171,29 @@ impl Cofre for CofreDesligado {
     }
 }
 
-/// O cofre do sistema: no Windows, o Gerenciador de Credenciais (crate `keyring`); nos outros sistemas, toda
-/// chamada devolve [`ErroCofre::NaoSuportado`].
+/// O cofre do sistema: no Windows, o Gerenciador de Credenciais (crates `keyring-core` e
+/// `windows-native-keyring-store`); nos outros sistemas, toda chamada devolve [`ErroCofre::NaoSuportado`].
 #[derive(Debug, Clone, Copy, Default)]
 pub struct CofreDoSistema;
 
 #[cfg(windows)]
 mod windows {
+    use std::collections::HashMap;
+
+    use keyring_core::api::CredentialStoreApi;
+    use windows_native_keyring_store::Store;
+
     use super::{conferir_chave, Cofre, CofreDoSistema, ErroCofre, Segredo, SERVICO};
 
-    fn entrada(chave: &str) -> Result<keyring::Entry, ErroCofre> {
+    /// O item fica so' nesta maquina: nao acompanha o perfil do usuario para outras maquinas do dominio.
+    const PERSISTENCIA: &str = "Local";
+
+    fn entrada(chave: &str) -> Result<keyring_core::Entry, ErroCofre> {
         conferir_chave(chave)?;
-        keyring::Entry::new(SERVICO, chave).map_err(|_| ErroCofre::Indisponivel)
+        let modificadores = HashMap::from([("persistence", PERSISTENCIA)]);
+        Store::new()
+            .and_then(|cofre| cofre.build(SERVICO, chave, Some(&modificadores)))
+            .map_err(|_| ErroCofre::Indisponivel)
     }
 
     impl Cofre for CofreDoSistema {
@@ -195,14 +206,14 @@ mod windows {
         fn ler(&self, chave: &str) -> Result<Option<Segredo>, ErroCofre> {
             match entrada(chave)?.get_password() {
                 Ok(s) => Ok(Some(Segredo::novo(s))),
-                Err(keyring::Error::NoEntry) => Ok(None),
+                Err(keyring_core::Error::NoEntry) => Ok(None),
                 Err(_) => Err(ErroCofre::Indisponivel),
             }
         }
 
         fn apagar(&self, chave: &str) -> Result<(), ErroCofre> {
             match entrada(chave)?.delete_credential() {
-                Ok(()) | Err(keyring::Error::NoEntry) => Ok(()),
+                Ok(()) | Err(keyring_core::Error::NoEntry) => Ok(()),
                 Err(_) => Err(ErroCofre::Indisponivel),
             }
         }
@@ -283,6 +294,25 @@ mod testes {
             ..Emitente::default()
         };
         assert_eq!(chave_do_certificado(&e, ""), Some("52998224725".into()));
+    }
+
+    /// Toca o Gerenciador de Credenciais de verdade, com um item proprio do teste que e' apagado no fim:
+    /// `cargo test -p rustnf-app --lib cofre_do_sistema_no_windows -- --ignored`.
+    #[cfg(windows)]
+    #[test]
+    #[ignore = "grava e apaga um item no Gerenciador de Credenciais do Windows"]
+    fn cofre_do_sistema_no_windows_guarda_le_troca_e_apaga() {
+        let c = CofreDoSistema;
+        let chave = format!("teste-do-cofre-{}", std::process::id());
+        c.apagar(&chave).unwrap();
+        assert!(c.ler(&chave).unwrap().is_none());
+        c.guardar(&chave, &Segredo::novo("um".into())).unwrap();
+        assert_eq!(c.ler(&chave).unwrap().unwrap().expor(), "um");
+        c.guardar(&chave, &Segredo::novo("dois".into())).unwrap();
+        assert_eq!(c.ler(&chave).unwrap().unwrap().expor(), "dois");
+        c.apagar(&chave).unwrap();
+        assert!(c.ler(&chave).unwrap().is_none());
+        c.apagar(&chave).unwrap();
     }
 
     #[cfg(not(windows))]

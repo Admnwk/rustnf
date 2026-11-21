@@ -20,7 +20,8 @@
   `cancelar` marca a nota como cancelada; `calcular` usa as `[[aliquotas]]` quando o JSON nao traz `publicadas`.
   Comandos novos: `config mostrar`, `config caminho`, `senha guardar`, `senha apagar` e `notas listar`. Sem arquivo
   de configuracao e sem as opcoes novas, o comportamento e' o de antes.
-* Dependencias novas: `toml` (MIT OR Apache-2.0) e `keyring` (MIT OR Apache-2.0, so' no Windows).
+* Dependencias novas: `toml`, e, so' no Windows, `keyring-core` e `windows-native-keyring-store` (todas MIT OR
+  Apache-2.0).
 
 ## 0.1.0
 
