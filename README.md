@@ -231,10 +231,11 @@ seção e o campo no erro.
 | `[interface]` | `tema` (`sistema`, `claro` ou `escuro`; padrão `sistema`): preferência da interface de desktop, a linha de comando não a usa |
 | `[[aliquotas]]` | `ano`, `cbs_referencia`, `cbs`, `ibs_uf`, `ibs_mun`, `fonte` (uma tabela por ano) |
 
-* **`[emitente]`** completa o pedido da DPS no `emitir`, só nos campos que o pedido não traz (nunca sobrescreve):
-  `prestador.documento`, `nome`, `im`, `op_simples`, `apuracao_sn`, `regime_especial`, `cmun_emissor` e `serie`.
-* **`[[aliquotas]]`** valem no `calcular` quando o JSON não traz `publicadas`: sem elas, a prévia de 2027 em diante usa
-  o que a biblioteca assume; com elas, usa o número publicado.
+* **`[emitente]`** completa o pedido da DPS no `emitir` (linha de comando, API HTTP e MCP), só nos campos que o pedido
+  não traz (nunca sobrescreve): `prestador.documento`, `nome`, `im`, `op_simples`, `apuracao_sn`, `regime_especial`,
+  `cmun_emissor` e `serie`.
+* **`[[aliquotas]]`** valem no `calcular` (linha de comando, API HTTP e MCP) quando o JSON não traz `publicadas`: sem
+  elas, a prévia de 2027 em diante usa o que a biblioteca assume; com elas, usa o número publicado.
 * **`[servidor]`** é o que `rustnf serve` usa quando a opção não é dada.
 * **`[interface]`** guarda só o tema da interface de desktop; `sistema` segue o tema do Windows.
 * **Sem segredo no arquivo.** Não existe campo de senha nem de token; `senha` ou `token` no arquivo é recusado como
@@ -273,7 +274,8 @@ NÃO foi emitida; emita de novo, que o número já avançou. O `cancelar` marca 
 recusar o pedido e a nota já tiver o cancelamento registrado (envio anterior sem resposta, ou feito em outro lugar), a
 resposta é `registrado` com `recuperada: true`, e as mensagens da recusa vêm em `alertas`.
 `rustnf notas listar [--json]` lista as notas. As gravações são atômicas (arquivo temporário e `rename`); o nome do
-arquivo vem só da chave de acesso conferida.
+arquivo vem só da chave de acesso conferida. A emissão e o cancelamento pela API HTTP e pelo MCP usam a mesma pasta,
+do mesmo jeito.
 
 ## API HTTP
 
@@ -331,6 +333,13 @@ $ curl -s -X POST http://127.0.0.1:8080/cancelar -H "Authorization: Bearer $TOKE
     -d '{"chave":"<chave>","motivo":"1","justificativa":"Valor digitado errado na nota"}'
 ```
 
+O servidor lê o mesmo arquivo de configuração da linha de comando (`rustnf serve --config rustnf.toml`). No `/emitir`,
+o `[emitente]` completa o que o pedido não traz; com `[notas].pasta`, o `numero` da DPS pode faltar (vale o próximo da
+série), a nota autorizada é guardada e a resposta traz `guardada` e `numero_dps` (e `aviso` ou `recuperada_difere`,
+nos casos descritos em [Pasta de notas](#pasta-de-notas)). No `/cancelar`, o cancelamento registrado marca a nota na
+pasta. O servidor emite uma nota por vez, para duas emissões simultâneas não pegarem o mesmo número. Sem `[emitente]`
+e sem pasta de notas, o pedido precisa vir completo, com o `numero`.
+
 Segurança: escuta em `127.0.0.1` por padrão (fora dele o tráfego é HTTP puro: ponha um proxy com TLS na frente); sem
 CORS; cabeçalho `Origin` de fora do próprio computador recebe 403; teto de corpo e tempo limite por requisição; token
 comparado em tempo constante; o PDF é gerado fora do laço assíncrono. Todo erro tem o envelope único:
@@ -357,8 +366,9 @@ a versão e as capacidades em `_meta` e os cabeçalhos `MCP-Protocol-Version`, `
 | `conferir_dps` | confere a DPS; recusa volta com `isError: true` |
 | `montar_dps` | XML da DPS |
 | `gerar_danfse` | PDF em base64, num recurso embutido |
-| `emitir_nfse` | só com `--permitir-emissao` e o Bearer |
-| `cancelar_nfse` | só com `--permitir-emissao` e o Bearer |
+| `emitir_nfse` | emite como o `POST /emitir`; só com `--permitir-emissao` e o Bearer |
+| `consultar_nfse` | consulta pela chave de acesso; só com `--permitir-emissao` e o Bearer |
+| `cancelar_nfse` | cancela como o `POST /cancelar`; só com `--permitir-emissao` e o Bearer |
 
 Recusa de regra fiscal volta como resultado da ferramenta com `isError: true`, não como erro de protocolo. Sem o
 Bearer, `tools/list` mostra só as quatro de leitura. Cada ferramenta tem `inputSchema` (JSON Schema). Exemplo:

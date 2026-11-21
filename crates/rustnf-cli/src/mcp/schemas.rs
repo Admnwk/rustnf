@@ -278,6 +278,16 @@ pub fn dps() -> Value {
     Value::Object(s)
 }
 
+/// Schema de `emitir_nfse`: a DPS, sem exigir o que a configuracao do servidor pode completar (os dados do
+/// prestador e o municipio emissor, pelo emitente; o numero, pela pasta de notas). O que faltar de verdade e'
+/// recusado pela montagem da DPS, com o campo.
+#[must_use]
+pub fn dps_de_emissao() -> Value {
+    let mut s = dps();
+    s["required"] = json!(["servico", "valores"]);
+    s
+}
+
 /// Schema de `calcular_cbs_ibs` (`nucleo::Operacao`).
 #[must_use]
 pub fn operacao() -> Value {
@@ -348,6 +358,19 @@ pub fn danfse() -> Value {
             "canhoto": {"type": "boolean", "description": "Com o canhoto de cientificacao; padrao true."}
         },
         "required": ["xml"],
+        "additionalProperties": false
+    })
+}
+
+/// Schema de `consultar_nfse`.
+#[must_use]
+pub fn consulta() -> Value {
+    json!({
+        "type": "object",
+        "properties": {
+            "chave": texto("Chave de acesso da NFS-e (50 posicoes).")
+        },
+        "required": ["chave"],
         "additionalProperties": false
     })
 }
@@ -448,8 +471,34 @@ mod testes {
 
     #[test]
     fn todo_schema_e_objeto_com_tipo() {
-        for s in [dps(), operacao(), danfse(), cancelamento()] {
+        for s in [
+            dps(),
+            dps_de_emissao(),
+            operacao(),
+            danfse(),
+            consulta(),
+            cancelamento(),
+        ] {
             assert_eq!(s["type"], json!("object"));
         }
+    }
+
+    #[test]
+    fn a_emissao_nao_exige_o_que_a_configuracao_completa() {
+        let (conferir, emitir) = (dps(), dps_de_emissao());
+        assert_eq!(conferir["properties"], emitir["properties"]);
+        let exigidos = |s: &Value| -> BTreeSet<String> {
+            s["required"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|v| v.as_str().unwrap().to_string())
+                .collect()
+        };
+        for campo in ["prestador", "cmun_emissor", "numero"] {
+            assert!(exigidos(&conferir).contains(campo), "{campo}");
+            assert!(!exigidos(&emitir).contains(campo), "{campo}");
+        }
+        assert!(exigidos(&emitir).contains("servico") && exigidos(&emitir).contains("valores"));
     }
 }

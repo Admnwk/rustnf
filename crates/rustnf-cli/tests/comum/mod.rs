@@ -20,6 +20,7 @@ use rustnf::assinatura::cert_a1::{self, Certificado};
 use rustnf::chave_dfe;
 use rustnf::nfse::compactar;
 use rustnf::nfse::sefin::{ClienteNfse, FalhaRede, Transporte};
+use rustnf_app::notas::Notas;
 use rustnf_cli::emissao::Emissor;
 use rustnf_cli::http::{roteador, Config, Estado, Token};
 use serde_json::{json, Value};
@@ -197,6 +198,80 @@ pub fn app_emissao_com(falso: Falso, config: Config) -> Router {
         emissor_falso(falso),
         Token::novo(TOKEN.into()).unwrap(),
     ))
+}
+
+/// O arquivo de configuracao de exemplo, lido.
+pub fn config_de_exemplo() -> rustnf_app::config::Config {
+    rustnf_app::config::Config::ler(&exemplo()).unwrap()
+}
+
+/// Servidor so' de leitura com as `[[aliquotas]]` do arquivo de exemplo.
+pub fn app_leitura_com_aliquotas() -> Router {
+    roteador(
+        Estado::somente_leitura(Config::default()).com_aliquotas(config_de_exemplo().publicadas()),
+    )
+}
+
+/// Servidor com emissao, o `[emitente]` do arquivo de exemplo e a pasta de notas dada.
+pub fn app_emissao_com_pasta(falso: Falso, pasta: &Path) -> Router {
+    roteador(
+        Estado::com_emissao(
+            Config::default(),
+            emissor_falso(falso),
+            Token::novo(TOKEN.into()).unwrap(),
+        )
+        .com_emitente(config_de_exemplo().emitente)
+        .com_notas(Some(Notas::abrir(pasta).unwrap())),
+    )
+}
+
+pub fn id_dps(numero: u64) -> String {
+    format!(
+        "DPS{}{}{}{:05}{:015}",
+        "3550308", "2", "11222333000181", 1, numero
+    )
+}
+
+/// Resposta de emissao autorizada com a nota inteira (data de processamento e do tomador).
+pub fn autorizada_completa(numero: u64) -> (String, Resp) {
+    let ch =
+        chave_dfe::montar_nfse(3550308, "11222333000181", 70 + numero, "2610", Some(1), 2).unwrap();
+    let xml = format!(
+        "<NFSe xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infNFSe Id=\"NFS{ch}\">\
+         <nNFSe>{}</nNFSe><dhProc>2026-10-02T10:00:01-03:00</dhProc><cStat>100</cStat><ambGer>2</ambGer>\
+         <valores><vLiq>150.00</vLiq></valores><DPS versao=\"1.01\"><infDPS Id=\"{}\"><tpAmb>2</tpAmb>\
+         <serie>1</serie><nDPS>{numero}</nDPS><dCompet>2026-10-01</dCompet>\
+         <toma><CNPJ>11222333000181</CNPJ><xNome>Cliente</xNome></toma>\
+         <valores><vServPrest><vServ>150.00</vServ></vServPrest></valores></infDPS></DPS></infNFSe></NFSe>",
+        70 + numero,
+        id_dps(numero)
+    );
+    let resp = json_resp(
+        201,
+        json!({"chaveAcesso": ch, "idDps": id_dps(numero), "nfseXmlGZipB64": compactar(&xml)}),
+    );
+    (ch, resp)
+}
+
+/// O pedido valido sem nada do que o `[emitente]` completa.
+pub fn pedido_sem_emitente() -> Value {
+    let mut v = dps_valida();
+    v["prestador"] = json!({});
+    for campo in ["cmun_emissor", "numero"] {
+        v.as_object_mut().unwrap().remove(campo);
+    }
+    v
+}
+
+/// Resposta de evento registrado.
+pub fn evento_registrado() -> Resp {
+    json_resp(201, json!({"eventoXmlGZipB64": compactar("<evento/>")}))
+}
+
+/// O XML da DPS que o transporte falso recebeu na chamada `i`.
+pub fn dps_enviada(falso: &Falso, i: usize) -> String {
+    let corpo: Value = serde_json::from_slice(&falso.corpos.lock().unwrap()[i]).unwrap();
+    rustnf::nfse::descompactar(corpo["dpsXmlGZipB64"].as_str().unwrap()).unwrap()
 }
 
 pub fn requisicao(

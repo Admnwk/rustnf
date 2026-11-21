@@ -19,11 +19,17 @@ use axum::middleware::{self, Next};
 use axum::response::{IntoResponse, Response};
 use axum::routing::{get, post};
 use axum::Router;
+use rustnf::reforma::aliquotas::Publicadas;
+use rustnf_app::config::Emitente;
+use rustnf_app::notas::Notas;
+use rustnf_app::pedido;
 use serde_json::{json, Value};
 
 pub use auth::Token;
 
 use crate::emissao::Emissor;
+use crate::erro::Erro;
+use crate::nucleo::PedidoCancelamento;
 
 /// Ajustes do servidor.
 #[derive(Debug, Clone)]
@@ -63,25 +69,98 @@ pub struct Estado {
     pub config: Config,
     /// Presente so' com `--permitir-emissao`.
     pub emissao: Option<Emissao>,
+    /// As `[[aliquotas]]` da configuracao: valem na previa quando o pedido nao traz `publicadas`.
+    pub aliquotas: Publicadas,
+    /// O `[emitente]` da configuracao: completa o pedido da DPS so' nos campos que ele nao traz.
+    pub emitente: Emitente,
+    /// A pasta de notas da configuracao: numera a DPS, guarda a nota autorizada e marca a cancelada.
+    pub notas: Option<Notas>,
+    /// Uma emissao por vez: o numero da DPS so' avanca quando a nota e' autorizada, entao duas emissoes
+    /// simultaneas pegariam o mesmo numero.
+    fila: tokio::sync::Mutex<()>,
 }
 
 impl Estado {
+    fn novo(config: Config, emissao: Option<Emissao>) -> Self {
+        Self {
+            config,
+            emissao,
+            aliquotas: Publicadas::new(),
+            emitente: Emitente::default(),
+            notas: None,
+            fila: tokio::sync::Mutex::new(()),
+        }
+    }
+
     /// Servidor sem emissao: so' calculo, conferencia, montagem, DANFSe e MCP de leitura.
     #[must_use]
     pub fn somente_leitura(config: Config) -> Self {
-        Self {
-            config,
-            emissao: None,
-        }
+        Self::novo(config, None)
     }
 
     /// Servidor com emissao, consulta e cancelamento, protegidos pelo token.
     #[must_use]
     pub fn com_emissao(config: Config, emissor: Arc<dyn Emissor>, token: Token) -> Self {
-        Self {
-            config,
-            emissao: Some(Emissao { emissor, token }),
-        }
+        Self::novo(config, Some(Emissao { emissor, token }))
+    }
+
+    /// Com as aliquotas publicadas da configuracao.
+    #[must_use]
+    pub fn com_aliquotas(mut self, aliquotas: Publicadas) -> Self {
+        self.aliquotas = aliquotas;
+        self
+    }
+
+    /// Com o emitente da configuracao.
+    #[must_use]
+    pub fn com_emitente(mut self, emitente: Emitente) -> Self {
+        self.emitente = emitente;
+        self
+    }
+
+    /// Com a pasta de notas da configuracao (`None` = nao guardar).
+    #[must_use]
+    pub fn com_notas(mut self, notas: Option<Notas>) -> Self {
+        self.notas = notas;
+        self
+    }
+
+    /// Emite o `pedido` como a linha de comando: completa com o emitente, numera pela pasta de notas e guarda a
+    /// nota autorizada.
+    ///
+    /// # Errors
+    ///
+    /// Como [`pedido::emitir_pedido`].
+    pub(crate) async fn emitir(&self, em: &Emissao, pedido: Value) -> Result<Value, Erro> {
+        let _vez = self.fila.lock().await;
+        pedido::emitir_pedido(
+            em.emissor.as_ref(),
+            pedido,
+            &self.emitente,
+            self.config.folga_relogio,
+            self.notas.as_ref(),
+        )
+        .await
+    }
+
+    /// Cancela a nota e, registrado o cancelamento, marca-a na pasta de notas.
+    ///
+    /// # Errors
+    ///
+    /// Como [`pedido::cancelar_pedido`].
+    pub(crate) async fn cancelar(
+        &self,
+        em: &Emissao,
+        p: &PedidoCancelamento,
+    ) -> Result<Value, Erro> {
+        pedido::cancelar_pedido(
+            em.emissor.as_ref(),
+            &p.chave,
+            &p.motivo,
+            &p.justificativa,
+            self.notas.as_ref(),
+        )
+        .await
     }
 }
 

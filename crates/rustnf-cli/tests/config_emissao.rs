@@ -12,50 +12,11 @@ use std::path::Path;
 
 use clap::Parser;
 use comum::*;
-use rustnf::chave_dfe;
-use rustnf::nfse::{compactar, descompactar};
 use rustnf_app::cofre::{Cofre, CofreEmMemoria};
 use rustnf_app::config::{Config, Efetiva};
 use rustnf_app::notas::Notas;
 use rustnf_cli::cli::{emitir_valor, executar_com, Cli};
-use serde_json::{json, Value};
-fn id_dps(numero: u64) -> String {
-    format!(
-        "DPS{}{}{}{:05}{:015}",
-        "3550308", "2", "11222333000181", 1, numero
-    )
-}
-
-/// Resposta de emissao autorizada com a nota inteira (data de processamento e do tomador).
-fn autorizada_completa(numero: u64) -> (String, Resp) {
-    let ch =
-        chave_dfe::montar_nfse(3550308, "11222333000181", 70 + numero, "2610", Some(1), 2).unwrap();
-    let xml = format!(
-        "<NFSe xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infNFSe Id=\"NFS{ch}\">\
-         <nNFSe>{}</nNFSe><dhProc>2026-10-02T10:00:01-03:00</dhProc><cStat>100</cStat><ambGer>2</ambGer>\
-         <valores><vLiq>150.00</vLiq></valores><DPS versao=\"1.01\"><infDPS Id=\"{}\"><tpAmb>2</tpAmb>\
-         <serie>1</serie><nDPS>{numero}</nDPS><dCompet>2026-10-01</dCompet>\
-         <toma><CNPJ>11222333000181</CNPJ><xNome>Cliente</xNome></toma>\
-         <valores><vServPrest><vServ>150.00</vServ></vServPrest></valores></infDPS></DPS></infNFSe></NFSe>",
-        70 + numero,
-        id_dps(numero)
-    );
-    let resp = json_resp(
-        201,
-        json!({"chaveAcesso": ch, "idDps": id_dps(numero), "nfseXmlGZipB64": compactar(&xml)}),
-    );
-    (ch, resp)
-}
-
-/// O pedido valido sem nada do que o `[emitente]` completa.
-fn pedido_sem_emitente() -> Value {
-    let mut v = dps_valida();
-    v["prestador"] = json!({});
-    for campo in ["cmun_emissor", "numero"] {
-        v.as_object_mut().unwrap().remove(campo);
-    }
-    v
-}
+use serde_json::json;
 
 fn efetiva_com_notas(pasta: &Path) -> Efetiva {
     let mut c = Config::ler(&exemplo()).unwrap();
@@ -89,8 +50,7 @@ async fn emitir_completa_o_emitente_numera_e_guarda_a_nota() {
     assert_eq!(v["numero_dps"], 42);
 
     // o que foi enviado a Sefin tem os dados do emitente e o numero da pasta
-    let corpo: Value = serde_json::from_slice(&falso.corpos.lock().unwrap()[0]).unwrap();
-    let xml = descompactar(corpo["dpsXmlGZipB64"].as_str().unwrap()).unwrap();
+    let xml = dps_enviada(&falso, 0);
     for trecho in [
         "<CNPJ>11222333000181</CNPJ>",
         "<nDPS>42</nDPS>",

@@ -11,6 +11,7 @@ use std::time::Duration;
 
 use axum::http::StatusCode;
 use comum::*;
+use rustnf_app::notas::Notas;
 use rustnf_cli::http::Config;
 use serde_json::{json, Value};
 
@@ -256,6 +257,127 @@ async fn emitir_consultar_e_cancelar_com_transporte_falso() {
     assert_eq!(st, StatusCode::OK, "{}", String::from_utf8_lossy(&corpo));
     assert_eq!(json_do_corpo(&corpo)["status"], "registrado");
     assert_eq!(falso.chamadas().len(), 3);
+}
+
+#[tokio::test]
+async fn emitir_e_cancelar_usam_o_emitente_e_a_pasta_de_notas_da_configuracao() {
+    let p = Pasta::nova();
+    let pasta = p.caminho("notas");
+    let notas = Notas::abrir(&pasta).unwrap();
+    // a pasta ja tem as notas ate a 41: a proxima DPS e' a 42
+    notas.confirmar_numero("1", 41).unwrap();
+    let (ch, autorizada) = autorizada_completa(42);
+    let falso = Falso::novo(vec![
+        ("POST", "/nfse".into(), autorizada),
+        ("POST", "/eventos".into(), evento_registrado()),
+    ]);
+    let app = app_emissao_com_pasta(falso.clone(), &pasta);
+
+    let (st, _, corpo) = enviar(&app, post_json_token("/emitir", &pedido_sem_emitente())).await;
+    assert_eq!(st, StatusCode::OK, "{}", String::from_utf8_lossy(&corpo));
+    let v = json_do_corpo(&corpo);
+    assert_eq!(v["status"], "autorizada", "{v}");
+    assert_eq!(v["guardada"], true, "{v}");
+    assert_eq!(v["numero_dps"], 42, "{v}");
+
+    // o que foi enviado a Sefin tem os dados do emitente e o numero da pasta
+    let xml = dps_enviada(&falso, 0);
+    for trecho in [
+        "<CNPJ>11222333000181</CNPJ>",
+        "<nDPS>42</nDPS>",
+        "<cLocEmi>3550308</cLocEmi>",
+        "<IM>123456</IM>",
+    ] {
+        assert!(xml.contains(trecho), "faltou {trecho} em {xml}");
+    }
+
+    // a nota ficou na pasta, e a numeracao avancou
+    assert!(notas.ler_xml(&ch).is_ok());
+    assert_eq!(notas.proximo_numero("1").unwrap(), 43);
+    assert_eq!(notas.listar().unwrap()[0].situacao.texto(), "autorizada");
+
+    // o cancelamento registrado marca a nota na pasta
+    let (st, _, corpo) = enviar(
+        &app,
+        post_json_token(
+            "/cancelar",
+            &json!({"chave": ch, "motivo": "1", "justificativa": "Valor digitado errado na nota"}),
+        ),
+    )
+    .await;
+    assert_eq!(st, StatusCode::OK, "{}", String::from_utf8_lossy(&corpo));
+    assert_eq!(json_do_corpo(&corpo)["status"], "registrado");
+    assert_eq!(notas.listar().unwrap()[0].situacao.texto(), "cancelada");
+}
+
+#[tokio::test]
+async fn duas_emissoes_ao_mesmo_tempo_nao_pegam_o_mesmo_numero() {
+    let p = Pasta::nova();
+    let pasta = p.caminho("notas");
+    let notas = Notas::abrir(&pasta).unwrap();
+    notas.confirmar_numero("1", 41).unwrap();
+    let (_, r1) = autorizada_completa(42);
+    let (_, r2) = autorizada_completa(43);
+    let falso = Falso::novo(vec![
+        ("POST", "/nfse".into(), r1),
+        ("POST", "/nfse".into(), r2),
+    ])
+    .com_atraso(Duration::from_millis(50));
+    let app = app_emissao_com_pasta(falso.clone(), &pasta);
+
+    let (a, b) = tokio::join!(
+        enviar(&app, post_json_token("/emitir", &pedido_sem_emitente())),
+        enviar(&app, post_json_token("/emitir", &pedido_sem_emitente())),
+    );
+    let mut numeros = Vec::new();
+    for (st, _, corpo) in [a, b] {
+        assert_eq!(st, StatusCode::OK, "{}", String::from_utf8_lossy(&corpo));
+        numeros.push(json_do_corpo(&corpo)["numero_dps"].as_u64().unwrap());
+    }
+    numeros.sort_unstable();
+    assert_eq!(numeros, [42, 43]);
+    assert!(dps_enviada(&falso, 0).contains("<nDPS>42</nDPS>"));
+    assert!(dps_enviada(&falso, 1).contains("<nDPS>43</nDPS>"));
+    assert_eq!(notas.proximo_numero("1").unwrap(), 44);
+}
+
+#[tokio::test]
+async fn sem_emitente_e_sem_pasta_o_emitir_segue_como_era() {
+    // servidor sem `[emitente]` e sem pasta de notas: o pedido completo emite e a resposta nao fala em pasta
+    let ch = chave();
+    let app = app_emissao(Falso::novo(vec![("POST", "/nfse".into(), autorizada(&ch))]));
+    let (st, _, corpo) = enviar(&app, post_json_token("/emitir", &dps_valida())).await;
+    assert_eq!(st, StatusCode::OK, "{}", String::from_utf8_lossy(&corpo));
+    let v = json_do_corpo(&corpo);
+    assert!(
+        v.get("guardada").is_none() && v.get("numero_dps").is_none(),
+        "{v}"
+    );
+
+    // e o pedido sem numero continua recusado pela montagem, sem chegar a rede
+    let falso = Falso::default();
+    let app = app_emissao(falso.clone());
+    let mut pedido = dps_valida();
+    pedido.as_object_mut().unwrap().remove("numero");
+    let (st, _, _) = enviar(&app, post_json_token("/emitir", &pedido)).await;
+    assert_eq!(st, StatusCode::UNPROCESSABLE_ENTITY);
+    assert!(falso.chamadas().is_empty());
+}
+
+#[tokio::test]
+async fn calcular_usa_as_aliquotas_da_configuracao() {
+    let pedido = json!({"tributos": {"data": "2027-06-01", "cst": "000", "cclass_trib": "000001", "base": "100.00"}});
+    // sem aliquotas na configuracao, a previa de 2027 recusa: falta o numero publicado da CBS
+    let (st, _, _) = enviar(&app_leitura(), post_json("/calcular", &pedido)).await;
+    assert_eq!(st, StatusCode::UNPROCESSABLE_ENTITY);
+    // com as do arquivo (cbs_referencia 8,8): 8,8 - 0,1 = 8,7
+    let (st, _, corpo) = enviar(
+        &app_leitura_com_aliquotas(),
+        post_json("/calcular", &pedido),
+    )
+    .await;
+    assert_eq!(st, StatusCode::OK, "{}", String::from_utf8_lossy(&corpo));
+    assert_eq!(json_do_corpo(&corpo)["tributos"]["cbs"]["aliquota"], "8.70");
 }
 
 #[tokio::test]
