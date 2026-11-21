@@ -71,9 +71,11 @@ fn dia(data: Option<&str>) -> Result<Option<String>, ErroNotas> {
     }
 }
 
-/// A busca como parte de uma chave de acesso: so' letras e digitos, comecando pelos 7 digitos do municipio, com pelo
-/// menos [`MINIMO_DA_CHAVE`] posicoes. Um nome comprido nao vira chave por engano.
-fn chave_da_busca(busca: &str) -> Option<String> {
+/// A busca como parte de uma chave de acesso: so' letras e digitos (com espacos ou pontuacao de agrupamento),
+/// comecando pelos 7 digitos do municipio, com pelo menos 20 posicoes. Devolve a chave limpa, em maiusculas. Um nome
+/// comprido, mesmo com numero no meio, nao vira chave por engano.
+#[must_use]
+pub fn chave_da_busca(busca: &str) -> Option<String> {
     let limpa: String = busca
         .chars()
         .filter(char::is_ascii_alphanumeric)

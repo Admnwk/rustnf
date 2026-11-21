@@ -68,11 +68,12 @@ const ALTURA: f32 = 780.0;
 const LARGURA_MINIMA: f32 = 940.0;
 const ALTURA_MINIMA: f32 = 620.0;
 
-/// Registra os atalhos de teclado: Ctrl+S salva nas Configuracoes, Ctrl+N abre a Nova nota, Ctrl+Enter emite nela,
-/// Ctrl+L abre as Notas (a lista), Ctrl+K a Consulta e Ctrl+P a Previa.
+/// Registra os atalhos de teclado: Ctrl+S salva e Ctrl+Shift+D descarta nas Configuracoes, Ctrl+N abre a Nova nota,
+/// Ctrl+Enter emite nela, Ctrl+L abre as Notas (a lista), Ctrl+K a Consulta e Ctrl+P a Previa.
 pub fn registrar_atalhos(cx: &mut App) {
     cx.bind_keys([
         KeyBinding::new("ctrl-s", SalvarConfiguracao, Some("Raiz")),
+        KeyBinding::new("ctrl-shift-d", DescartarConfiguracao, Some("Raiz")),
         KeyBinding::new("ctrl-n", IrParaNovaNota, Some("Raiz")),
         KeyBinding::new("ctrl-l", IrParaNotas, Some("Raiz")),
         KeyBinding::new("ctrl-k", IrParaConsultar, Some("Raiz")),

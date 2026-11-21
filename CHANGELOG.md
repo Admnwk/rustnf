@@ -31,6 +31,14 @@
   `/dps/montar` e `/emitir`), o pedido é recusado antes de qualquer envio. O padrão continua aceitando o pedido, para
   não quebrar quem já usa.
 * `rustnf dps esquema` imprime o JSON Schema do pedido da DPS (`--emissao` para o do `emitir`).
+* Interface de desktop:
+  * correção na busca da tela Notas: um nome de tomador comprido com número no meio ("Clínica 24 Horas ...") era
+    tomado por chave de acesso e não achava nada. A busca passa a usar a mesma regra da linha de comando: só é chave
+    o texto que começa pelos 7 dígitos do município;
+  * "Abrir a pasta", na tela Notas, mostra a pasta de notas no gerenciador de arquivos;
+  * "Copiar o XML", no detalhe da nota, põe o XML inteiro na área de transferência;
+  * Ctrl+Shift+D descarta, nas Configurações, o que foi alterado e não foi salvo (o botão "Descartar" já existia; a
+    ação não tinha tecla).
 * Biblioteca: `Certificado::resumo` (e `resumo_de_agora`) devolve o que se mostra de um certificado aberto, com o CPF
   mascarado. Camada de aplicação: `notas::Filtro`, `notas::csv`, `Notas::registro`, `Notas::exportar` e
   `Notas::reindexar`.

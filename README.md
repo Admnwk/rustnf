@@ -485,7 +485,8 @@ O que já faz: primeiro uso em três passos (emitente, certificado, pasta das no
 DANFSe, alíquotas por ano e tema); botões "Testar certificado" (abre o `.pfx`, sem rede) e "Testar conexão com a Sefin"
 (chamada real à Sefin Nacional, só quando você clica); selo fixo do ambiente (Produção ou Produção restrita) e estado
 do certificado no rodapé; a **Nova nota**, as **Notas**, a **Consulta** e a **Prévia** (abaixo). O que ainda **não** faz:
-os casos de emissão fora do caso comum (veja o fim da Nova nota), que seguem pela linha de comando.
+os casos de emissão fora do caso comum (veja o fim da Nova nota), que seguem pela linha de comando. Nas Configurações,
+Ctrl+S salva e Ctrl+Shift+D descarta o que foi alterado e ainda não foi salvo.
 
 ### Nova nota
 
@@ -528,7 +529,7 @@ da linha da tela e desenhadas só no que cabe na janela (a pasta pode ter milhar
 (série e número), tomador (o CPF aparece mascarado, `***.***.***-NN`; o CNPJ, inteiro), valor e situação (autorizada ou
 cancelada). A busca (nome sem acento, CPF/CNPJ ou número; uma chave colada também acha a nota) e o filtro por situação
 valem juntos. A lista se atualiza sozinha quando a Nova nota autoriza uma nota e quando um cancelamento termina; "Atualizar"
-lê a pasta de novo. Pasta vazia, leitura com erro ("Tentar de novo") e busca sem resultado tem tela própria. Setas movem
+lê a pasta de novo e "Abrir a pasta" mostra a pasta de notas no gerenciador de arquivos do sistema. Pasta vazia, leitura com erro ("Tentar de novo") e busca sem resultado tem tela própria. Setas movem
 a linha em foco, Enter abre o detalhe e Esc volta da página do detalhe.
 
 O **detalhe** (ao lado da lista em janela larga; página em janela estreita) mostra os dados lidos do XML guardado: número,
@@ -537,7 +538,8 @@ e situação. XML ausente ou ilegível é dito sem derrubar a tela. Dele saem:
 
 * **Abrir o DANFSe**: gera o PDF fora da tela (com a marca de cancelada, quando for o caso, e o canhoto da configuração),
   grava `<chave>.pdf` ao lado do XML (o nome sai só da chave conferida) e o abre no programa padrão do sistema. O PDF não
-  entra no índice nem na numeração. "Mostrar na pasta" mostra o XML no explorador de arquivos;
+  entra no índice nem na numeração. "Mostrar na pasta" mostra o XML no explorador de arquivos e "Copiar o XML" põe o
+  XML inteiro da nota na área de transferência (para colar num e-mail ou no sistema da contabilidade);
 * **Cancelar a nota** (só nota autorizada): diálogo com o ambiente em destaque, o resumo da nota, o motivo (erro na
   emissão, serviço não prestado ou outros) e a justificativa, de 15 a 255 caracteres, com contador e erro embaixo do campo.
   Em produção o botão só habilita depois de marcar "Entendo que o cancelamento tem efeito fiscal". O envio é feito fora

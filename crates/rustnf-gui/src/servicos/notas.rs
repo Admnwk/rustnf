@@ -106,6 +106,17 @@ impl Servicos {
         Ok(NotaDaPasta { registro, leitura })
     }
 
+    /// O XML guardado de uma nota da pasta, inteiro.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroTela::Pasta`] ou [`ErroTela::XmlAusente`].
+    pub fn xml_da_nota(&self, config: &Config, chave: &str) -> Result<String, ErroTela> {
+        self.notas_da(config)?
+            .ler_xml(chave)
+            .map_err(|_| ErroTela::XmlAusente)
+    }
+
     /// A nota (do emitente) consta do indice da pasta.
     #[must_use]
     pub fn nota_esta_na_pasta(&self, config: &Config, chave: &str) -> bool {

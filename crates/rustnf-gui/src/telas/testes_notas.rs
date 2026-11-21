@@ -339,6 +339,31 @@ fn teclado_seta_e_enter_abrem_o_detalhe_e_esc_volta(cx: &mut TestAppContext) {
     });
 }
 
+#[gpui_kit::test]
+fn abrir_a_pasta_de_notas_e_copiar_o_xml_da_nota(cx: &mut TestAppContext) {
+    let c = cenario(cx, "restrita", &[Desfecho::Autorizada], true, 1120.);
+    let chave = semear(&c, 1, "52998224725", "Maria de Teste", "100.50");
+    ir_para(cx, &c, Tela::Notas);
+    esperar_a_lista(cx, &c, 1);
+    // "Abrir a pasta" pede ao sistema a pasta de notas inteira
+    clicar(cx, &c, "abrir-pasta-de-notas");
+    assert_eq!(c.abridor.pedidos(), vec![(Destino::Abrir, c.notas.clone())]);
+    // no detalhe, "Copiar o XML" poe na area de transferencia o XML guardado, inteiro
+    abrir_o_detalhe(cx, &c, 0, &chave);
+    let xml = Notas::abrir(&c.notas).unwrap().ler_xml(&chave).unwrap();
+    assert!(existe(cx, &c, "copiar-xml"));
+    clicar(cx, &c, "copiar-xml");
+    esperar_ate(cx, "o XML na area de transferencia", |cx| {
+        cx.run_until_parked();
+        cx.read_from_clipboard().and_then(|item| item.text()) == Some(xml.clone())
+    });
+    // o botao diz que copiou; escolher outra nota (ou a mesma de novo) volta ao texto de antes
+    let notas = tela_notas(cx, &c);
+    cx.update(|cx| assert!(notas.read(cx).detalhe.read(cx).xml_copiado()));
+    abrir_o_detalhe(cx, &c, 0, &chave);
+    cx.update(|cx| assert!(!notas.read(cx).detalhe.read(cx).xml_copiado()));
+}
+
 // ---------------------------------------------------------------- DANFSe
 
 #[gpui_kit::test]
