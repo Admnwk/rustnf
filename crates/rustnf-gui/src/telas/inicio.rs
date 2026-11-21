@@ -4,7 +4,7 @@
 
 //! O Inicio: o primeiro uso, se a configuracao estiver incompleta, ou o resumo do que esta configurado.
 
-use gpui_kit::component::button::Button;
+use gpui_kit::component::button::{Button, ButtonVariants as _};
 use gpui_kit::component::{h_flex, v_flex, ActiveTheme as _, Icon, IconName, Sizable as _};
 use gpui_kit::{
     div, px, AnyElement, Context, InteractiveElement as _, IntoElement, ParentElement as _,
@@ -147,7 +147,7 @@ impl Raiz {
             .id("proximos-passos")
             .child(titulo_do_cartao("O que fazer a seguir", IconName::Info, cx))
             .child(div().text_sm().child(
-                "Esta janela configura o rustnf. Para montar, emitir, consultar ou cancelar notas, use a linha de comando do mesmo programa:",
+                "Para montar e emitir uma nota, use Emitir uma nota (ou Ctrl+N). Consultar e cancelar notas, e os casos que a tela de nota não cobre (comércio exterior, obra, substituição...), ficam na linha de comando do mesmo programa:",
             ))
             .child(
                 v_flex()
@@ -166,16 +166,28 @@ impl Raiz {
                 },
             ))
             .child(
-                h_flex().child(
-                    Button::new("abrir-configuracoes")
-                        .label("Abrir Configurações")
-                        .icon(IconName::Settings)
-                        .outline()
-                        .on_click(cx.listener(|this, _, _, cx| {
-                            this.tela = Tela::Configuracoes;
-                            cx.notify();
-                        })),
-                ),
+                h_flex()
+                    .gap_2()
+                    .child(
+                        Button::new("emitir-uma-nota")
+                            .label("Emitir uma nota")
+                            .icon(IconName::FileText)
+                            .primary()
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                this.tela = Tela::NovaNota;
+                                cx.notify();
+                            })),
+                    )
+                    .child(
+                        Button::new("abrir-configuracoes")
+                            .label("Abrir Configurações")
+                            .icon(IconName::Settings)
+                            .outline()
+                            .on_click(cx.listener(|this, _, _, cx| {
+                                this.tela = Tela::Configuracoes;
+                                cx.notify();
+                            })),
+                    ),
             );
 
         div()

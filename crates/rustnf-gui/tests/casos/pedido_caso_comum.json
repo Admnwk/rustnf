@@ -1,0 +1,39 @@
+{
+  "competencia": "2026-11-21",
+  "tomador": {
+    "documento": "52998224725",
+    "nome": "Maria de Teste",
+    "email": "maria@exemplo.com.br",
+    "fone": "11988887777",
+    "endereco": {
+      "cmun": "3550308",
+      "cep": "01310100",
+      "logradouro": "Avenida de Teste",
+      "numero": "100",
+      "bairro": "Centro"
+    }
+  },
+  "servico": {
+    "ctribnac": "140101",
+    "descricao": "Revisão geral do veículo",
+    "cnbs": "120011000"
+  },
+  "valores": {
+    "servico": "1234.56",
+    "desconto_incondicionado": "34.56",
+    "municipal": {
+      "tributacao": 1,
+      "retencao": 1
+    },
+    "total": {
+      "percentual_sn": "4.5"
+    }
+  },
+  "ibscbs": {
+    "cind_op": "050101",
+    "cst": "000",
+    "cclass_trib": "000001",
+    "fin": 0,
+    "ind_dest": 0
+  }
+}

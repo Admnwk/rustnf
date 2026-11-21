@@ -9,11 +9,14 @@
 //! * [`servicos`] -- carregar e gravar a configuracao, abrir o certificado, cofre de senhas e teste de conexao, sem
 //!   janela;
 //! * [`fora`] -- o runtime proprio para a rede;
+//! * `demonstracao` -- o emissor sem rede, so' com a feature `demonstracao` (e nos testes);
 //! * `telas` -- as janelas, so' no Windows (a versao atual do GPUI usada aqui so' tem janela no Windows).
 #![forbid(unsafe_code)]
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 #![cfg_attr(test, allow(clippy::unwrap_used, clippy::expect_used, clippy::panic))]
 
+#[cfg(any(test, feature = "demonstracao"))]
+pub mod demonstracao;
 pub mod fora;
 pub mod modelo;
 pub mod servicos;

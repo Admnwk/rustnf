@@ -17,6 +17,7 @@ use gpui_kit::{AppContext as _, Context, Entity, PathPromptOptions, Subscription
 use rustnf_app::config::Config;
 use rustnf_app::segredo::Segredo;
 
+use super::nota::{EventoNota, NovaNota};
 use crate::fora;
 use crate::modelo::ambiente::{Ambiente, Tema};
 use crate::modelo::campo::{Campo, CampoAliquota, Erros};
@@ -30,6 +31,8 @@ use crate::servicos::{Carga, ErroTela, Servicos};
 pub enum Tela {
     /// O resumo (ou o primeiro uso, se a configuracao estiver incompleta).
     Inicio,
+    /// Montar e emitir uma nota.
+    NovaNota,
     /// Todas as opcoes.
     Configuracoes,
 }
@@ -137,6 +140,7 @@ pub(super) struct Entradas {
 /// A janela.
 pub struct Raiz {
     pub(super) servicos: Arc<Servicos>,
+    pub(super) nova: Entity<NovaNota>,
     pub(super) estado: Estado,
     pub(super) tela: Tela,
     pub(super) secao: Secao,
@@ -201,8 +205,13 @@ impl Raiz {
         };
         let apuracao = selecao(window, cx, &OPCOES_APURACAO);
         let especial = selecao(window, cx, &OPCOES_REGIME_ESPECIAL);
+        let nova = {
+            let servicos = Arc::clone(&servicos);
+            cx.new(|cx| NovaNota::new(servicos, window, cx))
+        };
         let mut raiz = Self {
             servicos,
+            nova,
             estado: Estado::Carregando,
             tela: Tela::Inicio,
             secao: Secao::Emitente,
@@ -271,6 +280,20 @@ impl Raiz {
                         cx.notify();
                     }
                 }
+            },
+        );
+        self.fixas.push(s);
+        let s = cx.subscribe_in(
+            &self.nova.clone(),
+            window,
+            |this, _, evento: &EventoNota, _, cx| {
+                match evento {
+                    EventoNota::IrParaAliquotas => {
+                        this.tela = Tela::Configuracoes;
+                        this.secao = Secao::Aliquotas;
+                    }
+                }
+                cx.notify();
             },
         );
         self.fixas.push(s);
@@ -384,7 +407,16 @@ impl Raiz {
         self.sincronizar(window, cx);
         self.aplicar_tema(window, cx);
         self.atualizar_certificado(cx);
+        self.entregar_a_nova_nota(window, cx);
         cx.notify();
+    }
+
+    /// Entrega a configuracao que vale (a gravada, com as variaveis de ambiente por cima) a Nova nota.
+    pub(super) fn entregar_a_nova_nota(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let efetiva = self.servicos.efetiva(&self.salvo);
+        let completa = configuracao_completa(&self.salvo);
+        self.nova
+            .update(cx, |n, cx| n.definir_config(efetiva, completa, window, cx));
     }
 
     /// Poe nos campos da tela o texto do formulario (sem disparar `Change`).
@@ -801,6 +833,7 @@ impl Raiz {
                             cx,
                         );
                         this.atualizar_certificado(cx);
+                        this.entregar_a_nova_nota(window, cx);
                     }
                     Err(erro) => {
                         this.aviso = Some(Aviso {
@@ -965,6 +998,7 @@ impl Raiz {
                             cx,
                         );
                         this.atualizar_certificado(cx);
+                        this.entregar_a_nova_nota(window, cx);
                     }
                     Err(erro) => this.erro_no_campo(&erro),
                 }

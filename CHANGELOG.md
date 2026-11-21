@@ -30,6 +30,21 @@
   conexao com a Sefin e mostra sempre o ambiente (Producao ou Producao restrita) e o estado do certificado. Ainda nao
   emite, consulta nem cancela nota. A camada `modelo` (estado dos formularios, mascaras, conferencia campo a campo) nao
   depende de janela e e' testada em qualquer sistema.
+* `rustnf-gui`: nova tela **Nova nota** (Ctrl+N; botao "Emitir uma nota" no Inicio): formulario do caso comum (tomador,
+  servico com busca na Lista Nacional, valores, ISS, tributos federais e IBS/CBS) com a sugestao de NBS, `cIndOp` e
+  `cClassTrib` pela correlacao do Anexo VIII, conferencia ao vivo (propria e da biblioteca, cada recusa no campo da tela),
+  painel fixo com pendencias, valor liquido e previa do IBS/CBS, rascunho automatico em `rascunho.json` na pasta de notas,
+  confirmacao com o ambiente em destaque (em producao, com marcacao explicita) e emissao fora da tela com pedido
+  congelado: "Tentar de novo" reenvia o mesmo pedido e "Desistir" avisa que a nota pode ter sido autorizada; nota
+  recuperada com dados diferentes dos do formulario e' avisada e o formulario fica para emitir de novo. A senha, se
+  nao estiver no cofre, e' pedida para aquela emissao e nao e' guardada. Feature `demonstracao` (desligada por padrao) e
+  exemplo `demonstracao`: a mesma janela com um emissor sem rede. Dependencias novas do crate: `serde`, `serde_json` e
+  `async-trait` (ja usadas pelo resto do workspace).
+* `rustnf-app`: `pedido::emitir_pedido_completo` e `pedido::Emitida` devolvem o resultado do cliente como dado tipado
+  (rejeicao com codigo, descricao e complemento), e `atomico::gravar` passou a ser publico. Nota recuperada (ja existia
+  na Sefin com a mesma serie e o mesmo numero de DPS) e' comparada com o pedido: `Emitida::diferencas` e, na resposta de
+  `emitir_pedido` (linha de comando, HTTP e MCP), `recuperada_difere` dizem em que ela difere; vazio ou ausente quando a
+  nota e' a do pedido.
 * Configuracao: nova secao `[interface]` com `tema` (`sistema`, `claro` ou `escuro`).
 * `rustnf-app`: novo modulo `certificado` (abrir o A1 e montar o cliente da Sefin, antes dentro da linha de comando) e
   `cofre::cofre_do_ambiente` (a escolha do cofre por `RUSTNF_COFRE`), compartilhados pela linha de comando e pela

@@ -19,8 +19,8 @@ use gpui_kit::{
 
 use super::pecas::{cor_da, faixa, icone_da, Negrito as _};
 use super::raiz::{Estado, Raiz, Tela};
-use super::{DescartarConfiguracao, SalvarConfiguracao};
-use crate::modelo::ambiente::Ambiente;
+use super::{DescartarConfiguracao, IrParaNovaNota, SalvarConfiguracao};
+use crate::modelo::ambiente::{Ambiente, CORES_DA_DEMONSTRACAO, SELO_DA_DEMONSTRACAO};
 use crate::modelo::certificado::Gravidade;
 
 impl Raiz {
@@ -34,7 +34,11 @@ impl Raiz {
 
     fn barra_de_titulo(&self) -> TitleBar {
         let ambiente = self.ambiente_do_selo();
-        let cores = ambiente.cores();
+        let (rotulo_do_selo, cores) = if self.servicos.demonstracao() {
+            (SELO_DA_DEMONSTRACAO, CORES_DA_DEMONSTRACAO)
+        } else {
+            (ambiente.selo(), ambiente.cores())
+        };
         TitleBar::new()
             .child(
                 h_flex()
@@ -59,7 +63,7 @@ impl Raiz {
                     .font_semibold()
                     .bg(rgb(cores.fundo))
                     .text_color(rgb(cores.texto))
-                    .child(ambiente.selo()),
+                    .child(rotulo_do_selo),
             )
     }
 
@@ -77,6 +81,15 @@ impl Raiz {
                                 .active(tela == Tela::Inicio)
                                 .on_click(cx.listener(|this, _, _, cx| {
                                     this.tela = Tela::Inicio;
+                                    cx.notify();
+                                })),
+                        )
+                        .child(
+                            SidebarMenuItem::new("Nova nota")
+                                .icon(IconName::FileText)
+                                .active(tela == Tela::NovaNota)
+                                .on_click(cx.listener(|this, _, _, cx| {
+                                    this.tela = Tela::NovaNota;
                                     cx.notify();
                                 })),
                         )
@@ -177,6 +190,7 @@ impl Raiz {
             }
             Estado::Pronto => match self.tela {
                 Tela::Inicio => self.tela_inicio(window, cx),
+                Tela::NovaNota => self.tela_nova_nota(cx),
                 Tela::Configuracoes => self.tela_configuracoes(window, cx),
             },
         }
@@ -206,6 +220,10 @@ impl Render for Raiz {
                 if this.tela == Tela::Configuracoes {
                     this.descartar(window, cx);
                 }
+            }))
+            .on_action(cx.listener(|this, _: &IrParaNovaNota, _, cx| {
+                this.tela = Tela::NovaNota;
+                cx.notify();
             }))
             .child(titulo)
             .child(

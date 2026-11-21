@@ -5,7 +5,8 @@
 //! O fluxo de emissao e de cancelamento com a configuracao: completa o pedido com o `[emitente]`, numera a DPS pela
 //! pasta de notas, emite e guarda a nota autorizada.
 
-use rustnf::nfse::sefin::Status;
+use rustnf::nfse::leitura::Nfse;
+use rustnf::nfse::sefin::{Resultado, Status};
 use rustnf::nfse::Dps;
 use serde_json::{json, Value};
 
@@ -32,6 +33,90 @@ fn serie_do_pedido(pedido: &Value) -> String {
     }
 }
 
+/// O que `emitir_pedido_completo` devolve: o resultado inteiro do cliente e o que se fez com a pasta de notas.
+#[derive(Debug, Clone)]
+pub struct Emitida {
+    /// O resultado do cliente da Sefin (com o XML da nota, se autorizada, e as mensagens de rejeicao).
+    pub resultado: Resultado,
+    /// O numero da DPS, quando veio da pasta de notas (o pedido nao trazia).
+    pub numero_dps: Option<u64>,
+    /// Nota autorizada ou recuperada e pasta de notas em uso: o XML foi guardado? `None` nos outros casos.
+    pub guardada: Option<bool>,
+    /// Aviso quando a nota foi autorizada mas a pasta nao pode ser atualizada por completo.
+    pub aviso: Option<&'static str>,
+    /// Nota RECUPERADA (ja existia na Sefin com esta serie e este numero de DPS): em que ela difere do pedido
+    /// enviado agora. Vazio quando a nota e' a do pedido. Com diferenca, a nota que existe NAO e' a que se quis
+    /// emitir: sobrou de uma tentativa anterior com outros dados.
+    pub diferencas: Vec<&'static str>,
+}
+
+const AVISO_PASTA: &str = "a nota foi autorizada, mas a pasta de notas nao pode ser atualizada por completo; consulte a nota pela chave e confira a numeracao";
+
+/// O que do pedido se compara com a nota recuperada.
+struct Enviado {
+    tomador: String,
+    valor: String,
+    servico: String,
+    competencia: Option<String>,
+}
+
+impl Enviado {
+    fn da_dps(dps: &Dps) -> Self {
+        Self {
+            tomador: documento(dps.tomador.as_ref().map_or("", |t| t.documento.as_str())),
+            valor: dps.valores.servico.as_str().to_string(),
+            servico: so_digitos(dps.servico.ctribnac.as_str()),
+            competencia: dps.competencia.clone(),
+        }
+    }
+
+    /// Em que a `nfse` recuperada difere do que foi enviado.
+    fn diferencas(&self, nfse: &Nfse) -> Vec<&'static str> {
+        let mut saida = Vec::new();
+        if self.tomador != documento(&nfse.tomador_documento) {
+            saida.push("tomador");
+        }
+        if centavos(&self.valor) != centavos(&nfse.valor_servico) {
+            saida.push("valor do servico");
+        }
+        if self.servico != so_digitos(&nfse.ctribnac) {
+            saida.push("codigo do servico");
+        }
+        let dia = |texto: &str| texto.trim().chars().take(10).collect::<String>();
+        if let Some(c) = &self.competencia {
+            if !c.trim().is_empty() && dia(c) != dia(&nfse.competencia) {
+                saida.push("competencia");
+            }
+        }
+        saida
+    }
+}
+
+fn so_digitos(texto: &str) -> String {
+    texto.chars().filter(char::is_ascii_digit).collect()
+}
+
+/// CPF ou CNPJ sem a mascara. As letras ficam (em maiuscula): o CNPJ pode ser alfanumerico.
+fn documento(texto: &str) -> String {
+    texto
+        .chars()
+        .filter(char::is_ascii_alphanumeric)
+        .map(|c| c.to_ascii_uppercase())
+        .collect()
+}
+
+/// Texto decimal (`150`, `150.5`, `150,50`) em centavos; `None` se nao for um valor com ate 2 casas.
+fn centavos(texto: &str) -> Option<i128> {
+    let t = texto.trim().replace(',', ".");
+    let (inteiro, fracao) = t.split_once('.').unwrap_or((&t, ""));
+    let fracao = fracao.trim_end_matches('0');
+    let so_numeros = |s: &str| s.bytes().all(|b| b.is_ascii_digit());
+    if inteiro.is_empty() || fracao.len() > 2 || !so_numeros(inteiro) || !so_numeros(fracao) {
+        return None;
+    }
+    format!("{inteiro}{fracao:0<2}").parse().ok()
+}
+
 /// Emite a DPS do `pedido` (JSON).
 ///
 /// 1. completa so' os campos ausentes com o `[emitente]`;
@@ -41,18 +126,50 @@ fn serie_do_pedido(pedido: &Value) -> String {
 ///    a emissao vale (a nota existe na Sefin): a resposta traz `guardada: false` e o `aviso`.
 ///
 /// A resposta e' a de [`emissao::emitir`]; com `notas`, ganha `guardada` (e `numero_dps`, quando o numero veio da
-/// pasta).
+/// pasta). Nota recuperada com dados diferentes dos do pedido (sobra de uma tentativa anterior com a mesma serie e o
+/// mesmo numero): `recuperada_difere` lista o que difere, e a nota que existe NAO e' a do pedido.
 ///
 /// # Errors
 ///
 /// Como [`emissao::emitir`], mais o erro de ler o numero da pasta de notas ou da leitura do pedido.
 pub async fn emitir_pedido(
     emissor: &dyn Emissor,
-    mut pedido: Value,
+    pedido: Value,
     emitente: &Emitente,
     folga_segundos: u32,
     notas: Option<&Notas>,
 ) -> Result<Value, Erro> {
+    let emitida = emitir_pedido_completo(emissor, pedido, emitente, folga_segundos, notas).await?;
+    let mut saida = emissao::resultado_json(&emitida.resultado)?;
+    if let Some(guardada) = emitida.guardada {
+        saida["guardada"] = json!(guardada);
+    }
+    if let Some(aviso) = emitida.aviso {
+        saida["aviso"] = json!(aviso);
+    }
+    if !emitida.diferencas.is_empty() {
+        saida["recuperada_difere"] = json!(emitida.diferencas);
+    }
+    if let Some(n) = emitida.numero_dps {
+        saida["numero_dps"] = json!(n);
+    }
+    Ok(saida)
+}
+
+/// Como [`emitir_pedido`], devolvendo o resultado do cliente como dado tipado (a rejeicao da Sefin chega com os
+/// codigos e as descricoes, sem virar texto) em vez de JSON. E' o que uma interface usa para mostrar cada desfecho.
+///
+/// # Errors
+///
+/// So' a recusa da propria montagem, o erro de ler o numero da pasta de notas e o da leitura do pedido; o que a
+/// Sefin responde vem em `Emitida::resultado`.
+pub async fn emitir_pedido_completo(
+    emissor: &dyn Emissor,
+    mut pedido: Value,
+    emitente: &Emitente,
+    folga_segundos: u32,
+    notas: Option<&Notas>,
+) -> Result<Emitida, Erro> {
     aplicar_emitente(&mut pedido, emitente);
     let mut numero_da_pasta = None;
     if let (Some(notas), true) = (notas, pedido.is_object() && ausente(&pedido, "numero")) {
@@ -63,29 +180,32 @@ pub async fn emitir_pedido(
     let dps: Dps = serde_json::from_value(pedido)?;
     let serie = dps.serie.as_str().to_string();
     let numero = dps.numero.as_str().to_string();
+    let enviado = Enviado::da_dps(&dps);
     let resultado = emissao::enviar(emissor, dps, folga_segundos).await?;
-    let mut saida = emissao::resultado_json(&resultado)?;
-    let Some(notas) = notas else {
-        return Ok(saida);
+    let diferencas = match (&resultado.nfse, resultado.recuperada) {
+        (Some(nfse), true) => enviado.diferencas(nfse),
+        _ => Vec::new(),
     };
-    if resultado.status == Status::Autorizada {
+    let mut emitida = Emitida {
+        resultado,
+        numero_dps: numero_da_pasta,
+        guardada: None,
+        aviso: None,
+        diferencas,
+    };
+    if let (Some(notas), Status::Autorizada) = (notas, emitida.resultado.status) {
         // o numero foi gasto na Sefin mesmo que a guarda do XML falhe
         let confirmado = confirmar(notas, &serie, &numero);
-        let guardada = guardar(notas, &resultado, &serie, &numero);
-        saida["guardada"] = json!(guardada);
+        let guardada = guardar(notas, &emitida.resultado, &serie, &numero);
+        emitida.guardada = Some(guardada);
         if !(guardada && confirmado) {
-            saida["aviso"] = json!(
-                "a nota foi autorizada, mas a pasta de notas nao pode ser atualizada por completo; consulte a nota pela chave e confira a numeracao"
-            );
+            emitida.aviso = Some(AVISO_PASTA);
         }
     }
-    if let Some(n) = numero_da_pasta {
-        saida["numero_dps"] = json!(n);
-    }
-    Ok(saida)
+    Ok(emitida)
 }
 
-fn guardar(notas: &Notas, r: &rustnf::nfse::sefin::Resultado, serie: &str, numero: &str) -> bool {
+fn guardar(notas: &Notas, r: &Resultado, serie: &str, numero: &str) -> bool {
     let Some(nfse) = &r.nfse else {
         return false;
     };
@@ -130,4 +250,278 @@ pub async fn cancelar_pedido(
         let _ = notas.marcar_cancelada(chave);
     }
     Ok(saida)
+}
+
+#[cfg(test)]
+mod testes {
+    use std::future::Future;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::task::{Context, Poll, Waker};
+
+    use async_trait::async_trait;
+    use rustnf::nfse::leitura::{ler_nfse, Mensagem};
+
+    use super::*;
+    use crate::testes_comuns::PastaTemporaria;
+
+    const DPS: &str = include_str!("../../rustnf-cli/exemplos/dps.json");
+    const NFSE_BASE: &str = include_str!("../../rustnf-cli/exemplos/nfse.xml");
+
+    /// A NFS-e de exemplo com uma chave de acesso de digito verificador certo (a do exemplo nao tem).
+    fn nfse_valida() -> String {
+        let chave = rustnf::chave_dfe::montar_nfse(
+            1_400_159,
+            "11222333000181",
+            22,
+            "2609",
+            Some(97_579_757),
+            2,
+        )
+        .unwrap();
+        NFSE_BASE.replace("14001591299999999999999000000000000022097579757684", &chave)
+    }
+
+    /// O emissor desses testes responde na hora, sem rede.
+    struct Falso {
+        status: Status,
+        recuperada: bool,
+        chamadas: AtomicUsize,
+    }
+
+    #[async_trait]
+    impl Emissor for Falso {
+        fn ambiente(&self) -> u8 {
+            2
+        }
+
+        async fn emitir(&self, _dps: &Dps) -> Resultado {
+            self.chamadas.fetch_add(1, Ordering::Relaxed);
+            let xml = nfse_valida();
+            let nfse = ler_nfse(&xml).unwrap();
+            let autorizada = self.status == Status::Autorizada;
+            Resultado {
+                status: self.status,
+                frase: "resposta de teste".into(),
+                chave: if autorizada {
+                    nfse.chave.clone()
+                } else {
+                    String::new()
+                },
+                id_dps: String::new(),
+                nfse: autorizada.then_some(nfse),
+                xml_assinado: String::new(),
+                xml_retorno: if autorizada { xml } else { String::new() },
+                erros: if autorizada {
+                    vec![]
+                } else {
+                    vec![Mensagem {
+                        codigo: "E0312".into(),
+                        descricao: "codigo de tributacao".into(),
+                        complemento: "serv".into(),
+                    }]
+                },
+                alertas: vec![],
+                http: 200,
+                recuperada: self.recuperada,
+                corpo: None,
+                detalhe: String::new(),
+            }
+        }
+
+        async fn consultar(&self, _chave: &str) -> Resultado {
+            unreachable!("os testes nao consultam")
+        }
+
+        async fn cancelar(&self, _chave: &str, _motivo: &str, _justificativa: &str) -> Resultado {
+            unreachable!("os testes nao cancelam")
+        }
+    }
+
+    fn bloquear<T>(futuro: impl Future<Output = T>) -> T {
+        let mut futuro = std::pin::pin!(futuro);
+        let mut cx = Context::from_waker(Waker::noop());
+        loop {
+            if let Poll::Ready(v) = futuro.as_mut().poll(&mut cx) {
+                return v;
+            }
+        }
+    }
+
+    fn pedido_sem_numero() -> Value {
+        let mut p: Value = serde_json::from_str(DPS).unwrap();
+        p.as_object_mut().unwrap().remove("numero");
+        p
+    }
+
+    #[test]
+    fn completo_devolve_a_rejeicao_com_codigo_e_a_forma_json_continua_recusa() {
+        let emissor = Falso {
+            status: Status::Rejeitada,
+            recuperada: false,
+            chamadas: AtomicUsize::new(0),
+        };
+        let emitente = Emitente::default();
+        let pasta = PastaTemporaria::nova("pedido-rejeitada");
+        let notas = Notas::abrir(pasta.caminho()).unwrap();
+        let e = bloquear(emitir_pedido_completo(
+            &emissor,
+            pedido_sem_numero(),
+            &emitente,
+            60,
+            Some(&notas),
+        ))
+        .unwrap();
+        assert_eq!(e.resultado.status, Status::Rejeitada);
+        assert_eq!(e.resultado.erros[0].codigo, "E0312");
+        assert_eq!(e.numero_dps, Some(1));
+        assert_eq!(e.guardada, None);
+        // rejeitada nao gasta numero
+        assert_eq!(notas.proximo_numero("1").unwrap(), 1);
+        // a funcao de sempre continua devolvendo a recusa em texto
+        let erro = bloquear(emitir_pedido(
+            &emissor,
+            pedido_sem_numero(),
+            &emitente,
+            60,
+            Some(&notas),
+        ))
+        .unwrap_err();
+        assert!(matches!(erro, Erro::Recusa { campo, .. } if campo == "sefin"));
+        assert_eq!(emissor.chamadas.load(Ordering::Relaxed), 2);
+    }
+
+    #[test]
+    fn completo_guarda_a_nota_autorizada_e_a_forma_json_diz_o_mesmo() {
+        let emissor = Falso {
+            status: Status::Autorizada,
+            recuperada: false,
+            chamadas: AtomicUsize::new(0),
+        };
+        let emitente = Emitente::default();
+        let pasta = PastaTemporaria::nova("pedido-autorizada");
+        let notas = Notas::abrir(pasta.caminho()).unwrap();
+        let e = bloquear(emitir_pedido_completo(
+            &emissor,
+            pedido_sem_numero(),
+            &emitente,
+            60,
+            Some(&notas),
+        ))
+        .unwrap();
+        assert_eq!(e.resultado.status, Status::Autorizada);
+        assert_eq!(e.numero_dps, Some(1));
+        assert_eq!(e.guardada, Some(true));
+        assert_eq!(e.aviso, None);
+        assert!(e.diferencas.is_empty());
+        assert_eq!(notas.listar().unwrap().len(), 1);
+        assert_eq!(notas.proximo_numero("1").unwrap(), 2);
+        // a mesma DPS, na forma de sempre: JSON com `guardada` e `numero_dps`
+        let json = bloquear(emitir_pedido(
+            &emissor,
+            pedido_sem_numero(),
+            &emitente,
+            60,
+            Some(&notas),
+        ))
+        .unwrap();
+        assert_eq!(json["guardada"], true);
+        assert_eq!(json["numero_dps"], 2);
+        assert_eq!(json["status"], "autorizada");
+        // sem pasta de notas nao ha o que guardar
+        let sem = bloquear(emitir_pedido_completo(
+            &emissor,
+            serde_json::from_str(DPS).unwrap(),
+            &emitente,
+            60,
+            None,
+        ))
+        .unwrap();
+        assert_eq!(sem.guardada, None);
+        assert_eq!(sem.numero_dps, None);
+    }
+
+    fn recuperador() -> Falso {
+        Falso {
+            status: Status::Autorizada,
+            recuperada: true,
+            chamadas: AtomicUsize::new(0),
+        }
+    }
+
+    #[test]
+    fn nota_recuperada_com_outros_dados_diz_em_que_difere() {
+        let emissor = recuperador();
+        let emitente = Emitente::default();
+        // o pedido de exemplo nao e' a nota de exemplo: tomador, valor, servico e competencia sao outros
+        let pedido: Value = serde_json::from_str(DPS).unwrap();
+        let e = bloquear(emitir_pedido_completo(
+            &emissor,
+            pedido.clone(),
+            &emitente,
+            60,
+            None,
+        ))
+        .unwrap();
+        assert!(e.resultado.recuperada);
+        assert_eq!(
+            e.diferencas,
+            [
+                "tomador",
+                "valor do servico",
+                "codigo do servico",
+                "competencia"
+            ]
+        );
+        let json = bloquear(emitir_pedido(&emissor, pedido, &emitente, 60, None)).unwrap();
+        assert_eq!(json["recuperada"], true);
+        assert_eq!(json["recuperada_difere"][0], "tomador");
+        assert_eq!(json["recuperada_difere"].as_array().unwrap().len(), 4);
+    }
+
+    #[test]
+    fn a_mesma_nota_escrita_de_outro_jeito_nao_acusa_diferenca() {
+        let nfse = ler_nfse(&nfse_valida()).unwrap();
+        // os dados da nota de exemplo com mascara, virgula e zero a direita
+        let enviado = Enviado {
+            tomador: documento("33.444.555/0001-72"),
+            valor: "12,450".into(),
+            servico: so_digitos("01.03.01"),
+            competencia: Some("2026-09-23".into()),
+        };
+        assert!(enviado.diferencas(&nfse).is_empty());
+        // sem competencia no pedido (vale a de hoje), ela nao entra na comparacao
+        let sem = Enviado {
+            competencia: None,
+            ..enviado
+        };
+        assert!(sem.diferencas(&nfse).is_empty());
+        // um centavo a mais ja e' outra nota
+        let outro_valor = Enviado {
+            valor: "12.46".into(),
+            ..sem
+        };
+        assert_eq!(outro_valor.diferencas(&nfse), ["valor do servico"]);
+        // o CNPJ alfanumerico nao perde as letras na comparacao
+        assert_eq!(documento("12.abc.345/01de-35"), "12ABC34501DE35");
+        let alfanumerico = Enviado {
+            tomador: documento("12.ABC.345/01DE-35"),
+            ..outro_valor
+        };
+        assert_eq!(
+            alfanumerico.diferencas(&nfse),
+            ["tomador", "valor do servico"]
+        );
+    }
+
+    #[test]
+    fn centavos_le_o_valor_escrito_de_varios_jeitos() {
+        assert_eq!(centavos("150"), Some(15_000));
+        assert_eq!(centavos("150.5"), Some(15_050));
+        assert_eq!(centavos(" 150,50 "), Some(15_050));
+        assert_eq!(centavos("12.450"), Some(1_245));
+        assert_eq!(centavos("0.07"), Some(7));
+        for ruim in ["", "abc", "1.234", ".5", "1.2.3", "-1"] {
+            assert_eq!(centavos(ruim), None, "{ruim}");
+        }
+    }
 }
