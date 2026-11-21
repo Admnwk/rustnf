@@ -22,9 +22,9 @@ pub fn limpar(texto: &str) -> String {
         .filter(char::is_ascii_alphanumeric)
         .map(|c| c.to_ascii_uppercase())
         .collect();
-    let inicio = (0..v.len().saturating_sub(1))
-        .find(|&i| v[i].is_ascii_digit() && v[i + 1].is_ascii_digit())
-        .unwrap_or(v.len());
+    // a chave comeca por digito (municipio): so' o prefixo de letras do `Id` fica de fora. Um unico digito digitado
+    // ainda e' o comeco da chave.
+    let inicio = v.iter().position(char::is_ascii_digit).unwrap_or(v.len());
     v[inicio..].iter().take(TAMANHO).collect()
 }
 
@@ -146,6 +146,9 @@ mod testes {
 
     #[test]
     fn a_mascara_acompanha_a_digitacao() {
+        // digitando a chave caractere a caractere, o primeiro digito nao some
+        assert_eq!(em_grupos("3"), "3");
+        assert_eq!(em_grupos("NFS3"), "3");
         assert_eq!(em_grupos("3550308"), "35503 08");
         assert_eq!(em_grupos("35503 08 12"), "35503 0812");
         assert_eq!(em_grupos(""), "");
