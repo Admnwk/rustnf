@@ -23,6 +23,19 @@
 * Assinatura da DPS e dos eventos: o padrao passa a ser RSA com SHA-256 (era SHA-1). O SHA-1 continua disponivel:
   `--assinatura sha1`, `RUSTNF_ASSINATURA=sha1`, `[sefin] assinatura = "sha1"` ou, na biblioteca, o campo
   `ClienteNfse::algoritmo`. A conferencia de assinaturas continua aceitando SHA-1, SHA-256 e SHA-512.
+* Novo crate `rustnf-gui` (`crates/rustnf-gui`): a interface de desktop, em GPUI (`gpui-kit` =0.10.0), so' para Windows nesta
+  versao (fora do Windows o executavel avisa e sai com codigo 2). Le e grava o mesmo arquivo de configuracao da linha de
+  comando e guarda a senha do certificado no cofre do sistema. Faz o primeiro uso em tres passos, mostra o Inicio e as
+  Configuracoes (emitente, Sefin Nacional, certificado, senha, notas, DANFSe, aliquotas, tema), testa o certificado e a
+  conexao com a Sefin e mostra sempre o ambiente (Producao ou Producao restrita) e o estado do certificado. Ainda nao
+  emite, consulta nem cancela nota. A camada `modelo` (estado dos formularios, mascaras, conferencia campo a campo) nao
+  depende de janela e e' testada em qualquer sistema.
+* Configuracao: nova secao `[interface]` com `tema` (`sistema`, `claro` ou `escuro`).
+* `rustnf-app`: novo modulo `certificado` (abrir o A1 e montar o cliente da Sefin, antes dentro da linha de comando) e
+  `cofre::cofre_do_ambiente` (a escolha do cofre por `RUSTNF_COFRE`), compartilhados pela linha de comando e pela
+  interface. O comportamento da linha de comando nao mudou.
+* Biblioteca: `rustnf::danfse::municipio::buscar` agora e' publica (codigo IBGE de 7 digitos -> nome e UF, pela tabela
+  embutida).
 * Dependencias novas: `toml`, e, so' no Windows, `keyring-core` e `windows-native-keyring-store` (todas MIT OR
   Apache-2.0).
 

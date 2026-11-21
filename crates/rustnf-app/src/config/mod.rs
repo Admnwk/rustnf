@@ -27,7 +27,7 @@ pub use arquivo::{caminho_do_arquivo, caminho_padrao, LerAmbiente, VARIAVEL_CONF
 pub use efetiva::{Efetiva, VARIAVEIS};
 pub use emitente::aplicar_emitente;
 pub use erro::{ErroConfig, Indicado};
-pub use modelo::{Aliquota, Config, Danfse, Emitente, Notas, Sefin, Servidor};
+pub use modelo::{Aliquota, Config, Danfse, Emitente, Interface, Notas, Sefin, Servidor, TEMAS};
 
 fn opcional(s: &str) -> Option<String> {
     let t = s.trim();

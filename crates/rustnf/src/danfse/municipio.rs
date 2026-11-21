@@ -30,8 +30,14 @@ fn tabela() -> &'static Tabela {
     })
 }
 
-/// Nome e UF do municipio de codigo IBGE `ibge`, se constar da tabela.
-pub(super) fn buscar(ibge: &str) -> Option<(String, String)> {
+/// Nome (em maiusculas, como a tabela grava) e UF do municipio de codigo IBGE `ibge` (7 digitos, sem espaco), se
+/// constar da tabela embutida. E' a mesma tabela que o DANFSe usa para escrever o municipio na nota.
+///
+/// ```ignore
+/// assert_eq!(rustnf::danfse::municipio::buscar("4106902"), Some(("CURITIBA".into(), "PR".into())));
+/// ```
+#[must_use]
+pub fn buscar(ibge: &str) -> Option<(String, String)> {
     tabela()
         .get(ibge)
         .map(|(nome, uf)| ((*nome).to_string(), (*uf).to_string()))

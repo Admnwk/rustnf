@@ -41,6 +41,10 @@ limite_corpo = 1048576           # bytes
 tempo_limite_s = 60
 origens_permitidas = []          # por exemplo ["https://app.exemplo.com.br"]
 
+# Preferencias da interface de desktop (`rustnf-gui`); a linha de comando nao as usa.
+[interface]
+tema = "sistema"                 # sistema (segue o do Windows) | claro | escuro
+
 # Aliquotas publicadas por ano (percentual, texto decimal), usadas pela previa do IBS/CBS (`rustnf calcular`) quando o
 # pedido nao traz `publicadas`. 2027-2028: cbs_referencia (a biblioteca tira 0,1 ponto percentual) ou cbs;
 # 2029 em diante: cbs, ibs_uf e ibs_mun. Os numeros abaixo sao de exemplo.

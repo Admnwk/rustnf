@@ -2,15 +2,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! Abre o certificado A1 e monta o cliente real da Sefin Nacional.
+//! A senha do certificado dada pela chamada e a ligacao com `rustnf_app::certificado`, que abre o A1 e monta o cliente
+//! real da Sefin Nacional.
 
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
-use rustnf::assinatura::cert_a1;
 use rustnf::assinatura::xmldsig::Algoritmo;
-use rustnf::nfse::sefin::ClienteNfse;
-use zeroize::Zeroizing;
+use rustnf_app::certificado;
 
 use super::{Ambiente, ArgSenha};
 use crate::emissao::Emissor;
@@ -40,17 +40,9 @@ pub(super) fn senha_explicita(
 /// Texto do erro quando nenhuma origem de senha existe.
 pub(super) const SEM_SENHA: &str = "informe a senha do certificado por --senha-env <VARIAVEL> ou --senha-stdin (ou guarde-a no cofre do sistema com `rustnf senha guardar`)";
 
-fn abrir(pfx: &str, senha: &Segredo) -> Result<rustnf::assinatura::cert_a1::Certificado, Erro> {
-    if pfx == "-" {
-        return Err(Erro::Uso("--pfx precisa de um arquivo, nao de '-'".into()));
-    }
-    let bytes = Zeroizing::new(entrada::ler_bytes(pfx, "o certificado")?);
-    cert_a1::carregar(&bytes, senha.expor()).map_err(|e| Erro::Entrada(e.to_string()))
-}
-
 /// So' confere que a senha abre o certificado.
 pub(super) fn conferir(pfx: &str, senha: &Segredo) -> Result<(), Erro> {
-    abrir(pfx, senha).map(|_| ())
+    certificado::conferir(&arquivo(pfx)?, senha)
 }
 
 /// Abre o .pfx e monta o cliente da Sefin para o ambiente.
@@ -61,8 +53,18 @@ pub(super) fn emissor(
     algoritmo: Algoritmo,
     tempo_limite: Duration,
 ) -> Result<Arc<dyn Emissor>, Erro> {
-    let certificado = abrir(pfx, senha)?;
-    let mut cliente = ClienteNfse::real(certificado, ambiente.codigo(), None, None, tempo_limite)?;
-    cliente.algoritmo = algoritmo;
-    Ok(Arc::new(cliente))
+    certificado::emissor(
+        &arquivo(pfx)?,
+        senha,
+        ambiente.codigo(),
+        algoritmo,
+        tempo_limite,
+    )
+}
+
+fn arquivo(pfx: &str) -> Result<PathBuf, Erro> {
+    if pfx == "-" {
+        return Err(Erro::Uso("--pfx precisa de um arquivo, nao de '-'".into()));
+    }
+    Ok(PathBuf::from(pfx))
 }

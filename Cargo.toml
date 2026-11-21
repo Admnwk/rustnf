@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/rustnf", "crates/rustnf-app", "crates/rustnf-cli"]
+members = ["crates/rustnf", "crates/rustnf-app", "crates/rustnf-cli", "crates/rustnf-gui"]
 
 [workspace.package]
 version = "0.1.0"
@@ -17,3 +17,8 @@ unreachable_pub = "warn"
 dbg_macro = "deny"
 todo = "deny"
 unimplemented = "deny"
+
+# As dependencias compilam sem informacao de depuracao: a arvore e' grande (Typst e GPUI) e, com ela, a pasta de
+# build passa de 15 GB e a ligacao dos binarios fica lenta. O codigo do proprio workspace continua depuravel.
+[profile.dev.package."*"]
+debug = false

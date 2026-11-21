@@ -6,7 +6,8 @@
 //!
 //! * termo proibido (`higiene_termos.txt`, uma expressao regular por linha) em arquivo ou em mensagem de commit;
 //!   quem mantem o projeto soma uma lista propria, guardada fora do repositorio, apontando a variavel de
-//!   ambiente `RUSTNF_HIGIENE_PRIVADA` para a pasta dela (`termos.txt`, `amostras.txt` e `limpos.txt`);
+//!   ambiente `RUSTNF_HIGIENE_PRIVADA` para a pasta dela (`termos.txt`, `amostras.txt` e `limpos.txt`); em
+//!   `termos.txt`, linha que comeca por `!` e' excecao: um trecho de terceiros que nao e' rastro;
 //! * endereco (URL) fora da lista de fontes publicas aceitas;
 //! * CPF ou CNPJ com digito verificador valido que nao esteja em `higiene_documentos.txt`;
 //! * dependencia que nao venha do crates.io, ou por caminho para fora do repositorio;
@@ -102,7 +103,14 @@ fn da_pasta_privada(arquivo: &str) -> Option<Vec<String>> {
 
 fn termos_privados() -> Vec<(String, Regex)> {
     match da_pasta_privada("termos.txt") {
-        Some(linhas) => carregar_termos(&linhas.join("\n")),
+        Some(linhas) => {
+            let so_termos: Vec<&str> = linhas
+                .iter()
+                .map(String::as_str)
+                .filter(|l| !l.starts_with(MARCA_DE_EXCECAO))
+                .collect();
+            carregar_termos(&so_termos.join("\n"))
+        }
         None => {
             eprintln!(
                 "lista privada ausente ({LISTA_PRIVADA}): so' os termos publicos foram usados"
@@ -111,10 +119,47 @@ fn termos_privados() -> Vec<(String, Regex)> {
         }
     }
 }
+
+/// Marca, em `termos.txt` da pasta privada, a linha que e' excecao e nao termo.
+const MARCA_DE_EXCECAO: char = '!';
+
+/// Trechos de terceiros que um termo da lista privada acusaria sem serem rastro (nome de um crate no `Cargo.lock`,
+/// campo de uma API de biblioteca): as linhas de `termos.txt` que comecam por `!`, cada uma com uma expressao
+/// regular. So' o trecho casado e' ignorado; o resto da linha continua sendo varrido.
+fn excecoes_privadas() -> Vec<Regex> {
+    da_pasta_privada("termos.txt")
+        .unwrap_or_default()
+        .iter()
+        .filter_map(|l| l.strip_prefix(MARCA_DE_EXCECAO))
+        .enumerate()
+        .map(|(i, l)| {
+            // nem a expressao vai para a mensagem: ela pode parar num registro publico
+            Regex::new(l).unwrap_or_else(|_| panic!("excecao privada numero {} invalida", i + 1))
+        })
+        .collect()
+}
+
 /// Devolve `rotulo:linha: termo -> trecho` para cada ocorrencia.
 fn achados(texto: &str, rotulo: &str, termos: &[(String, Regex)]) -> Vec<String> {
+    achados_fora_de(texto, rotulo, termos, &[])
+}
+
+/// Como [`achados`], apagando antes de cada linha os trechos que casam com uma das `excecoes`.
+fn achados_fora_de(
+    texto: &str,
+    rotulo: &str,
+    termos: &[(String, Regex)],
+    excecoes: &[Regex],
+) -> Vec<String> {
     let mut saida = Vec::new();
     for (i, linha) in texto.lines().enumerate() {
+        let mut limpa = std::borrow::Cow::Borrowed(linha);
+        for e in excecoes {
+            if e.is_match(&limpa) {
+                limpa = std::borrow::Cow::Owned(e.replace_all(&limpa, " ").into_owned());
+            }
+        }
+        let linha = limpa.as_ref();
         for (nome, re) in termos {
             if let Some(m) = re.find(linha) {
                 saida.push(format!(
@@ -201,11 +246,27 @@ fn reprovar(titulo: &str, problemas: &[String]) {
 #[test]
 fn arquivos_do_repo_sem_termo_proibido() {
     let termos = termos();
+    let excecoes = excecoes_privadas();
     let mut problemas = Vec::new();
     for (rel, texto) in arquivos_ou_aviso() {
-        problemas.extend(achados(&texto, &rel, &termos));
+        problemas.extend(achados_fora_de(&texto, &rel, &termos, &excecoes));
     }
     reprovar("termos proibidos", &problemas);
+}
+
+#[test]
+fn a_excecao_so_libera_o_trecho_dela() {
+    let termos = carregar_termos(r"\bazul\b");
+    let excecoes = vec![Regex::new("ceu-azul").unwrap()];
+    let acha = |texto: &str| achados_fora_de(texto, "x", &termos, &excecoes).len();
+    assert_eq!(acha("name = \"ceu-azul\""), 0);
+    assert_eq!(acha("o mar azul"), 1, "fora do trecho continua acusando");
+    assert_eq!(
+        acha("ceu-azul e mar azul"),
+        1,
+        "o resto da linha e' varrido"
+    );
+    assert_eq!(achados("name = \"ceu-azul\"", "x", &termos).len(), 1);
 }
 
 /// O rodape de coautoria do projeto: a unica linha de mensagem de commit que pode citar esses nomes. E' montado em

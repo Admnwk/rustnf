@@ -16,6 +16,14 @@ ignore = [
     { id = "RUSTSEC-2026-0192", reason = "ttf-parser unmaintained; transitiva do Typst" },
     { id = "RUSTSEC-2024-0449", reason = "unsafe-libyaml unmaintained; transitiva do Typst" },
     { id = "RUSTSEC-2024-0320", reason = "yaml-rust unmaintained; transitiva do Typst" },
+    # Dependencias do GPUI (crate `rustnf-gui`, gpui-kit 0.10.0). Sem mantenedor (nao e' vulnerabilidade), todas
+    # transitivas e sem substituto aceito por ele. Rever a cada versao nova do gpui-kit (ROADMAP).
+    { id = "RUSTSEC-2024-0384", reason = "instant unmaintained; transitiva do GPUI (gpui-component, gpui-base)" },
+    { id = "RUSTSEC-2025-0134", reason = "rustls-pemfile unmaintained; transitiva do GPUI (gpui-pre-reqwest)" },
+    # So' no lado Linux do GPUI (acessibilidade e portal por D-Bus), que o rustnf-gui, so' Windows, nao compila.
+    { id = "RUSTSEC-2026-0370", reason = "zvariant unmaintained; so' no lado Linux do GPUI, que nao e' compilado" },
+    { id = "RUSTSEC-2026-0371", reason = "zbus_names unmaintained; so' no lado Linux do GPUI, que nao e' compilado" },
+    { id = "RUSTSEC-2026-0372", reason = "zvariant_derive unmaintained; so' no lado Linux do GPUI, que nao e' compilado" },
 ]
 
 [licenses]
@@ -33,6 +41,8 @@ allow = [
     "CC0-1.0",
     "OpenSSL",
     "MPL-2.0",
+    # enum-iterator (transitiva do GPUI): BSD de zero clausulas, sem nenhuma exigencia
+    "0BSD",
     # webpki-roots (raizes de CA do rustls): licenca de DADOS permissiva
     "CDLA-Permissive-2.0",
 ]

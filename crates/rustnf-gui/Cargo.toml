@@ -1,0 +1,32 @@
+[package]
+name = "rustnf-gui"
+description = "Interface de desktop do rustnf (GPUI): configuracao, certificado e primeiro uso. Somente Windows nesta versao."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "rustnf-gui"
+path = "src/main.rs"
+
+[dependencies]
+rustnf = { path = "../rustnf", features = ["sefin", "danfse"] }
+rustnf-app = { path = "../rustnf-app" }
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+tokio = { version = "1", features = ["rt-multi-thread", "time", "net"] }
+
+[target.'cfg(windows)'.dependencies]
+gpui-kit = "=0.10.0"
+
+[dev-dependencies]
+rustnf = { path = "../rustnf", features = ["sefin", "danfse", "cert_a1_teste"] }
+async-trait = "0.1"
+
+[target.'cfg(windows)'.dev-dependencies]
+gpui-kit = { version = "=0.10.0", features = ["test-support"] }

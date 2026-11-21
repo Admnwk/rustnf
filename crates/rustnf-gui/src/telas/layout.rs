@@ -1,0 +1,220 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+//! O esqueleto da janela: barra de titulo com o selo de ambiente, barra lateral, area de conteudo e barra de estado.
+
+use gpui_kit::component::sidebar::{
+    Sidebar, SidebarFooter, SidebarGroup, SidebarMenu, SidebarMenuItem,
+};
+use gpui_kit::component::status_bar::StatusBar;
+use gpui_kit::component::{
+    h_flex, v_flex, ActiveTheme as _, Icon, IconName, Sizable as _, TitleBar,
+};
+use gpui_kit::prelude::FluentBuilder as _;
+use gpui_kit::{
+    div, px, rgb, AnyElement, Context, InteractiveElement as _, IntoElement, ParentElement as _,
+    Render, Styled as _, Window,
+};
+
+use super::pecas::{cor_da, faixa, icone_da, Negrito as _};
+use super::raiz::{Estado, Raiz, Tela};
+use super::{DescartarConfiguracao, SalvarConfiguracao};
+use crate::modelo::ambiente::Ambiente;
+use crate::modelo::certificado::Gravidade;
+
+impl Raiz {
+    /// O ambiente em vigor, para o selo.
+    fn ambiente_do_selo(&self) -> Ambiente {
+        self.info.as_ref().map_or_else(
+            || Ambiente::de_config(&self.salvo.sefin.ambiente),
+            |i| i.ambiente,
+        )
+    }
+
+    fn barra_de_titulo(&self) -> TitleBar {
+        let ambiente = self.ambiente_do_selo();
+        let cores = ambiente.cores();
+        TitleBar::new()
+            .child(
+                h_flex()
+                    .gap_2()
+                    .items_center()
+                    .child(div().text_sm().font_semibold().child("rustnf"))
+                    .child(
+                        div()
+                            .text_xs()
+                            .opacity(0.6)
+                            .child("emissor de NFS-e nacional"),
+                    ),
+            )
+            .child(
+                div()
+                    .id("selo-de-ambiente")
+                    .mr_3()
+                    .px_2p5()
+                    .py_0p5()
+                    .rounded_full()
+                    .text_xs()
+                    .font_semibold()
+                    .bg(rgb(cores.fundo))
+                    .text_color(rgb(cores.texto))
+                    .child(ambiente.selo()),
+            )
+    }
+
+    fn lateral(&self, cx: &mut Context<Self>) -> Sidebar<SidebarGroup<SidebarMenu>> {
+        let tela = self.tela;
+        Sidebar::new("lateral")
+            .w(px(224.))
+            .collapsible(false)
+            .child(
+                SidebarGroup::new("Menu").child(
+                    SidebarMenu::new()
+                        .child(
+                            SidebarMenuItem::new("Início")
+                                .icon(IconName::LayoutDashboard)
+                                .active(tela == Tela::Inicio)
+                                .on_click(cx.listener(|this, _, _, cx| {
+                                    this.tela = Tela::Inicio;
+                                    cx.notify();
+                                })),
+                        )
+                        .child(
+                            SidebarMenuItem::new("Configurações")
+                                .icon(IconName::Settings)
+                                .active(tela == Tela::Configuracoes)
+                                .on_click(cx.listener(|this, _, _, cx| {
+                                    this.tela = Tela::Configuracoes;
+                                    cx.notify();
+                                })),
+                        ),
+                ),
+            )
+            .footer(
+                SidebarFooter::new().child(
+                    div()
+                        .text_xs()
+                        .opacity(0.6)
+                        .child(format!("Versão {}", env!("CARGO_PKG_VERSION"))),
+                ),
+            )
+    }
+
+    fn barra_de_estado(&self, cx: &mut Context<Self>) -> StatusBar {
+        let gravidade = self.cert.gravidade();
+        let cor = cor_da(gravidade, cx);
+        let tema = cx.theme();
+        StatusBar::new()
+            .left(
+                h_flex()
+                    .id("estado-do-certificado")
+                    .gap_1p5()
+                    .items_center()
+                    .child(Icon::new(icone_da(gravidade)).small().text_color(cor))
+                    .child(div().text_color(cor).child(self.cert.texto())),
+            )
+            .right(
+                h_flex()
+                    .gap_3()
+                    .items_center()
+                    .text_color(tema.muted_foreground)
+                    .when(self.servicos.cofre_desligado(), |d| {
+                        d.child(div().child("Cofre de senhas desligado"))
+                    })
+                    .when_some(self.info.as_ref(), |d, i| {
+                        d.child(div().child(if i.nome.is_empty() {
+                            "sem arquivo".to_string()
+                        } else if i.novo {
+                            format!("{} (novo)", i.nome)
+                        } else {
+                            i.nome.clone()
+                        }))
+                    }),
+            )
+    }
+
+    fn conteudo(&mut self, window: &mut Window, cx: &mut Context<Self>) -> AnyElement {
+        match &self.estado {
+            Estado::Carregando => v_flex()
+                .size_full()
+                .items_center()
+                .justify_center()
+                .gap_2()
+                .text_color(cx.theme().muted_foreground)
+                .child(Icon::new(IconName::LoaderCircle).large())
+                .child("Lendo a configuração...")
+                .into_any_element(),
+            Estado::Falha(texto) => {
+                let texto = texto.clone();
+                v_flex()
+                    .size_full()
+                    .items_center()
+                    .justify_center()
+                    .p_8()
+                    .child(
+                        v_flex()
+                            .max_w(px(560.))
+                            .gap_3()
+                            .child(div().text_xl().font_semibold().child("Não foi possível abrir a configuração"))
+                            .child(faixa(Gravidade::Erro, texto, cx))
+                            .child(
+                                div()
+                                    .text_sm()
+                                    .text_color(cx.theme().muted_foreground)
+                                    .child("Corrija o arquivo (o mesmo que a linha de comando usa) ou abra o programa com --config <arquivo>."),
+                            )
+                            .child(
+                                gpui_kit::component::button::Button::new("tentar-de-novo")
+                                    .label("Tentar de novo")
+                                    .outline()
+                                    .on_click(cx.listener(|this, _, window, cx| {
+                                        this.carregar(window, cx);
+                                    })),
+                            ),
+                    )
+                    .into_any_element()
+            }
+            Estado::Pronto => match self.tela {
+                Tela::Inicio => self.tela_inicio(window, cx),
+                Tela::Configuracoes => self.tela_configuracoes(window, cx),
+            },
+        }
+    }
+}
+
+impl Render for Raiz {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        let fundo = cx.theme().background;
+        let texto = cx.theme().foreground;
+        let titulo = self.barra_de_titulo();
+        let lateral = self.lateral(cx);
+        let conteudo = self.conteudo(window, cx);
+        let estado = self.barra_de_estado(cx);
+        v_flex()
+            .id("raiz")
+            .key_context("Raiz")
+            .size_full()
+            .bg(fundo)
+            .text_color(texto)
+            .on_action(cx.listener(|this, _: &SalvarConfiguracao, window, cx| {
+                if this.tela == Tela::Configuracoes {
+                    this.salvar(window, cx);
+                }
+            }))
+            .on_action(cx.listener(|this, _: &DescartarConfiguracao, window, cx| {
+                if this.tela == Tela::Configuracoes {
+                    this.descartar(window, cx);
+                }
+            }))
+            .child(titulo)
+            .child(
+                h_flex()
+                    .flex_1()
+                    .min_h_0()
+                    .child(lateral)
+                    .child(div().flex_1().min_w_0().h_full().child(conteudo)),
+            )
+            .child(estado)
+    }
+}
