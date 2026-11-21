@@ -1,11 +1,18 @@
 # rustnf
 
-Emissor aberto de NFS-e do padrao nacional (Sefin Nacional / ADN), escrito em Rust: uma biblioteca e um binario
-(`rustnf`) que oferece **linha de comando**, **API HTTP** e **servidor MCP** no mesmo executavel.
+Emissor aberto de NFS-e do padrao nacional (Sefin Nacional / ADN), escrito em Rust: uma biblioteca, um binario
+(`rustnf`) que oferece **linha de comando**, **API HTTP** e **servidor MCP** no mesmo executavel, e uma
+**interface de desktop** para Windows (`rustnf-gui`).
 
 > **Aviso: este projeto NAO e' software oficial** da Receita Federal, do Comite Gestor da NFS-e nem de qualquer
 > prefeitura. Ele segue a documentacao publica (fontes em `docs/FONTES.md`); a responsabilidade pelo uso em producao e'
 > de quem o opera. Emitir ou cancelar nota em producao tem efeito fiscal. Teste antes na producao restrita.
+
+![Nova nota: o formulario, a conferencia e a previa do IBS/CBS](docs/imagens/nova-nota.png)
+
+![Notas: a pasta de notas, com busca e filtro](docs/imagens/notas.png)
+
+As telas acima sao da interface de desktop, com dados ficticios.
 
 ## Estado
 
@@ -18,7 +25,7 @@ Emissor aberto de NFS-e do padrao nacional (Sefin Nacional / ADN), escrito em Ru
 | cliente da Sefin Nacional | transporte falso (resposta perdida, 5xx, E0014, consulta, cancelamento) | uma chamada real, com TLS mutuo e certificado A1 |
 | previa do IBS/CBS | casos de teste da calculadora oficial da Receita Federal | comparar com os valores de uma NFS-e autorizada |
 | DANFSe | contrato de conteudo e leiaute | comparar com um DANFSe emitido pelo portal |
-| interface de desktop (`rustnf-gui`, so' Windows) | testes do modelo (mascaras, conferencia, pedido, previa, sugestao, rascunho, lista das notas, detalhe, cancelamento, consulta pela chave e previa avulsa), dos fluxos com emissor de demonstracao e pasta temporaria e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuracao e pelo exemplo de demonstracao | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, so' o emissor de demonstracao respondeu**; o DANFSe aberto no leitor de PDF de outra maquina; uma chamada real a Sefin pelo botao "Testar conexao"; exame da janela em outras escalas de tela |
+| interface de desktop (`rustnf-gui`, so' Windows) | testes do modelo (mascaras, conferencia, pedido, previa, sugestao, rascunho, lista das notas, detalhe, cancelamento, consulta pela chave e previa avulsa), dos fluxos com emissor de demonstracao e pasta temporaria e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuracao e pelo exemplo de demonstracao | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, so' o emissor de demonstracao respondeu**; o DANFSe aberto no leitor de PDF de outra maquina; uma chamada real a Sefin pelo botao "Testar conexao"; exame da janela em outras escalas de tela; o executavel de release aberto numa maquina sem as ferramentas de desenvolvimento |
 
 Se voce testar, conte como foi: abra um relato pelo modelo **"Relato de emissao"** (aba Issues), mesmo quando der
 certo. Correcao e' bem-vinda por pedido de mudanca, com a fonte oficial citada e um caso no contrato (veja
@@ -48,6 +55,20 @@ Valores e percentuais usam inteiros de ponto fixo, nunca ponto flutuante. A DPS 
 calcula e' a Sefin Nacional): `calcular` e' so' uma previa; vale o que voltar na NFS-e.
 
 ## Instalacao
+
+### Baixar pronto
+
+Cada versao publicada traz, na pagina de Releases, um `.zip` para Windows (64 bits) com `rustnf.exe` (linha de comando)
+e `rustnf-gui.exe` (interface de desktop), e um `.tar.gz` com a linha de comando para Linux. Nao ha instalador:
+descompacte e execute. No Windows (10 ou 11) nao e' preciso instalar mais nada: a biblioteca C vai dentro do
+executavel. Para emitir voce precisa do seu certificado A1 (`.pfx`) e da senha dele.
+
+O executavel **nao tem assinatura de codigo**. No primeiro uso o Windows pode mostrar "O Windows protegeu o
+computador" (SmartScreen): clique em "Mais informacoes" e depois em "Executar assim mesmo". Antes, confira o
+SHA-256 do arquivo baixado com o `SHA256SUMS.txt` da mesma release (no PowerShell:
+`Get-FileHash arquivo.zip -Algorithm SHA256`).
+
+### Compilar
 
 Precisa do Rust (edicao 2021, versao estavel recente).
 
@@ -444,7 +465,9 @@ cargo run -p rustnf-gui --features demonstracao --example demonstracao -- --conf
 ```
 
 A compilacao **release** no Windows precisa do `fxc.exe` (compilador de shaders do Windows SDK): deixe-o no `PATH` ou
-aponte a variavel `GPUI_FXC_PATH` para ele. O modo de depuracao nao precisa. A primeira compilacao e' demorada (centenas
+aponte a variavel `GPUI_FXC_PATH` para ele. O modo de depuracao nao precisa. Para o executavel nao depender do
+Visual C++ Redistributable, compile com `RUSTFLAGS="-C target-feature=+crt-static"` (e' o que o fluxo de release
+faz, e ele confere as dependencias do executavel antes de empacotar). A primeira compilacao e' demorada (centenas
 de crates). O mapa da camada de janela: `crates/rustnf-gui/src/modelo` (estado dos formularios, mascaras, conferencia
 campo a campo, passos do primeiro uso, lista das notas, detalhe, cancelamento, consulta e previa avulsa; sem janela e
 testavel em qualquer sistema), `src/servicos.rs` e `src/servicos` (arquivo, cofre, certificado, conexao, pasta de notas,

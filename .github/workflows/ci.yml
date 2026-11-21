@@ -31,6 +31,21 @@ jobs:
       - name: Higiene (arquivos e historico)
         run: cargo test -p rustnf --test higiene
 
+  interface:
+    # A interface de desktop so' tem janela no Windows: aqui ela compila com o GPUI de verdade e os testes de janela
+    # rodam. No Linux (job `verificar`) so' a camada sem janela e' compilada e testada.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Clippy da interface
+        run: cargo clippy -p rustnf-gui --all-targets --all-features -- -D warnings
+      - name: Testes da interface
+        run: cargo test -p rustnf-gui --all-features
+
   deny:
     runs-on: ubuntu-latest
     steps:

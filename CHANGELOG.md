@@ -2,6 +2,10 @@
 
 ## Proxima versao
 
+* Entrega: o CI passa a compilar e testar a interface de desktop no Windows (job `interface`); novo fluxo `release`
+  que, com uma tag de versao, monta `rustnf.exe` e `rustnf-gui.exe` (Windows, com a biblioteca C dentro do executavel:
+  quem baixa nao precisa instalar nada) e `rustnf` (Linux), confere as dependencias dos executaveis, calcula os
+  SHA-256 e abre a release como rascunho. README com as telas e a instrucao de quem baixa pronto.
 * Novo crate `rustnf-app` (`crates/rustnf-app`): a camada de aplicacao, sem tela, sem servidor e sem `clap`, que a linha
   de comando e qualquer interface de desktop compartilham. Recebeu `nucleo`, `emissao`, `segredo` e o erro (sem o status
   HTTP, que ficou no binario); ganhou:

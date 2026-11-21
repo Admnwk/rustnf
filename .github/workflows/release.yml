@@ -1,0 +1,96 @@
+name: release
+
+# Monta os executaveis de uma versao. Com uma tag `v*`, abre a release como RASCUNHO, com os arquivos e os SHA-256:
+# quem publica e' uma pessoa, depois de conferir. Disparado a mao (workflow_dispatch), so' compila e deixa os
+# arquivos como artefatos da execucao, sem abrir release nenhuma: serve para ensaiar o fluxo.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    env:
+      # A biblioteca C vai dentro do executavel: quem baixa nao precisa instalar o Visual C++ Redistributable.
+      RUSTFLAGS: -C target-feature=+crt-static
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: release
+      - name: Compilar
+        run: cargo build --release -p rustnf-cli -p rustnf-gui
+      - name: Conferir que so' o Windows e' exigido
+        shell: pwsh
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          $dumpbin = & $vswhere -latest -find 'VC\Tools\MSVC\**\bin\Hostx64\x64\dumpbin.exe' | Select-Object -First 1
+          if (-not $dumpbin) { throw 'dumpbin nao encontrado' }
+          foreach ($exe in 'target\release\rustnf.exe', 'target\release\rustnf-gui.exe') {
+            $dlls = & $dumpbin /dependents $exe | Where-Object { $_ -match '\.dll\s*$' } | ForEach-Object { $_.Trim().ToLower() }
+            "${exe}: $($dlls -join ', ')"
+            $de_fora = $dlls | Where-Object { $_ -match '^(vcruntime|msvcp|vcomp|ucrtbased)' }
+            if ($de_fora) { throw "$exe depende de biblioteca que nao vem com o Windows: $($de_fora -join ', ')" }
+          }
+      - name: Empacotar
+        shell: pwsh
+        run: |
+          $nome = "rustnf-${{ github.ref_name }}-windows-x64"
+          New-Item -ItemType Directory $nome | Out-Null
+          Copy-Item target\release\rustnf.exe, target\release\rustnf-gui.exe, LICENSE, NOTICE, README.md, CHANGELOG.md $nome
+          Compress-Archive -Path $nome -DestinationPath "$nome.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: rustnf-*-windows-x64.zip
+          if-no-files-found: error
+
+  linux:
+    # So' a linha de comando: a interface de desktop nao tem janela fora do Windows.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: release
+      - name: Compilar
+        run: cargo build --release -p rustnf-cli
+      - name: Empacotar
+        run: |
+          nome="rustnf-${{ github.ref_name }}-linux-x64"
+          mkdir "$nome"
+          cp target/release/rustnf LICENSE NOTICE README.md CHANGELOG.md "$nome"
+          tar -czf "$nome.tar.gz" "$nome"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: rustnf-*-linux-x64.tar.gz
+          if-no-files-found: error
+
+  rascunho:
+    # So' com tag de versao. A release nasce como rascunho.
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - name: SHA-256 dos arquivos
+        run: sha256sum rustnf-* > SHA256SUMS.txt && cat SHA256SUMS.txt
+      - name: Abrir a release como rascunho
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create "${{ github.ref_name }}" --repo "${{ github.repository }}" --draft
+          --title "rustnf ${{ github.ref_name }}"
+          --notes "Notas da versao em CHANGELOG.md. Confira o SHA-256 de cada arquivo em SHA256SUMS.txt."
+          rustnf-* SHA256SUMS.txt
