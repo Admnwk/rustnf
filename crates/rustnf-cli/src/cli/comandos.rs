@@ -7,14 +7,17 @@
 use std::io::Write;
 use std::path::Path;
 
+use rustnf::nfse::sefin::{ClienteNfse, Transporte};
 use rustnf_app::cofre::{cofre_do_ambiente, Cofre};
 use rustnf_app::config::Efetiva;
+use rustnf_app::notas::Situacao;
 use rustnf_app::pedido;
 use serde_json::{json, Value};
 
 use super::{
-    configuracao, resolver, servir, AcaoDps, ArgCalcular, ArgCancelar, ArgConsultar, ArgDanfse,
-    ArgEmitir, ArgSefin, Cli, Comando, SituacaoArg,
+    configuracao, resolver, servir, AcaoCertificado, AcaoDps, AcaoSefin, ArgCalcular, ArgCancelar,
+    ArgCertificado, ArgConsultar, ArgDanfse, ArgEmitir, ArgSefin, ArgTestar, Cli, Comando,
+    SituacaoArg,
 };
 use crate::emissao::{self, Emissor};
 use crate::entrada;
@@ -65,7 +68,105 @@ pub async fn executar_com(cli: Cli, cofre: &dyn Cofre) -> Result<(), Erro> {
         Comando::Config { acao } => configuracao::config(acao, config),
         Comando::Senha { acao } => configuracao::senha(acao, config, cofre),
         Comando::Notas { acao } => configuracao::notas(acao, config),
+        Comando::Certificado {
+            acao: AcaoCertificado::Mostrar(a),
+        } => certificado_mostrar(&a, config, cofre),
+        Comando::Sefin {
+            acao: AcaoSefin::Testar(a),
+        } => sefin_testar(&a, config, cofre).await,
     }
+}
+
+/// `rustnf certificado mostrar`: abre o certificado e diz de quem e', ate quando vale e se assina hoje.
+fn certificado_mostrar(
+    a: &ArgCertificado,
+    config: Option<&Path>,
+    cofre: &dyn Cofre,
+) -> Result<(), Erro> {
+    let efetiva = configuracao::carregar(config)?;
+    let pfx = resolver::pfx(&efetiva, a.pfx.as_deref())?;
+    let senha = resolver::senha(&efetiva, cofre, &a.senha, &pfx, false)?;
+    let certificado = super::certificado::abrir(&pfx, &senha)?;
+    let emitente = &efetiva.config.emitente;
+    let documento = [emitente.cnpj.as_str(), emitente.cpf.as_str()]
+        .into_iter()
+        .find(|d| !d.is_empty());
+    let r = certificado.resumo_de_agora(documento);
+    if a.json {
+        escrever_json(&serde_json::to_value(&r)?)?;
+    } else {
+        for aviso in &r.avisos {
+            eprintln!("aviso: {aviso}");
+        }
+        let texto = format!(
+            "{}\ntitular: {}\ndocumento: {}\nemissor: {}{}\nvalidade: de {} a {} ({} dias)\n",
+            r.frase,
+            r.titular,
+            r.documento,
+            r.emissor,
+            if r.icp_brasil {
+                " (ICP-Brasil)"
+            } else {
+                " (fora da ICP-Brasil)"
+            },
+            r.valido_de,
+            r.valido_ate,
+            r.dias_restantes,
+        );
+        escrever_stdout(texto.as_bytes())?;
+    }
+    if r.ok {
+        Ok(())
+    } else {
+        Err(Erro::recusa("", r.frase))
+    }
+}
+
+/// O teste da conexao de um cliente da Sefin ja montado: `{"ok": true, "ambiente", "frase"}`.
+///
+/// # Errors
+///
+/// [`Erro::Recusa`] se o certificado nao assina hoje (nada vai para a rede); [`Erro::Rede`] se a Sefin nao
+/// respondeu ou recusou o certificado.
+pub async fn testar_conexao<T: Transporte>(cliente: &ClienteNfse<T>) -> Result<Value, Erro> {
+    let resumo = cliente.certificado.resumo_de_agora(None);
+    if !resumo.ok {
+        return Err(Erro::recusa("", resumo.frase));
+    }
+    let (ok, frase) = cliente.testar().await;
+    if !ok {
+        return Err(Erro::Rede(frase));
+    }
+    Ok(json!({
+        "ok": true,
+        "ambiente": if cliente.ambiente == 1 { "producao" } else { "restrita" },
+        "frase": frase,
+    }))
+}
+
+/// `rustnf sefin testar`: uma chamada real a Sefin Nacional, com o certificado e o ambiente da configuracao.
+async fn sefin_testar(a: &ArgTestar, config: Option<&Path>, cofre: &dyn Cofre) -> Result<(), Erro> {
+    let efetiva = configuracao::carregar(config)?;
+    let pfx = resolver::pfx(&efetiva, a.sefin.pfx.as_deref())?;
+    let ambiente = resolver::ambiente(&efetiva, a.sefin.ambiente)?;
+    let senha = resolver::senha(&efetiva, cofre, &a.sefin.senha, &pfx, false)?;
+    let certificado = super::certificado::abrir(&pfx, &senha)?;
+    let cliente = rustnf_app::certificado::cliente(
+        certificado,
+        ambiente.codigo(),
+        resolver::assinatura(&efetiva, a.sefin.assinatura),
+        resolver::tempo_sefin(&efetiva),
+    )?;
+    let v = testar_conexao(&cliente).await?;
+    if a.json {
+        return escrever_json(&v);
+    }
+    let texto = format!(
+        "{}\nambiente: {}\n",
+        v["frase"].as_str().unwrap_or_default(),
+        v["ambiente"].as_str().unwrap_or_default()
+    );
+    escrever_stdout(texto.as_bytes())
 }
 
 fn dps(acao: AcaoDps) -> Result<(), Erro> {
@@ -110,22 +211,69 @@ fn calcular(a: &ArgCalcular, config: Option<&Path>) -> Result<(), Erro> {
     Ok(())
 }
 
-fn danfse(a: &ArgDanfse, config: Option<&Path>) -> Result<(), Erro> {
-    let xml = entrada::ler_texto(&a.nfse, "o XML da NFS-e")?;
-    let situacao = match a.situacao {
-        SituacaoArg::Valida => SituacaoNota::Valida,
-        SituacaoArg::Cancelada => SituacaoNota::Cancelada,
-        SituacaoArg::Substituida => SituacaoNota::Substituida,
-    };
-    let canhoto = !a.sem_canhoto && configuracao::carregar(config)?.config.danfse.canhoto;
-    let pdf = nucleo::gerar_danfse(&xml, situacao, canhoto)?;
-    if a.saida == "-" {
-        return escrever_stdout(&pdf);
+/// Grava o PDF no arquivo de saida; `-` escreve no stdout.
+fn gravar_pdf(saida: &str, pdf: &[u8]) -> Result<(), Erro> {
+    if saida == "-" {
+        return escrever_stdout(pdf);
     }
-    std::fs::write(&a.saida, &pdf)
+    std::fs::write(saida, pdf)
         .map_err(|_| Erro::Entrada("nao foi possivel gravar o PDF no arquivo de saida".into()))?;
     eprintln!("DANFSe gravado: {} bytes", pdf.len());
     Ok(())
+}
+
+fn danfse(a: &ArgDanfse, config: Option<&Path>) -> Result<(), Erro> {
+    let situacao = a.situacao.map(|s| match s {
+        SituacaoArg::Valida => SituacaoNota::Valida,
+        SituacaoArg::Cancelada => SituacaoNota::Cancelada,
+        SituacaoArg::Substituida => SituacaoNota::Substituida,
+    });
+    if let Some(chave) = &a.chave {
+        return danfse_da_pasta(a, chave, situacao, config);
+    }
+    let (Some(nfse), Some(saida)) = (&a.nfse, &a.saida) else {
+        return Err(Erro::Uso(
+            "informe o XML da NFS-e e o PDF de saida (-o), ou a nota da pasta com --chave".into(),
+        ));
+    };
+    let xml = entrada::ler_texto(nfse, "o XML da NFS-e")?;
+    let canhoto = !a.sem_canhoto && configuracao::carregar(config)?.config.danfse.canhoto;
+    let pdf = nucleo::gerar_danfse(&xml, situacao.unwrap_or_default(), canhoto)?;
+    gravar_pdf(saida, &pdf)
+}
+
+/// O DANFSe de uma nota da pasta de notas, pela chave: sai do XML guardado, com a marca de cancelada quando a nota
+/// esta cancelada na pasta. Sem `-o`, o PDF fica ao lado do XML e o caminho dele sai no stdout.
+fn danfse_da_pasta(
+    a: &ArgDanfse,
+    chave: &str,
+    situacao: Option<SituacaoNota>,
+    config: Option<&Path>,
+) -> Result<(), Erro> {
+    let efetiva = configuracao::carregar(config)?;
+    let notas = configuracao::notas_exigida(&efetiva)?;
+    // a chave pode vir colada com espacos ou pontuacao
+    let chave: String = chave
+        .chars()
+        .filter(char::is_ascii_alphanumeric)
+        .map(|c| c.to_ascii_uppercase())
+        .collect();
+    let registro = notas.registro(&chave)?;
+    let xml = notas.ler_xml(&chave)?;
+    let situacao = situacao.unwrap_or(match registro.situacao {
+        Situacao::Autorizada => SituacaoNota::Valida,
+        Situacao::Cancelada => SituacaoNota::Cancelada,
+    });
+    let canhoto = !a.sem_canhoto && efetiva.config.danfse.canhoto;
+    let pdf = nucleo::gerar_danfse(&xml, situacao, canhoto)?;
+    match &a.saida {
+        Some(saida) => gravar_pdf(saida, &pdf),
+        None => {
+            let caminho = notas.guardar_danfse(&chave, &pdf)?;
+            eprintln!("DANFSe gravado: {} bytes", pdf.len());
+            escrever_stdout(format!("{}\n", caminho.to_string_lossy()).as_bytes())
+        }
+    }
 }
 
 fn imprimir(v: &Value, json: bool) -> Result<(), Erro> {

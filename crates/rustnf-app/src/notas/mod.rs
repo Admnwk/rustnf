@@ -14,9 +14,13 @@
 //! numero da DPS so' avanca em nota autorizada ou recuperada ([`Notas::confirmar_numero`]). O caminho de cada XML e'
 //! montado so' com a chave conferida: nada vindo de fora vira pedaco de caminho.
 
+mod filtro;
+mod manutencao;
 mod registro;
 #[cfg(test)]
 mod testes;
+#[cfg(test)]
+mod testes_manutencao;
 mod trava;
 
 use std::collections::BTreeMap;
@@ -27,6 +31,8 @@ use std::path::{Path, PathBuf};
 use rustnf::chave_dfe;
 use serde::{Deserialize, Serialize};
 
+pub use filtro::{sem_acento, Filtro};
+pub use manutencao::{csv, Exportadas, Reindexado, INDICE_ANTERIOR, LISTA_CSV};
 pub use registro::{Registro, Situacao};
 
 use crate::atomico;

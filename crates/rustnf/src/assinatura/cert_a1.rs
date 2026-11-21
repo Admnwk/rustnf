@@ -45,6 +45,30 @@ pub struct Teste {
     pub avisos: Vec<String>,
 }
 
+/// O que se mostra de um certificado aberto ([`Certificado::resumo`]). Nunca leva a chave nem a senha.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+pub struct Resumo {
+    /// Assina hoje: ja comecou a valer e nao venceu.
+    pub ok: bool,
+    /// Frase de tela, com o documento mascarado.
+    pub frase: String,
+    /// Avisos: vence em breve, nao e' da ICP-Brasil, e' de outro documento.
+    pub avisos: Vec<String>,
+    pub titular: String,
+    /// CNPJ inteiro ou CPF mascarado; vazio se o certificado nao traz documento.
+    pub documento: String,
+    pub emissor: String,
+    pub icp_brasil: bool,
+    /// `AAAA-MM-DD`, no horario de Brasilia.
+    pub valido_de: String,
+    /// `AAAA-MM-DD`, no horario de Brasilia.
+    pub valido_ate: String,
+    /// Negativo depois do vencimento.
+    pub dias_restantes: i64,
+    /// `valido`, `vence_em_breve`, `vencido` ou `ainda_nao_valido`.
+    pub situacao: &'static str,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Situacao {
     Valido,
@@ -237,6 +261,49 @@ impl Certificado {
             frase: format!("Certificado OK: {quem}{doc}, valido ate {fim}."),
             avisos,
         }
+    }
+
+    /// O que se mostra do certificado aberto: quem e', ate quando vale e se assina em `agora`. A frase e os avisos
+    /// sao os de [`Certificado::testar`]. O CNPJ sai inteiro (e' dado publico da empresa) e o CPF, mascarado.
+    pub fn resumo(
+        &self,
+        cnpj_empresa: Option<&str>,
+        agora: DateTime<Utc>,
+        aviso_dias: i64,
+    ) -> Resumo {
+        let teste = self.testar(cnpj_empresa, agora, aviso_dias);
+        let dia = |d: DateTime<Utc>| {
+            d.with_timezone(&crate_brasilia())
+                .format("%Y-%m-%d")
+                .to_string()
+        };
+        Resumo {
+            ok: teste.ok,
+            frase: teste.frase,
+            avisos: teste.avisos,
+            titular: self.titular.clone(),
+            documento: if self.cnpj.is_empty() && !self.cpf.is_empty() {
+                mascarar_doc(&self.cpf)
+            } else {
+                self.cnpj.clone()
+            },
+            emissor: self.emissor.clone(),
+            icp_brasil: self.icp_brasil,
+            valido_de: dia(self.validade_inicio),
+            valido_ate: dia(self.validade_fim),
+            dias_restantes: self.dias_restantes(agora),
+            situacao: match self.situacao(agora, aviso_dias) {
+                Situacao::Valido => "valido",
+                Situacao::VenceEmBreve => "vence_em_breve",
+                Situacao::Vencido => "vencido",
+                Situacao::AindaNaoValido => "ainda_nao_valido",
+            },
+        }
+    }
+
+    /// [`Certificado::resumo`] no relogio do computador, com o aviso de vencimento padrao ([`AVISO_DIAS`]).
+    pub fn resumo_de_agora(&self, cnpj_empresa: Option<&str>) -> Resumo {
+        self.resumo(cnpj_empresa, Utc::now(), AVISO_DIAS)
     }
 
     /// Titular + cadeia em PEM (publico).

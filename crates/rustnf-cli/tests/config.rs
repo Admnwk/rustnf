@@ -455,3 +455,514 @@ fn notas_listar_mostra_a_pasta_configurada() {
         s.out
     );
 }
+
+/// Uma nota do indice com outra data, outro tomador e outra situacao.
+fn nota_da_pasta(n: u64, emissao: &str, nome: &str, situacao: Situacao) -> Registro {
+    Registro {
+        chave: chave_dfe::montar_nfse(3550308, "11222333000181", n, "2610", Some(1), 2).unwrap(),
+        numero: n.to_string(),
+        serie: "1".into(),
+        numero_dps: n.to_string(),
+        emissao: emissao.into(),
+        valor_servico: "150.00".into(),
+        situacao,
+        tomador_documento: "52998224725".into(),
+        tomador_nome: nome.into(),
+    }
+}
+
+/// Pasta de notas com tres notas (setembro, outubro cancelada e novembro) e o arquivo de configuracao que a usa.
+fn pasta_com_tres_notas(p: &Pasta) -> (Notas, String, Vec<Registro>) {
+    let pasta = p.caminho("notas");
+    let notas = Notas::abrir(&pasta).unwrap();
+    let registros = vec![
+        nota_da_pasta(
+            1,
+            "2026-09-30T10:00:00-03:00",
+            "João da Silva",
+            Situacao::Autorizada,
+        ),
+        nota_da_pasta(
+            2,
+            "2026-10-15T10:00:00-03:00",
+            "Padaria Pão Quente",
+            Situacao::Cancelada,
+        ),
+        nota_da_pasta(
+            3,
+            "2026-11-01T10:00:00-03:00",
+            "Oficina; do Zé",
+            Situacao::Autorizada,
+        ),
+    ];
+    for r in &registros {
+        notas
+            .guardar(r, &format!("<NFSe>{}</NFSe>", r.numero))
+            .unwrap();
+    }
+    notas.marcar_cancelada(&registros[1].chave).unwrap();
+    let cfg = p.escrever(
+        "notas.toml",
+        format!("[notas]\npasta = '{}'\n", pasta.to_string_lossy()).as_bytes(),
+    );
+    (notas, cfg, registros)
+}
+
+#[test]
+fn notas_listar_filtra_por_periodo_situacao_e_busca() {
+    let p = Pasta::nova();
+    let (_, cfg, reg) = pasta_com_tres_notas(&p);
+    let numeros = |extra: &[&str]| -> Vec<String> {
+        let mut args = vec!["notas", "listar", "--json", "--config", &cfg];
+        args.extend(extra);
+        let s = rodar(&p, &args, None, &[]);
+        assert_eq!(s.codigo, 0, "{}", s.err);
+        let v: Value = serde_json::from_str(&s.out).unwrap();
+        v.as_array()
+            .unwrap()
+            .iter()
+            .map(|n| n["numero"].as_str().unwrap().to_string())
+            .collect()
+    };
+    assert_eq!(
+        numeros(&[]),
+        ["3", "2", "1"],
+        "da mais recente para a mais antiga"
+    );
+    assert_eq!(numeros(&["--de", "2026-10-01"]), ["3", "2"]);
+    assert_eq!(
+        numeros(&["--de", "2026-10-01", "--ate", "2026-10-31"]),
+        ["2"]
+    );
+    assert_eq!(numeros(&["--situacao", "cancelada"]), ["2"]);
+    assert_eq!(
+        numeros(&["--situacao", "autorizada", "--ate", "2026-10-31"]),
+        ["1"]
+    );
+    assert_eq!(numeros(&["--busca", "pao quente"]), ["2"]);
+    assert_eq!(numeros(&["--busca", &reg[0].chave]), ["1"]);
+    assert!(numeros(&["--busca", "ninguem"]).is_empty());
+
+    // data que nao e' um dia: erro de entrada, sem listar nada
+    let s = rodar(
+        &p,
+        &["notas", "listar", "--config", &cfg, "--de", "01/10/2026"],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 2, "{}", s.err);
+    assert!(
+        s.err.contains("AAAA-MM-DD") && s.out.is_empty(),
+        "{} {}",
+        s.err,
+        s.out
+    );
+    // --json e --csv nao vao juntos
+    let s = rodar(
+        &p,
+        &["notas", "listar", "--config", &cfg, "--json", "--csv"],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 2, "{}", s.err);
+}
+
+#[test]
+fn notas_listar_em_csv_para_planilha() {
+    let p = Pasta::nova();
+    let (_, cfg, reg) = pasta_com_tres_notas(&p);
+    let s = rodar(
+        &p,
+        &[
+            "notas",
+            "listar",
+            "--csv",
+            "--config",
+            &cfg,
+            "--de",
+            "2026-10-01",
+        ],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    let linhas: Vec<&str> = s.out.split("\r\n").collect();
+    assert_eq!(
+        linhas[0],
+        "emissao;numero;serie;numero_dps;valor_servico;situacao;tomador_documento;tomador_nome;chave"
+    );
+    assert_eq!(
+        linhas[1],
+        format!(
+            "2026-11-01;3;1;3;150,00;autorizada;52998224725;\"Oficina; do Zé\";{}",
+            reg[2].chave
+        )
+    );
+    assert!(
+        linhas[2].starts_with("2026-10-15;2;1;2;150,00;cancelada;"),
+        "{}",
+        linhas[2]
+    );
+    assert_eq!(linhas.len(), 4, "{linhas:?}");
+}
+
+#[test]
+fn notas_exportar_copia_os_xml_do_mes_e_a_lista() {
+    let p = Pasta::nova();
+    let (notas, cfg, reg) = pasta_com_tres_notas(&p);
+    let destino = p.caminho("para o contador");
+    let destino_txt = destino.to_string_lossy().into_owned();
+
+    let s = rodar(
+        &p,
+        &[
+            "notas",
+            "exportar",
+            "--mes",
+            "2026-10",
+            "--para",
+            &destino_txt,
+            "--config",
+            &cfg,
+        ],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    assert!(
+        s.out.contains("1 nota(s)") && s.out.contains("1 XML"),
+        "{}",
+        s.out
+    );
+    assert_eq!(
+        std::fs::read_to_string(destino.join(format!("{}.xml", reg[1].chave))).unwrap(),
+        "<NFSe>2</NFSe>"
+    );
+    let lista = std::fs::read_to_string(destino.join("notas.csv")).unwrap();
+    assert!(
+        lista.contains(";cancelada;") && lista.contains(&reg[1].chave),
+        "{lista}"
+    );
+    assert_eq!(
+        std::fs::read_dir(&destino).unwrap().count(),
+        2,
+        "so' a nota de outubro e a lista"
+    );
+    // a pasta de notas fica como estava
+    assert_eq!(notas.listar().unwrap().len(), 3);
+
+    // mes sem nota: nada e' criado
+    let vazio = p.caminho("vazio");
+    let vazio_txt = vazio.to_string_lossy().into_owned();
+    let s = rodar(
+        &p,
+        &[
+            "notas", "exportar", "--mes", "2025-01", "--para", &vazio_txt, "--config", &cfg,
+        ],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    assert!(
+        s.err.contains("nenhuma nota") && !vazio.exists(),
+        "{}",
+        s.err
+    );
+    // mes mal escrito: erro de entrada
+    let s = rodar(
+        &p,
+        &[
+            "notas",
+            "exportar",
+            "--mes",
+            "10/2026",
+            "--para",
+            &destino_txt,
+            "--config",
+            &cfg,
+        ],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 2, "{}", s.err);
+}
+
+#[test]
+fn notas_reindexar_refaz_o_indice_ilegivel() {
+    let p = Pasta::nova();
+    let pasta = p.caminho("notas");
+    let notas = Notas::abrir(&pasta).unwrap();
+    let ch = guardar_nota_do_danfse(&notas);
+    let antes = notas.listar().unwrap();
+    let cfg = p.escrever(
+        "notas.toml",
+        format!("[notas]\npasta = '{}'\n", pasta.to_string_lossy()).as_bytes(),
+    );
+    std::fs::write(pasta.join("indice.json"), "{ quebrado").unwrap();
+    let s = rodar(&p, &["notas", "listar", "--config", &cfg], None, &[]);
+    assert_eq!(s.codigo, 2, "o indice ilegivel e' acusado: {}", s.err);
+
+    let s = rodar(&p, &["notas", "reindexar", "--config", &cfg], None, &[]);
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    assert!(s.out.contains("indice refeito: 1 nota(s)"), "{}", s.out);
+    assert!(
+        s.err.contains("ilegivel") && s.err.contains("indice.anterior.json"),
+        "{}",
+        s.err
+    );
+    assert_eq!(notas.listar().unwrap(), antes);
+    assert_eq!(notas.listar().unwrap()[0].chave, ch);
+    assert_eq!(
+        std::fs::read_to_string(pasta.join("indice.anterior.json")).unwrap(),
+        "{ quebrado"
+    );
+}
+
+#[test]
+fn danfse_pela_chave_sai_da_pasta_de_notas() {
+    let p = Pasta::nova();
+    let pasta = p.caminho("notas");
+    let notas = Notas::abrir(&pasta).unwrap();
+    let ch = guardar_nota_do_danfse(&notas);
+    let cfg = p.escrever(
+        "notas.toml",
+        format!("[notas]\npasta = '{}'\n", pasta.to_string_lossy()).as_bytes(),
+    );
+
+    // sem -o: o PDF fica ao lado do XML e o caminho sai no stdout; a chave pode vir em grupos
+    let em_grupos = ch
+        .as_bytes()
+        .chunks(5)
+        .map(|g| String::from_utf8_lossy(g).into_owned())
+        .collect::<Vec<_>>()
+        .join(" ");
+    let s = rodar(
+        &p,
+        &["danfse", "--chave", &em_grupos, "--config", &cfg],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    let pdf = notas
+        .caminho_do_xml_guardado(&ch)
+        .unwrap()
+        .with_extension("pdf");
+    assert_eq!(s.out.trim(), pdf.to_string_lossy());
+    let valida = std::fs::read(&pdf).unwrap();
+    assert!(valida.starts_with(b"%PDF-"));
+    assert_eq!(
+        notas.listar().unwrap().len(),
+        1,
+        "o PDF nao entra no indice"
+    );
+
+    // nota cancelada na pasta: o PDF sai com a marca, sem pedir --situacao; -o escolhe o arquivo
+    notas.marcar_cancelada(&ch).unwrap();
+    let fora = p.texto("cancelada.pdf");
+    let s = rodar(
+        &p,
+        &["danfse", "--chave", &ch, "-o", &fora, "--config", &cfg],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    let cancelada = std::fs::read(&fora).unwrap();
+    assert!(cancelada.starts_with(b"%PDF-") && cancelada != valida);
+    // --situacao dita vale sobre a da pasta: sai o mesmo PDF da nota valida
+    let de_novo = p.texto("valida.pdf");
+    let s = rodar(
+        &p,
+        &[
+            "danfse",
+            "--chave",
+            &ch,
+            "-o",
+            &de_novo,
+            "--situacao",
+            "valida",
+            "--config",
+            &cfg,
+        ],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    assert_eq!(std::fs::read(&de_novo).unwrap(), valida);
+
+    // chave que nao esta na pasta, chave invalida, sem pasta de notas, XML e chave juntos
+    let outra = chave_dfe::montar_nfse(3550308, "11222333000181", 8, "2610", Some(1), 2).unwrap();
+    let s = rodar(
+        &p,
+        &["danfse", "--chave", &outra, "--config", &cfg],
+        None,
+        &[],
+    );
+    assert_ne!(s.codigo, 0);
+    assert!(s.err.contains("nao encontrada"), "{}", s.err);
+    let s = rodar(
+        &p,
+        &["danfse", "--chave", "../../x", "--config", &cfg],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 2, "{}", s.err);
+    let s = rodar(&p, &["danfse", "--chave", &ch], None, &[]);
+    assert_eq!(s.codigo, 2, "{}", s.err);
+    assert!(s.err.contains("[notas].pasta"), "{}", s.err);
+    let s = rodar(
+        &p,
+        &["danfse", "nota.xml", "--chave", &ch, "--config", &cfg],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 2, "{}", s.err);
+    // sem XML e sem chave, e XML sem -o: erro de uso
+    assert_eq!(rodar(&p, &["danfse"], None, &[]).codigo, 2);
+    assert_eq!(rodar(&p, &["danfse", "nota.xml"], None, &[]).codigo, 2);
+}
+
+#[test]
+fn certificado_mostrar_diz_quem_e_e_ate_quando_vale() {
+    let p = Pasta::nova();
+    let pfx = pfx_de_teste(&p);
+    let cfg = p.escrever("c.toml", toml_com_pfx(&pfx, "").as_bytes());
+    let env = [("SENHA_A1", "teste")];
+
+    let s = rodar(
+        &p,
+        &[
+            "certificado",
+            "mostrar",
+            "--config",
+            &cfg,
+            "--senha-env",
+            "SENHA_A1",
+        ],
+        None,
+        &env,
+    );
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    for trecho in [
+        "Certificado OK: OFICINA TESTE",
+        "titular: OFICINA TESTE",
+        "documento: 11222333000181",
+        "(ICP-Brasil)",
+        "validade: de 20",
+        " dias)",
+    ] {
+        assert!(s.out.contains(trecho), "faltou '{trecho}' em {}", s.out);
+    }
+    assert!(!s.out.contains("teste.pfx") && !s.err.contains("teste.pfx"));
+
+    // em JSON, e com o aviso quando o certificado e' de outro documento que o do emitente
+    let outro = p.escrever(
+        "outro.toml",
+        toml_com_pfx(&pfx, "[emitente]\ncnpj = \"12ABC34501DE35\"\n").as_bytes(),
+    );
+    let s = rodar(
+        &p,
+        &[
+            "certificado",
+            "mostrar",
+            "--json",
+            "--config",
+            &outro,
+            "--senha-stdin",
+        ],
+        Some("teste\n"),
+        &[],
+    );
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    let v: Value = serde_json::from_str(&s.out).unwrap();
+    assert_eq!(v["ok"], true);
+    assert_eq!(v["situacao"], "valido");
+    assert_eq!(v["documento"], "11222333000181");
+    assert!(v["dias_restantes"].as_i64().unwrap() >= 364, "{v}");
+    assert!(v["avisos"].to_string().contains("E0718"), "{v}");
+
+    // senha errada: erro de entrada, sem ecoar a senha
+    let s = rodar(
+        &p,
+        &[
+            "certificado",
+            "mostrar",
+            "--config",
+            &cfg,
+            "--senha-env",
+            "SENHA_A1",
+        ],
+        None,
+        &[("SENHA_A1", "senha-errada")],
+    );
+    assert_eq!(s.codigo, 2, "{}", s.err);
+    assert!(!s.err.contains("senha-errada"), "{}", s.err);
+    // sem certificado configurado: erro de uso
+    let s = rodar(
+        &p,
+        &["certificado", "mostrar", "--senha-env", "SENHA_A1"],
+        None,
+        &env,
+    );
+    assert_eq!(s.codigo, 2, "{}", s.err);
+    assert!(s.err.contains("--pfx"), "{}", s.err);
+}
+
+#[test]
+fn certificado_vencido_sai_com_3_no_mostrar_e_no_teste_da_sefin_sem_ir_a_rede() {
+    let p = Pasta::nova();
+    let pfx = pfx_vencido(&p);
+    let cfg = p.escrever("c.toml", toml_com_pfx(&pfx, "").as_bytes());
+    let env = [("SENHA_A1", "teste")];
+
+    let s = rodar(
+        &p,
+        &[
+            "certificado",
+            "mostrar",
+            "--json",
+            "--config",
+            &cfg,
+            "--senha-env",
+            "SENHA_A1",
+        ],
+        None,
+        &env,
+    );
+    assert_eq!(s.codigo, 3, "{}", s.err);
+    let v: Value = serde_json::from_str(&s.out).unwrap();
+    assert_eq!(v["ok"], false);
+    assert_eq!(v["situacao"], "vencido");
+    assert!(v["dias_restantes"].as_i64().unwrap() < 0, "{v}");
+    assert!(s.err.contains("VENCIDO"), "{}", s.err);
+
+    // o teste da Sefin para no certificado vencido: nenhuma chamada sai
+    let s = rodar(
+        &p,
+        &[
+            "sefin",
+            "testar",
+            "--config",
+            &cfg,
+            "--senha-env",
+            "SENHA_A1",
+        ],
+        None,
+        &env,
+    );
+    assert_eq!(s.codigo, 3, "{}", s.err);
+    assert!(
+        s.err.contains("VENCIDO") && s.out.is_empty(),
+        "{} {}",
+        s.err,
+        s.out
+    );
+    // e sem ambiente definido nem chega a abrir o certificado
+    let s = rodar(
+        &p,
+        &["sefin", "testar", "--pfx", &pfx, "--senha-env", "SENHA_A1"],
+        None,
+        &env,
+    );
+    assert_eq!(s.codigo, 2, "{}", s.err);
+    assert!(s.err.contains("--ambiente"), "{}", s.err);
+}

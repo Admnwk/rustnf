@@ -179,6 +179,74 @@ fn certificado_documento_pelo_campo_icp_e_avisos() {
 }
 
 #[test]
+fn resumo_diz_quem_e_ate_quando_vale_e_se_assina() {
+    let agora = Utc::now();
+    // pessoa juridica, valido por um ano: CNPJ inteiro, datas e dias
+    let pj = a1("11222333000181");
+    let r = pj.resumo(Some("11222333000181"), agora, 30);
+    assert!(r.ok && r.avisos.is_empty(), "{r:?}");
+    assert_eq!(
+        (r.titular.as_str(), r.documento.as_str(), r.situacao),
+        ("OFICINA TESTE", "11222333000181", "valido")
+    );
+    assert_eq!(
+        (r.icp_brasil, r.emissor.as_str()),
+        (true, cert_a1::AC_TESTE)
+    );
+    assert_eq!(r.dias_restantes, pj.dias_restantes(agora));
+    assert!((364..=365).contains(&r.dias_restantes), "{r:?}");
+    for data in [&r.valido_de, &r.valido_ate] {
+        assert!(
+            data.len() == 10 && data.as_bytes()[4] == b'-' && data.as_bytes()[7] == b'-',
+            "{data}"
+        );
+    }
+    assert!(r.valido_de < r.valido_ate);
+    // o aviso de outro documento e' o da biblioteca
+    let outro = pj.resumo(Some("12ABC34501DE35"), agora, 30);
+    assert!(
+        outro.ok && outro.avisos.iter().any(|a| a.contains("E0718")),
+        "{outro:?}"
+    );
+
+    // pessoa fisica: o CPF sai mascarado, tambem no JSON
+    let pf = a1("52998224725").resumo(None, agora, 30);
+    assert_eq!(pf.documento, "529.***.***-25");
+    let json = serde_json::to_string(&pf).unwrap();
+    assert!(!json.contains("52998224725"), "{json}");
+    assert!(json.contains("\"dias_restantes\""), "{json}");
+
+    // vence em breve e vencido
+    let curto =
+        cert_a1::gerar_teste("11222333000181", "X", "teste", 10, true, true, agora).unwrap();
+    let r = cert_a1::carregar(&curto, "teste")
+        .unwrap()
+        .resumo(None, agora, 30);
+    assert!(
+        r.ok && r.situacao == "vence_em_breve" && !r.avisos.is_empty(),
+        "{r:?}"
+    );
+    let velho = cert_a1::gerar_teste(
+        "11222333000181",
+        "X",
+        "teste",
+        1,
+        false,
+        false,
+        agora - Duration::days(30),
+    )
+    .unwrap();
+    let r = cert_a1::carregar(&velho, "teste")
+        .unwrap()
+        .resumo(None, agora, 30);
+    assert!(
+        !r.ok && r.situacao == "vencido" && r.dias_restantes < 0,
+        "{r:?}"
+    );
+    assert!(r.frase.contains("VENCIDO"), "{r:?}");
+}
+
+#[test]
 fn testar_frase_mascara_o_documento_e_nao_fala_so_de_fisco() {
     // a frase vai para a tela: documento mascarado
     for (doc, mascara) in [

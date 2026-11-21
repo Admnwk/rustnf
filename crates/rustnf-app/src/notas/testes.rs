@@ -5,11 +5,11 @@
 use super::*;
 use crate::testes_comuns::PastaTemporaria;
 
-fn chave(n: u64) -> String {
+pub(super) fn chave(n: u64) -> String {
     chave_dfe::montar_nfse(3550308, "11222333000181", n, "2610", Some(1), 2).unwrap()
 }
 
-fn registro(n: u64) -> Registro {
+pub(super) fn registro(n: u64) -> Registro {
     Registro {
         chave: chave(n),
         numero: format!("{n}"),

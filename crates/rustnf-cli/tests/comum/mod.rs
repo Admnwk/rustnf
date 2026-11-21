@@ -412,6 +412,37 @@ pub fn pfx_de_teste(pasta: &Pasta) -> String {
     pasta.escrever("teste.pfx", &bytes)
 }
 
+/// Um certificado de teste que venceu ha um mes.
+pub fn pfx_vencido(pasta: &Pasta) -> String {
+    let bytes = cert_a1::gerar_teste(
+        "11222333000181",
+        "OFICINA TESTE",
+        "teste",
+        1,
+        true,
+        false,
+        Utc::now() - chrono::Duration::days(30),
+    )
+    .unwrap();
+    pasta.escrever("vencido.pfx", &bytes)
+}
+
+/// Guarda na pasta de notas a NFS-e do contrato do DANFSe, com uma chave de acesso de digito verificador certo, e
+/// devolve a chave.
+pub fn guardar_nota_do_danfse(notas: &Notas) -> String {
+    use rustnf::nfse::leitura::ler_nfse;
+    use rustnf_app::notas::Registro;
+    let original = nfse_xml_para_danfse();
+    let lida = ler_nfse(&original).unwrap();
+    assert_eq!(lida.chave.len(), 50, "a nota do contrato tem chave");
+    let ch = chave_dfe::montar_nfse(3550308, "11222333000181", 7, "2610", Some(1), 2).unwrap();
+    let xml = original.replace(&lida.chave, &ch);
+    let registro = Registro::da_nfse(&ler_nfse(&xml).unwrap());
+    assert_eq!(registro.chave, ch);
+    notas.guardar(&registro, &xml).unwrap();
+    ch
+}
+
 /// Texto TOML com o caminho entre aspas simples (literal): serve para caminho do Windows, com barra invertida.
 pub fn toml_com_pfx(pfx: &str, extra: &str) -> String {
     format!("[sefin]\nambiente = \"restrita\"\npfx = '{pfx}'\n{extra}")
