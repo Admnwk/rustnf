@@ -151,9 +151,10 @@ de casos). Valores aceitam número ou texto. `rustnf dps esquema` imprime o JSON
 cada campo (`--emissao` para o do `emitir`, que não exige o que a configuração completa).
 
 **Campo de nome errado.** Um campo que a DPS não conhece (erro de digitação, campo no grupo errado) não entra no XML.
-O programa não o ignora calado: `dps montar`, `dps conferir` e `emitir` avisam no stderr, com o caminho
-(`valores.desconto_incondicional`), e a saída `--json` traz a lista em `campos_desconhecidos`. Com `--estrito`, o
-pedido é **recusado** (código 3) antes de qualquer envio:
+O `emitir` o **recusa** (código 3) antes de abrir o certificado e de qualquer envio: uma nota sem o desconto que se
+quis dar tem valor fiscal. Para emitir mesmo assim, ignorando o campo, use `--ignorar-desconhecidos`. `dps montar` e
+`dps conferir` só avisam no stderr, com o caminho (`valores.desconto_incondicional`), e a saída `--json` traz a lista em
+`campos_desconhecidos`; com `--estrito`, eles também recusam:
 
 ```
 $ rustnf dps conferir pedido.json
@@ -163,8 +164,6 @@ aviso: campo desconhecido no pedido, ignorado: valores.desconto_incondicional (c
 $ rustnf dps conferir pedido.json --estrito          # saida 3
 erro: valores.desconto_incondicional: campo desconhecido no pedido: confira o nome
 ```
-
-Em produção, prefira `rustnf emitir --estrito`: sem ele a nota sai sem o valor do campo errado.
 
 ### Prévia do IBS/CBS
 
@@ -234,8 +233,8 @@ $ rustnf cancelar --chave <chave> --motivo 1 --justificativa "Valor digitado err
   `[sefin].assinatura`) troca para SHA-1; o leiaute não fixa o algoritmo.
 * Motivos de cancelamento: `1` erro na emissão, `2` serviço não prestado, `9` outros; a justificativa é obrigatória.
 * `--json` imprime o resultado completo (inclui a NFS-e lida e os alertas); sem ele, um resumo.
-* `--estrito` recusa, antes de abrir o certificado, o pedido com campo desconhecido (veja
-  [Montar e conferir a DPS](#montar-e-conferir-a-dps)).
+* O pedido com campo desconhecido é recusado antes de abrir o certificado; `--ignorar-desconhecidos` emite mesmo
+  assim, sem o campo (veja [Montar e conferir a DPS](#montar-e-conferir-a-dps)).
 
 ## Configuração
 
@@ -421,9 +420,9 @@ nos casos descritos em [Pasta de notas](#pasta-de-notas)). No `/cancelar`, o can
 pasta. O servidor emite uma nota por vez, para duas emissões simultâneas não pegarem o mesmo número. Sem `[emitente]`
 e sem pasta de notas, o pedido precisa vir completo, com o `numero`.
 
-Campo que a DPS não conhece: `/dps/conferir`, `/dps/montar` e `/emitir` devolvem a lista em `campos_desconhecidos`
-(a nota é emitida sem eles). Com `?estrito=true` na rota, o pedido é recusado (422, com o campo) antes de qualquer
-envio: `POST /emitir?estrito=true`.
+Campo que a DPS não conhece: o `/emitir` recusa o pedido (422, com o campo) antes de qualquer envio; com
+`?estrito=false` ele emite sem o campo e a resposta traz a lista em `campos_desconhecidos`. `/dps/conferir` e
+`/dps/montar` só devolvem a lista, a menos que a rota leve `?estrito=true`.
 
 Segurança: escuta em `127.0.0.1` por padrão (fora dele o tráfego é HTTP puro: ponha um proxy com TLS na frente); sem
 CORS; cabeçalho `Origin` de fora do próprio computador recebe 403; teto de corpo e tempo limite por requisição; token
@@ -456,7 +455,8 @@ a versão e as capacidades em `_meta` e os cabeçalhos `MCP-Protocol-Version`, `
 | `cancelar_nfse` | cancela como o `POST /cancelar`; só com `--permitir-emissao` e o Bearer |
 
 Recusa de regra fiscal volta como resultado da ferramenta com `isError: true`, não como erro de protocolo. Campo que
-a DPS não conhece volta listado em `campos_desconhecidos`, em `conferir_dps` e em `emitir_nfse`. Sem o
+a DPS não conhece volta listado em `campos_desconhecidos` no `conferir_dps`, e no `emitir_nfse` recusa o pedido
+(`isError: true`) antes de qualquer envio. Sem o
 Bearer, `tools/list` mostra só as quatro de leitura. Cada ferramenta tem `inputSchema` (JSON Schema). Exemplo:
 
 ```

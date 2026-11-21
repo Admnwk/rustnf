@@ -382,10 +382,13 @@ pub struct ArgEmitir {
     /// Segundos subtraidos do relogio ao preencher o `dhEmi` que o pedido nao traz (regra E0008). Padrao: 60.
     #[arg(long, value_name = "SEGUNDOS")]
     pub folga_relogio: Option<u32>,
-    /// Recusa (saida 3), antes de qualquer envio, o pedido com campo desconhecido; sem a opcao, ele e' ignorado
-    /// com um aviso no stderr.
-    #[arg(long)]
+    /// Recusa (saida 3), antes de qualquer envio, o pedido com campo desconhecido. E' o padrao; a opcao continua
+    /// aceita por compatibilidade.
+    #[arg(long, conflicts_with = "ignorar_desconhecidos")]
     pub estrito: bool,
+    /// Emite mesmo com campo desconhecido no pedido: ele e' ignorado (nao entra no XML) e aparece num aviso no stderr.
+    #[arg(long)]
+    pub ignorar_desconhecidos: bool,
     /// Saida em JSON.
     #[arg(long)]
     pub json: bool,

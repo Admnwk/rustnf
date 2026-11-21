@@ -375,8 +375,15 @@ async fn emitir(a: ArgEmitir, config: Option<&Path>, cofre: &dyn Cofre) -> Resul
     let texto = entrada::ler_texto(&a.pedido, "o pedido")?;
     // erro de sintaxe do JSON antes de qualquer outra coisa, como sempre foi
     let pedido: Value = serde_json::from_str(&texto)?;
-    if a.estrito {
-        nucleo::recusar_desconhecidos(&pedido)?;
+    // campo de nome errado nao entra no XML: a nota sairia sem ele. Por padrao, recusa antes de abrir o certificado
+    if !a.ignorar_desconhecidos {
+        nucleo::recusar_desconhecidos(&pedido).map_err(|e| match e {
+            Erro::Recusa { campo, mensagem } => Erro::recusa(
+                campo,
+                format!("{mensagem}; para emitir sem ele, use --ignorar-desconhecidos"),
+            ),
+            outro => outro,
+        })?;
     }
     let efetiva = configuracao::carregar(config)?;
     let emissor = emissor_de(&a.sefin, &efetiva, cofre, a.pedido == "-")?;

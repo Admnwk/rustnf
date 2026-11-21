@@ -204,20 +204,49 @@ fn campo_desconhecido_no_pedido_e_avisado_e_recusado_com_estrito() {
 }
 
 #[test]
-fn emitir_estrito_recusa_o_campo_desconhecido_antes_de_abrir_o_certificado() {
+fn emitir_recusa_o_campo_desconhecido_antes_de_abrir_o_certificado() {
     let pedido = pedido_com_nome_errado();
-    // sem certificado nem senha: a recusa do pedido vem primeiro
+    // por padrao (e com --estrito, que continua aceito): sem certificado nem senha, a recusa do pedido vem primeiro
+    for args in [
+        vec!["emitir", pedido.as_str(), "--ambiente", "restrita"],
+        vec![
+            "emitir",
+            pedido.as_str(),
+            "--estrito",
+            "--ambiente",
+            "restrita",
+        ],
+    ] {
+        let s = rodar(&args, None, &[]);
+        assert_eq!(s.codigo, 3, "{args:?}: {}", s.err);
+        assert!(s.err.contains("descontos: campo desconhecido"), "{}", s.err);
+        assert!(
+            s.err.contains("--ignorar-desconhecidos"),
+            "a recusa diz como seguir: {}",
+            s.err
+        );
+    }
+    // com --ignorar-desconhecidos o comando segue e para onde sempre parou: falta o certificado
     let s = rodar(
-        &["emitir", &pedido, "--estrito", "--ambiente", "restrita"],
+        &[
+            "emitir",
+            &pedido,
+            "--ignorar-desconhecidos",
+            "--ambiente",
+            "restrita",
+        ],
         None,
         &[],
     );
-    assert_eq!(s.codigo, 3, "{}", s.err);
-    assert!(s.err.contains("descontos: campo desconhecido"), "{}", s.err);
-    // sem --estrito o comando segue e para onde sempre parou: falta o certificado
-    let s = rodar(&["emitir", &pedido, "--ambiente", "restrita"], None, &[]);
     assert_eq!(s.codigo, 2, "{}", s.err);
     assert!(s.err.contains("--pfx"), "{}", s.err);
+    // as duas opcoes juntas: erro de uso
+    let s = rodar(
+        &["emitir", &pedido, "--estrito", "--ignorar-desconhecidos"],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 2, "{}", s.err);
 }
 
 #[test]

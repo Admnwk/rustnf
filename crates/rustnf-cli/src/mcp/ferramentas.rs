@@ -61,7 +61,7 @@ const FERRAMENTAS: [Ferramenta; 7] = [
     Ferramenta {
         nome: "emitir_nfse",
         titulo: "Emitir a NFS-e",
-        descricao: "Monta, assina com o certificado A1 do servidor e envia a DPS a Sefin Nacional. O emitente da configuracao do servidor completa o que o pedido nao traz; com pasta de notas configurada, o numero da DPS pode faltar (vale o proximo da serie) e a nota autorizada e' guardada. Operacao com efeito fiscal.",
+        descricao: "Monta, assina com o certificado A1 do servidor e envia a DPS a Sefin Nacional. O emitente da configuracao do servidor completa o que o pedido nao traz; com pasta de notas configurada, o numero da DPS pode faltar (vale o proximo da serie) e a nota autorizada e' guardada. Campo que a DPS nao conhece (nome errado) recusa o pedido antes do envio. Operacao com efeito fiscal.",
         emissao: true,
         schema: schemas::dps_de_emissao,
     },
@@ -192,6 +192,8 @@ async fn rodar(f: &Ferramenta, estado: &Estado, args: Value) -> Result<Value, Er
         "gerar_danfse" => danfse(args).await,
         "emitir_nfse" => {
             let em = estado.emissao.as_ref().ok_or(Erro::Interno)?;
+            // campo de nome errado nao entra no XML: recusa antes de qualquer envio
+            nucleo::recusar_desconhecidos(&args)?;
             let v = estado.emitir(em, args).await?;
             Ok(resultado_estruturado(v, false))
         }
