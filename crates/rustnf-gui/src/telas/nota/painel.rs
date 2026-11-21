@@ -9,7 +9,6 @@ use gpui_kit::component::button::{Button, ButtonVariants as _};
 use gpui_kit::component::{
     h_flex, v_flex, ActiveTheme as _, Disableable as _, Icon, IconName, Sizable as _,
 };
-use gpui_kit::prelude::FluentBuilder as _;
 use gpui_kit::{
     div, px, AnyElement, Context, InteractiveElement as _, IntoElement, ParentElement as _,
     SharedString, StatefulInteractiveElement as _, Styled as _,
@@ -17,8 +16,10 @@ use gpui_kit::{
 
 use super::{EstadoDoRascunho, Etapa, Fase, NovaNota};
 use crate::modelo::certificado::Gravidade;
-use crate::modelo::previa::{mostrar, totais, PreviaIbsCbs, ValoresIbsCbs};
-use crate::telas::pecas::{cor_da, faixa, icone_da, Negrito as _};
+use crate::modelo::previa::{mostrar, totais};
+use crate::telas::pecas::{
+    cor_da, corpo_da_previa, faixa, icone_da, linha_de_numero, titulo_do_bloco,
+};
 
 /// Largura do painel quando fica ao lado do formulario.
 pub(in crate::telas) const LARGURA_DO_PAINEL: f32 = 340.0;
@@ -48,21 +49,13 @@ impl NovaNota {
             .into_any_element()
     }
 
-    fn titulo_do_bloco(titulo: &str, cx: &Context<Self>) -> impl IntoElement {
-        div()
-            .text_xs()
-            .font_semibold()
-            .text_color(cx.theme().muted_foreground)
-            .child(titulo.to_uppercase())
-    }
-
     fn bloco_de_pendencias(&mut self, cx: &mut Context<Self>) -> AnyElement {
         let tema = cx.theme();
         let muted = tema.muted_foreground;
         let hover = tema.accent;
         let pendencias = self.conferencia.pendencias.clone();
         let total = pendencias.len();
-        let mut bloco = v_flex().gap_2().child(Self::titulo_do_bloco(
+        let mut bloco = v_flex().gap_2().child(titulo_do_bloco(
             &if total == 0 {
                 "Conferência".to_string()
             } else {
@@ -125,36 +118,6 @@ impl NovaNota {
         bloco.into_any_element()
     }
 
-    fn linha_de_numero(
-        rotulo: &str,
-        valor: String,
-        negrito: bool,
-        cx: &Context<Self>,
-    ) -> impl IntoElement {
-        let tema = cx.theme();
-        h_flex()
-            .justify_between()
-            .gap_3()
-            .child(
-                div()
-                    .text_sm()
-                    .text_color(if negrito {
-                        tema.foreground
-                    } else {
-                        tema.muted_foreground
-                    })
-                    .when(negrito, |d| d.font_semibold())
-                    .child(rotulo.to_string()),
-            )
-            .child(
-                div()
-                    .text_sm()
-                    .text_right()
-                    .when(negrito, |d| d.font_semibold())
-                    .child(valor),
-            )
-    }
-
     fn bloco_de_valores(&mut self, cx: &mut Context<Self>) -> AnyElement {
         let t = totais(&self.dados);
         let tem_servico = t.servico.is_some();
@@ -162,15 +125,15 @@ impl NovaNota {
         let mut bloco = v_flex()
             .id("resumo-de-valores")
             .gap_1p5()
-            .child(Self::titulo_do_bloco("Valores", cx))
-            .child(Self::linha_de_numero(
+            .child(titulo_do_bloco("Valores", cx))
+            .child(linha_de_numero(
                 "Serviço",
                 format!("R$ {}", mostrar(t.servico.unwrap_or(0))),
                 false,
                 cx,
             ));
         if t.desc_incondicionado > 0 {
-            bloco = bloco.child(Self::linha_de_numero(
+            bloco = bloco.child(linha_de_numero(
                 "Desconto incondicionado",
                 negativo(t.desc_incondicionado),
                 false,
@@ -178,7 +141,7 @@ impl NovaNota {
             ));
         }
         if t.desc_condicionado > 0 {
-            bloco = bloco.child(Self::linha_de_numero(
+            bloco = bloco.child(linha_de_numero(
                 "Desconto condicionado",
                 negativo(t.desc_condicionado),
                 false,
@@ -186,7 +149,7 @@ impl NovaNota {
             ));
         }
         if t.retencoes > 0 {
-            bloco = bloco.child(Self::linha_de_numero(
+            bloco = bloco.child(linha_de_numero(
                 "Retenções federais",
                 negativo(t.retencoes),
                 false,
@@ -196,7 +159,7 @@ impl NovaNota {
         let borda = cx.theme().border;
         bloco
             .child(div().h(px(1.)).w_full().bg(borda).my_1())
-            .child(Self::linha_de_numero(
+            .child(linha_de_numero(
                 "Valor líquido",
                 if tem_servico {
                     format!("R$ {}", mostrar(t.liquido.unwrap_or(0)))
@@ -215,108 +178,18 @@ impl NovaNota {
             .into_any_element()
     }
 
-    fn parcela(rotulo: &str, aliquota: &str, valor: &str, cx: &Context<Self>) -> impl IntoElement {
-        Self::linha_de_numero(
-            &format!("{rotulo} ({aliquota}%)"),
-            format!("R$ {valor}"),
-            false,
-            cx,
-        )
-    }
-
-    fn valores_do_ibscbs(v: &ValoresIbsCbs, cx: &mut Context<Self>) -> AnyElement {
-        let mut bloco = v_flex()
-            .id("previa-calculada")
-            .gap_1p5()
-            .child(Self::linha_de_numero(
-                "Base de cálculo",
-                format!("R$ {}", v.base),
-                false,
-                cx,
-            ))
-            .child(Self::parcela(
-                "IBS estadual",
-                &v.ibs_uf.aliquota,
-                &v.ibs_uf.valor,
-                cx,
-            ))
-            .child(Self::parcela(
-                "IBS municipal",
-                &v.ibs_mun.aliquota,
-                &v.ibs_mun.valor,
-                cx,
-            ))
-            .child(Self::parcela("CBS", &v.cbs.aliquota, &v.cbs.valor, cx))
-            .child(Self::linha_de_numero(
-                "IBS total",
-                format!("R$ {}", v.ibs_total),
-                true,
-                cx,
-            ));
-        for aviso in &v.avisos {
-            bloco = bloco.child(
-                div()
-                    .text_xs()
-                    .text_color(cx.theme().muted_foreground)
-                    .child(aviso.clone()),
-            );
-        }
-        bloco = bloco.child(
-            div()
-                .text_xs()
-                .text_color(cx.theme().muted_foreground)
-                .child(format!(
-                    "Prévia com as alíquotas de {}. Vale o que a Sefin calcular ao autorizar.",
-                    v.ano
-                )),
-        );
-        bloco.into_any_element()
-    }
-
     fn bloco_do_ibscbs(&mut self, cx: &mut Context<Self>) -> AnyElement {
-        let muted = cx.theme().muted_foreground;
-        let corpo: AnyElement = match self.previa_ibs.clone() {
-            PreviaIbsCbs::Desligada => div()
-                .id("previa-desligada")
-                .text_sm()
-                .text_color(muted)
-                .child("O grupo IBS/CBS está desligado nesta nota.")
-                .into_any_element(),
-            PreviaIbsCbs::Incompleta(m) | PreviaIbsCbs::NaoSeAplica(m) => div()
-                .id("previa-incompleta")
-                .text_sm()
-                .text_color(muted)
-                .child(m)
-                .into_any_element(),
-            PreviaIbsCbs::SemAliquota { ano } => v_flex()
-                .id("previa-sem-aliquota")
-                .gap_2()
-                .child(faixa(
-                    Gravidade::Aviso,
-                    format!(
-                        "Não há alíquota cadastrada para {ano}, então não há prévia. Cadastre a alíquota publicada na aba Alíquotas das Configurações."
-                    ),
-                    cx,
-                ))
-                .child(
-                    h_flex().child(
-                        Button::new("abrir-aliquotas")
-                            .label("Abrir as alíquotas")
-                            .icon(IconName::Settings)
-                            .outline()
-                            .small()
-                            .on_click(cx.listener(|this, _, _, cx| this.pedir_aliquotas(cx))),
-                    ),
-                )
-                .into_any_element(),
-            PreviaIbsCbs::Recusada(m) => faixa(Gravidade::Erro, m, cx)
-                .id("previa-recusada")
-                .into_any_element(),
-            PreviaIbsCbs::Calculada(v) => Self::valores_do_ibscbs(&v, cx),
-        };
+        let botao = Button::new("abrir-aliquotas")
+            .label("Abrir as alíquotas")
+            .icon(IconName::Settings)
+            .outline()
+            .small()
+            .on_click(cx.listener(|this, _, _, cx| this.pedir_aliquotas(cx)))
+            .into_any_element();
+        let corpo = corpo_da_previa(&self.previa_ibs, Some(botao), cx);
         v_flex()
             .gap_2()
-            .child(Self::titulo_do_bloco("Prévia do IBS e da CBS", cx))
+            .child(titulo_do_bloco("Prévia do IBS e da CBS", cx))
             .child(corpo)
             .into_any_element()
     }
@@ -353,7 +226,7 @@ impl NovaNota {
         };
         v_flex()
             .gap_3()
-            .child(Self::titulo_do_bloco("Emitir", cx))
+            .child(titulo_do_bloco("Emitir", cx))
             .child(div().text_sm().text_color(muted).child(numeracao))
             .child(
                 Button::new("emitir")

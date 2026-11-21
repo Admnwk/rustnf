@@ -19,7 +19,10 @@ use gpui_kit::{
 
 use super::pecas::{cor_da, faixa, icone_da, Negrito as _};
 use super::raiz::{Estado, Raiz, Tela};
-use super::{DescartarConfiguracao, IrParaNovaNota, SalvarConfiguracao};
+use super::{
+    DescartarConfiguracao, IrParaConsultar, IrParaNotas, IrParaNovaNota, IrParaPrevia,
+    SalvarConfiguracao,
+};
 use crate::modelo::ambiente::{Ambiente, CORES_DA_DEMONSTRACAO, SELO_DA_DEMONSTRACAO};
 use crate::modelo::certificado::Gravidade;
 
@@ -80,8 +83,7 @@ impl Raiz {
                                 .icon(IconName::LayoutDashboard)
                                 .active(tela == Tela::Inicio)
                                 .on_click(cx.listener(|this, _, _, cx| {
-                                    this.tela = Tela::Inicio;
-                                    cx.notify();
+                                    this.ir_para(Tela::Inicio, cx);
                                 })),
                         )
                         .child(
@@ -89,8 +91,31 @@ impl Raiz {
                                 .icon(IconName::FileText)
                                 .active(tela == Tela::NovaNota)
                                 .on_click(cx.listener(|this, _, _, cx| {
-                                    this.tela = Tela::NovaNota;
-                                    cx.notify();
+                                    this.ir_para(Tela::NovaNota, cx);
+                                })),
+                        )
+                        .child(
+                            SidebarMenuItem::new("Notas")
+                                .icon(IconName::Inbox)
+                                .active(tela == Tela::Notas)
+                                .on_click(cx.listener(|this, _, _, cx| {
+                                    this.ir_para(Tela::Notas, cx);
+                                })),
+                        )
+                        .child(
+                            SidebarMenuItem::new("Consultar")
+                                .icon(IconName::Search)
+                                .active(tela == Tela::Consultar)
+                                .on_click(cx.listener(|this, _, _, cx| {
+                                    this.ir_para(Tela::Consultar, cx);
+                                })),
+                        )
+                        .child(
+                            SidebarMenuItem::new("Prévia")
+                                .icon(IconName::ChartPie)
+                                .active(tela == Tela::Previa)
+                                .on_click(cx.listener(|this, _, _, cx| {
+                                    this.ir_para(Tela::Previa, cx);
                                 })),
                         )
                         .child(
@@ -98,8 +123,7 @@ impl Raiz {
                                 .icon(IconName::Settings)
                                 .active(tela == Tela::Configuracoes)
                                 .on_click(cx.listener(|this, _, _, cx| {
-                                    this.tela = Tela::Configuracoes;
-                                    cx.notify();
+                                    this.ir_para(Tela::Configuracoes, cx);
                                 })),
                         ),
                 ),
@@ -191,6 +215,9 @@ impl Raiz {
             Estado::Pronto => match self.tela {
                 Tela::Inicio => self.tela_inicio(window, cx),
                 Tela::NovaNota => self.tela_nova_nota(cx),
+                Tela::Notas => self.tela_notas(cx),
+                Tela::Consultar => self.tela_consultar(cx),
+                Tela::Previa => self.previa.clone().into_any_element(),
                 Tela::Configuracoes => self.tela_configuracoes(window, cx),
             },
         }
@@ -222,8 +249,16 @@ impl Render for Raiz {
                 }
             }))
             .on_action(cx.listener(|this, _: &IrParaNovaNota, _, cx| {
-                this.tela = Tela::NovaNota;
-                cx.notify();
+                this.ir_para(Tela::NovaNota, cx);
+            }))
+            .on_action(cx.listener(|this, _: &IrParaNotas, _, cx| {
+                this.ir_para(Tela::Notas, cx);
+            }))
+            .on_action(cx.listener(|this, _: &IrParaConsultar, _, cx| {
+                this.ir_para(Tela::Consultar, cx);
+            }))
+            .on_action(cx.listener(|this, _: &IrParaPrevia, _, cx| {
+                this.ir_para(Tela::Previa, cx);
             }))
             .child(titulo)
             .child(

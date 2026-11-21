@@ -21,15 +21,17 @@ use rustnf_app::segredo::Segredo;
 
 use super::nota::{Fase, NovaNota};
 use super::{iniciar, Raiz, Tela};
-use crate::demonstracao::{Desfecho, EmissorDemonstracao, FabricaDemonstracao};
+use crate::demonstracao::{
+    Cancelamento, Desfecho, EmissorDemonstracao, Ensaio, FabricaDemonstracao,
+};
 use crate::modelo::nota::CampoNota;
 use crate::servicos::{Conexao, FuturoConexao, Preparo, Servicos};
-use crate::testes_comuns::PastaTemporaria;
+use crate::testes_comuns::{AbridorDeTeste, PastaTemporaria};
 
-const SENHA: &str = "senha-do-teste-123";
-const CNPJ: &str = "11222333000181";
+pub(super) const SENHA: &str = "senha-do-teste-123";
+pub(super) const CNPJ: &str = "11222333000181";
 
-struct SemConexao;
+pub(super) struct SemConexao;
 
 impl Conexao for SemConexao {
     fn testar(&self, _preparo: Preparo) -> FuturoConexao {
@@ -38,18 +40,19 @@ impl Conexao for SemConexao {
 }
 
 /// O que cada teste precisa para olhar e conferir.
-struct Cenario {
-    janela: WindowHandle<gpui_kit::base::Root>,
-    raiz: Entity<Raiz>,
-    nova: Entity<NovaNota>,
-    emissor: Arc<EmissorDemonstracao>,
-    cofre: Arc<CofreEmMemoria>,
-    notas: PathBuf,
-    arquivo: PathBuf,
-    _pasta: PastaTemporaria,
+pub(super) struct Cenario {
+    pub(super) janela: WindowHandle<gpui_kit::base::Root>,
+    pub(super) raiz: Entity<Raiz>,
+    pub(super) nova: Entity<NovaNota>,
+    pub(super) emissor: Arc<EmissorDemonstracao>,
+    pub(super) abridor: Arc<AbridorDeTeste>,
+    pub(super) cofre: Arc<CofreEmMemoria>,
+    pub(super) notas: PathBuf,
+    pub(super) arquivo: PathBuf,
+    pub(super) _pasta: PastaTemporaria,
 }
 
-fn arquivo_de_ensaio(
+pub(super) fn arquivo_de_ensaio(
     pasta: &PastaTemporaria,
     pfx: &Path,
     ambiente: &str,
@@ -72,7 +75,7 @@ fn arquivo_de_ensaio(
     caminho
 }
 
-fn abrir_janela(
+pub(super) fn abrir_janela(
     cx: &mut TestAppContext,
     servicos: Arc<Servicos>,
     largura: f32,
@@ -97,7 +100,7 @@ fn abrir_janela(
 }
 
 /// Alto o bastante para o formulario inteiro aparecer sem rolar.
-fn cenario(
+pub(super) fn cenario(
     cx: &mut TestAppContext,
     ambiente: &str,
     roteiro: &[Desfecho],
@@ -107,10 +110,23 @@ fn cenario(
     cenario_com_altura(cx, ambiente, roteiro, completo, largura, 5200.)
 }
 
-fn cenario_com_altura(
+pub(super) fn cenario_com_altura(
     cx: &mut TestAppContext,
     ambiente: &str,
     roteiro: &[Desfecho],
+    completo: bool,
+    largura: f32,
+    altura: f32,
+) -> Cenario {
+    cenario_de_cancelamento(cx, ambiente, roteiro, &[], completo, largura, altura)
+}
+
+/// Como `cenario_com_altura`, com o roteiro do cancelamento da demonstracao (vazio: registrado).
+pub(super) fn cenario_de_cancelamento(
+    cx: &mut TestAppContext,
+    ambiente: &str,
+    roteiro: &[Desfecho],
+    cancelamento: &[Cancelamento],
     completo: bool,
     largura: f32,
     altura: f32,
@@ -122,11 +138,16 @@ fn cenario_com_altura(
     let arquivo = arquivo_de_ensaio(&pasta, &pfx, ambiente, completo);
     let cofre = Arc::new(CofreEmMemoria::novo());
     cofre.guardar(CNPJ, &Segredo::novo(SENHA.into())).unwrap();
-    let emissor = EmissorDemonstracao::novo(
+    let emissor = EmissorDemonstracao::com_ensaio(
         if ambiente == "producao" { 1 } else { 2 },
         roteiro,
+        Ensaio {
+            cancelamento: cancelamento.to_vec(),
+            pasta: Some(pasta.caminho().join("notas")),
+        },
         Duration::from_millis(120),
     );
+    let abridor = Arc::new(AbridorDeTeste::default());
     let cofre_dyn: Arc<dyn Cofre> = cofre.clone();
     let servicos = Arc::new(
         Servicos::com(
@@ -137,7 +158,8 @@ fn cenario_com_altura(
             Arc::new(SemConexao),
             Arc::new(chrono::Utc::now),
         )
-        .com_fabrica(FabricaDemonstracao::nova(emissor.clone())),
+        .com_fabrica(FabricaDemonstracao::nova(emissor.clone()))
+        .com_abridor(abridor.clone()),
     );
     let (janela, raiz) = abrir_janela(cx, servicos, largura, altura);
     cx.run_until_parked();
@@ -155,13 +177,14 @@ fn cenario_com_altura(
         raiz,
         nova,
         emissor,
+        abridor,
         cofre,
         arquivo,
         _pasta: pasta,
     }
 }
 
-fn digitar(cx: &mut TestAppContext, c: &Cenario, id: &'static str, texto: &str) {
+pub(super) fn digitar(cx: &mut TestAppContext, c: &Cenario, id: &'static str, texto: &str) {
     cx.update_window(c.janela.into(), |_, window, cx| {
         window.render_frame(cx);
         window.click(id, cx);
@@ -172,7 +195,7 @@ fn digitar(cx: &mut TestAppContext, c: &Cenario, id: &'static str, texto: &str) 
     cx.run_until_parked();
 }
 
-fn clicar(cx: &mut TestAppContext, c: &Cenario, id: &'static str) {
+pub(super) fn clicar(cx: &mut TestAppContext, c: &Cenario, id: &'static str) {
     cx.update_window(c.janela.into(), |_, window, cx| {
         window.render_frame(cx);
         window.click(id, cx);
@@ -181,7 +204,7 @@ fn clicar(cx: &mut TestAppContext, c: &Cenario, id: &'static str) {
     cx.run_until_parked();
 }
 
-fn existe(cx: &mut TestAppContext, c: &Cenario, id: &'static str) -> bool {
+pub(super) fn existe(cx: &mut TestAppContext, c: &Cenario, id: &'static str) -> bool {
     cx.update_window(c.janela.into(), |_, window, cx| {
         window.render_frame(cx);
         window.try_find(id).is_some()
@@ -190,7 +213,7 @@ fn existe(cx: &mut TestAppContext, c: &Cenario, id: &'static str) -> bool {
 }
 
 /// A descricao e' um Textarea sem id: o foco vai pelo modelo e o texto, pela janela.
-fn escrever_a_descricao(cx: &mut TestAppContext, c: &Cenario, texto: &str) {
+pub(super) fn escrever_a_descricao(cx: &mut TestAppContext, c: &Cenario, texto: &str) {
     let nova = c.nova.clone();
     cx.update_window(c.janela.into(), |_, window, cx| {
         window.render_frame(cx);
@@ -203,14 +226,14 @@ fn escrever_a_descricao(cx: &mut TestAppContext, c: &Cenario, texto: &str) {
 }
 
 /// Deixa os eventos de foco e de digitacao correrem.
-fn assentar(cx: &mut TestAppContext, c: &Cenario) {
+pub(super) fn assentar(cx: &mut TestAppContext, c: &Cenario) {
     cx.update_window(c.janela.into(), |_, window, cx| window.render_frame(cx))
         .unwrap();
     cx.run_until_parked();
 }
 
 /// Preenche a nota do caso comum pela janela, campo a campo.
-fn preencher(cx: &mut TestAppContext, c: &Cenario) {
+pub(super) fn preencher(cx: &mut TestAppContext, c: &Cenario) {
     digitar(cx, c, "nota-tomador-documento", "52998224725");
     digitar(cx, c, "nota-tomador-nome", "Maria de Teste");
     digitar(cx, c, "nota-ctribnac", "140101");
@@ -225,7 +248,12 @@ fn preencher(cx: &mut TestAppContext, c: &Cenario) {
     digitar(cx, c, "nota-class-trib", "000001");
 }
 
-fn esperar(cx: &mut TestAppContext, c: &Cenario, o_que: &str, pronto: impl Fn(&NovaNota) -> bool) {
+pub(super) fn esperar(
+    cx: &mut TestAppContext,
+    c: &Cenario,
+    o_que: &str,
+    pronto: impl Fn(&NovaNota) -> bool,
+) {
     cx.executor().allow_parking();
     let t0 = std::time::Instant::now();
     loop {
@@ -241,7 +269,7 @@ fn esperar(cx: &mut TestAppContext, c: &Cenario, o_que: &str, pronto: impl Fn(&N
     }
 }
 
-fn pendencias(cx: &mut TestAppContext, c: &Cenario) -> Vec<CampoNota> {
+pub(super) fn pendencias(cx: &mut TestAppContext, c: &Cenario) -> Vec<CampoNota> {
     cx.update(|cx| {
         c.nova
             .read(cx)
@@ -585,9 +613,25 @@ fn sem_senha_guardada_a_tela_pede_a_senha_e_nao_a_guarda(cx: &mut TestAppContext
     // senha errada: o dialogo continua, com o erro
     digitar(cx, &c, "senha-da-emissao", "errada");
     clicar(cx, &c, "usar-senha");
-    esperar(cx, &c, "senha incorreta", |n| {
-        n.erro_senha.as_deref() == Some("Senha do certificado incorreta.")
-    });
+    let t0 = std::time::Instant::now();
+    loop {
+        let erro = cx.update(|cx| {
+            c.nova
+                .read(cx)
+                .senha_pedida
+                .as_ref()
+                .and_then(|(d, _)| d.read(cx).erro.clone())
+        });
+        if erro.as_deref() == Some("Senha do certificado incorreta.") {
+            break;
+        }
+        assert!(
+            t0.elapsed() < Duration::from_secs(20),
+            "demorou demais: senha incorreta"
+        );
+        std::thread::sleep(Duration::from_millis(20));
+        cx.run_until_parked();
+    }
     assert_eq!(c.emissor.total_de_chamadas(), 0);
     // senha certa: emite, e o cofre continua sem ela
     digitar(cx, &c, "senha-da-emissao", SENHA);

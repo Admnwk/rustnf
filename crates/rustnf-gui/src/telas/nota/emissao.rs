@@ -10,13 +10,14 @@ use gpui_kit::component::WindowExt as _;
 use gpui_kit::{AppContext as _, Context, Window};
 use rustnf_app::segredo::Segredo;
 
-use super::{Concluida, EstadoDoRascunho, Etapa, Fase, NovaNota};
+use super::{Concluida, EstadoDoRascunho, Etapa, EventoNota, Fase, NovaNota};
 use crate::fora;
 use crate::modelo::ambiente::Ambiente;
 use crate::modelo::conferencia::Pendencia;
 use crate::modelo::emissao::{aviso_de_desistir, DesfechoEmissao};
 use crate::modelo::pedido::PedidoCongelado;
 use crate::servicos::{emitir, ErroTela};
+use crate::telas::senha::{classificar, Credencial};
 
 impl NovaNota {
     /// O botao Emitir (ou Ctrl+Enter): com pendencia, leva ao primeiro campo; sem ela, abre a confirmacao.
@@ -103,7 +104,6 @@ impl NovaNota {
             etapa: Etapa::AbrindoCertificado,
             tentativa: tentativa.clone(),
         };
-        self.erro_senha = None;
         self.recuperado = false;
         self.rejeicao = None;
         self.recusa = None;
@@ -136,32 +136,19 @@ impl NovaNota {
                     return;
                 }
             };
-            let preparo = match preparo {
-                Ok(p) => p,
-                Err(ErroTela::SemSenha) => {
+            let preparo = match classificar(preparo, digitou) {
+                Credencial::Pronta(p) => *p,
+                Credencial::PedirSenha(erro) => {
                     this.update_in(cx, |this, window, cx| {
                         this.fase = anterior;
-                        this.pedir_senha(tentativa, None, window, cx);
+                        this.pedir_senha(tentativa, erro, window, cx);
                     })
                     .ok();
                     return;
                 }
-                Err(ErroTela::SenhaIncorreta) if digitou => {
-                    this.update_in(cx, |this, window, cx| {
-                        this.fase = anterior;
-                        this.pedir_senha(
-                            tentativa,
-                            Some(ErroTela::SenhaIncorreta.texto()),
-                            window,
-                            cx,
-                        );
-                    })
-                    .ok();
-                    return;
-                }
-                Err(outro) => {
+                Credencial::Falhou(texto) => {
                     this.update_in(cx, |this, _, cx| {
-                        this.voltar_com(anterior, Pendencia::geral(outro.texto()), cx);
+                        this.voltar_com(anterior, Pendencia::geral(texto), cx);
                     })
                     .ok();
                     return;
@@ -234,6 +221,7 @@ impl NovaNota {
                     self.versao_do_rascunho_para_apagar(cx);
                 }
                 self.atualizar_numero(cx);
+                cx.emit(EventoNota::NotaAutorizada);
             }
             DesfechoEmissao::Rejeitada { mensagens } => {
                 self.fase = Fase::Editando;

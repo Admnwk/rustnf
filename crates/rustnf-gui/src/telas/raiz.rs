@@ -17,12 +17,17 @@ use gpui_kit::{AppContext as _, Context, Entity, PathPromptOptions, Subscription
 use rustnf_app::config::Config;
 use rustnf_app::segredo::Segredo;
 
-use super::nota::{EventoNota, NovaNota};
+use super::cancelar::{Cancelamento, EventoCancelamento};
+use super::consultar::{EventoConsulta, TelaConsultar};
+use super::nota::{EventoNota, Modelo, NovaNota};
+use super::notas::{EventoNotas, TelaNotas};
+use super::previa::{EventoPrevia, TelaPrevia};
 use crate::fora;
 use crate::modelo::ambiente::{Ambiente, Tema};
 use crate::modelo::campo::{Campo, CampoAliquota, Erros};
 use crate::modelo::certificado::{EstadoCertificado, InfoCertificado};
 use crate::modelo::formulario::{Formulario, OPCOES_APURACAO, OPCOES_REGIME_ESPECIAL};
+use crate::modelo::nota::DadosNota;
 use crate::modelo::passos::{configuracao_completa, pendentes, Passo};
 use crate::servicos::{Carga, ErroTela, Servicos};
 
@@ -33,6 +38,12 @@ pub enum Tela {
     Inicio,
     /// Montar e emitir uma nota.
     NovaNota,
+    /// A lista das notas da pasta, com o detalhe.
+    Notas,
+    /// Consultar uma nota pela chave de acesso.
+    Consultar,
+    /// A calculadora avulsa do IBS e da CBS.
+    Previa,
     /// Todas as opcoes.
     Configuracoes,
 }
@@ -141,6 +152,10 @@ pub(super) struct Entradas {
 pub struct Raiz {
     pub(super) servicos: Arc<Servicos>,
     pub(super) nova: Entity<NovaNota>,
+    pub(super) cancelamento: Entity<Cancelamento>,
+    pub(super) notas: Entity<TelaNotas>,
+    pub(super) consultar: Entity<TelaConsultar>,
+    pub(super) previa: Entity<TelaPrevia>,
     pub(super) estado: Estado,
     pub(super) tela: Tela,
     pub(super) secao: Secao,
@@ -209,9 +224,29 @@ impl Raiz {
             let servicos = Arc::clone(&servicos);
             cx.new(|cx| NovaNota::new(servicos, window, cx))
         };
+        let cancelamento = {
+            let servicos = Arc::clone(&servicos);
+            cx.new(|cx| Cancelamento::new(servicos, window, cx))
+        };
+        let notas = {
+            let (servicos, cancelamento) = (Arc::clone(&servicos), cancelamento.clone());
+            cx.new(|cx| TelaNotas::new(servicos, cancelamento, window, cx))
+        };
+        let consultar = {
+            let (servicos, cancelamento) = (Arc::clone(&servicos), cancelamento.clone());
+            cx.new(|cx| TelaConsultar::new(servicos, cancelamento, window, cx))
+        };
+        let previa = {
+            let servicos = Arc::clone(&servicos);
+            cx.new(|cx| TelaPrevia::new(servicos, window, cx))
+        };
         let mut raiz = Self {
             servicos,
             nova,
+            cancelamento,
+            notas,
+            consultar,
+            previa,
             estado: Estado::Carregando,
             tela: Tela::Inicio,
             secao: Secao::Emitente,
@@ -288,10 +323,57 @@ impl Raiz {
             window,
             |this, _, evento: &EventoNota, _, cx| {
                 match evento {
-                    EventoNota::IrParaAliquotas => {
-                        this.tela = Tela::Configuracoes;
-                        this.secao = Secao::Aliquotas;
+                    EventoNota::IrParaAliquotas => this.ir_para_aliquotas(),
+                    EventoNota::NotaAutorizada => {
+                        this.notas.update(cx, |n, cx| n.recarregar(cx));
                     }
+                }
+                cx.notify();
+            },
+        );
+        self.fixas.push(s);
+        let s = cx.subscribe_in(
+            &self.notas.clone(),
+            window,
+            |this, _, evento: &EventoNotas, window, cx| match evento {
+                EventoNotas::UsarComoModelo(dados) => {
+                    this.usar_como_modelo((**dados).clone(), window, cx)
+                }
+                EventoNotas::IrParaNovaNota => this.ir_para(Tela::NovaNota, cx),
+            },
+        );
+        self.fixas.push(s);
+        let s = cx.subscribe_in(
+            &self.consultar.clone(),
+            window,
+            |this, _, evento: &EventoConsulta, window, cx| match evento {
+                EventoConsulta::Guardou => {
+                    this.notas.update(cx, |n, cx| n.recarregar(cx));
+                }
+                EventoConsulta::UsarComoModelo(dados) => {
+                    this.usar_como_modelo((**dados).clone(), window, cx);
+                }
+            },
+        );
+        self.fixas.push(s);
+        let s = cx.subscribe_in(
+            &self.cancelamento.clone(),
+            window,
+            |this, _, evento: &EventoCancelamento, _, cx| match evento {
+                EventoCancelamento::Registrado(chave) => {
+                    let (a, b) = (chave.clone(), chave.clone());
+                    this.notas.update(cx, |n, cx| n.cancelada(&a, cx));
+                    this.consultar.update(cx, |c, cx| c.cancelada(&b, cx));
+                }
+            },
+        );
+        self.fixas.push(s);
+        let s = cx.subscribe_in(
+            &self.previa.clone(),
+            window,
+            |this, _, evento: &EventoPrevia, _, cx| {
+                match evento {
+                    EventoPrevia::IrParaAliquotas => this.ir_para_aliquotas(),
                 }
                 cx.notify();
             },
@@ -407,16 +489,87 @@ impl Raiz {
         self.sincronizar(window, cx);
         self.aplicar_tema(window, cx);
         self.atualizar_certificado(cx);
-        self.entregar_a_nova_nota(window, cx);
+        self.entregar_config(window, cx);
         cx.notify();
     }
 
-    /// Entrega a configuracao que vale (a gravada, com as variaveis de ambiente por cima) a Nova nota.
-    pub(super) fn entregar_a_nova_nota(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+    /// Entrega a configuracao que vale (a gravada, com as variaveis de ambiente por cima) as telas que a usam: Nova
+    /// nota, Notas, Consultar, o cancelamento e a Previa.
+    pub(super) fn entregar_config(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let efetiva = self.servicos.efetiva(&self.salvo);
         let completa = configuracao_completa(&self.salvo);
+        let e = efetiva.clone();
         self.nova
-            .update(cx, |n, cx| n.definir_config(efetiva, completa, window, cx));
+            .update(cx, |n, cx| n.definir_config(e, completa, window, cx));
+        let e = efetiva.clone();
+        self.cancelamento
+            .update(cx, |c, cx| c.definir_config(e, cx));
+        let e = efetiva.clone();
+        self.notas
+            .update(cx, |n, cx| n.definir_config(e, completa, cx));
+        let e = efetiva.clone();
+        self.consultar.update(cx, |c, cx| c.definir_config(e, cx));
+        self.previa
+            .update(cx, |p, cx| p.definir_config(&efetiva, window, cx));
+    }
+
+    /// Muda a tela. Notas le a pasta de novo ao abrir, para a lista nao ficar atras do que a Nova nota e os
+    /// cancelamentos fizeram.
+    pub(super) fn ir_para(&mut self, tela: Tela, cx: &mut Context<Self>) {
+        self.tela = tela;
+        if tela == Tela::Notas {
+            self.notas.update(cx, |n, cx| n.recarregar(cx));
+        }
+        cx.notify();
+    }
+
+    fn ir_para_aliquotas(&mut self) {
+        self.tela = Tela::Configuracoes;
+        self.secao = Secao::Aliquotas;
+    }
+
+    /// "Usar como modelo": leva os dados da nota para a Nova nota. Com algo digitado, pergunta antes de substituir;
+    /// com uma tentativa de emissao pendente, nao substitui.
+    pub(super) fn usar_como_modelo(
+        &mut self,
+        dados: DadosNota,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let resposta = self
+            .nova
+            .update(cx, |n, cx| n.receber_modelo(dados, window, cx));
+        match resposta {
+            Modelo::Aplicado => self.ir_para(Tela::NovaNota, cx),
+            Modelo::Recusado(texto) => {
+                window.push_notification(
+                    Notification::warning(texto).title("Não foi possível usar como modelo"),
+                    cx,
+                );
+            }
+            Modelo::PedirConfirmacao(dados) => {
+                let raiz = cx.entity();
+                window.open_alert_dialog(cx, move |alerta, _, _| {
+                    let (raiz, dados) = (raiz.clone(), dados.clone());
+                    alerta
+                        .title("Substituir o que você preencheu?")
+                        .description(
+                            "A Nova nota tem dados preenchidos. Usar a nota escolhida como modelo apaga o que está no formulário e o rascunho salvo.",
+                        )
+                        .confirm()
+                        .ok_text("Substituir")
+                        .cancel_text("Manter o formulário")
+                        .on_ok(move |_, window, cx| {
+                            let dados = (*dados).clone();
+                            raiz.update(cx, |r, cx| {
+                                r.nova.update(cx, |n, cx| n.usar_modelo(dados, window, cx));
+                                r.ir_para(Tela::NovaNota, cx);
+                            });
+                            true
+                        })
+                });
+            }
+        }
     }
 
     /// Poe nos campos da tela o texto do formulario (sem disparar `Change`).
@@ -833,7 +986,7 @@ impl Raiz {
                             cx,
                         );
                         this.atualizar_certificado(cx);
-                        this.entregar_a_nova_nota(window, cx);
+                        this.entregar_config(window, cx);
                     }
                     Err(erro) => {
                         this.aviso = Some(Aviso {
@@ -998,7 +1151,7 @@ impl Raiz {
                             cx,
                         );
                         this.atualizar_certificado(cx);
-                        this.entregar_a_nova_nota(window, cx);
+                        this.entregar_config(window, cx);
                     }
                     Err(erro) => this.erro_no_campo(&erro),
                 }

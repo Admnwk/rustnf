@@ -5,27 +5,23 @@
 //! Os dialogos da Nova nota: confirmar a emissao (com o ambiente em destaque), pedir a senha do certificado, limpar o
 //! formulario e desistir de uma tentativa sem resposta. Esc fecha qualquer um.
 
-use std::cell::Cell;
-
 use gpui_kit::component::button::{Button, ButtonVariants as _};
 use gpui_kit::component::checkbox::Checkbox;
 use gpui_kit::component::dialog::DialogFooter;
-use gpui_kit::component::input::{Input, InputEvent, InputState};
 use gpui_kit::component::{h_flex, v_flex, ActiveTheme as _, Disableable as _, WindowExt as _};
 use gpui_kit::prelude::FluentBuilder as _;
 use gpui_kit::{
-    div, px, rgb, AppContext as _, Context, Focusable as _, InteractiveElement as _,
-    ParentElement as _, Styled as _, Window,
+    div, px, rgb, AppContext as _, Context, InteractiveElement as _, ParentElement as _,
+    Styled as _, Window,
 };
-use rustnf_app::segredo::Segredo;
 
 use super::{Fase, NovaNota};
 use crate::modelo::ambiente::{CORES_DA_DEMONSTRACAO, SELO_DA_DEMONSTRACAO};
-use crate::modelo::certificado::Gravidade;
 use crate::modelo::mascara::documento_para_resumo;
 use crate::modelo::pedido::PedidoCongelado;
 use crate::modelo::previa::mostrar;
-use crate::telas::pecas::{faixa, linha_de_resumo, Negrito as _};
+use crate::telas::pecas::{linha_de_resumo, Negrito as _};
+use crate::telas::senha::{DialogoSenha, EventoSenha};
 
 /// O que a confirmacao mostra: tomador, servico, valor e valor liquido, e a DPS que vai ser usada.
 struct ResumoDaConfirmacao {
@@ -183,8 +179,8 @@ impl NovaNota {
         });
     }
 
-    /// Pede a senha do certificado em um dialogo com campo mascarado. Ela vale so' para esta emissao: vai direto para
-    /// o certificado, nao e' guardada e o campo e' esvaziado ao usar.
+    /// Pede a senha do certificado (veja `telas::senha`): ela vale so' para esta emissao, nao e' guardada e o campo e'
+    /// esvaziado ao usar.
     pub(in crate::telas) fn pedir_senha(
         &mut self,
         tentativa: PedidoCongelado,
@@ -192,96 +188,27 @@ impl NovaNota {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
-        self.erro_senha = erro;
-        let entrada = cx.new(|cx| {
-            InputState::new(window, cx)
-                .placeholder("Senha do certificado")
-                .masked(true)
-        });
-        self.senha_pedida = Some((entrada.clone(), tentativa));
+        let desligado = self.servicos.cofre_desligado();
+        let dialogo = cx.new(|cx| DialogoSenha::new(desligado, erro, window, cx));
         self.sub_senha = Some(cx.subscribe_in(
-            &entrada,
+            &dialogo,
             window,
-            |this, _, evento: &InputEvent, window, cx| {
-                if matches!(evento, InputEvent::PressEnter { .. }) {
-                    this.usar_senha(window, cx);
+            |this, dialogo, evento: &EventoSenha, window, cx| match evento {
+                EventoSenha::Usada => {
+                    let senha = dialogo.update(cx, |d, _| d.tomar());
+                    this.sub_senha = None;
+                    if let Some((_, tentativa)) = this.senha_pedida.take() {
+                        this.iniciar_envio(Some(tentativa), senha, window, cx);
+                    }
+                }
+                EventoSenha::Fechada => {
+                    this.senha_pedida = None;
+                    this.sub_senha = None;
                 }
             },
         ));
-        let nova = cx.entity();
-        let primeira = Cell::new(true);
-        window.open_dialog(cx, move |dialog, window, cx| {
-            if primeira.replace(false) {
-                entrada.focus_handle(cx).focus(window, cx);
-            }
-            let erro = nova.read(cx).erro_senha.clone();
-            let desligado = nova.read(cx).servicos.cofre_desligado();
-            let nova_usar = nova.clone();
-            let nova_enter = nova.clone();
-            let nova_fechou = nova.clone();
-            dialog
-                .title("Senha do certificado")
-                .w(px(460.))
-                // Enter usa a senha digitada (o dialogo so' fecha se ela for usada)
-                .on_ok(move |_, window, cx| {
-                    nova_enter.update(cx, |n, cx| n.usar_senha(window, cx));
-                    false
-                })
-                .on_close(move |_, _, cx| {
-                    nova_fechou.update(cx, |n, _| {
-                        n.senha_pedida = None;
-                        n.sub_senha = None;
-                    });
-                })
-                .child(
-                    v_flex()
-                        .gap_3()
-                        .child(div().text_sm().child(if desligado {
-                            "O cofre de senhas está desligado. Digite a senha do certificado: ela vale só para esta emissão e não é guardada."
-                        } else {
-                            "Não há senha guardada no cofre para este certificado. Digite-a: ela vale só para esta emissão e não é guardada."
-                        }))
-                        .child(Input::new(&entrada).id("senha-da-emissao").mask_toggle())
-                        .children(erro.map(|e| faixa(Gravidade::Erro, e, cx))),
-                )
-                .footer(
-                    DialogFooter::new()
-                        .child(
-                            Button::new("cancelar-senha")
-                                .label("Cancelar")
-                                .outline()
-                                .on_click(|_, window, cx| window.close_dialog(cx)),
-                        )
-                        .child(
-                            Button::new("usar-senha")
-                                .label("Usar nesta emissão")
-                                .primary()
-                                .on_click(move |_, window, cx| {
-                                    nova_usar.update(cx, |n, cx| n.usar_senha(window, cx));
-                                }),
-                        ),
-                )
-        });
-    }
-
-    /// Usa a senha digitada: fecha o dialogo, esvazia o campo e emite.
-    pub(in crate::telas) fn usar_senha(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let Some((entrada, tentativa)) = self.senha_pedida.clone() else {
-            return;
-        };
-        let texto = entrada.read(cx).value().to_string();
-        if texto.is_empty() {
-            self.erro_senha = Some("Digite a senha do certificado.".into());
-            window.refresh();
-            cx.notify();
-            return;
-        }
-        let senha = Segredo::novo(texto);
-        entrada.update(cx, |e, cx| e.set_value("", window, cx));
-        self.senha_pedida = None;
-        self.sub_senha = None;
-        window.close_dialog(cx);
-        self.iniciar_envio(Some(tentativa), Some(senha), window, cx);
+        self.senha_pedida = Some((dialogo.clone(), tentativa));
+        DialogoSenha::abrir(&dialogo, window, cx);
     }
 
     /// Pergunta antes de limpar o formulario.

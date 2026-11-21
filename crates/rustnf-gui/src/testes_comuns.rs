@@ -13,6 +13,8 @@ use chrono::Utc;
 use rustnf::assinatura::cert_a1::gerar_teste;
 use rustnf_app::cofre::CofreEmMemoria;
 
+#[cfg(windows)]
+use crate::servicos::{AbrirArquivos, Destino};
 use crate::servicos::{Conexao, Servicos};
 
 static CONTADOR: AtomicU64 = AtomicU64::new(0);
@@ -80,4 +82,29 @@ pub(crate) fn servicos_de_teste(
         Arc::new(Utc::now),
     );
     (servicos, cofre)
+}
+
+/// Quem "abre" arquivos nos testes: anota o pedido e nao abre programa nenhum. So' os testes da janela o usam.
+#[cfg(windows)]
+#[derive(Default)]
+pub(crate) struct AbridorDeTeste {
+    pedidos: std::sync::Mutex<Vec<(Destino, PathBuf)>>,
+}
+
+#[cfg(windows)]
+impl AbridorDeTeste {
+    /// Os pedidos que a tela fez, na ordem.
+    pub(crate) fn pedidos(&self) -> Vec<(Destino, PathBuf)> {
+        self.pedidos.lock().map(|p| p.clone()).unwrap_or_default()
+    }
+}
+
+#[cfg(windows)]
+impl AbrirArquivos for AbridorDeTeste {
+    fn pedir(&self, destino: Destino, caminho: &Path) -> bool {
+        if let Ok(mut p) = self.pedidos.lock() {
+            p.push((destino, caminho.to_path_buf()));
+        }
+        false
+    }
 }

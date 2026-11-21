@@ -25,6 +25,9 @@ pub trait Emissor: Send + Sync {
     async fn consultar(&self, chave: &str) -> Resultado;
     /// Evento 101101.
     async fn cancelar(&self, chave: &str, motivo: &str, justificativa: &str) -> Resultado;
+    /// A nota tem o evento de cancelamento registrado? `Ok` = sim, `NaoEncontrada` = nao; outro resultado = nao deu
+    /// para saber.
+    async fn cancelada(&self, chave: &str) -> Resultado;
 }
 
 #[async_trait]
@@ -43,6 +46,10 @@ impl<T: Transporte + 'static> Emissor for ClienteNfse<T> {
 
     async fn cancelar(&self, chave: &str, motivo: &str, justificativa: &str) -> Resultado {
         ClienteNfse::cancelar(self, chave, motivo, justificativa).await
+    }
+
+    async fn cancelada(&self, chave: &str) -> Resultado {
+        ClienteNfse::cancelada(self, chave).await
     }
 }
 
@@ -140,6 +147,34 @@ pub async fn enviar(
 /// Como [`resultado_json`].
 pub async fn consultar(emissor: &dyn Emissor, chave: &str) -> Result<Value, Erro> {
     resultado_json(&emissor.consultar(chave).await)
+}
+
+/// A consulta de uma NFS-e com o que se sabe do cancelamento dela.
+#[derive(Debug, Clone)]
+pub struct Consultada {
+    /// O resultado da consulta pela chave (com a nota e o XML, se foi achada).
+    pub resultado: Resultado,
+    /// A nota achada tem o cancelamento registrado? `None`: nao e' uma nota achada, ou nao deu para saber.
+    pub cancelada: Option<bool>,
+}
+
+/// Consulta a NFS-e pela chave e, achando-a, confere se ha cancelamento registrado (o XML da nota nao diz). E' o
+/// que uma interface usa para mostrar a situacao da nota; [`consultar`] continua devolvendo o JSON de sempre.
+pub async fn consultar_completa(emissor: &dyn Emissor, chave: &str) -> Consultada {
+    let resultado = emissor.consultar(chave).await;
+    let cancelada = if resultado.status == Status::Autorizada && resultado.nfse.is_some() {
+        match emissor.cancelada(chave).await.status {
+            Status::Ok => Some(true),
+            Status::NaoEncontrada => Some(false),
+            _ => None,
+        }
+    } else {
+        None
+    };
+    Consultada {
+        resultado,
+        cancelada,
+    }
 }
 
 /// Cancela a NFS-e (evento 101101).

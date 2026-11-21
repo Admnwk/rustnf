@@ -45,6 +45,19 @@
   na Sefin com a mesma serie e o mesmo numero de DPS) e' comparada com o pedido: `Emitida::diferencas` e, na resposta de
   `emitir_pedido` (linha de comando, HTTP e MCP), `recuperada_difere` dizem em que ela difere; vazio ou ausente quando a
   nota e' a do pedido.
+* `rustnf-gui`: novas telas **Notas** (Ctrl+L), **Consultar** (Ctrl+K) e **Previa** (Ctrl+P). Notas lista a pasta de notas
+  (busca por texto, filtro por situacao, lista virtual, atualizacao sozinha) e mostra o detalhe da nota lido do XML, com
+  "Abrir o DANFSe" (gravado ao lado do XML e aberto no programa padrao), "Mostrar na pasta", **cancelar** (motivo e
+  justificativa dentro dos limites da biblioteca, confirmacao explicita em producao, desfechos registrado, rejeitado e sem
+  resposta, com "Tentar de novo" e "Conferir na Sefin") e "Usar como modelo" (a Nova nota recebe os dados da nota).
+  Consultar busca a nota pela chave de acesso (conferida antes, mostrada em grupos), confere se a nota devolvida e' a
+  pedida e se tem cancelamento registrado, e guarda na pasta de notas a nota do emitente. Previa e' a calculadora avulsa do
+  IBS e da CBS, sem certificado nem pasta. A senha do certificado, quando nao esta no cofre, e' pedida pelo mesmo dialogo
+  para emitir, cancelar e consultar. A demonstracao passa a consultar e cancelar (`--cancelamento`).
+* `rustnf-app`: `Emissor::cancelada` (a nota tem o evento de cancelamento registrado?), `emissao::consultar_completa`,
+  `pedido::cancelar_pedido_completo` e `pedido::Cancelada` (o resultado do cancelamento como dado tipado; `cancelar_pedido`
+  continua devolvendo o JSON de sempre), `Notas::caminho_do_xml_guardado` e `Notas::guardar_danfse` (o PDF fica ao lado do
+  XML e nao entra no indice nem na numeracao).
 * Configuracao: nova secao `[interface]` com `tema` (`sistema`, `claro` ou `escuro`).
 * `rustnf-app`: novo modulo `certificado` (abrir o A1 e montar o cliente da Sefin, antes dentro da linha de comando) e
   `cofre::cofre_do_ambiente` (a escolha do cofre por `RUSTNF_COFRE`), compartilhados pela linha de comando e pela

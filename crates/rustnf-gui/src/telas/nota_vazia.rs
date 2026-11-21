@@ -2,8 +2,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! A Nova nota com a configuracao incompleta: um estado vazio que explica o que falta e leva ao Inicio ou as
-//! Configuracoes. Sem formulario.
+//! As telas que usam o emitente, o certificado e a pasta das notas (Nova nota, Notas e Consultar) com a configuracao
+//! incompleta: um estado vazio que explica o que falta e leva ao Inicio ou as Configuracoes. Sem formulario nem lista.
 
 use gpui_kit::component::button::{Button, ButtonVariants as _};
 use gpui_kit::component::{h_flex, v_flex, ActiveTheme as _, Icon, IconName, Sizable as _};
@@ -19,8 +19,51 @@ use crate::modelo::passos::{configuracao_completa, o_que_falta};
 impl Raiz {
     /// O conteudo da tela Nova nota: o formulario, ou o que falta configurar.
     pub(super) fn tela_nova_nota(&mut self, cx: &mut Context<Self>) -> AnyElement {
+        let filho = self.nova.clone().into_any_element();
+        self.exigindo_configuracao(
+            "Nova nota",
+            "Antes de emitir, o rustnf precisa de alguns dados.",
+            "A nota usa os dados do emitente, o certificado digital e a pasta das notas. Ainda falta:",
+            filho,
+            cx,
+        )
+    }
+
+    /// O conteudo da tela Notas: a lista, ou o que falta configurar.
+    pub(super) fn tela_notas(&mut self, cx: &mut Context<Self>) -> AnyElement {
+        let filho = self.notas.clone().into_any_element();
+        self.exigindo_configuracao(
+            "Notas",
+            "Antes de listar as notas, o rustnf precisa de alguns dados.",
+            "A lista usa a pasta das notas, e cancelar usa o certificado digital. Ainda falta:",
+            filho,
+            cx,
+        )
+    }
+
+    /// O conteudo da tela Consultar: o campo da chave, ou o que falta configurar.
+    pub(super) fn tela_consultar(&mut self, cx: &mut Context<Self>) -> AnyElement {
+        let filho = self.consultar.clone().into_any_element();
+        self.exigindo_configuracao(
+            "Consultar",
+            "Antes de consultar, o rustnf precisa de alguns dados.",
+            "A consulta usa o certificado digital e os dados do emitente. Ainda falta:",
+            filho,
+            cx,
+        )
+    }
+
+    /// `filho` com a configuracao completa; senao, o estado vazio que explica o que falta.
+    fn exigindo_configuracao(
+        &mut self,
+        titulo: &str,
+        apoio: &str,
+        explicacao: &str,
+        filho: AnyElement,
+        cx: &mut Context<Self>,
+    ) -> AnyElement {
         if configuracao_completa(&self.salvo) {
-            return self.nova.clone().into_any_element();
+            return filho;
         }
         let muted = cx.theme().muted_foreground;
         let itens = o_que_falta(&self.salvo);
@@ -47,11 +90,7 @@ impl Raiz {
                     .gap_5()
                     .px_6()
                     .py_8()
-                    .child(cabecalho(
-                        "Nova nota",
-                        "Antes de emitir, o rustnf precisa de alguns dados.",
-                        cx,
-                    ))
+                    .child(cabecalho(titulo, apoio, cx))
                     .child(
                         cartao(cx)
                             .gap_4()
@@ -67,9 +106,12 @@ impl Raiz {
                                             .child("Falta configurar o rustnf"),
                                     ),
                             )
-                            .child(div().text_sm().text_color(muted).child(
-                                "A nota usa os dados do emitente, o certificado digital e a pasta das notas. Ainda falta:",
-                            ))
+                            .child(
+                                div()
+                                    .text_sm()
+                                    .text_color(muted)
+                                    .child(explicacao.to_string()),
+                            )
                             .child(lista)
                             .child(
                                 h_flex()
@@ -80,8 +122,7 @@ impl Raiz {
                                             .icon(IconName::LayoutDashboard)
                                             .primary()
                                             .on_click(cx.listener(|this, _, _, cx| {
-                                                this.tela = Tela::Inicio;
-                                                cx.notify();
+                                                this.ir_para(Tela::Inicio, cx);
                                             })),
                                     )
                                     .child(
@@ -90,8 +131,7 @@ impl Raiz {
                                             .icon(IconName::Settings)
                                             .outline()
                                             .on_click(cx.listener(|this, _, _, cx| {
-                                                this.tela = Tela::Configuracoes;
-                                                cx.notify();
+                                                this.ir_para(Tela::Configuracoes, cx);
                                             })),
                                     ),
                             ),
