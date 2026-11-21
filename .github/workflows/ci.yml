@@ -45,6 +45,13 @@ jobs:
         run: cargo clippy -p rustnf-gui --all-targets --all-features -- -D warnings
       - name: Testes da interface
         run: cargo test -p rustnf-gui --all-features
+      - name: Icone e versao no executavel da interface
+        shell: pwsh
+        run: |
+          cargo build -p rustnf-gui
+          $versao = (cargo metadata --no-deps --format-version 1 | ConvertFrom-Json).packages |
+            Where-Object name -eq 'rustnf-gui' | Select-Object -ExpandProperty version
+          ./.github/conferir_recursos.ps1 -Exe target/debug/rustnf-gui.exe -Versao $versao
 
   deny:
     runs-on: ubuntu-latest
