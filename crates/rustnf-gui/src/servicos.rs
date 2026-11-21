@@ -29,6 +29,7 @@ use rustnf_app::segredo::Segredo;
 use crate::modelo::ambiente::Ambiente;
 use crate::modelo::campo::Campo;
 use crate::modelo::certificado::{avaliar, testar, EstadoCertificado, InfoCertificado};
+use crate::modelo::mascara::frase;
 use crate::modelo::nota::DadosNota;
 use crate::modelo::rascunho;
 
@@ -131,15 +132,6 @@ fn texto_do_cofre(e: ErroCofre) -> String {
                 .into()
         }
         _ => "O cofre de senhas do Windows não respondeu.".into(),
-    }
-}
-
-/// Maiuscula na primeira letra (as frases da biblioteca comecam em minuscula).
-fn frase(texto: &str) -> String {
-    let mut c = texto.chars();
-    match c.next() {
-        Some(p) => p.to_uppercase().chain(c).collect(),
-        None => String::new(),
     }
 }
 

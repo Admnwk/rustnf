@@ -6,6 +6,16 @@
 
 use rustnf::danfse::municipio;
 
+/// A frase com maiuscula na primeira letra: as mensagens da biblioteca comecam em minuscula, e a tela nao.
+#[must_use]
+pub fn frase(texto: &str) -> String {
+    let mut letras = texto.trim().chars();
+    match letras.next() {
+        Some(primeira) => primeira.to_uppercase().chain(letras).collect(),
+        None => String::new(),
+    }
+}
+
 /// So' os digitos de `texto`, no maximo `limite`.
 #[must_use]
 pub fn so_digitos(texto: &str, limite: usize) -> String {
@@ -323,6 +333,14 @@ fn nome_proprio(maiusculas: &str) -> String {
 #[cfg(test)]
 mod testes {
     use super::*;
+
+    #[test]
+    fn frase_ganha_maiuscula_na_primeira_letra() {
+        assert_eq!(frase("a competencia nao pode"), "A competencia nao pode");
+        assert_eq!(frase("  órgão sem resposta "), "Órgão sem resposta");
+        assert_eq!(frase("Já certa."), "Já certa.");
+        assert_eq!(frase(""), "");
+    }
 
     #[test]
     fn cpf_e_cnpj_ganham_mascara_conforme_o_tamanho() {

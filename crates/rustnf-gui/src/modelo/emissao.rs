@@ -11,6 +11,7 @@ use rustnf_app::erro::Erro;
 use rustnf_app::pedido::Emitida;
 
 use super::conferencia::{campo_do_codigo, pendencia_da_recusa, Pendencia};
+use super::mascara::frase;
 use super::nota::CampoNota;
 
 /// Uma mensagem da Sefin: a descricao em destaque, o codigo e o complemento em segundo plano.
@@ -34,7 +35,7 @@ impl From<&Mensagem> for MensagemSefin {
             codigo: m.codigo.trim().to_string(),
             descricao: m.descricao.trim().to_string(),
             complemento: m.complemento.trim().to_string(),
-            dica: m.dica().to_string(),
+            dica: frase(m.dica()),
             campo: campo_do_codigo(&m.codigo),
         }
     }
@@ -53,8 +54,11 @@ pub enum DesfechoEmissao {
         guardada: bool,
         /// O aviso, quando a pasta nao pode ser atualizada por completo.
         aviso: Option<String>,
-        /// A resposta do envio se perdeu e a nota foi achada pela consulta.
+        /// A nota ja existia na Sefin com este numero de DPS e foi achada pela consulta.
         recuperada: bool,
+        /// Nota recuperada: em que ela difere do formulario. Com diferenca, a nota que existe NAO e' a que se
+        /// quis emitir (sobrou de uma tentativa anterior com outros dados).
+        diferencas: Vec<String>,
         /// Alertas da Sefin que acompanham a autorizacao.
         alertas: Vec<MensagemSefin>,
     },
@@ -106,6 +110,11 @@ impl DesfechoEmissao {
                     guardada: emitida.guardada.unwrap_or(false),
                     aviso: emitida.aviso.map(|_| AVISO_DA_PASTA.to_string()),
                     recuperada: r.recuperada,
+                    diferencas: emitida
+                        .diferencas
+                        .iter()
+                        .map(|d| rotulo_da_diferenca(d).to_string())
+                        .collect(),
                     alertas: r.alertas.iter().map(MensagemSefin::from).collect(),
                 }
             }
@@ -115,7 +124,7 @@ impl DesfechoEmissao {
                 if mensagens.is_empty() {
                     mensagens.push(MensagemSefin {
                         codigo: String::new(),
-                        descricao: frase_da_sefin(&r.frase),
+                        descricao: frase(&r.frase),
                         complemento: String::new(),
                         dica: String::new(),
                         campo: None,
@@ -125,7 +134,7 @@ impl DesfechoEmissao {
             }
             // recusa local da biblioteca (nada saiu para a rede)
             Status::Erro if r.http == 0 && r.detalhe.is_empty() => Self::Recusada {
-                pendencia: Pendencia::geral(frase_da_sefin(&r.frase)),
+                pendencia: Pendencia::geral(frase(&r.frase)),
             },
             Status::Pendente | Status::Indisponivel | Status::Erro | Status::NaoEncontrada => {
                 Self::SemResposta {
@@ -153,20 +162,35 @@ pub const TEXTO_SEM_RESPOSTA: &str = "A Sefin Nacional não respondeu (ou está 
 /// Explica o que "Tentar de novo" faz.
 pub const EXPLICACAO_DE_TENTAR_DE_NOVO: &str = "Tentar de novo reenvia exatamente o mesmo pedido (mesmo número de DPS e mesma data e hora de emissão). Se a nota já existir na Sefin, ela é recuperada, sem duplicar.";
 
-/// O aviso de quem desiste de uma tentativa sem desfecho.
+/// O aviso de quem desiste de uma tentativa sem desfecho. O numero da DPS nao avanca na desistencia: a proxima
+/// emissao usa o mesmo, e a Sefin devolve a nota anterior se ela existir.
 #[must_use]
 pub fn aviso_de_desistir(serie: &str, numero: u64) -> String {
     format!(
-        "A nota PODE ter sido autorizada (DPS número {numero}, série {serie}). Antes de emitir outra, consulte pela chave de acesso ou pelo número da DPS (na linha de comando: rustnf consultar). Emitir outra sem conferir pode duplicar a nota."
+        "A nota PODE ter sido autorizada (DPS número {numero}, série {serie}). A próxima emissão usa esse mesmo número: se a nota anterior existir na Sefin, é ela que volta, e a tela avisa quando os dados dela não são os do formulário."
     )
 }
 
-fn frase_da_sefin(frase: &str) -> String {
-    let mut c = frase.trim().chars();
-    match c.next() {
-        Some(p) => p.to_uppercase().chain(c).collect(),
-        None => String::new(),
+/// O nome, para a tela, de cada diferenca que a camada de aplicacao aponta numa nota recuperada.
+fn rotulo_da_diferenca(diferenca: &str) -> &str {
+    match diferenca {
+        "valor do servico" => "valor do serviço",
+        "codigo do servico" => "código do serviço",
+        "competencia" => "competência",
+        outra => outra,
     }
+}
+
+/// O que a tela diz da nota recuperada cujos dados conferem com os do formulario.
+pub const TEXTO_DA_RECUPERADA: &str = "A nota já existia na Sefin com este número de DPS (a resposta de um envio anterior se perdeu) e foi recuperada pela consulta. Os dados dela conferem com os do formulário. Não houve duplicidade.";
+
+/// O que a tela diz da nota recuperada que NAO e' a do formulario.
+#[must_use]
+pub fn texto_da_recuperada_diferente(diferencas: &[String]) -> String {
+    format!(
+        "Já existia na Sefin uma nota com este número de DPS, de uma tentativa anterior, e ela NÃO é a do formulário: difere em {}. Ela foi autorizada naquela tentativa e é a nota mostrada abaixo. A nota do formulário ainda não foi emitida: volte ao formulário, que está como você deixou, e emita de novo (o número da DPS já avançou).",
+        diferencas.join(", ")
+    )
 }
 
 #[cfg(test)]
@@ -200,6 +224,7 @@ mod testes {
             numero_dps: None,
             guardada: None,
             aviso: None,
+            diferencas: Vec::new(),
         }
     }
 
@@ -229,8 +254,10 @@ mod testes {
                 guardada,
                 aviso,
                 recuperada,
+                diferencas,
                 alertas,
             } => {
+                assert!(diferencas.is_empty());
                 assert_eq!(numero, "25");
                 assert_eq!(chave.len(), 50);
                 assert!(guardada);
@@ -241,6 +268,35 @@ mod testes {
             }
             outro => panic!("{outro:?}"),
         }
+    }
+
+    #[test]
+    fn recuperada_de_outra_tentativa_leva_as_diferencas_com_o_nome_da_tela() {
+        let mut r = resultado(Status::Autorizada);
+        r.recuperada = true;
+        let mut e = emitida(r);
+        e.diferencas = vec![
+            "tomador",
+            "valor do servico",
+            "codigo do servico",
+            "competencia",
+        ];
+        let DesfechoEmissao::Autorizada { diferencas, .. } = DesfechoEmissao::de(Ok(e), 3) else {
+            panic!("esperava autorizada");
+        };
+        assert_eq!(
+            diferencas,
+            [
+                "tomador",
+                "valor do serviço",
+                "código do serviço",
+                "competência"
+            ]
+        );
+        let texto = texto_da_recuperada_diferente(&diferencas);
+        assert!(texto.contains("NÃO é a do formulário"));
+        assert!(texto.contains("tomador, valor do serviço"));
+        assert!(texto.contains("ainda não foi emitida"));
     }
 
     #[test]
@@ -340,6 +396,6 @@ mod testes {
         assert!(a.contains("PODE ter sido autorizada"));
         assert!(a.contains("número 42"));
         assert!(a.contains("série 1"));
-        assert!(a.contains("duplicar"));
+        assert!(a.contains("mesmo número"));
     }
 }

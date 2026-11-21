@@ -14,8 +14,11 @@
 //! * [`previa`] -- a base de calculo e o IBS/CBS de um servico, como a Sefin Nacional vai calcular.
 //!
 //! A DPS nao leva valor de IBS/CBS calculado (quem calcula e' a Sefin Nacional): este modulo serve para conferir
-//! o que vai na DPS e para consultar as tabelas e as aliquotas. Percentual em x10000 (4 casas, `i64`);
-//! arredondamento meio-para-cima (longe do zero); os casos em `tests/casos/reforma.json` conferem texto a texto.
+//! o que vai na DPS e para consultar as tabelas e as aliquotas. Percentual em x10000 (4 casas, `i64`). Dois
+//! arredondamentos convivem, cada um no seu lugar: os VALORES da previa (base, aliquota efetiva, IBS, CBS) usam
+//! "meio para o par", como a calculadora oficial (veja [`previa`]); a LEITURA de um texto de aliquota ou de reducao
+//! com mais de 4 casas usa meio-para-cima, longe do zero. Os casos em `tests/casos/reforma.json` conferem texto a
+//! texto.
 pub mod aliquotas;
 pub mod atividades_sn;
 mod decimal;

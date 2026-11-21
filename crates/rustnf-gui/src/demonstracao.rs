@@ -8,7 +8,7 @@
 //! emissao de verdade. So' existe com a feature `demonstracao` (e nos testes); o executavel normal nao tem como
 //! entrar nesse modo.
 
-use std::collections::VecDeque;
+use std::collections::{HashMap, VecDeque};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -27,7 +27,8 @@ use crate::servicos::{ErroTela, FabricaDeEmissor, Preparo};
 pub enum Desfecho {
     /// A Sefin autoriza a nota.
     Autorizada,
-    /// A resposta do envio se perde e a consulta acha a nota: autorizada e recuperada.
+    /// A consulta acha a nota que ja existe com esta serie e este numero de DPS: a da PRIMEIRA chamada com eles
+    /// (a mesma do pedido num reenvio; outra, se os dados mudaram depois de uma desistencia).
     Recuperada,
     /// A Sefin recusa a DPS, com duas mensagens.
     Rejeitada,
@@ -58,6 +59,8 @@ pub struct EmissorDemonstracao {
     atraso: Duration,
     roteiro: Mutex<VecDeque<Desfecho>>,
     chamadas: Mutex<Vec<Chamada>>,
+    /// A primeira DPS que chegou com cada serie e numero: e' a nota que "ja existe" numa recuperacao.
+    primeiras: Mutex<HashMap<(String, String), Dps>>,
 }
 
 impl EmissorDemonstracao {
@@ -70,6 +73,7 @@ impl EmissorDemonstracao {
             atraso,
             roteiro: Mutex::new(roteiro.iter().copied().collect()),
             chamadas: Mutex::new(Vec::new()),
+            primeiras: Mutex::new(HashMap::new()),
         })
     }
 
@@ -83,6 +87,18 @@ impl EmissorDemonstracao {
     #[must_use]
     pub fn chamadas(&self) -> Vec<Chamada> {
         self.chamadas.lock().map(|c| c.clone()).unwrap_or_default()
+    }
+
+    /// A DPS que "ja existe" na serie e no numero desta: a primeira que chegou com eles (esta, se for a primeira).
+    fn a_que_ja_existe(&self, dps: &Dps) -> Dps {
+        let id = (
+            dps.serie.as_str().trim().to_string(),
+            dps.numero.as_str().trim().to_string(),
+        );
+        match self.primeiras.lock() {
+            Ok(mut p) => p.entry(id).or_insert_with(|| dps.clone()).clone(),
+            Err(_) => dps.clone(),
+        }
     }
 
     fn proximo(&self) -> Desfecho {
@@ -127,6 +143,20 @@ fn so_digitos(t: &str) -> String {
     t.chars().filter(char::is_ascii_digit).collect()
 }
 
+/// `CPF` para 11 caracteres; senao `CNPJ` (que pode ter letras: conta-se letra e digito).
+fn tag_do_documento(documento: &str) -> &'static str {
+    if documento
+        .chars()
+        .filter(char::is_ascii_alphanumeric)
+        .count()
+        == 11
+    {
+        "CPF"
+    } else {
+        "CNPJ"
+    }
+}
+
 /// A NFS-e autorizada para a DPS, como a Sefin a devolveria (so' o que a camada de aplicacao le).
 fn nfse_autorizada(dps: &Dps, ambiente: u8) -> Option<(String, String)> {
     let numero: u64 = dps.numero.as_str().trim().parse().ok()?;
@@ -141,17 +171,9 @@ fn nfse_autorizada(dps: &Dps, ambiente: u8) -> Option<(String, String)> {
     let documento = dps.prestador.pessoa.documento.clone();
     let chave =
         chave_dfe::montar_nfse(cmun, &documento, numero, &aamm, Some(123_456_789), 2).ok()?;
-    let doc_tag = if so_digitos(&documento).len() == 11 {
-        "CPF"
-    } else {
-        "CNPJ"
-    };
+    let doc_tag = tag_do_documento(&documento);
     let tomador = dps.tomador.as_ref().map_or_else(String::new, |t| {
-        let tag = if so_digitos(&t.documento).len() == 11 {
-            "CPF"
-        } else {
-            "CNPJ"
-        };
+        let tag = tag_do_documento(&t.documento);
         format!(
             "<toma><{tag}>{}</{tag}><xNome>{}</xNome></toma>",
             esc(&t.documento),
@@ -229,12 +251,13 @@ impl Emissor for EmissorDemonstracao {
                 valor: dps.valores.servico.as_str().to_string(),
             });
         }
+        let existente = self.a_que_ja_existe(dps);
         if !self.atraso.is_zero() {
             tokio::time::sleep(self.atraso).await;
         }
         match self.proximo() {
             Desfecho::Autorizada => autorizada(dps, self.ambiente, false),
-            Desfecho::Recuperada => autorizada(dps, self.ambiente, true),
+            Desfecho::Recuperada => autorizada(&existente, self.ambiente, true),
             Desfecho::Rejeitada => {
                 let mut r = resultado(Status::Rejeitada, "A Sefin recusou a DPS (demonstracao).");
                 r.http = 400;

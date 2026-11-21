@@ -57,6 +57,8 @@ pub(super) struct Concluida {
     pub(super) guardada: bool,
     pub(super) aviso: Option<String>,
     pub(super) recuperada: bool,
+    /// Nota recuperada que nao e' a do formulario: em que difere.
+    pub(super) diferencas: Vec<String>,
     pub(super) alertas: Vec<MensagemSefin>,
 }
 
@@ -210,7 +212,7 @@ impl NovaNota {
         let busca = cx.new(|cx| {
             InputState::new(window, cx).placeholder("Buscar o serviço por palavra ou código")
         });
-        let dados = DadosNota::novo(&ctx.hoje());
+        let dados = ctx.nota_nova();
         let mut nova = Self {
             servicos,
             config,
@@ -307,6 +309,10 @@ impl NovaNota {
     ) {
         let primeira = !self.carregada && completa;
         self.ctx = self.servicos.contexto_da_nota(&config);
+        // formulario ainda sem nada digitado: a chave do grupo IBS/CBS acompanha o regime da configuracao que chegou
+        if matches!(self.fase, Fase::Editando) && self.dados.vazio(&self.ctx.hoje()) {
+            self.dados.ibscbs_ativo = self.ctx.regime().informa_ibscbs_por_padrao();
+        }
         self.config = config;
         self.pronta = completa;
         if primeira {
@@ -631,7 +637,7 @@ impl NovaNota {
         if self.travado() {
             return;
         }
-        self.dados = DadosNota::novo(&self.ctx.hoje());
+        self.dados = self.ctx.nota_nova();
         self.sincronizar(window, cx);
         self.tocados.clear();
         self.marcas.clear();

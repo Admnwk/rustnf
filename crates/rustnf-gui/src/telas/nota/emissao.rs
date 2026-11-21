@@ -215,18 +215,24 @@ impl NovaNota {
                 guardada,
                 aviso,
                 recuperada,
+                diferencas,
                 alertas,
             } => {
+                // nota recuperada que nao e' a do formulario: o formulario (e o rascunho) ficam para emitir de novo
+                let e_a_do_formulario = diferencas.is_empty();
                 self.fase = Fase::Concluida(Concluida {
                     numero,
                     chave,
                     guardada,
                     aviso,
                     recuperada,
+                    diferencas,
                     alertas,
                 });
                 self.copiada = false;
-                self.versao_do_rascunho_para_apagar(cx);
+                if e_a_do_formulario {
+                    self.versao_do_rascunho_para_apagar(cx);
+                }
                 self.atualizar_numero(cx);
             }
             DesfechoEmissao::Rejeitada { mensagens } => {
@@ -275,6 +281,15 @@ impl NovaNota {
         }
         self.fase = Fase::Editando;
         self.limpar(window, cx);
+    }
+
+    /// Depois de uma nota recuperada que nao e' a do formulario: volta a editar, com tudo como estava.
+    pub(in crate::telas) fn voltar_ao_formulario(&mut self, cx: &mut Context<Self>) {
+        if !matches!(self.fase, Fase::Concluida(_)) {
+            return;
+        }
+        self.fase = Fase::Editando;
+        cx.notify();
     }
 
     /// Copia a chave de acesso da nota autorizada.

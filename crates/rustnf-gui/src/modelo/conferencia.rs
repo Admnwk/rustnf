@@ -613,6 +613,7 @@ fn separar_regra(mensagem: &str) -> (String, Option<String>) {
 #[must_use]
 pub fn pendencia_da_recusa(campo: &str, mensagem: &str, op_simples: u8) -> Pendencia {
     let (frase, regra) = separar_regra(mensagem);
+    let frase = super::mascara::frase(&frase);
     let da_tela = campo_da_recusa(campo, op_simples);
     let mensagem = match (da_tela, campo.is_empty()) {
         (Some(_), _) | (None, true) => frase,
@@ -1002,7 +1003,7 @@ mod testes {
         assert!(p.mensagem.contains("linha de comando"));
         let vazia = pendencia_da_recusa("", "falha qualquer", 1);
         assert_eq!(vazia.campo, None);
-        assert_eq!(vazia.mensagem, "falha qualquer");
+        assert_eq!(vazia.mensagem, "Falha qualquer");
         assert_eq!(vazia.regra, None);
     }
 

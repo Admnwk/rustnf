@@ -14,7 +14,9 @@ use gpui_kit::{
 
 use super::{Concluida, Fase, NovaNota};
 use crate::modelo::certificado::Gravidade;
-use crate::modelo::emissao::{MensagemSefin, EXPLICACAO_DE_TENTAR_DE_NOVO};
+use crate::modelo::emissao::{
+    texto_da_recuperada_diferente, MensagemSefin, EXPLICACAO_DE_TENTAR_DE_NOVO, TEXTO_DA_RECUPERADA,
+};
 use crate::telas::pecas::{cabecalho, cartao, faixa, linha_de_resumo, Negrito as _};
 
 /// A chave de acesso em grupos de 5, para ler e para quebrar a linha.
@@ -41,24 +43,33 @@ impl NovaNota {
         let sucesso = tema.success;
         let muted = tema.muted_foreground;
         let copiada = self.copiada;
+        // nota recuperada que nao e' a do formulario: a tela nao comemora, avisa
+        let outra = !c.diferencas.is_empty();
+        let aviso_cor = crate::telas::pecas::cor_da(Gravidade::Aviso, cx);
         let mut caixa = cartao(cx).id("nota-autorizada").gap_4().child(
             h_flex()
                 .gap_3()
                 .items_center()
-                .child(Icon::new(IconName::CircleCheck).large().text_color(sucesso))
+                .child(if outra {
+                    Icon::new(IconName::TriangleAlert)
+                        .large()
+                        .text_color(aviso_cor)
+                } else {
+                    Icon::new(IconName::CircleCheck).large().text_color(sucesso)
+                })
                 .child(
                     v_flex()
                         .gap_0p5()
-                        .child(
-                            div()
-                                .text_xl()
-                                .font_semibold()
-                                .child(if c.numero.is_empty() {
-                                    "NFS-e autorizada".to_string()
-                                } else {
-                                    format!("NFS-e nº {} autorizada", c.numero)
-                                }),
-                        )
+                        .child(div().text_xl().font_semibold().child(
+                            match (outra, c.numero.is_empty()) {
+                                (true, true) => {
+                                    "Já existia uma NFS-e com este número de DPS".to_string()
+                                }
+                                (true, false) => format!("A NFS-e nº {} já existia", c.numero),
+                                (false, true) => "NFS-e autorizada".to_string(),
+                                (false, false) => format!("NFS-e nº {} autorizada", c.numero),
+                            },
+                        ))
                         .child(
                             h_flex()
                                 .gap_2()
@@ -85,12 +96,17 @@ impl NovaNota {
                         ),
                 ),
         );
-        if c.recuperada {
-            caixa = caixa.child(faixa(
-                Gravidade::Neutro,
-                "A resposta do envio se perdeu e a nota foi recuperada pela consulta à Sefin. Não houve duplicidade.",
-                cx,
-            ));
+        if outra {
+            caixa = caixa.child(
+                faixa(
+                    Gravidade::Aviso,
+                    texto_da_recuperada_diferente(&c.diferencas),
+                    cx,
+                )
+                .id("nota-de-outra-tentativa"),
+            );
+        } else if c.recuperada {
+            caixa = caixa.child(faixa(Gravidade::Neutro, TEXTO_DA_RECUPERADA, cx));
         }
         caixa = caixa
             .child(linha_de_resumo("Número", c.numero.clone(), cx))
@@ -144,15 +160,19 @@ impl NovaNota {
         for a in &c.alertas {
             caixa = caixa.child(self.mensagem_da_sefin(a, Gravidade::Aviso, cx));
         }
-        caixa = caixa.child(
-            h_flex().child(
-                Button::new("nova-nota-limpa")
-                    .label("Nova nota")
-                    .icon(IconName::Plus)
-                    .primary()
-                    .on_click(cx.listener(|this, _, window, cx| this.nova_nota(window, cx))),
-            ),
-        );
+        caixa = caixa.child(h_flex().child(if outra {
+            Button::new("voltar-ao-formulario")
+                .label("Voltar ao formulário")
+                .icon(IconName::ChevronLeft)
+                .primary()
+                .on_click(cx.listener(|this, _, _, cx| this.voltar_ao_formulario(cx)))
+        } else {
+            Button::new("nova-nota-limpa")
+                .label("Nova nota")
+                .icon(IconName::Plus)
+                .primary()
+                .on_click(cx.listener(|this, _, window, cx| this.nova_nota(window, cx)))
+        }));
         div()
             .id("resultado-da-nota")
             .size_full()
@@ -167,7 +187,11 @@ impl NovaNota {
                     .py_8()
                     .child(cabecalho(
                         "Nova nota",
-                        "A Sefin Nacional autorizou a nota.",
+                        if outra {
+                            "A Sefin Nacional devolveu uma nota que já existia."
+                        } else {
+                            "A Sefin Nacional autorizou a nota."
+                        },
                         cx,
                     ))
                     .child(caixa),

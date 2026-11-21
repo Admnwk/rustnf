@@ -56,6 +56,14 @@ impl Contexto {
         Regime::de(&self.emitente)
     }
 
+    /// O formulario vazio de uma nota nova: competencia de hoje e o grupo IBS/CBS conforme o regime do emitente.
+    #[must_use]
+    pub fn nota_nova(&self) -> DadosNota {
+        let mut dados = DadosNota::novo(&self.hoje());
+        dados.ibscbs_ativo = self.regime().informa_ibscbs_por_padrao();
+        dados
+    }
+
     /// A serie da DPS: a do `[emitente]`, ou 1.
     #[must_use]
     pub fn serie(&self) -> String {
@@ -558,6 +566,18 @@ pub(crate) mod testes {
         d.sem_tomador = true;
         let p = montar_pedido(&d, &ctx_do_caso());
         assert!(p.get("tomador").is_none());
+    }
+
+    #[test]
+    fn nota_nova_nasce_com_o_grupo_ibscbs_so_para_quem_nao_e_do_simples() {
+        let agora = "2026-11-21T15:00:00Z".parse().unwrap();
+        for (op, esperado) in [(1, true), (2, false), (3, false)] {
+            let mut config = config_do_caso();
+            config.emitente.op_simples = op;
+            let nota = Contexto::de_config(&config, agora).nota_nova();
+            assert_eq!(nota.ibscbs_ativo, esperado, "op_simples {op}");
+            assert_eq!(nota.competencia, "21/11/2026");
+        }
     }
 
     #[test]

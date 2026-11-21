@@ -218,6 +218,9 @@ fn preencher(cx: &mut TestAppContext, c: &Cenario) {
     digitar(cx, c, "nota-nbs", "120011000");
     digitar(cx, c, "nota-valor-servico", "1234,56");
     digitar(cx, c, "nota-percentual-sn", "4,5");
+    // o emitente do ensaio e' do Simples: a nota nasce sem o grupo IBS/CBS, e o caso comum o liga
+    cx.update(|cx| c.nova.update(cx, |n, cx| n.escolher_ibscbs(true, cx)));
+    cx.run_until_parked();
     digitar(cx, c, "nota-cind-op", "050101");
     digitar(cx, c, "nota-class-trib", "000001");
 }
@@ -513,6 +516,58 @@ fn desistir_volta_a_editar_com_o_aviso_de_que_a_nota_pode_ter_sido_autorizada(
         assert_eq!(n.dados.tomador_nome, "Maria de Teste");
     });
     assert!(!existe(cx, &c, "tentar-de-novo-emissao"));
+}
+
+#[gpui_kit::test]
+fn depois_de_desistir_a_nota_antiga_que_volta_e_avisada_e_o_formulario_fica(
+    cx: &mut TestAppContext,
+) {
+    let c = cenario(
+        cx,
+        "restrita",
+        &[Desfecho::SemResposta, Desfecho::Recuperada],
+        true,
+        1120.,
+    );
+    preencher(cx, &c);
+    clicar(cx, &c, "emitir");
+    clicar(cx, &c, "confirmar-emissao");
+    esperar(cx, &c, "sem resposta", |n| {
+        matches!(n.fase, Fase::Pendente { .. })
+    });
+    cx.update(|cx| c.nova.update(cx, |n, cx| n.desistir(cx)));
+    // outra nota no mesmo formulario: muda o valor e emite de novo, com o mesmo numero de DPS
+    digitar(cx, &c, "nota-valor-servico", "999,00");
+    clicar(cx, &c, "emitir");
+    clicar(cx, &c, "confirmar-emissao");
+    esperar(cx, &c, "a nota antiga", |n| {
+        matches!(n.fase, Fase::Concluida(_))
+    });
+    let Fase::Concluida(r) = cx.update(|cx| c.nova.read(cx).fase.clone()) else {
+        panic!("esperava concluida");
+    };
+    assert!(r.recuperada);
+    assert_eq!(r.diferencas, ["valor do serviço"]);
+    assert!(existe(cx, &c, "voltar-ao-formulario"));
+    assert!(!existe(cx, &c, "nova-nota-limpa"));
+    // a nota que existe e' a da primeira tentativa: foi guardada e gastou o numero
+    let chamadas = c.emissor.chamadas();
+    assert_eq!(chamadas.len(), 2);
+    assert_eq!(chamadas[0].numero, chamadas[1].numero);
+    assert_ne!(chamadas[0].valor, chamadas[1].valor);
+    let notas = Notas::abrir(&c.notas).unwrap();
+    let lista = notas.listar().unwrap();
+    assert_eq!(lista.len(), 1);
+    assert_eq!(lista[0].valor_servico, chamadas[0].valor);
+    assert_eq!(notas.proximo_numero("1").unwrap(), 2);
+    // o formulario volta como estava, para emitir a nota que faltou
+    clicar(cx, &c, "voltar-ao-formulario");
+    cx.update(|cx| {
+        let n = c.nova.read(cx);
+        assert!(matches!(n.fase, Fase::Editando));
+        assert_eq!(n.dados.valor_servico, "999,00");
+        assert_eq!(n.dados.tomador_nome, "Maria de Teste");
+    });
 }
 
 #[gpui_kit::test]

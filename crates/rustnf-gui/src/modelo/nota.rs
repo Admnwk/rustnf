@@ -589,10 +589,15 @@ impl DadosNota {
         .any(|t| !t.trim().is_empty())
     }
 
-    /// Nada foi digitado nem escolhido alem do que ja vem de fabrica (so' a competencia, se for a de `hoje`).
+    /// Nada foi digitado nem escolhido alem do que ja vem de fabrica (so' a competencia, se for a de `hoje`). A
+    /// chave do grupo IBS/CBS nao conta: ela nasce conforme o regime do emitente e, sozinha, nao e' dado da nota.
     #[must_use]
     pub fn vazio(&self, hoje: &str) -> bool {
-        *self == Self::novo(hoje)
+        let de_fabrica = Self {
+            ibscbs_ativo: self.ibscbs_ativo,
+            ..Self::novo(hoje)
+        };
+        *self == de_fabrica
     }
 
     /// O documento do tomador, so' com letras e digitos.
@@ -640,6 +645,14 @@ impl Regime {
             op_simples: emitente.op_simples,
             regime_especial: emitente.regime_especial,
         }
+    }
+
+    /// A nota nasce com o grupo IBS/CBS ligado: so' para quem nao e' optante do Simples Nacional. As aliquotas de
+    /// 2026 nao se aplicam ao optante (LC 214/2025, art. 348, III, como a previa da biblioteca diz), entao a nota
+    /// dele nasce sem o grupo. E' so' o ponto de partida: a chave da tela liga e desliga nos dois casos.
+    #[must_use]
+    pub fn informa_ibscbs_por_padrao(self) -> bool {
+        self.op_simples == 1
     }
 
     /// A tela pede o percentual de tributos do Simples Nacional (so' ME/EPP).
@@ -764,6 +777,10 @@ mod testes {
         let mut mexido = d();
         mexido.definir(CampoNota::Descricao, "x");
         assert!(!mexido.vazio("21/11/2026"));
+        // so' a chave do grupo IBS/CBS (que nasce conforme o regime) nao e' dado digitado
+        let mut so_a_chave = DadosNota::novo("21/11/2026");
+        so_a_chave.ibscbs_ativo = false;
+        assert!(so_a_chave.vazio("21/11/2026"));
     }
 
     #[test]

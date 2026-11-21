@@ -216,7 +216,10 @@ Com `[notas].pasta`, o `emitir` guarda cada nota autorizada, sem banco de dados:
 ```
 
 Sem `numero` no pedido, o `emitir` usa o proximo da serie. O numero so' avanca em nota autorizada ou recuperada
-(rejeitada ou pendente nao gasta numero) e nunca volta atras. O `cancelar` marca a nota como cancelada no indice.
+(rejeitada ou pendente nao gasta numero) e nunca volta atras. Nota recuperada e' a que ja existia na Sefin com
+aquela serie e aquele numero de DPS: se os dados dela nao forem os do pedido (sobra de uma tentativa anterior), a
+resposta traz `recuperada_difere` com o que difere (tomador, valor, codigo do servico, competencia) e a nota do pedido
+NAO foi emitida; emita de novo, que o numero ja avancou. O `cancelar` marca a nota como cancelada no indice.
 `rustnf notas listar [--json]` lista as notas. As gravacoes sao atomicas (arquivo temporario e `rename`); o nome do
 arquivo vem so' da chave de acesso conferida.
 
@@ -350,7 +353,8 @@ de notas e a data e hora de emissao sao automaticas. O formulario cobre o **caso
 * **tributos federais** (opcional): IRRF, CSLL, contribuicao previdenciaria e PIS/COFINS;
 * **IBS/CBS**: `cIndOp`, `cClassTrib` (o CST sai dele) e consumidor final, com a **sugestao da correlacao do Anexo VIII**
   (NBS, `cIndOp` e `cClassTrib`): ela so' propoe, so' preenche campo vazio e nao escolhe calada quando ha mais de uma
-  classificacao. A biblioteca aceita a nota sem este grupo, entao a tela o deixa desligavel.
+  classificacao. A biblioteca aceita a nota sem este grupo, entao a tela o deixa desligavel: a nota nasce com ele
+  ligado para quem nao e' optante do Simples Nacional e desligado para o optante.
 
 Um painel fixo ao lado (embaixo, em janela estreita) mostra, enquanto voce digita, as **pendencias** (clique leva ao campo),
 o resumo de valores com o valor liquido estimado, a **previa do IBS/CBS** (com as `[[aliquotas]]` da configuracao; sem
@@ -361,7 +365,9 @@ de notas (`rascunho.json`) e volta ao reabrir; "Limpar" pergunta antes.
 Emitir abre uma confirmacao com o ambiente em destaque; **em producao ela so' habilita depois de marcar "Entendo que esta
 nota tem valor fiscal"**. O envio roda fora da tela e o pedido enviado fica congelado (mesmo numero de DPS, mesma data e
 hora): se a Sefin nao responder, o formulario trava e "Tentar de novo" reenvia exatamente o mesmo pedido (a biblioteca
-recupera a nota se ela ja existir); "Desistir desta tentativa" avisa que a nota pode ter sido autorizada. Se a Sefin
+recupera a nota se ela ja existir); "Desistir desta tentativa" avisa que a nota pode ter sido autorizada. O numero da
+DPS nao avanca na desistencia: se a nota anterior existir, e' ela que a Sefin devolve na emissao seguinte, e a tela
+avisa quando os dados dela nao sao os do formulario (que fica como estava, para emitir de novo). Se a Sefin
 rejeitar, os dados ficam e as mensagens aparecem no painel. Sem senha no cofre, a tela a pede (so' para aquela emissao;
 nao e' guardada). O que a tela nao cobre (tomador no exterior, intermediario, comercio exterior, obra, evento, locacao,
 deducoes, reembolsos, substituicao, beneficio municipal, suspensao, imunidade, destinatario diferente do tomador) se emite

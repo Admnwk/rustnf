@@ -11,7 +11,7 @@ use rustnf_app::nucleo::{self, Operacao};
 use serde_json::{json, Value};
 
 use super::mascara::{
-    centavos_para_dinheiro, data_br_para_iso, decimal_para_dinheiro, dinheiro_para_centavos,
+    centavos_para_dinheiro, data_br_para_iso, decimal_para_dinheiro, dinheiro_para_centavos, frase,
 };
 use super::nota::DadosNota;
 use super::pedido::{percentual, Contexto};
@@ -162,11 +162,7 @@ fn ler_resposta(v: &Value, ano: i32) -> Option<ValoresIbsCbs> {
         avisos: v
             .pointer("/tributos/avisos")
             .and_then(Value::as_array)
-            .map(|a| {
-                a.iter()
-                    .filter_map(|x| x.as_str().map(str::to_string))
-                    .collect()
-            })
+            .map(|a| a.iter().filter_map(|x| x.as_str().map(frase)).collect())
             .unwrap_or_default(),
     })
 }
@@ -238,7 +234,7 @@ pub fn ibscbs(d: &DadosNota, ctx: &Contexto) -> PreviaIbsCbs {
             if v["recusado"].as_bool() == Some(true) {
                 let motivo = texto_json(&v, "/bases/erros/0/mensagem")
                     .unwrap_or_else(|| "A base de cálculo foi recusada.".into());
-                return PreviaIbsCbs::Recusada(motivo);
+                return PreviaIbsCbs::Recusada(frase(&motivo));
             }
             match ler_resposta(&v, ano) {
                 Some(valores) => PreviaIbsCbs::Calculada(valores),
@@ -251,7 +247,7 @@ pub fn ibscbs(d: &DadosNota, ctx: &Contexto) -> PreviaIbsCbs {
             if sem_numero {
                 PreviaIbsCbs::SemAliquota { ano }
             } else {
-                PreviaIbsCbs::Recusada(e.mensagem())
+                PreviaIbsCbs::Recusada(frase(&e.mensagem()))
             }
         }
     }

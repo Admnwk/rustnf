@@ -705,16 +705,13 @@ impl NovaNota {
             .ghost()
             .on_click(cx.listener(|this, _, _, cx| this.alternar_federais(cx)));
         let mut cartao = cartao(cx).id("secao-federais").child(
-            h_flex()
-                .justify_between()
-                .items_center()
-                .child(cabeca)
-                .child(
-                    div()
-                        .text_xs()
-                        .text_color(cx.theme().muted_foreground)
-                        .child("Retenções de IRRF, CSLL e previdência; PIS e COFINS."),
-                ),
+            v_flex().items_start().gap_1().child(cabeca).child(
+                div()
+                    .pl_3()
+                    .text_xs()
+                    .text_color(cx.theme().muted_foreground)
+                    .child("Retenções de IRRF, CSLL e previdência; PIS e COFINS."),
+            ),
         );
         if aberta {
             cartao = cartao.child(
