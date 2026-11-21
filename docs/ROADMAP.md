@@ -31,12 +31,15 @@
   cancelamento, "usar como modelo", consulta pela chave e calculadora avulsa do IBS/CBS. Testadas com o emissor de
   demonstracao: **nenhuma nota real foi emitida, consultada nem cancelada por elas**.
 
+* Entrega: interface compilada e testada no Windows pelo CI; fluxo de release que monta os executaveis (Windows sem
+  dependencia do Visual C++ Redistributable, e Linux so' com a linha de comando) e abre a release como rascunho.
+
 ## Proximo
 
 1. Interface de desktop: os casos de emissao fora do caso comum (tomador no exterior, intermediario, comercio exterior,
    obra, evento, locacao, deducoes, reembolsos, substituicao, beneficio municipal, suspensao, imunidade e destinatario
-   diferente do tomador) seguem pela linha de comando. Faltam: icone e empacotamento do executavel, e a versao de
-   `rustnf-gui` para outros sistemas quando o GPUI tiver janela neles.
+   diferente do tomador) seguem pela linha de comando. Faltam: icone do executavel, assinatura de codigo (sem ela o
+   Windows avisa no primeiro uso) e a versao de `rustnf-gui` para outros sistemas quando o GPUI tiver janela neles.
 2. Cofre do sistema tambem no Linux e no macOS (hoje so' o Windows); aliquotas do arquivo de
    configuracao tambem na API HTTP e no MCP (hoje so' no `calcular` da linha de comando); trava que reserve o numero da
    DPS entre processos (hoje a trava protege a consistencia dos arquivos, nao a reserva do numero).
