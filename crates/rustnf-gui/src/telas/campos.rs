@@ -118,7 +118,7 @@ impl Raiz {
                     false,
                     Some("Até 5 dígitos. Vazio: a do pedido, ou 1.".into()),
                     e(Campo::Serie),
-                    Input::new(&self.entradas.serie).id("serie").text_right(),
+                    Input::new(&self.entradas.serie).id("serie"),
                 )
                 .col_span(1),
             );

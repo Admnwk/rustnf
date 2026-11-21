@@ -114,9 +114,25 @@ pub(super) fn cor_da(gravidade: Gravidade, cx: &App) -> Hsla {
     let tema = cx.theme();
     match gravidade {
         Gravidade::Ok => tema.success,
-        Gravidade::Aviso => tema.warning,
+        Gravidade::Aviso => legivel_no_claro(tema.warning, tema.is_dark()),
         Gravidade::Erro => tema.danger,
         Gravidade::Neutro => tema.muted_foreground,
+    }
+}
+
+/// Luminosidade maxima de uma cor de aviso usada como TEXTO sobre o fundo claro.
+const LUMINOSIDADE_DO_AVISO_NO_CLARO: f32 = 0.33;
+
+/// O amarelo de aviso do tema e' claro demais para texto sobre fundo claro: no tema claro ele escurece ate dar
+/// contraste de leitura; no escuro fica como o tema definiu.
+fn legivel_no_claro(cor: Hsla, escuro: bool) -> Hsla {
+    if escuro {
+        cor
+    } else {
+        Hsla {
+            l: cor.l.min(LUMINOSIDADE_DO_AVISO_NO_CLARO),
+            ..cor
+        }
     }
 }
 

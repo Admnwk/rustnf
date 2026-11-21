@@ -214,14 +214,14 @@ impl Raiz {
                                 false,
                                 Some("De 1 a 600.".into()),
                                 tempo_erro,
-                                Input::new(&self.entradas.tempo).id("tempo-limite").text_right(),
+                                Input::new(&self.entradas.tempo).id("tempo-limite"),
                             ))
                             .child(campo(
                                 "Folga do relógio (segundos)",
                                 false,
                                 Some("Tirada do horário ao preencher a emissão. Até 3600.".into()),
                                 folga_erro,
-                                Input::new(&self.entradas.folga).id("folga-do-relogio").text_right(),
+                                Input::new(&self.entradas.folga).id("folga-do-relogio"),
                             )),
                     ),
             )
@@ -265,7 +265,8 @@ impl Raiz {
         let muted = tema.muted_foreground;
         let borda = tema.border;
         let linhas = self.entradas.aliquotas.clone();
-        let larguras = [64., 112., 96., 112., 112.];
+        // a fonte, que e' texto livre, fica com o que sobra da largura
+        let larguras = [60., 92., 76., 96., 108.];
 
         let mut cabecalho_da_tabela = h_flex()
             .gap_2()
@@ -290,7 +291,7 @@ impl Raiz {
             for (j, coluna) in CampoAliquota::TODOS.iter().enumerate() {
                 let mut entrada =
                     Input::new(&linha[j]).id(SharedString::from(format!("aliquota-{i}-{j}")));
-                // numeros alinhados a direita; so' a fonte e' texto
+                // percentuais alinhados a direita, para comparar entre as linhas; so' a fonte e' texto
                 if *coluna != CampoAliquota::Fonte {
                     entrada = entrada.text_right();
                 }
