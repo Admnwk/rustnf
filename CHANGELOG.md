@@ -1,6 +1,9 @@
 # Changelog
 
-## Próxima versão
+## 0.3.0 - 2026-11-21
+
+Atenção ao atualizar: a emissão passa a recusar o pedido com campo de nome errado (veja "Mudança de comportamento"
+abaixo); a API HTTP e o MCP passam a usar a pasta de notas e o `[emitente]` da configuração, como a linha de comando.
 
 * A API HTTP e o MCP passam a emitir e a cancelar pelo mesmo caminho da linha de comando e da interface. Em
   `POST /emitir` e em `emitir_nfse`, o `[emitente]` da configuração completa o que o pedido não traz e, com
