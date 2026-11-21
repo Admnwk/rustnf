@@ -14,6 +14,7 @@ use crate::config::{aplicar_emitente, Emitente};
 use crate::emissao::{self, Emissor};
 use crate::erro::Erro;
 use crate::notas::{Notas, Registro};
+use crate::nucleo;
 
 /// Campo ausente do pedido: nao existe, e' `null` ou e' texto vazio.
 fn ausente(pedido: &Value, chave: &str) -> bool {
@@ -126,7 +127,7 @@ fn centavos(texto: &str) -> Option<i128> {
 ///    a emissao vale (a nota existe na Sefin): a resposta traz `guardada: false` e o `aviso`.
 ///
 /// A resposta e' a de [`emissao::emitir`]; com `notas`, ganha `guardada` (e `numero_dps`, quando o numero veio da
-/// pasta). Nota recuperada com dados diferentes dos do pedido (sobra de uma tentativa anterior com a mesma serie e o
+/// pasta). Pedido com campo que a DPS nao le ([`nucleo::campos_desconhecidos`]): `campos_desconhecidos` os lista. Nota recuperada com dados diferentes dos do pedido (sobra de uma tentativa anterior com a mesma serie e o
 /// mesmo numero): `recuperada_difere` lista o que difere, e a nota que existe NAO e' a do pedido.
 ///
 /// # Errors
@@ -139,8 +140,12 @@ pub async fn emitir_pedido(
     folga_segundos: u32,
     notas: Option<&Notas>,
 ) -> Result<Value, Erro> {
+    let desconhecidos = nucleo::campos_desconhecidos(&pedido);
     let emitida = emitir_pedido_completo(emissor, pedido, emitente, folga_segundos, notas).await?;
     let mut saida = emissao::resultado_json(&emitida.resultado)?;
+    if !desconhecidos.is_empty() {
+        saida["campos_desconhecidos"] = json!(desconhecidos);
+    }
     if let Some(guardada) = emitida.guardada {
         saida["guardada"] = json!(guardada);
     }

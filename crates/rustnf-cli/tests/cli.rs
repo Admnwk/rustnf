@@ -135,6 +135,109 @@ fn dps_conferir_diz_ok_ou_a_recusa_com_saida_3() {
     assert_eq!(v["campo"], campo);
 }
 
+/// O pedido valido com um campo de nome errado na raiz e outro dentro de `valores`.
+fn pedido_com_nome_errado() -> String {
+    let mut v = dps_valida();
+    v["descontos"] = json!("10.00");
+    v["valores"]["desconto_incondicional"] = json!("5.00");
+    gravar("dps_nome_errado.json", v.to_string().as_bytes())
+}
+
+#[test]
+fn campo_desconhecido_no_pedido_e_avisado_e_recusado_com_estrito() {
+    let pedido = pedido_com_nome_errado();
+    // sem --estrito: confere e monta como antes, e avisa no stderr quais campos foram ignorados
+    for acao in ["conferir", "montar"] {
+        let s = rodar(&["dps", acao, &pedido], None, &[]);
+        assert_eq!(s.codigo, 0, "{acao}: {}", s.err);
+        assert!(
+            s.err.contains("descontos") && s.err.contains("valores.desconto_incondicional"),
+            "{acao}: {}",
+            s.err
+        );
+    }
+    let s = rodar(&["dps", "montar", &pedido], None, &[]);
+    assert_eq!(
+        String::from_utf8(s.out).unwrap(),
+        format!("{}\n", xml_da_dps_valida()),
+        "o XML e' o do pedido sem os campos ignorados"
+    );
+    let s = rodar(&["dps", "conferir", &pedido, "--json"], None, &[]);
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    let v: Value = serde_json::from_slice(&s.out).unwrap();
+    assert_eq!(v["ok"], true);
+    assert_eq!(
+        v["campos_desconhecidos"],
+        json!(["descontos", "valores.desconto_incondicional"])
+    );
+
+    // com --estrito: recusa (saida 3) com o campo, sem montar
+    for acao in ["conferir", "montar"] {
+        let s = rodar(&["dps", acao, &pedido, "--estrito"], None, &[]);
+        assert_eq!(s.codigo, 3, "{acao}: {}", s.err);
+        assert!(s.out.is_empty(), "{acao}");
+        assert!(
+            s.err.contains("descontos: campo desconhecido"),
+            "{acao}: {}",
+            s.err
+        );
+    }
+    let s = rodar(
+        &["dps", "conferir", &pedido, "--estrito", "--json"],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 3);
+    let v: Value = serde_json::from_slice(&s.out).unwrap();
+    assert_eq!(v["ok"], false);
+    assert_eq!(v["campo"], "descontos");
+
+    // pedido limpo: --estrito nao muda nada, e o JSON nao ganha o campo
+    let boa = gravar("dps_boa_estrito.json", dps_valida().to_string().as_bytes());
+    let s = rodar(&["dps", "conferir", &boa, "--estrito", "--json"], None, &[]);
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    assert_eq!(
+        serde_json::from_slice::<Value>(&s.out).unwrap(),
+        json!({"ok": true})
+    );
+    assert!(s.err.is_empty(), "{}", s.err);
+}
+
+#[test]
+fn emitir_estrito_recusa_o_campo_desconhecido_antes_de_abrir_o_certificado() {
+    let pedido = pedido_com_nome_errado();
+    // sem certificado nem senha: a recusa do pedido vem primeiro
+    let s = rodar(
+        &["emitir", &pedido, "--estrito", "--ambiente", "restrita"],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 3, "{}", s.err);
+    assert!(s.err.contains("descontos: campo desconhecido"), "{}", s.err);
+    // sem --estrito o comando segue e para onde sempre parou: falta o certificado
+    let s = rodar(&["emitir", &pedido, "--ambiente", "restrita"], None, &[]);
+    assert_eq!(s.codigo, 2, "{}", s.err);
+    assert!(s.err.contains("--pfx"), "{}", s.err);
+}
+
+#[test]
+fn dps_esquema_imprime_o_schema_do_pedido() {
+    let s = rodar(&["dps", "esquema"], None, &[]);
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    let v: Value = serde_json::from_slice(&s.out).unwrap();
+    assert_eq!(v["type"], "object");
+    for campo in ["prestador", "servico", "valores", "tomador", "numero"] {
+        assert!(v["properties"][campo].is_object(), "{campo}");
+    }
+    assert!(v["required"].to_string().contains("numero"));
+    // o da emissao nao exige o que a configuracao completa
+    let s = rodar(&["dps", "esquema", "--emissao"], None, &[]);
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    let e: Value = serde_json::from_slice(&s.out).unwrap();
+    assert_eq!(e["properties"], v["properties"]);
+    assert!(!e["required"].to_string().contains("numero"));
+}
+
 #[test]
 fn dps_com_json_invalido_ou_arquivo_ausente_e_saida_2() {
     let s = rodar(&["dps", "conferir", "-"], Some("{ nao e json"), &[]);

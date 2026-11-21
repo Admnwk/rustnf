@@ -169,19 +169,61 @@ async fn sefin_testar(a: &ArgTestar, config: Option<&Path>, cofre: &dyn Cofre) -
     escrever_stdout(texto.as_bytes())
 }
 
+/// Avisa no stderr os campos do pedido que a DPS nao le.
+fn avisar_desconhecidos(campos: &[String]) {
+    for campo in campos {
+        eprintln!("aviso: campo desconhecido no pedido, ignorado: {campo} (confira o nome)");
+    }
+}
+
+/// Os campos desconhecidos do pedido ja lido como DPS. Com `estrito`, o pedido que tem algum e' recusado.
+fn desconhecidos_do(texto: &str, estrito: bool) -> Result<Vec<String>, Erro> {
+    // o texto ja foi lido como DPS: aqui ele so' e' lido de novo como JSON generico
+    let pedido: Value = serde_json::from_str(texto)?;
+    if estrito {
+        nucleo::recusar_desconhecidos(&pedido)?;
+    }
+    Ok(nucleo::campos_desconhecidos(&pedido))
+}
+
 fn dps(acao: AcaoDps) -> Result<(), Erro> {
     match acao {
-        AcaoDps::Montar { pedido } => {
-            let dps = nucleo::ler_dps(&entrada::ler_texto(&pedido, "o pedido")?)?;
+        AcaoDps::Esquema { emissao } => escrever_json(&if emissao {
+            crate::mcp::dps_de_emissao()
+        } else {
+            crate::mcp::dps()
+        }),
+        AcaoDps::Montar { pedido, estrito } => {
+            let texto = entrada::ler_texto(&pedido, "o pedido")?;
+            let dps = nucleo::ler_dps(&texto)?;
+            let desconhecidos = desconhecidos_do(&texto, estrito)?;
             let xml = nucleo::montar_dps(&dps)?;
+            avisar_desconhecidos(&desconhecidos);
             escrever_stdout(format!("{xml}\n").as_bytes())
         }
-        AcaoDps::Conferir { pedido, json } => {
-            let dps = nucleo::ler_dps(&entrada::ler_texto(&pedido, "o pedido")?)?;
-            let r = nucleo::conferir_dps(&dps);
+        AcaoDps::Conferir {
+            pedido,
+            json,
+            estrito,
+        } => {
+            let texto = entrada::ler_texto(&pedido, "o pedido")?;
+            let dps = nucleo::ler_dps(&texto)?;
+            let desconhecidos = desconhecidos_do(&texto, false)?;
+            let r = if estrito {
+                desconhecidos_do(&texto, true).map(|_| ())
+            } else {
+                Ok(())
+            }
+            .and_then(|()| nucleo::conferir_dps(&dps));
             if json {
                 escrever_json(&match &r {
-                    Ok(()) => nucleo::ok_simples(),
+                    Ok(()) => {
+                        let mut v = nucleo::ok_simples();
+                        if !desconhecidos.is_empty() {
+                            v["campos_desconhecidos"] = json!(desconhecidos);
+                        }
+                        v
+                    }
                     Err(e) => {
                         let mut v = e.envelope()["erro"].clone();
                         v["ok"] = json!(false);
@@ -190,6 +232,9 @@ fn dps(acao: AcaoDps) -> Result<(), Erro> {
                 })?;
             } else if r.is_ok() {
                 escrever_stdout(b"ok\n")?;
+            }
+            if r.is_ok() {
+                avisar_desconhecidos(&desconhecidos);
             }
             r
         }
@@ -280,6 +325,13 @@ fn imprimir(v: &Value, json: bool) -> Result<(), Erro> {
     if let Some(aviso) = v.get("aviso").and_then(Value::as_str) {
         eprintln!("aviso: {aviso}");
     }
+    if let Some(campos) = v.get("campos_desconhecidos").and_then(Value::as_array) {
+        let campos: Vec<String> = campos
+            .iter()
+            .filter_map(|c| c.as_str().map(String::from))
+            .collect();
+        avisar_desconhecidos(&campos);
+    }
     if json {
         escrever_json(v)
     } else {
@@ -323,6 +375,9 @@ async fn emitir(a: ArgEmitir, config: Option<&Path>, cofre: &dyn Cofre) -> Resul
     let texto = entrada::ler_texto(&a.pedido, "o pedido")?;
     // erro de sintaxe do JSON antes de qualquer outra coisa, como sempre foi
     let pedido: Value = serde_json::from_str(&texto)?;
+    if a.estrito {
+        nucleo::recusar_desconhecidos(&pedido)?;
+    }
     let efetiva = configuracao::carregar(config)?;
     let emissor = emissor_de(&a.sefin, &efetiva, cofre, a.pedido == "-")?;
     let v = emitir_valor(emissor.as_ref(), pedido, &efetiva, a.folga_relogio).await?;

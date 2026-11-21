@@ -364,6 +364,75 @@ async fn sem_emitente_e_sem_pasta_o_emitir_segue_como_era() {
     assert!(falso.chamadas().is_empty());
 }
 
+/// O pedido valido com um campo de nome errado na raiz e outro dentro de `valores`.
+fn pedido_com_nome_errado() -> Value {
+    let mut v = dps_valida();
+    v["descontos"] = json!("10.00");
+    v["valores"]["desconto_incondicional"] = json!("5.00");
+    v
+}
+
+#[tokio::test]
+async fn campo_desconhecido_volta_na_resposta_e_e_recusado_com_estrito() {
+    let app = app_leitura();
+    let pedido = pedido_com_nome_errado();
+    let esperado = json!(["descontos", "valores.desconto_incondicional"]);
+
+    let (st, _, corpo) = enviar(&app, post_json("/dps/conferir", &pedido)).await;
+    assert_eq!(st, StatusCode::OK);
+    let v = json_do_corpo(&corpo);
+    assert_eq!(v["ok"], true);
+    assert_eq!(v["campos_desconhecidos"], esperado);
+    let (st, _, corpo) = enviar(&app, post_json("/dps/montar", &pedido)).await;
+    assert_eq!(st, StatusCode::OK);
+    let v = json_do_corpo(&corpo);
+    assert_eq!(v["xml"], xml_da_dps_valida());
+    assert_eq!(v["campos_desconhecidos"], esperado);
+
+    // pedido limpo: a resposta e' a de sempre
+    let (_, _, corpo) = enviar(&app, post_json("/dps/conferir", &dps_valida())).await;
+    assert_eq!(json_do_corpo(&corpo), json!({"ok": true}));
+
+    // ?estrito=true: 422 com o campo
+    for rota in ["/dps/conferir?estrito=true", "/dps/montar?estrito=true"] {
+        let (st, _, corpo) = enviar(&app, post_json(rota, &pedido)).await;
+        assert_eq!(st, StatusCode::UNPROCESSABLE_ENTITY, "{rota}");
+        assert_eq!(
+            json_do_corpo(&corpo)["erro"]["campo"],
+            "descontos",
+            "{rota}"
+        );
+    }
+    let (st, _, _) = enviar(&app, post_json("/dps/conferir?estrito=true", &dps_valida())).await;
+    assert_eq!(st, StatusCode::OK);
+    let (st, _, _) = enviar(&app, post_json("/dps/conferir?estrito=talvez", &pedido)).await;
+    assert_eq!(st, StatusCode::BAD_REQUEST);
+}
+
+#[tokio::test]
+async fn emitir_avisa_o_campo_desconhecido_e_com_estrito_nao_chega_a_sefin() {
+    let ch = chave();
+    let falso = Falso::novo(vec![("POST", "/nfse".into(), autorizada(&ch))]);
+    let app = app_emissao(falso.clone());
+    let pedido = pedido_com_nome_errado();
+
+    // com ?estrito=true: 422 e nada sai para a rede
+    let (st, _, corpo) = enviar(&app, post_json_token("/emitir?estrito=true", &pedido)).await;
+    assert_eq!(st, StatusCode::UNPROCESSABLE_ENTITY);
+    assert_eq!(json_do_corpo(&corpo)["erro"]["campo"], "descontos");
+    assert!(falso.chamadas().is_empty());
+
+    // sem ele: emite como antes, e a resposta diz o que foi ignorado
+    let (st, _, corpo) = enviar(&app, post_json_token("/emitir", &pedido)).await;
+    assert_eq!(st, StatusCode::OK, "{}", String::from_utf8_lossy(&corpo));
+    let v = json_do_corpo(&corpo);
+    assert_eq!(v["status"], "autorizada");
+    assert_eq!(
+        v["campos_desconhecidos"],
+        json!(["descontos", "valores.desconto_incondicional"])
+    );
+}
+
 #[tokio::test]
 async fn calcular_usa_as_aliquotas_da_configuracao() {
     let pedido = json!({"tributos": {"data": "2027-06-01", "cst": "000", "cclass_trib": "000001", "base": "100.00"}});

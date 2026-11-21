@@ -40,7 +40,7 @@ const FERRAMENTAS: [Ferramenta; 7] = [
     Ferramenta {
         nome: "conferir_dps",
         titulo: "Conferir a DPS",
-        descricao: "Confere a DPS contra as regras do Anexo I sem enviar nada. Recusa volta com isError e o campo recusado.",
+        descricao: "Confere a DPS contra as regras do Anexo I sem enviar nada. Recusa volta com isError e o campo recusado. Campo que a DPS nao conhece (nome errado) nao e' recusa: volta listado em campos_desconhecidos.",
         emissao: false,
         schema: schemas::dps,
     },
@@ -176,9 +176,14 @@ async fn rodar(f: &Ferramenta, estado: &Estado, args: Value) -> Result<Value, Er
             Ok(resultado_estruturado(v, recusado))
         }
         "conferir_dps" => {
+            let desconhecidos = nucleo::campos_desconhecidos(&args);
             let dps: Dps = argumentos(args)?;
             nucleo::conferir_dps(&dps)?;
-            Ok(resultado_estruturado(nucleo::ok_simples(), false))
+            let mut v = nucleo::ok_simples();
+            if !desconhecidos.is_empty() {
+                v["campos_desconhecidos"] = json!(desconhecidos);
+            }
+            Ok(resultado_estruturado(v, false))
         }
         "montar_dps" => {
             let dps: Dps = argumentos(args)?;

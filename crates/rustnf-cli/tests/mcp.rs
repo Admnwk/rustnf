@@ -485,6 +485,33 @@ async fn emitir_consultar_e_cancelar_usam_o_emitente_e_a_pasta_de_notas() {
 }
 
 #[tokio::test]
+async fn conferir_e_emitir_dizem_o_campo_desconhecido() {
+    let mut pedido = dps_valida();
+    pedido["descontos"] = json!("10.00");
+    let ch = chave();
+    let app = app_emissao(Falso::novo(vec![("POST", "/nfse".into(), autorizada(&ch))]));
+
+    let r = chamar(&app, "conferir_dps", pedido.clone()).await;
+    assert_eq!(r["isError"], false, "{r}");
+    assert_eq!(r["structuredContent"]["ok"], true);
+    assert_eq!(
+        r["structuredContent"]["campos_desconhecidos"],
+        json!(["descontos"])
+    );
+    // pedido limpo: o resultado de sempre
+    let r = chamar(&app, "conferir_dps", dps_valida()).await;
+    assert_eq!(r["structuredContent"], json!({"ok": true}));
+
+    let r = chamar(&app, "emitir_nfse", pedido).await;
+    assert_eq!(r["isError"], false, "{r}");
+    assert_eq!(r["structuredContent"]["status"], "autorizada");
+    assert_eq!(
+        r["structuredContent"]["campos_desconhecidos"],
+        json!(["descontos"])
+    );
+}
+
+#[tokio::test]
 async fn consultar_nfse_e_ferramenta_de_emissao() {
     let ch = chave();
     // servidor sem emissao: a ferramenta nao existe
