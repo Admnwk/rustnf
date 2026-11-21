@@ -25,11 +25,12 @@
   * `rustnf notas exportar --mes AAAA-MM --para <pasta>`: copia os XML do mês e a lista em CSV, para a contabilidade;
   * `rustnf notas reindexar`: refaz o índice da pasta de notas a partir dos XML guardados, guardando o índice anterior
     ao lado.
-* Campo de nome errado no pedido da DPS deixa de ser ignorado em silêncio. `rustnf dps montar`, `dps conferir` e
-  `emitir` avisam no stderr o caminho de cada campo que a DPS não conhece, e a resposta em JSON (linha de comando, API
-  HTTP e MCP) traz a lista em `campos_desconhecidos`. Com `--estrito` (ou `?estrito=true` em `/dps/conferir`,
-  `/dps/montar` e `/emitir`), o pedido é recusado antes de qualquer envio. O padrão continua aceitando o pedido, para
-  não quebrar quem já usa.
+* **Mudança de comportamento:** campo de nome errado no pedido da DPS deixa de ser ignorado em silêncio. A
+  **emissão recusa** o pedido com campo que a DPS não conhece, antes de abrir o certificado e de qualquer envio: em
+  `rustnf emitir` (código 3; `--ignorar-desconhecidos` emite mesmo assim, sem o campo, e `--estrito` continua aceito),
+  em `POST /emitir` (422; `?estrito=false` emite sem o campo) e em `emitir_nfse` (`isError`). `rustnf dps montar` e
+  `dps conferir`, `/dps/conferir` e `/dps/montar` e `conferir_dps` avisam e devolvem a lista em
+  `campos_desconhecidos`; com `--estrito` ou `?estrito=true`, também recusam.
 * `rustnf dps esquema` imprime o JSON Schema do pedido da DPS (`--emissao` para o do `emitir`).
 * Interface de desktop:
   * correção na busca da tela Notas: um nome de tomador comprido com número no meio ("Clínica 24 Horas ...") era

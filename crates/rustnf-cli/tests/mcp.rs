@@ -502,13 +502,20 @@ async fn conferir_e_emitir_dizem_o_campo_desconhecido() {
     let r = chamar(&app, "conferir_dps", dps_valida()).await;
     assert_eq!(r["structuredContent"], json!({"ok": true}));
 
+    // a emissao recusa o pedido com campo desconhecido (resultado com isError), sem chegar a Sefin
     let r = chamar(&app, "emitir_nfse", pedido).await;
+    assert_eq!(r["isError"], true, "{r}");
+    assert!(
+        r["content"][0]["text"]
+            .as_str()
+            .unwrap()
+            .contains("descontos"),
+        "{r}"
+    );
+    // o pedido limpo emite
+    let r = chamar(&app, "emitir_nfse", dps_valida()).await;
     assert_eq!(r["isError"], false, "{r}");
     assert_eq!(r["structuredContent"]["status"], "autorizada");
-    assert_eq!(
-        r["structuredContent"]["campos_desconhecidos"],
-        json!(["descontos"])
-    );
 }
 
 #[tokio::test]

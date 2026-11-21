@@ -89,18 +89,20 @@ fn parametro<'a>(uri: &'a Uri, nome: &str) -> Option<&'a str> {
         .map(|(_, v)| v)
 }
 
-/// `?estrito=true`: recusar o pedido com campo desconhecido.
-fn estrito(uri: &Uri) -> Result<bool, Erro> {
+/// `?estrito=true|false`: recusar ou nao o pedido com campo desconhecido; sem o parametro, vale `padrao`.
+fn estrito(uri: &Uri, padrao: bool) -> Result<bool, Erro> {
     match parametro(uri, "estrito") {
-        None | Some("false") => Ok(false),
+        None => Ok(padrao),
+        Some("false") => Ok(false),
         Some("true") => Ok(true),
         Some(_) => Err(Erro::Entrada("estrito: use true ou false".into())),
     }
 }
 
-/// Os campos do pedido que a DPS nao le; com `?estrito=true`, o pedido que tem algum e' recusado.
-fn desconhecidos(uri: &Uri, pedido: &Value) -> Result<Vec<String>, Erro> {
-    if estrito(uri)? {
+/// Os campos do pedido que a DPS nao le. Estrito (pelo parametro ou pelo `padrao` da rota), o pedido que tem algum e'
+/// recusado.
+fn desconhecidos(uri: &Uri, pedido: &Value, padrao: bool) -> Result<Vec<String>, Erro> {
+    if estrito(uri, padrao)? {
         nucleo::recusar_desconhecidos(pedido)?;
     }
     Ok(nucleo::campos_desconhecidos(pedido))
@@ -122,7 +124,7 @@ pub(super) async fn dps_conferir(
 ) -> Resposta {
     let bytes = ler_corpo(&cabecalhos, corpo, estado.config.limite_corpo).await?;
     let dps: Dps = json_de(&bytes)?;
-    let campos = desconhecidos(&uri, &json_de(&bytes)?)?;
+    let campos = desconhecidos(&uri, &json_de(&bytes)?, false)?;
     nucleo::conferir_dps(&dps)?;
     Ok(resposta_json(
         StatusCode::OK,
@@ -138,7 +140,7 @@ pub(super) async fn dps_montar(
 ) -> Resposta {
     let bytes = ler_corpo(&cabecalhos, corpo, estado.config.limite_corpo).await?;
     let dps: Dps = json_de(&bytes)?;
-    let campos = desconhecidos(&uri, &json_de(&bytes)?)?;
+    let campos = desconhecidos(&uri, &json_de(&bytes)?, false)?;
     let xml = nucleo::montar_dps(&dps)?;
     Ok(resposta_json(
         StatusCode::OK,
@@ -190,8 +192,9 @@ pub(super) async fn emitir(
     let em = exigir_token(&estado, &cabecalhos)?;
     let bytes = ler_corpo(&cabecalhos, corpo, estado.config.limite_corpo).await?;
     let pedido: Value = json_de(&bytes)?;
-    // com `?estrito=true`, o campo desconhecido recusa o pedido antes de qualquer envio
-    desconhecidos(&uri, &pedido)?;
+    // por padrao (e com `?estrito=true`), o campo desconhecido recusa o pedido antes de qualquer envio; com
+    // `?estrito=false`, ele e' ignorado e volta em `campos_desconhecidos`
+    desconhecidos(&uri, &pedido, true)?;
     let r = estado.emitir(em, pedido).await?;
     Ok(resposta_json(StatusCode::OK, &r))
 }

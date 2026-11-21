@@ -410,20 +410,22 @@ async fn campo_desconhecido_volta_na_resposta_e_e_recusado_com_estrito() {
 }
 
 #[tokio::test]
-async fn emitir_avisa_o_campo_desconhecido_e_com_estrito_nao_chega_a_sefin() {
+async fn emitir_recusa_o_campo_desconhecido_e_com_estrito_false_emite_e_avisa() {
     let ch = chave();
     let falso = Falso::novo(vec![("POST", "/nfse".into(), autorizada(&ch))]);
     let app = app_emissao(falso.clone());
     let pedido = pedido_com_nome_errado();
 
-    // com ?estrito=true: 422 e nada sai para a rede
-    let (st, _, corpo) = enviar(&app, post_json_token("/emitir?estrito=true", &pedido)).await;
-    assert_eq!(st, StatusCode::UNPROCESSABLE_ENTITY);
-    assert_eq!(json_do_corpo(&corpo)["erro"]["campo"], "descontos");
+    // por padrao (e com ?estrito=true): 422 e nada sai para a rede
+    for rota in ["/emitir", "/emitir?estrito=true"] {
+        let (st, _, corpo) = enviar(&app, post_json_token(rota, &pedido)).await;
+        assert_eq!(st, StatusCode::UNPROCESSABLE_ENTITY, "{rota}");
+        assert_eq!(json_do_corpo(&corpo)["erro"]["campo"], "descontos");
+    }
     assert!(falso.chamadas().is_empty());
 
-    // sem ele: emite como antes, e a resposta diz o que foi ignorado
-    let (st, _, corpo) = enviar(&app, post_json_token("/emitir", &pedido)).await;
+    // com ?estrito=false: emite, e a resposta diz o que foi ignorado
+    let (st, _, corpo) = enviar(&app, post_json_token("/emitir?estrito=false", &pedido)).await;
     assert_eq!(st, StatusCode::OK, "{}", String::from_utf8_lossy(&corpo));
     let v = json_do_corpo(&corpo);
     assert_eq!(v["status"], "autorizada");
