@@ -1,76 +1,104 @@
 # rustnf
 
-Emissor aberto de NFS-e do padrao nacional (Sefin Nacional / ADN), escrito em Rust: uma biblioteca, um binario
-(`rustnf`) que oferece **linha de comando**, **API HTTP** e **servidor MCP** no mesmo executavel, e uma
+Emissor aberto de NFS-e do padrão nacional (Sefin Nacional / ADN), escrito em Rust: uma biblioteca, um binário
+(`rustnf`) que oferece **linha de comando**, **API HTTP** e **servidor MCP** no mesmo executável, e uma
 **interface de desktop** para Windows (`rustnf-gui`).
 
-> **Aviso: este projeto NAO e' software oficial** da Receita Federal, do Comite Gestor da NFS-e nem de qualquer
-> prefeitura. Ele segue a documentacao publica (fontes em `docs/FONTES.md`); a responsabilidade pelo uso em producao e'
-> de quem o opera. Emitir ou cancelar nota em producao tem efeito fiscal. Teste antes na producao restrita.
+> **Aviso: este projeto NÃO é software oficial** da Receita Federal, do Comitê Gestor da NFS-e nem de qualquer
+> prefeitura. Ele segue a documentação pública (fontes em `docs/FONTES.md`); a responsabilidade pelo uso em produção é
+> de quem o opera. Emitir ou cancelar nota em produção tem efeito fiscal. Teste antes na produção restrita.
 
-![Nova nota: o formulario, a conferencia e a previa do IBS/CBS](docs/imagens/nova-nota.png)
+![Nova nota: o formulário, a conferência e a prévia do IBS/CBS](docs/imagens/nova-nota.png)
 
 ![Notas: a pasta de notas, com busca e filtro](docs/imagens/notas.png)
 
-As telas acima sao da interface de desktop, com dados ficticios.
+As telas acima são da interface de desktop, com dados fictícios.
+
+## Emitir uma nota: passo a passo
+
+Pela interface de desktop (Windows):
+
+1. Baixe o `.zip` da versão mais recente em [Releases](https://github.com/Admnwk/rustnf/releases), descompacte e abra o
+   `rustnf-gui.exe` (sobre o aviso do Windows no primeiro uso, veja [Baixar pronto](#baixar-pronto)).
+2. No primeiro uso, preencha os três passos: os dados do **emitente**, o **certificado A1** (o arquivo `.pfx` e a senha,
+   com o botão "Testar certificado") e a **pasta das notas**.
+3. Confira, no canto superior direito, que o ambiente é **Produção restrita (testes)**. É o padrão; nele as notas não
+   têm efeito fiscal.
+4. Abra **Nova nota** e preencha o tomador, o serviço e os valores. O painel ao lado mostra o que falta; quando ele
+   disser "Tudo certo", clique em **Emitir nota** e confirme.
+5. A nota autorizada aparece em **Notas**: abra-a para ver os dados, gerar o DANFSe em PDF ou cancelar.
+6. Quando os testes derem certo, troque o ambiente para **Produção** em Configurações. A partir daí cada nota tem valor
+   fiscal, e a tela pede uma confirmação a mais antes de emitir.
+
+Pela linha de comando (Windows ou Linux), com o pedido em JSON (modelo em `crates/rustnf-cli/exemplos/dps.json`):
+
+```
+$ export SENHA_A1='...'
+$ rustnf dps conferir pedido.json
+$ rustnf emitir pedido.json --pfx certificado.pfx --senha-env SENHA_A1 --ambiente restrita
+```
+
+Os detalhes de cada passo estão em [Interface de desktop](#interface-de-desktop) e em
+[Linha de comando](#linha-de-comando).
 
 ## Estado
 
-**Nenhuma nota real foi emitida com este codigo ate agora**, nem em producao restrita. O que existe hoje:
+**Nenhuma nota real foi emitida com este código até agora**, nem em produção restrita. O que existe hoje:
 
 | parte | como foi conferida | o que falta |
 |---|---|---|
 | XML da DPS e regras antes do envio | contratos em `crates/rustnf/tests/casos/`, comparados texto a texto; regras lidas no Anexo I oficial | a Sefin Nacional aceitar uma DPS gerada aqui |
-| assinatura | conferida pelo proprio verificador e por um XML assinado fora da biblioteca | a Sefin Nacional validar uma assinatura feita aqui, em SHA-256 (o padrao) ou em SHA-1 (`--assinatura sha1`) |
-| cliente da Sefin Nacional | transporte falso (resposta perdida, 5xx, E0014, consulta, cancelamento) | uma chamada real, com TLS mutuo e certificado A1 |
-| previa do IBS/CBS | casos de teste da calculadora oficial da Receita Federal | comparar com os valores de uma NFS-e autorizada |
-| DANFSe | contrato de conteudo e leiaute | comparar com um DANFSe emitido pelo portal |
-| interface de desktop (`rustnf-gui`, so' Windows) | testes do modelo (mascaras, conferencia, pedido, previa, sugestao, rascunho, lista das notas, detalhe, cancelamento, consulta pela chave e previa avulsa), dos fluxos com emissor de demonstracao e pasta temporaria e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuracao e pelo exemplo de demonstracao | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, so' o emissor de demonstracao respondeu**; o DANFSe aberto no leitor de PDF de outra maquina; uma chamada real a Sefin pelo botao "Testar conexao"; exame da janela em outras escalas de tela; o executavel de release aberto numa maquina sem as ferramentas de desenvolvimento |
+| assinatura | conferida pelo próprio verificador e por um XML assinado fora da biblioteca | a Sefin Nacional validar uma assinatura feita aqui, em SHA-256 (o padrão) ou em SHA-1 (`--assinatura sha1`) |
+| cliente da Sefin Nacional | transporte falso (resposta perdida, 5xx, E0014, consulta, cancelamento) | uma chamada real, com TLS mútuo e certificado A1 |
+| prévia do IBS/CBS | casos de teste da calculadora oficial da Receita Federal | comparar com os valores de uma NFS-e autorizada |
+| DANFSe | contrato de conteúdo e leiaute | comparar com um DANFSe emitido pelo portal |
+| interface de desktop (`rustnf-gui`, só Windows) | testes do modelo (máscaras, conferência, pedido, prévia, sugestão, rascunho, lista das notas, detalhe, cancelamento, consulta pela chave e prévia avulsa), dos fluxos com emissor de demonstração e pasta temporária e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuração e pelo exemplo de demonstração | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, só o emissor de demonstração respondeu**; o DANFSe aberto no leitor de PDF de outra máquina; uma chamada real à Sefin pelo botão "Testar conexão"; exame da janela em outras escalas de tela; o executável de release aberto numa máquina sem as ferramentas de desenvolvimento |
 
-Se voce testar, conte como foi: abra um relato pelo modelo **"Relato de emissao"** (aba Issues), mesmo quando der
-certo. Correcao e' bem-vinda por pedido de mudanca, com a fonte oficial citada e um caso no contrato (veja
-`CONTRIBUTING.md`). Comece sempre pela producao restrita. Se a assinatura for recusada, repita com
+Se você testar, conte como foi: abra um relato pelo modelo **"Relato de emissão"** (aba Issues), mesmo quando der
+certo. Correção é bem-vinda por pedido de mudança, com a fonte oficial citada e um caso no contrato (veja
+`CONTRIBUTING.md`). Comece sempre pela produção restrita. Se a assinatura for recusada, repita com
 `--assinatura sha1` e diga no relato qual das duas passou.
 
 ## O que faz
 
 | comando | o que faz |
 |---|---|
-| `rustnf dps montar` | le o JSON de um pedido e escreve o XML da DPS (nao assinado) |
+| `rustnf dps montar` | lê o JSON de um pedido e escreve o XML da DPS (não assinado) |
 | `rustnf dps conferir` | confere as regras do Anexo I e diz "ok" ou a recusa (campo e motivo) |
-| `rustnf calcular` | previa da base de calculo e do IBS/CBS (Reforma Tributaria, LC 214/2025), como a calculadora da Receita Federal |
+| `rustnf calcular` | prévia da base de cálculo e do IBS/CBS (Reforma Tributária, LC 214/2025), como a calculadora da Receita Federal |
 | `rustnf danfse` | gera o DANFSe em PDF (NT 008) a partir do XML da NFS-e autorizada |
-| `rustnf emitir` | monta, assina com o certificado A1 e envia a DPS a Sefin Nacional (idempotente) |
+| `rustnf emitir` | monta, assina com o certificado A1 e envia a DPS à Sefin Nacional (idempotente) |
 | `rustnf consultar` | consulta uma NFS-e pela chave de acesso |
 | `rustnf cancelar` | cancela uma NFS-e (evento 101101) |
 | `rustnf serve` | sobe a API HTTP e o servidor MCP |
-| `rustnf config mostrar` / `caminho` | a configuracao efetiva e de onde veio; o arquivo em uso |
+| `rustnf config mostrar` / `caminho` | a configuração efetiva e de onde veio; o arquivo em uso |
 | `rustnf senha guardar` / `apagar` | guarda a senha do certificado no cofre do sistema (Windows) |
 | `rustnf notas listar` | lista as notas autorizadas guardadas na pasta de notas |
 
-Nenhuma regra fiscal mora no binario: ele le a entrada, chama a biblioteca (`crates/rustnf`) e escreve a saida. A
-biblioteca monta a DPS (leiaute 1.01 de producao e NT 009 de producao restrita), confere as regras antes do envio,
-le o retorno, calcula a previa do IBS/CBS, gera o DANFSe e fala com a Sefin Nacional por mTLS com o A1 em memoria.
-Valores e percentuais usam inteiros de ponto fixo, nunca ponto flutuante. A DPS nao leva IBS/CBS calculado (quem
-calcula e' a Sefin Nacional): `calcular` e' so' uma previa; vale o que voltar na NFS-e.
+Nenhuma regra fiscal mora no binário: ele lê a entrada, chama a biblioteca (`crates/rustnf`) e escreve a saída. A
+biblioteca monta a DPS (leiaute 1.01 de produção e NT 009 de produção restrita), confere as regras antes do envio,
+lê o retorno, calcula a prévia do IBS/CBS, gera o DANFSe e fala com a Sefin Nacional por mTLS com o A1 em memória.
+Valores e percentuais usam inteiros de ponto fixo, nunca ponto flutuante. A DPS não leva IBS/CBS calculado (quem
+calcula é a Sefin Nacional): `calcular` é só uma prévia; vale o que voltar na NFS-e.
 
-## Instalacao
+## Instalação
 
 ### Baixar pronto
 
-Cada versao publicada traz, na pagina de Releases, um `.zip` para Windows (64 bits) com `rustnf.exe` (linha de comando)
-e `rustnf-gui.exe` (interface de desktop), e um `.tar.gz` com a linha de comando para Linux. Nao ha instalador:
-descompacte e execute. No Windows (10 ou 11) nao e' preciso instalar mais nada: a biblioteca C vai dentro do
-executavel. Para emitir voce precisa do seu certificado A1 (`.pfx`) e da senha dele.
+Cada versão publicada traz, na página de Releases, um `.zip` para Windows (64 bits) com `rustnf.exe` (linha de comando)
+e `rustnf-gui.exe` (interface de desktop), e um `.tar.gz` com a linha de comando para Linux. Não há instalador:
+descompacte e execute. No Windows (10 ou 11) não é preciso instalar mais nada: a biblioteca C vai dentro do
+executável. Para emitir você precisa do seu certificado A1 (`.pfx`) e da senha dele.
 
-O executavel **nao tem assinatura de codigo**. No primeiro uso o Windows pode mostrar "O Windows protegeu o
-computador" (SmartScreen): clique em "Mais informacoes" e depois em "Executar assim mesmo". Antes, confira o
+O executável **não tem assinatura de código**. No primeiro uso o Windows pode mostrar "O Windows protegeu o
+computador" (SmartScreen): clique em "Mais informações" e depois em "Executar assim mesmo". Antes, confira o
 SHA-256 do arquivo baixado com o `SHA256SUMS.txt` da mesma release (no PowerShell:
 `Get-FileHash arquivo.zip -Algorithm SHA256`).
 
 ### Compilar
 
-Precisa do Rust (edicao 2021, versao estavel recente).
+Precisa do Rust estável 1.92 ou mais novo: é a versão mínima que as dependências declaram. O projeto é compilado e
+testado com a versão estável atual.
 
 ```
 git clone https://github.com/Admnwk/rustnf
@@ -78,26 +106,26 @@ cd rustnf
 cargo build --release -p rustnf-cli
 ```
 
-O executavel fica em `target/release/rustnf` (`rustnf.exe` no Windows). A interface de desktop e' outro executavel, so'
-para Windows (veja [Interface de desktop](#interface-de-desktop)). A biblioteca e a camada de aplicacao
-(`crates/rustnf-app`: operacoes, configuracao, cofre e pasta de notas, sem tela nem servidor) sao compartilhadas pelo
-binario e por qualquer interface que use o mesmo arquivo de configuracao. Nao e' preciso nenhum programa externo: o
-DANFSe em PDF e' escrito pelo proprio binario, com as fontes embutidas.
+O executável fica em `target/release/rustnf` (`rustnf.exe` no Windows). A interface de desktop é outro executável, só
+para Windows (veja [Interface de desktop](#interface-de-desktop)). A biblioteca e a camada de aplicação
+(`crates/rustnf-app`: operações, configuração, cofre e pasta de notas, sem tela nem servidor) são compartilhadas pelo
+binário e por qualquer interface que use o mesmo arquivo de configuração. Não é preciso nenhum programa externo: o
+DANFSe em PDF é escrito pelo próprio binário, com as fontes embutidas.
 
 ## Linha de comando
 
-Convencoes: dado no stdout, diagnostico no stderr; `--json` onde a saida padrao e' texto; onde se espera um arquivo,
-`-` le do stdin. Codigos de saida:
+Convenções: dado no stdout, diagnóstico no stderr; `--json` onde a saída padrão é texto; onde se espera um arquivo,
+`-` lê do stdin. Códigos de saída:
 
-| codigo | significado |
+| código | significado |
 |---|---|
 | 0 | ok |
 | 1 | falha interna |
-| 2 | erro de uso ou de entrada (opcao errada, JSON invalido, arquivo ausente, certificado que nao abre) |
-| 3 | recusa de regra (a DPS nao passa no Anexo I, a previa nao pode calcular, a Sefin rejeitou) |
+| 2 | erro de uso ou de entrada (opção errada, JSON inválido, arquivo ausente, certificado que não abre) |
+| 3 | recusa de regra (a DPS não passa no Anexo I, a prévia não pode calcular, a Sefin rejeitou) |
 | 4 | erro de rede ou resposta de erro da Sefin Nacional |
 
-Os exemplos abaixo usam os arquivos de `crates/rustnf-cli/exemplos/` (so' documentos ficticios).
+Os exemplos abaixo usam os arquivos de `crates/rustnf-cli/exemplos/` (só documentos fictícios).
 
 ### Montar e conferir a DPS
 
@@ -113,10 +141,10 @@ $ rustnf dps conferir pedido-com-erro.json --json     # saida 3
 ```
 
 O JSON do pedido tem a forma de `rustnf::nfse::Dps` (veja `crates/rustnf/tests/casos/nfse_nacional.json` para dezenas
-de casos). Valores aceitam numero ou texto. Atencao: campo desconhecido no pedido e' ignorado em silencio; confira o
+de casos). Valores aceitam número ou texto. Atenção: campo desconhecido no pedido é ignorado em silêncio; confira o
 nome do campo.
 
-### Previa do IBS/CBS
+### Prévia do IBS/CBS
 
 ```
 $ rustnf calcular crates/rustnf-cli/exemplos/calculo.json
@@ -128,8 +156,8 @@ $ rustnf calcular crates/rustnf-cli/exemplos/calculo.json
 ```
 
 O JSON tem `{"base": {...}}` e/ou `{"tributos": {...}}`. Se vierem os dois e `tributos.base` faltar, vale a base do
-regime regular calculada. Se a base registrar recusas de regra (`bases.erros`), a conta sai mesmo assim, `recusado` e'
-`true` e o codigo de saida e' 3.
+regime regular calculada. Se a base registrar recusas de regra (`bases.erros`), a conta sai mesmo assim, `recusado` é
+`true` e o código de saída é 3.
 
 ### DANFSe
 
@@ -139,13 +167,13 @@ DANFSe gravado: 116902 bytes
 $ rustnf danfse nfse.xml -o danfse.pdf --situacao cancelada --sem-canhoto
 ```
 
-`--situacao` aceita `valida` (padrao), `cancelada` e `substituida` (marca d'agua da NT 008). `-o -` escreve o PDF no
+`--situacao` aceita `valida` (padrão), `cancelada` e `substituida` (marca d'água da NT 008). `-o -` escreve o PDF no
 stdout.
 
 ### Emitir, consultar e cancelar
 
 Precisam do certificado A1 (`.pfx`/`.p12`), do ambiente e da senha. **A senha nunca vem por argumento** (apareceria na
-lista de processos e no historico do shell): so' por variavel de ambiente (`--senha-env`) ou pela primeira linha do
+lista de processos e no histórico do shell): só por variável de ambiente (`--senha-env`) ou pela primeira linha do
 stdin (`--senha-stdin`).
 
 ```
@@ -161,61 +189,61 @@ $ rustnf cancelar --chave <chave> --motivo 1 --justificativa "Valor digitado err
     --pfx certificado.pfx --senha-env SENHA_A1 --ambiente restrita
 ```
 
-* `--ambiente producao|restrita` prevalece sobre o `ambiente` do pedido. Sem arquivo de configuracao ele e' obrigatorio;
+* `--ambiente producao|restrita` prevalece sobre o `ambiente` do pedido. Sem arquivo de configuração ele é obrigatório;
   com arquivo (ou `RUSTNF_AMBIENTE`), vale o `[sefin].ambiente`. `--pfx` segue a mesma regra.
 * Sem `--senha-env` nem `--senha-stdin`, a senha vem do cofre do sistema, se houver uma guardada (veja
-  [Configuracao](#configuracao)).
-* Sem `emissao` (`dhEmi`) no pedido, vale "agora menos 60 s" (`--folga-relogio`), para o relogio local adiantado nao
+  [Configuração](#configuração)).
+* Sem `emissao` (`dhEmi`) no pedido, vale "agora menos 60 s" (`--folga-relogio`), para o relógio local adiantado não
   cair na regra E0008.
-* A emissao e' idempotente: resposta perdida, erro 5xx ou E0014 fazem a biblioteca consultar a DPS antes de reenviar o
+* A emissão é idempotente: resposta perdida, erro 5xx ou E0014 fazem a biblioteca consultar a DPS antes de reenviar o
   MESMO XML. Nunca renumere a DPS (`numero`) para "tentar de novo".
-* A DPS e os eventos sao assinados com RSA e SHA-256. `--assinatura sha1` (ou `RUSTNF_ASSINATURA`, ou
-  `[sefin].assinatura`) troca para SHA-1; o leiaute nao fixa o algoritmo.
-* Motivos de cancelamento: `1` erro na emissao, `2` servico nao prestado, `9` outros; a justificativa e' obrigatoria.
+* A DPS e os eventos são assinados com RSA e SHA-256. `--assinatura sha1` (ou `RUSTNF_ASSINATURA`, ou
+  `[sefin].assinatura`) troca para SHA-1; o leiaute não fixa o algoritmo.
+* Motivos de cancelamento: `1` erro na emissão, `2` serviço não prestado, `9` outros; a justificativa é obrigatória.
 * `--json` imprime o resultado completo (inclui a NFS-e lida e os alertas); sem ele, um resumo.
 
-## Configuracao
+## Configuração
 
-Um arquivo TOML unico, lido pela linha de comando e por qualquer outra interface. Exemplo comentado, so' com dados
-ficticios: [`crates/rustnf-cli/exemplos/rustnf.toml`](crates/rustnf-cli/exemplos/rustnf.toml).
+Um arquivo TOML único, lido pela linha de comando e por qualquer outra interface. Exemplo comentado, só com dados
+fictícios: [`crates/rustnf-cli/exemplos/rustnf.toml`](crates/rustnf-cli/exemplos/rustnf.toml).
 
-**Onde ele mora.** `--config <arquivo>` (arquivo inexistente e' erro); sem a opcao, a variavel de ambiente
-`RUSTNF_CONFIG` (inexistente tambem e' erro); sem ela, o local padrao: no Windows `%APPDATA%\rustnf\rustnf.toml`, nos
-outros sistemas `$XDG_CONFIG_HOME/rustnf/rustnf.toml` ou `$HOME/.config/rustnf/rustnf.toml`. Se nem o local padrao
-existir, valem os padroes e nada muda em relacao a usar so' opcoes. `rustnf config caminho` mostra o que vale e
-`rustnf config mostrar [--json]` mostra a configuracao efetiva e de onde veio.
+**Onde ele mora.** `--config <arquivo>` (arquivo inexistente é erro); sem a opção, a variável de ambiente
+`RUSTNF_CONFIG` (inexistente também é erro); sem ela, o local padrão: no Windows `%APPDATA%\rustnf\rustnf.toml`, nos
+outros sistemas `$XDG_CONFIG_HOME/rustnf/rustnf.toml` ou `$HOME/.config/rustnf/rustnf.toml`. Se nem o local padrão
+existir, valem os padrões e nada muda em relação a usar só opções. `rustnf config caminho` mostra o que vale e
+`rustnf config mostrar [--json]` mostra a configuração efetiva e de onde veio.
 
-**Precedencia**, em todo parametro: opcao da chamada > variavel de ambiente `RUSTNF_*` > arquivo > padrao. As
-variaveis: `RUSTNF_AMBIENTE`, `RUSTNF_PFX`, `RUSTNF_ASSINATURA`, `RUSTNF_TEMPO_LIMITE_SEFIN`, `RUSTNF_FOLGA_RELOGIO`,
+**Precedência**, em todo parâmetro: opção da chamada > variável de ambiente `RUSTNF_*` > arquivo > padrão. As
+variáveis: `RUSTNF_AMBIENTE`, `RUSTNF_PFX`, `RUSTNF_ASSINATURA`, `RUSTNF_TEMPO_LIMITE_SEFIN`, `RUSTNF_FOLGA_RELOGIO`,
 `RUSTNF_SERIE`, `RUSTNF_NOTAS_PASTA`, `RUSTNF_CANHOTO`, `RUSTNF_ENDERECO`, `RUSTNF_PORTA`, `RUSTNF_LIMITE_CORPO`,
-`RUSTNF_TEMPO_LIMITE` e `RUSTNF_ORIGENS_PERMITIDAS` (separadas por virgula). Campo desconhecido no arquivo e' recusado,
-e os valores sao conferidos (ambiente, codigo do municipio, CNPJ/CPF, numeros, anos de aliquota repetidos...) com a
-secao e o campo no erro.
+`RUSTNF_TEMPO_LIMITE` e `RUSTNF_ORIGENS_PERMITIDAS` (separadas por vírgula). Campo desconhecido no arquivo é recusado,
+e os valores são conferidos (ambiente, código do município, CNPJ/CPF, números, anos de alíquota repetidos...) com a
+seção e o campo no erro.
 
-| secao | campos |
+| seção | campos |
 |---|---|
-| `[emitente]` | `cnpj` ou `cpf`, `nome`, `inscricao_municipal`, `municipio` (IBGE, 7 digitos), `op_simples` (1, 2 ou 3), `regime_apuracao` (0 = nao informar), `regime_especial`, `serie` |
+| `[emitente]` | `cnpj` ou `cpf`, `nome`, `inscricao_municipal`, `municipio` (IBGE, 7 dígitos), `op_simples` (1, 2 ou 3), `regime_apuracao` (0 = não informar), `regime_especial`, `serie` |
 | `[sefin]` | `ambiente` (`producao` ou `restrita`), `pfx`, `assinatura` (`sha256` ou `sha1`), `tempo_limite_s`, `folga_relogio_s` |
-| `[notas]` | `pasta` (vazio = nao guardar) |
+| `[notas]` | `pasta` (vazio = não guardar) |
 | `[danfse]` | `canhoto` |
 | `[servidor]` | `endereco`, `porta`, `limite_corpo`, `tempo_limite_s`, `origens_permitidas` |
-| `[interface]` | `tema` (`sistema`, `claro` ou `escuro`; padrao `sistema`): preferencia da interface de desktop, a linha de comando nao a usa |
+| `[interface]` | `tema` (`sistema`, `claro` ou `escuro`; padrão `sistema`): preferência da interface de desktop, a linha de comando não a usa |
 | `[[aliquotas]]` | `ano`, `cbs_referencia`, `cbs`, `ibs_uf`, `ibs_mun`, `fonte` (uma tabela por ano) |
 
-* **`[emitente]`** completa o pedido da DPS no `emitir`, so' nos campos que o pedido nao traz (nunca sobrescreve):
+* **`[emitente]`** completa o pedido da DPS no `emitir`, só nos campos que o pedido não traz (nunca sobrescreve):
   `prestador.documento`, `nome`, `im`, `op_simples`, `apuracao_sn`, `regime_especial`, `cmun_emissor` e `serie`.
-* **`[[aliquotas]]`** valem no `calcular` quando o JSON nao traz `publicadas`: sem elas, a previa de 2027 em diante usa
-  o que a biblioteca assume; com elas, usa o numero publicado.
-* **`[servidor]`** e' o que `rustnf serve` usa quando a opcao nao e' dada.
-* **`[interface]`** guarda so' o tema da interface de desktop; `sistema` segue o tema do Windows.
-* **Sem segredo no arquivo.** Nao existe campo de senha nem de token; `senha` ou `token` no arquivo e' recusado como
+* **`[[aliquotas]]`** valem no `calcular` quando o JSON não traz `publicadas`: sem elas, a prévia de 2027 em diante usa
+  o que a biblioteca assume; com elas, usa o número publicado.
+* **`[servidor]`** é o que `rustnf serve` usa quando a opção não é dada.
+* **`[interface]`** guarda só o tema da interface de desktop; `sistema` segue o tema do Windows.
+* **Sem segredo no arquivo.** Não existe campo de senha nem de token; `senha` ou `token` no arquivo é recusado como
   campo desconhecido.
 
 ### Cofre da senha do certificado
 
 A senha do certificado vem de `--senha-env`, de `--senha-stdin` ou, na falta das duas, do **cofre do sistema**. No
-Windows e' o Gerenciador de Credenciais (servico `rustnf`; o item e' identificado pelo CNPJ do `[emitente]` ou, sem
-ele, pelo nome do arquivo `.pfx`). Nos outros sistemas o cofre nao e' usado: continue com variavel de ambiente ou stdin.
+Windows é o Gerenciador de Credenciais (serviço `rustnf`; o item é identificado pelo CNPJ do `[emitente]` ou, sem
+ele, pelo nome do arquivo `.pfx`). Nos outros sistemas o cofre não é usado: continue com variável de ambiente ou stdin.
 `RUSTNF_COFRE=desligado` desliga o cofre.
 
 ```
@@ -224,7 +252,7 @@ $ rustnf emitir pedido.json --config rustnf.toml                    # sem --senh
 $ rustnf senha apagar --config rustnf.toml
 ```
 
-A senha continua **impossivel** de passar por argumento.
+A senha continua **impossível** de passar por argumento.
 
 ### Pasta de notas
 
@@ -236,15 +264,15 @@ Com `[notas].pasta`, o `emitir` guarda cada nota autorizada, sem banco de dados:
 <pasta>/estado.json               o ultimo numero de DPS usado em cada serie
 ```
 
-Sem `numero` no pedido, o `emitir` usa o proximo da serie. O numero so' avanca em nota autorizada ou recuperada
-(rejeitada ou pendente nao gasta numero) e nunca volta atras. Nota recuperada e' a que ja existia na Sefin com
-aquela serie e aquele numero de DPS: se os dados dela nao forem os do pedido (sobra de uma tentativa anterior), a
-resposta traz `recuperada_difere` com o que difere (tomador, valor, codigo do servico, competencia) e a nota do pedido
-NAO foi emitida; emita de novo, que o numero ja avancou. O `cancelar` marca a nota como cancelada no indice; se a Sefin
-recusar o pedido e a nota ja tiver o cancelamento registrado (envio anterior sem resposta, ou feito em outro lugar), a
-resposta e' `registrado` com `recuperada: true`, e as mensagens da recusa vem em `alertas`.
-`rustnf notas listar [--json]` lista as notas. As gravacoes sao atomicas (arquivo temporario e `rename`); o nome do
-arquivo vem so' da chave de acesso conferida.
+Sem `numero` no pedido, o `emitir` usa o próximo da série. O número só avança em nota autorizada ou recuperada
+(rejeitada ou pendente não gasta número) e nunca volta atrás. Nota recuperada é a que já existia na Sefin com
+aquela série e aquele número de DPS: se os dados dela não forem os do pedido (sobra de uma tentativa anterior), a
+resposta traz `recuperada_difere` com o que difere (tomador, valor, código do serviço, competência) e a nota do pedido
+NÃO foi emitida; emita de novo, que o número já avançou. O `cancelar` marca a nota como cancelada no índice; se a Sefin
+recusar o pedido e a nota já tiver o cancelamento registrado (envio anterior sem resposta, ou feito em outro lugar), a
+resposta é `registrado` com `recuperada: true`, e as mensagens da recusa vêm em `alertas`.
+`rustnf notas listar [--json]` lista as notas. As gravações são atômicas (arquivo temporário e `rename`); o nome do
+arquivo vem só da chave de acesso conferida.
 
 ## API HTTP
 
@@ -253,20 +281,20 @@ rustnf serve                                   # 127.0.0.1:8080, so' leitura
 rustnf serve --porta 0                         # qualquer porta livre (o endereco sai no stderr)
 ```
 
-Opcoes: `--endereco` (padrao `127.0.0.1`), `--porta`, `--limite-corpo` (bytes; padrao 1048576),
-`--tempo-limite` (segundos; padrao 60), `--origem-permitida` (repetivel), `--folga-relogio`. Ctrl+C para o servidor
+Opções: `--endereco` (padrão `127.0.0.1`), `--porta`, `--limite-corpo` (bytes; padrão 1048576),
+`--tempo-limite` (segundos; padrão 60), `--origem-permitida` (repetível), `--folga-relogio`. Ctrl+C para o servidor
 limpo.
 
 | rota | corpo | resposta |
 |---|---|---|
 | `GET /health` | | `{"status":"ok","versao":"...","emissao":false}` |
-| `POST /calcular` | JSON de `calcular` | JSON da previa |
+| `POST /calcular` | JSON de `calcular` | JSON da prévia |
 | `POST /dps/conferir` | JSON da DPS | `{"ok":true}` ou 422 com o campo |
 | `POST /dps/montar` | JSON da DPS | `{"xml":"..."}` |
 | `POST /danfse` | XML da NFS-e (`?situacao=cancelada&canhoto=false`) | `application/pdf` |
-| `POST /emitir` | JSON da DPS | JSON do resultado (so' com emissao) |
-| `POST /cancelar` | `{"chave","motivo","justificativa"}` | JSON do resultado (so' com emissao) |
-| `GET /nfse/{chave}` | | JSON da NFS-e (so' com emissao) |
+| `POST /emitir` | JSON da DPS | JSON do resultado (só com emissão) |
+| `POST /cancelar` | `{"chave","motivo","justificativa"}` | JSON do resultado (só com emissão) |
+| `GET /nfse/{chave}` | | JSON da NFS-e (só com emissão) |
 | `POST /mcp` | mensagem JSON-RPC | veja abaixo |
 
 ```
@@ -283,9 +311,9 @@ $ curl -s -X POST 'http://127.0.0.1:8080/danfse?situacao=valida' --data-binary @
     -o danfse.pdf
 ```
 
-### Emissao pela API
+### Emissão pela API
 
-As rotas `/emitir`, `/cancelar` e `/nfse/{chave}` **nem existem** (404) sem `--permitir-emissao`. Com a opcao, o
+As rotas `/emitir`, `/cancelar` e `/nfse/{chave}` **nem existem** (404) sem `--permitir-emissao`. Com a opção, o
 servidor exige certificado, ambiente e um token: sem token configurado, ele recusa subir.
 
 ```
@@ -302,37 +330,37 @@ $ curl -s -X POST http://127.0.0.1:8080/cancelar -H "Authorization: Bearer $TOKE
     -d '{"chave":"<chave>","motivo":"1","justificativa":"Valor digitado errado na nota"}'
 ```
 
-Seguranca: escuta em `127.0.0.1` por padrao (fora dele o trafego e' HTTP puro: ponha um proxy com TLS na frente); sem
-CORS; cabecalho `Origin` de fora do proprio computador recebe 403; teto de corpo e tempo limite por requisicao; token
-comparado em tempo constante; o PDF e' gerado fora do laco assincrono. Todo erro tem o envelope unico:
+Segurança: escuta em `127.0.0.1` por padrão (fora dele o tráfego é HTTP puro: ponha um proxy com TLS na frente); sem
+CORS; cabeçalho `Origin` de fora do próprio computador recebe 403; teto de corpo e tempo limite por requisição; token
+comparado em tempo constante; o PDF é gerado fora do laço assíncrono. Todo erro tem o envelope único:
 
 ```
 {"erro": {"codigo": "recusa", "mensagem": "...", "campo": "infDPS/serie"}}
 ```
 
-Codigos: `entrada_invalida` (400), `nao_autorizado` (401), `nao_encontrada` (404), `corpo_grande` (413),
+Códigos: `entrada_invalida` (400), `nao_autorizado` (401), `nao_encontrada` (404), `corpo_grande` (413),
 `recusa` (422), `sefin` (502), `tempo_esgotado` (504), `erro_interno` (500). A mensagem nunca traz caminho de arquivo,
 senha, token, chave de acesso nem o XML assinado, e nada disso vai para o registro do servidor (stderr).
 
 ## MCP
 
 `POST /mcp` no mesmo servidor, transporte **Streamable HTTP** com resposta JSON (sem SSE) e sem estado. Implementa a
-revisao **2026-07-28** da especificacao
-(<https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http>): cada requisicao leva
-a versao e as capacidades em `_meta` e os cabecalhos `MCP-Protocol-Version`, `Mcp-Method` e `Mcp-Name`; tambem atende
-`initialize` da revisao 2025-11-25 para clientes mais antigos. Ferramentas:
+revisão **2026-07-28** da especificação
+(<https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http>): cada requisição leva
+a versão e as capacidades em `_meta` e os cabeçalhos `MCP-Protocol-Version`, `Mcp-Method` e `Mcp-Name`; também atende
+`initialize` da revisão 2025-11-25 para clientes mais antigos. Ferramentas:
 
 | ferramenta | o que faz |
 |---|---|
-| `calcular_cbs_ibs` | previa do IBS/CBS (mesmo JSON de `calcular`) |
+| `calcular_cbs_ibs` | prévia do IBS/CBS (mesmo JSON de `calcular`) |
 | `conferir_dps` | confere a DPS; recusa volta com `isError: true` |
 | `montar_dps` | XML da DPS |
 | `gerar_danfse` | PDF em base64, num recurso embutido |
-| `emitir_nfse` | so' com `--permitir-emissao` e o Bearer |
-| `cancelar_nfse` | so' com `--permitir-emissao` e o Bearer |
+| `emitir_nfse` | só com `--permitir-emissao` e o Bearer |
+| `cancelar_nfse` | só com `--permitir-emissao` e o Bearer |
 
-Recusa de regra fiscal volta como resultado da ferramenta com `isError: true`, nao como erro de protocolo. Sem o
-Bearer, `tools/list` mostra so' as quatro de leitura. Cada ferramenta tem `inputSchema` (JSON Schema). Exemplo:
+Recusa de regra fiscal volta como resultado da ferramenta com `isError: true`, não como erro de protocolo. Sem o
+Bearer, `tools/list` mostra só as quatro de leitura. Cada ferramenta tem `inputSchema` (JSON Schema). Exemplo:
 
 ```
 $ curl -s -X POST http://127.0.0.1:8080/mcp \
@@ -345,114 +373,114 @@ $ curl -s -X POST http://127.0.0.1:8080/mcp \
 ```
 
 Fora do que foi implementado: respostas em fluxo (SSE) e `subscriptions/listen`, `GET`/`DELETE` no endpoint (405),
-recursos, modelos de mensagem, logging, tarefas e autorizacao OAuth (as ferramentas de emissao usam o Bearer fixo do operador).
+recursos, modelos de mensagem, logging, tarefas e autorização OAuth (as ferramentas de emissão usam o Bearer fixo do operador).
 
 ## Interface de desktop
 
-`rustnf-gui` e' uma janela para configurar o rustnf sem editar o arquivo TOML. **So' existe para Windows** nesta versao
-(o GPUI usado so' tem janela no Windows); em outro sistema o executavel avisa e sai com codigo 2. Ela le e grava o **mesmo
-arquivo de configuracao** da linha de comando (`--config <arquivo>`, depois `RUSTNF_CONFIG`, depois o local padrao) e
-guarda a senha do certificado no Gerenciador de Credenciais do Windows, nunca no arquivo. Aceita so' `--config`,
-`--version` e `--help`; `RUSTNF_COFRE=desligado` desliga o cofre (a janela avisa que a senha nao sera guardada).
+`rustnf-gui` é uma janela para configurar o rustnf sem editar o arquivo TOML. **Só existe para Windows** nesta versão
+(o GPUI usado só tem janela no Windows); em outro sistema o executável avisa e sai com código 2. Ela lê e grava o **mesmo
+arquivo de configuração** da linha de comando (`--config <arquivo>`, depois `RUSTNF_CONFIG`, depois o local padrão) e
+guarda a senha do certificado no Gerenciador de Credenciais do Windows, nunca no arquivo. Aceita só `--config`,
+`--version` e `--help`; `RUSTNF_COFRE=desligado` desliga o cofre (a janela avisa que a senha não será guardada).
 
-O que ja faz: primeiro uso em tres passos (emitente, certificado, pasta das notas); Inicio com o resumo; Configuracoes
-(emitente, Sefin Nacional com ambiente, certificado, senha, assinatura, tempo limite e folga do relogio, notas, canhoto do
-DANFSe, aliquotas por ano e tema); botoes "Testar certificado" (abre o `.pfx`, sem rede) e "Testar conexao com a Sefin"
-(chamada real a Sefin Nacional, so' quando voce clica); selo fixo do ambiente (Producao ou Producao restrita) e estado
-do certificado no rodape; a **Nova nota**, as **Notas**, a **Consulta** e a **Previa** (abaixo). O que ainda **nao** faz:
-os casos de emissao fora do caso comum (veja o fim da Nova nota), que seguem pela linha de comando.
+O que já faz: primeiro uso em três passos (emitente, certificado, pasta das notas); Início com o resumo; Configurações
+(emitente, Sefin Nacional com ambiente, certificado, senha, assinatura, tempo limite e folga do relógio, notas, canhoto do
+DANFSe, alíquotas por ano e tema); botões "Testar certificado" (abre o `.pfx`, sem rede) e "Testar conexão com a Sefin"
+(chamada real à Sefin Nacional, só quando você clica); selo fixo do ambiente (Produção ou Produção restrita) e estado
+do certificado no rodapé; a **Nova nota**, as **Notas**, a **Consulta** e a **Prévia** (abaixo). O que ainda **não** faz:
+os casos de emissão fora do caso comum (veja o fim da Nova nota), que seguem pela linha de comando.
 
 ### Nova nota
 
-Item "Nova nota" da barra lateral (Ctrl+N; o Inicio tem o botao "Emitir uma nota"). Com a configuracao incompleta ela so'
-explica o que falta. O prestador, a serie, o municipio emissor e o regime vem do `[emitente]`; o numero da DPS vem da pasta
-de notas e a data e hora de emissao sao automaticas. O formulario cobre o **caso comum**, em uma pagina:
+Item "Nova nota" da barra lateral (Ctrl+N; o Início tem o botão "Emitir uma nota"). Com a configuração incompleta ela só
+explica o que falta. O prestador, a série, o município emissor e o regime vêm do `[emitente]`; o número da DPS vem da pasta
+de notas e a data e hora de emissão são automáticas. O formulário cobre o **caso comum**, em uma página:
 
-* **tomador** (CNPJ ou CPF com conferencia dos digitos, endereco nacional; ou "nota sem tomador identificado");
-* **servico**: busca na Lista Nacional por texto ou por codigo, descricao, municipio da prestacao, NBS e codigos opcionais;
-* **valores**: valor do servico, descontos e competencia (dinheiro no formato `1.234,56`);
-* **ISS**: tributavel no municipio ou nao incidencia, retencao pelo tomador, aliquota e os tributos aproximados que o
+* **tomador** (CNPJ ou CPF com conferência dos dígitos, endereço nacional; ou "nota sem tomador identificado");
+* **serviço**: busca na Lista Nacional por texto ou por código, descrição, município da prestação, NBS e códigos opcionais;
+* **valores**: valor do serviço, descontos e competência (dinheiro no formato `1.234,56`);
+* **ISS**: tributável no município ou não incidência, retenção pelo tomador, alíquota e os tributos aproximados que o
   regime do emitente pede (percentual do Simples Nacional, ou totais por esfera);
-* **tributos federais** (opcional): IRRF, CSLL, contribuicao previdenciaria e PIS/COFINS;
-* **IBS/CBS**: `cIndOp`, `cClassTrib` (o CST sai dele) e consumidor final, com a **sugestao da correlacao do Anexo VIII**
-  (NBS, `cIndOp` e `cClassTrib`): ela so' propoe, so' preenche campo vazio e nao escolhe calada quando ha mais de uma
-  classificacao. A biblioteca aceita a nota sem este grupo, entao a tela o deixa desligavel: a nota nasce com ele
-  ligado para quem nao e' optante do Simples Nacional e desligado para o optante.
+* **tributos federais** (opcional): IRRF, CSLL, contribuição previdenciária e PIS/COFINS;
+* **IBS/CBS**: `cIndOp`, `cClassTrib` (o CST sai dele) e consumidor final, com a **sugestão da correlação do Anexo VIII**
+  (NBS, `cIndOp` e `cClassTrib`): ela só propõe, só preenche campo vazio e não escolhe calada quando há mais de uma
+  classificação. A biblioteca aceita a nota sem este grupo, então a tela o deixa desligável: a nota nasce com ele
+  ligado para quem não é optante do Simples Nacional e desligado para o optante.
 
-Um painel fixo ao lado (embaixo, em janela estreita) mostra, enquanto voce digita, as **pendencias** (clique leva ao campo),
-o resumo de valores com o valor liquido estimado, a **previa do IBS/CBS** (com as `[[aliquotas]]` da configuracao; sem
-aliquota para o ano, ela diz isso e aponta a aba Aliquotas) e o botao Emitir, desligado com o motivo ao lado enquanto
-houver pendencia. O erro aparece embaixo do campo, so' depois de voce passar por ele. O rascunho e' salvo sozinho na pasta
+Um painel fixo ao lado (embaixo, em janela estreita) mostra, enquanto você digita, as **pendências** (clique leva ao campo),
+o resumo de valores com o valor líquido estimado, a **prévia do IBS/CBS** (com as `[[aliquotas]]` da configuração; sem
+alíquota para o ano, ela diz isso e aponta a aba Alíquotas) e o botão Emitir, desligado com o motivo ao lado enquanto
+houver pendência. O erro aparece embaixo do campo, só depois de você passar por ele. O rascunho é salvo sozinho na pasta
 de notas (`rascunho.json`) e volta ao reabrir; "Limpar" pergunta antes.
 
-Emitir abre uma confirmacao com o ambiente em destaque; **em producao ela so' habilita depois de marcar "Entendo que esta
-nota tem valor fiscal"**. O envio roda fora da tela e o pedido enviado fica congelado (mesmo numero de DPS, mesma data e
-hora): se a Sefin nao responder, o formulario trava e "Tentar de novo" reenvia exatamente o mesmo pedido (a biblioteca
-recupera a nota se ela ja existir); "Desistir desta tentativa" avisa que a nota pode ter sido autorizada. O numero da
-DPS nao avanca na desistencia: se a nota anterior existir, e' ela que a Sefin devolve na emissao seguinte, e a tela
-avisa quando os dados dela nao sao os do formulario (que fica como estava, para emitir de novo). Se a Sefin
-rejeitar, os dados ficam e as mensagens aparecem no painel. Sem senha no cofre, a tela a pede (so' para aquela emissao;
-nao e' guardada). O que a tela nao cobre (tomador no exterior, intermediario, comercio exterior, obra, evento, locacao,
-deducoes, reembolsos, substituicao, beneficio municipal, suspensao, imunidade, destinatario diferente do tomador) se emite
+Emitir abre uma confirmação com o ambiente em destaque; **em produção ela só habilita depois de marcar "Entendo que esta
+nota tem valor fiscal"**. O envio roda fora da tela e o pedido enviado fica congelado (mesmo número de DPS, mesma data e
+hora): se a Sefin não responder, o formulário trava e "Tentar de novo" reenvia exatamente o mesmo pedido (a biblioteca
+recupera a nota se ela já existir); "Desistir desta tentativa" avisa que a nota pode ter sido autorizada. O número da
+DPS não avança na desistência: se a nota anterior existir, é ela que a Sefin devolve na emissão seguinte, e a tela
+avisa quando os dados dela não são os do formulário (que fica como estava, para emitir de novo). Se a Sefin
+rejeitar, os dados ficam e as mensagens aparecem no painel. Sem senha no cofre, a tela a pede (só para aquela emissão;
+não é guardada). O que a tela não cobre (tomador no exterior, intermediário, comércio exterior, obra, evento, locação,
+deduções, reembolsos, substituição, benefício municipal, suspensão, imunidade, destinatário diferente do tomador) se emite
 pela linha de comando com o JSON completo. **Nenhuma nota real foi emitida por esta interface.**
 
 ### Notas
 
 Item "Notas" da barra lateral (Ctrl+L). Lista as notas da pasta de notas, da mais recente para a mais antiga, lidas fora
-da linha da tela e desenhadas so' no que cabe na janela (a pasta pode ter milhares de notas): data, numero da NFS-e, DPS
-(serie e numero), tomador (o CPF aparece mascarado, `***.***.***-NN`; o CNPJ, inteiro), valor e situacao (autorizada ou
-cancelada). A busca (nome sem acento, CPF/CNPJ ou numero; uma chave colada tambem acha a nota) e o filtro por situacao
+da linha da tela e desenhadas só no que cabe na janela (a pasta pode ter milhares de notas): data, número da NFS-e, DPS
+(série e número), tomador (o CPF aparece mascarado, `***.***.***-NN`; o CNPJ, inteiro), valor e situação (autorizada ou
+cancelada). A busca (nome sem acento, CPF/CNPJ ou número; uma chave colada também acha a nota) e o filtro por situação
 valem juntos. A lista se atualiza sozinha quando a Nova nota autoriza uma nota e quando um cancelamento termina; "Atualizar"
-le a pasta de novo. Pasta vazia, leitura com erro ("Tentar de novo") e busca sem resultado tem tela propria. Setas movem
-a linha em foco, Enter abre o detalhe e Esc volta da pagina do detalhe.
+lê a pasta de novo. Pasta vazia, leitura com erro ("Tentar de novo") e busca sem resultado tem tela própria. Setas movem
+a linha em foco, Enter abre o detalhe e Esc volta da página do detalhe.
 
-O **detalhe** (ao lado da lista em janela larga; pagina em janela estreita) mostra os dados lidos do XML guardado: numero,
-chave de acesso em grupos de 5 com "Copiar a chave", datas, tomador (aqui o documento aparece inteiro), servico, valores
-e situacao. XML ausente ou ilegivel e' dito sem derrubar a tela. Dele saem:
+O **detalhe** (ao lado da lista em janela larga; página em janela estreita) mostra os dados lidos do XML guardado: número,
+chave de acesso em grupos de 5 com "Copiar a chave", datas, tomador (aqui o documento aparece inteiro), serviço, valores
+e situação. XML ausente ou ilegível é dito sem derrubar a tela. Dele saem:
 
-* **Abrir o DANFSe**: gera o PDF fora da tela (com a marca de cancelada, quando for o caso, e o canhoto da configuracao),
-  grava `<chave>.pdf` ao lado do XML (o nome sai so' da chave conferida) e o abre no programa padrao do sistema. O PDF nao
-  entra no indice nem na numeracao. "Mostrar na pasta" mostra o XML no explorador de arquivos;
-* **Cancelar a nota** (so' nota autorizada): dialogo com o ambiente em destaque, o resumo da nota, o motivo (erro na
-  emissao, servico nao prestado ou outros) e a justificativa, de 15 a 255 caracteres, com contador e erro embaixo do campo.
-  Em producao o botao so' habilita depois de marcar "Entendo que o cancelamento tem efeito fiscal". O envio e' feito fora
-  da tela, pelo mesmo fluxo de certificado e senha da emissao. So' o cancelamento **registrado** marca a nota como cancelada
-  na pasta; rejeitado mostra as mensagens da Sefin e nao marca. **Sem resposta**: o pedido tem sempre o mesmo identificador
-  (a chave da nota mais o tipo do evento), entao reenviar nao cria um segundo cancelamento. Se o primeiro envio ja tiver sido
-  registrado, a Sefin recusa o reenvio por repeticao: diante de uma recusa, o programa confere se a nota ja tem o
-  cancelamento e, tendo, mostra que ela ja estava cancelada e marca a pasta. O dialogo oferece "Tentar de novo" (o mesmo
-  pedido) e "Conferir na Sefin" (so' consulta o evento de cancelamento da nota);
-* **Usar como modelo**: leva tomador, servico, descricao e valor da nota para a Nova nota (o que o XML permite ler; o resto
-  fica vazio e a conferencia da Nova nota aponta), com a competencia de hoje. Se a Nova nota tiver algo digitado, pergunta
-  antes de substituir; com uma tentativa de emissao pendente, nao substitui.
+* **Abrir o DANFSe**: gera o PDF fora da tela (com a marca de cancelada, quando for o caso, e o canhoto da configuração),
+  grava `<chave>.pdf` ao lado do XML (o nome sai só da chave conferida) e o abre no programa padrão do sistema. O PDF não
+  entra no índice nem na numeração. "Mostrar na pasta" mostra o XML no explorador de arquivos;
+* **Cancelar a nota** (só nota autorizada): diálogo com o ambiente em destaque, o resumo da nota, o motivo (erro na
+  emissão, serviço não prestado ou outros) e a justificativa, de 15 a 255 caracteres, com contador e erro embaixo do campo.
+  Em produção o botão só habilita depois de marcar "Entendo que o cancelamento tem efeito fiscal". O envio é feito fora
+  da tela, pelo mesmo fluxo de certificado e senha da emissão. Só o cancelamento **registrado** marca a nota como cancelada
+  na pasta; rejeitado mostra as mensagens da Sefin e não marca. **Sem resposta**: o pedido tem sempre o mesmo identificador
+  (a chave da nota mais o tipo do evento), então reenviar não cria um segundo cancelamento. Se o primeiro envio já tiver sido
+  registrado, a Sefin recusa o reenvio por repetição: diante de uma recusa, o programa confere se a nota já tem o
+  cancelamento e, tendo, mostra que ela já estava cancelada e marca a pasta. O diálogo oferece "Tentar de novo" (o mesmo
+  pedido) e "Conferir na Sefin" (só consulta o evento de cancelamento da nota);
+* **Usar como modelo**: leva tomador, serviço, descrição e valor da nota para a Nova nota (o que o XML permite ler; o resto
+  fica vazio e a conferência da Nova nota aponta), com a competência de hoje. Se a Nova nota tiver algo digitado, pergunta
+  antes de substituir; com uma tentativa de emissão pendente, não substitui.
 
 ### Consultar
 
-Item "Consultar" (Ctrl+K). O campo da chave aceita a chave colada com espacos e pontuacao, mostra-a em grupos de 5 e diz
-embaixo do campo o que falta ou por que nao confere (tamanho, formato e digito verificador, pela biblioteca). Enter no
-campo consulta. A consulta e' feita fora da tela, com o certificado, e **nao altera nada** na Sefin. O resultado e' o mesmo
-detalhe das Notas, mais: se a nota tem cancelamento registrado (o XML da nota nao diz; a tela consulta o evento e, se nao
-conseguir saber, avisa); se ela ja esta na pasta de notas, ou o botao "Guardar na pasta de notas" (so' para nota do
-emitente da configuracao; nota de outro emitente nao e' guardada); "Abrir o DANFSe" (nota que nao esta na pasta pergunta
-onde salvar); e Cancelar. A nota devolvida so' vale como resultado se a chave dela for a que se pediu. Nao encontrada, sem
-resposta e erro tem cada um o seu texto, com "Tentar de novo" quando faz sentido.
+Item "Consultar" (Ctrl+K). O campo da chave aceita a chave colada com espaços e pontuação, mostra-a em grupos de 5 e diz
+embaixo do campo o que falta ou por que não confere (tamanho, formato e dígito verificador, pela biblioteca). Enter no
+campo consulta. A consulta é feita fora da tela, com o certificado, e **não altera nada** na Sefin. O resultado é o mesmo
+detalhe das Notas, mais: se a nota tem cancelamento registrado (o XML da nota não diz; a tela consulta o evento e, se não
+conseguir saber, avisa); se ela já está na pasta de notas, ou o botão "Guardar na pasta de notas" (só para nota do
+emitente da configuração; nota de outro emitente não é guardada); "Abrir o DANFSe" (nota que não está na pasta pergunta
+onde salvar); e Cancelar. A nota devolvida só vale como resultado se a chave dela for a que se pediu. Não encontrada, sem
+resposta e erro têm cada um o seu texto, com "Tentar de novo" quando faz sentido.
 
-### Previa
+### Prévia
 
-Item "Previa" (Ctrl+P). Calculadora avulsa do IBS e da CBS, sem emitir nada e sem precisar de certificado nem de pasta de
-notas: valor do servico, desconto incondicionado, data do fato gerador (o ano decide as aliquotas), `cClassTrib` (com busca
-por texto na tabela oficial e o nome ao lado), regime simulado (comeca pelo do emitente) e, se houver, o ISSQN, o PIS e a
-COFINS que saem da base. Usa as `[[aliquotas]]` da configuracao; sem aliquota para o ano ela diz isso e aponta a aba
-Aliquotas. Mostra a base de calculo, a aliquota efetiva e o valor do IBS estadual, do IBS municipal e da CBS, e os totais,
-com os avisos e as recusas da biblioteca. Fora da tela, porque nao se digita ou nao faz sentido numa calculadora avulsa:
-desconto condicionado, documentos de ajuste da base, salao parceiro e locacao (os mesmos casos de `rustnf calcular` com o
+Item "Prévia" (Ctrl+P). Calculadora avulsa do IBS e da CBS, sem emitir nada e sem precisar de certificado nem de pasta de
+notas: valor do serviço, desconto incondicionado, data do fato gerador (o ano decide as alíquotas), `cClassTrib` (com busca
+por texto na tabela oficial e o nome ao lado), regime simulado (começa pelo do emitente) e, se houver, o ISSQN, o PIS e a
+COFINS que saem da base. Usa as `[[aliquotas]]` da configuração; sem alíquota para o ano ela diz isso e aponta a aba
+Alíquotas. Mostra a base de cálculo, a alíquota efetiva e o valor do IBS estadual, do IBS municipal e da CBS, e os totais,
+com os avisos e as recusas da biblioteca. Fora da tela, porque não se digita ou não faz sentido numa calculadora avulsa:
+desconto condicionado, documentos de ajuste da base, salão parceiro e locação (os mesmos casos de `rustnf calcular` com o
 JSON completo).
 
-Para clicar em tudo sem falar com a Sefin, ha o exemplo `demonstracao` (feature `demonstracao`, desligada por padrao; o
-executavel normal nao tem como entrar nesse modo). Ele abre a mesma janela com um emissor que nao usa a rede, com selo e
-titulo proprios. A nota "autorizada" entra de verdade na pasta de notas do arquivo de configuracao: use uma pasta de
-ensaio. A consulta devolve as notas que a demonstracao autorizou e as que estao nessa pasta; o cancelamento segue um
-roteiro, como a emissao.
+Para clicar em tudo sem falar com a Sefin, há o exemplo `demonstracao` (feature `demonstracao`, desligada por padrão; o
+executável normal não tem como entrar nesse modo). Ele abre a mesma janela com um emissor que não usa a rede, com selo e
+título próprios. A nota "autorizada" entra de verdade na pasta de notas do arquivo de configuração: use uma pasta de
+ensaio. A consulta devolve as notas que a demonstração autorizou e as que estão nessa pasta; o cancelamento segue um
+roteiro, como a emissão.
 
 ```
 cargo run -p rustnf-gui                      # modo de depuracao
@@ -464,29 +492,29 @@ cargo build --release -p rustnf-gui          # no Windows, precisa do fxc.exe do
 cargo run -p rustnf-gui --features demonstracao --example demonstracao -- --config ensaio.toml --resultado autorizada --cancelamento registrado
 ```
 
-A compilacao **release** no Windows precisa do `fxc.exe` (compilador de shaders do Windows SDK): deixe-o no `PATH` ou
-aponte a variavel `GPUI_FXC_PATH` para ele. O modo de depuracao nao precisa. Para o executavel nao depender do
-Visual C++ Redistributable, compile com `RUSTFLAGS="-C target-feature=+crt-static"` (e' o que o fluxo de release
-faz, e ele confere as dependencias do executavel antes de empacotar). A primeira compilacao e' demorada (centenas
-de crates). O mapa da camada de janela: `crates/rustnf-gui/src/modelo` (estado dos formularios, mascaras, conferencia
-campo a campo, passos do primeiro uso, lista das notas, detalhe, cancelamento, consulta e previa avulsa; sem janela e
-testavel em qualquer sistema), `src/servicos.rs` e `src/servicos` (arquivo, cofre, certificado, conexao, pasta de notas,
-DANFSe, cancelar e consultar) e `src/telas` (so' desenho).
+A compilação **release** no Windows precisa do `fxc.exe` (compilador de shaders do Windows SDK): deixe-o no `PATH` ou
+aponte a variável `GPUI_FXC_PATH` para ele. O modo de depuração não precisa. Para o executável não depender do
+Visual C++ Redistributable, compile com `RUSTFLAGS="-C target-feature=+crt-static"` (é o que o fluxo de release
+faz, e ele confere as dependências do executável antes de empacotar). A primeira compilação é demorada (centenas
+de crates). O mapa da camada de janela: `crates/rustnf-gui/src/modelo` (estado dos formulários, máscaras, conferência
+campo a campo, passos do primeiro uso, lista das notas, detalhe, cancelamento, consulta e prévia avulsa; sem janela e
+testável em qualquer sistema), `src/servicos.rs` e `src/servicos` (arquivo, cofre, certificado, conexão, pasta de notas,
+DANFSe, cancelar e consultar) e `src/telas` (só desenho).
 
 ## Ambientes
 
 | ambiente | `--ambiente` | `tpAmb` | Sefin Nacional |
 |---|---|---|---|
-| producao | `producao` | 1 | `https://sefin.nfse.gov.br/sefinnacional` |
-| producao restrita | `restrita` | 2 | `https://sefin.producaorestrita.nfse.gov.br/SefinNacional` |
+| produção | `producao` | 1 | `https://sefin.nfse.gov.br/sefinnacional` |
+| produção restrita | `restrita` | 2 | `https://sefin.producaorestrita.nfse.gov.br/SefinNacional` |
 
-A producao restrita e' o ambiente de testes da Sefin: use-a ate o fluxo estar certo. A DPS e a nota ficam presas ao
+A produção restrita é o ambiente de testes da Sefin: use-a até o fluxo estar certo. A DPS e a nota ficam presas ao
 ambiente em que foram feitas (regra E0006).
 
 ## Como testar sem certificado
 
-* `dps montar`, `dps conferir`, `calcular` e `danfse` nao precisam de certificado nem de rede.
-* Os testes automaticos geram certificados A1 autoassinados em memoria (feature `cert_a1_teste`; nunca valem no
+* `dps montar`, `dps conferir`, `calcular` e `danfse` não precisam de certificado nem de rede.
+* Os testes automáticos geram certificados A1 autoassinados em memória (feature `cert_a1_teste`; nunca valem no
   fisco), usam transporte falso no lugar da Sefin e comparam o XML gerado, texto a texto, com os contratos em
   `crates/rustnf/tests/casos/`. Nenhum teste usa rede nem porta fixa.
 
@@ -501,14 +529,14 @@ cargo test -p rustnf-gui
 cargo test -p rustnf --test higiene
 ```
 
-## Contribuir e seguranca
+## Contribuir e segurança
 
 Veja [CONTRIBUTING.md](CONTRIBUTING.md) (testes, contrato para mudar regra, teste de higiene) e
-[SECURITY.md](SECURITY.md) (como relatar vulnerabilidade, o que e' segredo). Plano em `docs/ROADMAP.md`; fontes
-oficiais em `docs/FONTES.md`; historico em `CHANGELOG.md`.
+[SECURITY.md](SECURITY.md) (como relatar vulnerabilidade, o que é segredo). Plano em `docs/ROADMAP.md`; fontes
+oficiais em `docs/FONTES.md`; histórico em `CHANGELOG.md`.
 
-## Licenca
+## Licença
 
 [Mozilla Public License 2.0](LICENSE) (`MPL-2.0`). Em resumo: pode usar, inclusive dentro de software fechado; quem
-DISTRIBUIR uma versao com arquivos do `rustnf` modificados tem de manter o aviso da licenca e disponibilizar o codigo
-desses arquivos sob a MPL 2.0. O texto que vale e' o do arquivo `LICENSE`.
+DISTRIBUIR uma versão com arquivos do `rustnf` modificados tem de manter o aviso da licença e disponibilizar o código
+desses arquivos sob a MPL 2.0. O texto que vale é o do arquivo `LICENSE`.

@@ -1,27 +1,27 @@
-name: Relato de emissao
-description: Voce testou emitir, consultar ou cancelar uma NFS-e com o rustnf. Conte como foi, tenha dado certo ou nao.
+name: Relato de emissão
+description: Você testou emitir, consultar ou cancelar uma NFS-e com o rustnf. Conte como foi, tenha dado certo ou não.
 title: "Relato: "
 body:
   - type: markdown
     attributes:
       value: |
-        Obrigado por testar. O projeto ainda nao tem nota real emitida, entao todo relato ajuda, inclusive o de sucesso.
+        Obrigado por testar. O projeto ainda não tem nota real emitida, então todo relato ajuda, inclusive o de sucesso.
 
-        **Nao anexe certificado, senha, token, nem XML ou PDF com dado de pessoa ou empresa real.** Antes de colar
-        qualquer trecho, troque nomes e documentos pelos ficticios de `crates/rustnf/tests/higiene_documentos.txt`.
+        **Não anexe certificado, senha, token, nem XML ou PDF com dado de pessoa ou empresa real.** Antes de colar
+        qualquer trecho, troque nomes e documentos pelos fictícios de `crates/rustnf/tests/higiene_documentos.txt`.
   - type: dropdown
     id: ambiente
     attributes:
       label: Ambiente
       options:
-        - Producao restrita
-        - Producao
+        - Produção restrita
+        - Produção
     validations:
       required: true
   - type: dropdown
     id: operacao
     attributes:
-      label: O que voce fez
+      label: O que você fez
       options:
         - Emitir
         - Consultar
@@ -45,41 +45,41 @@ body:
     attributes:
       label: Assinatura usada
       options:
-        - SHA-256 (o padrao)
+        - SHA-256 (o padrão)
         - SHA-1 (--assinatura sha1)
-        - Nao sei
+        - Não sei
     validations:
       required: true
   - type: input
     id: municipio
     attributes:
-      label: Municipio do prestador (codigo IBGE de 7 digitos)
+      label: Município do prestador (código IBGE de 7 dígitos)
       placeholder: "3550308"
     validations:
       required: true
   - type: input
     id: versao
     attributes:
-      label: Versao do rustnf ou commit
-      description: A saida de `rustnf --version`, ou o hash do commit.
+      label: Versão do rustnf ou commit
+      description: A saída de `rustnf --version`, ou o hash do commit.
     validations:
       required: true
   - type: input
     id: regime
     attributes:
       label: Regime do prestador
-      description: Nao optante, MEI ou ME/EPP do Simples Nacional.
+      description: Não optante, MEI ou ME/EPP do Simples Nacional.
   - type: textarea
     id: retorno
     attributes:
-      label: Codigo e mensagem de retorno
-      description: O codigo (por exemplo E0312) e o texto que a Sefin Nacional ou o rustnf devolveu.
+      label: Código e mensagem de retorno
+      description: O código (por exemplo E0312) e o texto que a Sefin Nacional ou o rustnf devolveu.
       render: text
   - type: textarea
     id: detalhe
     attributes:
-      label: O que voce esperava e o que aconteceu
-      description: O comando usado (sem a senha), o codigo de servico, e o trecho do pedido ou do XML que interessa, ja com os dados trocados por ficticios.
+      label: O que você esperava e o que aconteceu
+      description: O comando usado (sem a senha), o código de serviço, e o trecho do pedido ou do XML que interessa, já com os dados trocados por fictícios.
     validations:
       required: true
   - type: checkboxes
@@ -87,7 +87,7 @@ body:
     attributes:
       label: Antes de enviar
       options:
-        - label: Nao anexei certificado, senha nem token.
+        - label: Não anexei certificado, senha nem token.
           required: true
-        - label: Troquei nomes, documentos e enderecos reais por ficticios.
+        - label: Troquei nomes, documentos e endereços reais por fictícios.
           required: true
