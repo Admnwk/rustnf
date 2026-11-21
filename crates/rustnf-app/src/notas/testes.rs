@@ -255,3 +255,37 @@ fn a_mensagem_de_erro_nao_leva_caminho() {
         assert!(!t.contains('\\'), "{t}");
     }
 }
+
+#[test]
+fn o_danfse_fica_ao_lado_do_xml_e_nao_aparece_na_lista() {
+    let p = PastaTemporaria::nova("notas-danfse");
+    let notas = Notas::abrir(p.caminho()).unwrap();
+    notas.guardar(&registro(42), "<NFSe>42</NFSe>").unwrap();
+    let xml = notas.caminho_do_xml_guardado(&chave(42)).unwrap();
+    assert!(xml.ends_with(format!("{}.xml", chave(42))));
+    let pdf = notas.guardar_danfse(&chave(42), b"%PDF-1.7 teste").unwrap();
+    assert_eq!(pdf.parent(), xml.parent());
+    assert_eq!(
+        pdf.file_name().unwrap().to_string_lossy(),
+        format!("{}.pdf", chave(42))
+    );
+    assert_eq!(std::fs::read(&pdf).unwrap(), b"%PDF-1.7 teste");
+    // o indice, a lista e a numeracao nao mudam
+    assert_eq!(notas.listar().unwrap().len(), 1);
+    assert_eq!(notas.proximo_numero("1").unwrap(), 43);
+    assert_eq!(notas.ler_xml(&chave(42)).unwrap(), "<NFSe>42</NFSe>");
+    // gravar de novo troca o arquivo, sem sobra temporaria
+    notas.guardar_danfse(&chave(42), b"%PDF-novo").unwrap();
+    assert_eq!(std::fs::read(&pdf).unwrap(), b"%PDF-novo");
+    let sobras: Vec<_> = nomes(pdf.parent().unwrap());
+    assert_eq!(sobras.len(), 2, "{sobras:?}");
+    // so' nota do indice e so' chave valida
+    assert_eq!(
+        notas.guardar_danfse(&chave(99), b"%PDF").unwrap_err(),
+        ErroNotas::NaoEncontrada
+    );
+    assert_eq!(
+        notas.guardar_danfse("../../x", b"%PDF").unwrap_err(),
+        ErroNotas::ChaveInvalida
+    );
+}

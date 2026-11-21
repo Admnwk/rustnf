@@ -8,7 +8,8 @@
 //! emissao de verdade. So' existe com a feature `demonstracao` (e nos testes); o executavel normal nao tem como
 //! entrar nesse modo.
 
-use std::collections::{HashMap, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
+use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
@@ -19,6 +20,7 @@ use rustnf::nfse::leitura::{ler_nfse, Mensagem};
 use rustnf::nfse::sefin::{Resultado, Status};
 use rustnf::nfse::Dps;
 use rustnf_app::emissao::Emissor;
+use rustnf_app::notas::{Notas, Situacao};
 
 use crate::servicos::{ErroTela, FabricaDeEmissor, Preparo};
 
@@ -34,6 +36,37 @@ pub enum Desfecho {
     Rejeitada,
     /// Sem resposta: a nota nao e' confirmada.
     SemResposta,
+}
+
+/// Como o emissor de demonstracao responde a um pedido de cancelamento.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Cancelamento {
+    /// A Sefin registra o cancelamento.
+    Registrado,
+    /// A Sefin recusa o pedido, com duas mensagens.
+    Rejeitado,
+    /// Sem resposta: o cancelamento nao e' confirmado (e nao foi registrado).
+    SemResposta,
+}
+
+/// Um pedido de cancelamento como o emissor o recebeu (para o teste comparar os reenvios).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PedidoDeCancelamento {
+    /// A chave de acesso.
+    pub chave: String,
+    /// O codigo do motivo.
+    pub motivo: String,
+    /// A justificativa.
+    pub justificativa: String,
+}
+
+/// O que a demonstracao responde alem da emissao: o roteiro do cancelamento e a pasta de notas do ensaio.
+#[derive(Debug, Clone, Default)]
+pub struct Ensaio {
+    /// Um desfecho por pedido de cancelamento; o ultimo se repete. Vazio: registrado.
+    pub cancelamento: Vec<Cancelamento>,
+    /// A pasta de notas do ensaio, de onde a consulta tambem le.
+    pub pasta: Option<PathBuf>,
 }
 
 /// O que o emissor recebeu em cada chamada (para o teste comparar os reenvios).
@@ -61,6 +94,14 @@ pub struct EmissorDemonstracao {
     chamadas: Mutex<Vec<Chamada>>,
     /// A primeira DPS que chegou com cada serie e numero: e' a nota que "ja existe" numa recuperacao.
     primeiras: Mutex<HashMap<(String, String), Dps>>,
+    /// As NFS-e que este emissor "autorizou" nesta execucao: chave e XML.
+    autorizadas: Mutex<HashMap<String, String>>,
+    /// A pasta de notas do ensaio: a consulta tambem acha as notas que estao nela.
+    pasta: Option<PathBuf>,
+    cancelamento: Mutex<VecDeque<Cancelamento>>,
+    cancelamentos: Mutex<Vec<PedidoDeCancelamento>>,
+    canceladas: Mutex<HashSet<String>>,
+    consultas: Mutex<Vec<String>>,
 }
 
 impl EmissorDemonstracao {
@@ -68,13 +109,109 @@ impl EmissorDemonstracao {
     /// `atraso` (um pouco de espera faz o "enviando" ser visivel).
     #[must_use]
     pub fn novo(ambiente: u8, roteiro: &[Desfecho], atraso: Duration) -> Arc<Self> {
+        Self::com_ensaio(ambiente, roteiro, Ensaio::default(), atraso)
+    }
+
+    /// Como [`EmissorDemonstracao::novo`], com o roteiro do cancelamento e a pasta de notas do ensaio.
+    #[must_use]
+    pub fn com_ensaio(
+        ambiente: u8,
+        roteiro: &[Desfecho],
+        ensaio: Ensaio,
+        atraso: Duration,
+    ) -> Arc<Self> {
+        let cancelamento = if ensaio.cancelamento.is_empty() {
+            VecDeque::from([Cancelamento::Registrado])
+        } else {
+            ensaio.cancelamento.into_iter().collect()
+        };
         Arc::new(Self {
             ambiente,
             atraso,
             roteiro: Mutex::new(roteiro.iter().copied().collect()),
             chamadas: Mutex::new(Vec::new()),
             primeiras: Mutex::new(HashMap::new()),
+            autorizadas: Mutex::new(HashMap::new()),
+            pasta: ensaio.pasta,
+            cancelamento: Mutex::new(cancelamento),
+            cancelamentos: Mutex::new(Vec::new()),
+            canceladas: Mutex::new(HashSet::new()),
+            consultas: Mutex::new(Vec::new()),
         })
+    }
+
+    /// Os pedidos de cancelamento que o emissor recebeu, na ordem.
+    #[must_use]
+    pub fn pedidos_de_cancelamento(&self) -> Vec<PedidoDeCancelamento> {
+        self.cancelamentos
+            .lock()
+            .map(|c| c.clone())
+            .unwrap_or_default()
+    }
+
+    /// As chaves que o emissor foi chamado para consultar, na ordem.
+    #[must_use]
+    pub fn chaves_consultadas(&self) -> Vec<String> {
+        self.consultas.lock().map(|c| c.clone()).unwrap_or_default()
+    }
+
+    /// O XML de uma nota que este emissor autorizou nesta execucao, ou o da pasta de notas do ensaio.
+    fn xml_da_nota(&self, chave: &str) -> Option<String> {
+        if let Some(xml) = self
+            .autorizadas
+            .lock()
+            .ok()
+            .and_then(|a| a.get(chave).cloned())
+        {
+            return Some(xml);
+        }
+        let notas = Notas::abrir(self.pasta.as_ref()?).ok()?;
+        notas.ler_xml(chave).ok()
+    }
+
+    /// A nota tem cancelamento registrado: nesta execucao, ou na pasta de notas do ensaio.
+    fn esta_cancelada(&self, chave: &str) -> bool {
+        if self.canceladas.lock().is_ok_and(|c| c.contains(chave)) {
+            return true;
+        }
+        self.pasta
+            .as_ref()
+            .and_then(|p| Notas::abrir(p).ok())
+            .and_then(|n| n.listar().ok())
+            .is_some_and(|l| {
+                l.iter()
+                    .any(|r| r.chave == chave && r.situacao == Situacao::Cancelada)
+            })
+    }
+
+    fn proximo_cancelamento(&self) -> Cancelamento {
+        let Ok(mut roteiro) = self.cancelamento.lock() else {
+            return Cancelamento::SemResposta;
+        };
+        if roteiro.len() > 1 {
+            roteiro.pop_front().unwrap_or(Cancelamento::SemResposta)
+        } else {
+            roteiro
+                .front()
+                .copied()
+                .unwrap_or(Cancelamento::SemResposta)
+        }
+    }
+
+    async fn esperar(&self) {
+        if !self.atraso.is_zero() {
+            tokio::time::sleep(self.atraso).await;
+        }
+    }
+
+    /// Guarda a NFS-e que a demonstracao acabou de "autorizar", para a consulta devolve-la nesta execucao.
+    fn lembrar(&self, r: Resultado) -> Resultado {
+        if r.status == Status::Autorizada && !r.chave.is_empty() && !r.xml_retorno.is_empty() {
+            if let Ok(mut a) = self.autorizadas.lock() {
+                a.insert(r.chave.clone(), r.xml_retorno.clone());
+            }
+        }
+        r
     }
 
     /// Quantas vezes o emissor foi chamado.
@@ -252,12 +389,10 @@ impl Emissor for EmissorDemonstracao {
             });
         }
         let existente = self.a_que_ja_existe(dps);
-        if !self.atraso.is_zero() {
-            tokio::time::sleep(self.atraso).await;
-        }
+        self.esperar().await;
         match self.proximo() {
-            Desfecho::Autorizada => autorizada(dps, self.ambiente, false),
-            Desfecho::Recuperada => autorizada(&existente, self.ambiente, true),
+            Desfecho::Autorizada => self.lembrar(autorizada(dps, self.ambiente, false)),
+            Desfecho::Recuperada => self.lembrar(autorizada(&existente, self.ambiente, true)),
             Desfecho::Rejeitada => {
                 let mut r = resultado(Status::Rejeitada, "A Sefin recusou a DPS (demonstracao).");
                 r.http = 400;
@@ -286,13 +421,125 @@ impl Emissor for EmissorDemonstracao {
         }
     }
 
-    async fn consultar(&self, _chave: &str) -> Resultado {
-        resultado(Status::NaoEncontrada, "A demonstracao nao consulta notas.")
+    async fn consultar(&self, chave: &str) -> Resultado {
+        let chave = so_alnum_maiusculo(chave);
+        if let Ok(mut c) = self.consultas.lock() {
+            c.push(chave.clone());
+        }
+        self.esperar().await;
+        match self.xml_da_nota(&chave).as_deref().map(ler_nfse) {
+            Some(Ok(nfse)) => {
+                let mut r = resultado(Status::Autorizada, "NFS-e encontrada (demonstracao).");
+                r.chave = chave;
+                r.xml_retorno = nfse.xml.clone();
+                r.nfse = Some(nfse);
+                r.http = 200;
+                r
+            }
+            _ => {
+                let mut r = resultado(
+                    Status::NaoEncontrada,
+                    "A demonstracao nao conhece uma nota com esta chave.",
+                );
+                r.chave = chave;
+                r.http = 404;
+                r
+            }
+        }
     }
 
-    async fn cancelar(&self, _chave: &str, _motivo: &str, _justificativa: &str) -> Resultado {
-        resultado(Status::Erro, "A demonstracao nao cancela notas.")
+    async fn cancelar(&self, chave: &str, motivo: &str, justificativa: &str) -> Resultado {
+        let chave = so_alnum_maiusculo(chave);
+        if let Ok(mut c) = self.cancelamentos.lock() {
+            c.push(PedidoDeCancelamento {
+                chave: chave.clone(),
+                motivo: motivo.to_string(),
+                justificativa: justificativa.to_string(),
+            });
+        }
+        self.esperar().await;
+        let desfecho = self.proximo_cancelamento();
+        let conhecida = self.xml_da_nota(&chave).is_some();
+        let mut r = match desfecho {
+            Cancelamento::Registrado if conhecida => {
+                if let Ok(mut c) = self.canceladas.lock() {
+                    c.insert(chave.clone());
+                }
+                let mut r = resultado(
+                    Status::Registrado,
+                    "Evento 101101 registrado (demonstracao).",
+                );
+                r.http = 201;
+                r
+            }
+            Cancelamento::Registrado | Cancelamento::Rejeitado => {
+                let mut r = resultado(
+                    Status::Rejeitada,
+                    "A Sefin recusou o evento (demonstracao).",
+                );
+                r.http = 400;
+                r.erros = if conhecida {
+                    vec![
+                        mensagem(
+                            "DEMO-C1",
+                            "O prazo para cancelar esta nota diretamente no sistema já passou.",
+                            "Demonstração: nenhuma regra real foi consultada.",
+                        ),
+                        mensagem(
+                            "DEMO-C2",
+                            "Peça a análise fiscal do cancelamento ao município.",
+                            "",
+                        ),
+                    ]
+                } else {
+                    vec![mensagem(
+                        "DEMO-C3",
+                        "A demonstração não conhece uma nota com esta chave.",
+                        "",
+                    )]
+                };
+                r
+            }
+            Cancelamento::SemResposta => {
+                let mut r = resultado(
+                    Status::Pendente,
+                    "Sem confirmacao do evento (demonstracao).",
+                );
+                r.detalhe = "demonstracao".into();
+                r
+            }
+        };
+        r.chave = chave;
+        r
     }
+
+    async fn cancelada(&self, chave: &str) -> Resultado {
+        let chave = so_alnum_maiusculo(chave);
+        self.esperar().await;
+        let cancelada = self.esta_cancelada(&chave);
+        let mut r = if cancelada {
+            resultado(
+                Status::Ok,
+                "Evento 101101 registrado na nota (demonstracao).",
+            )
+        } else {
+            resultado(
+                Status::NaoEncontrada,
+                "Nenhum cancelamento registrado (demonstracao).",
+            )
+        };
+        r.chave = chave;
+        r.http = if cancelada { 200 } else { 404 };
+        r
+    }
+}
+
+fn so_alnum_maiusculo(texto: &str) -> String {
+    texto
+        .chars()
+        .filter(char::is_ascii_alphanumeric)
+        .map(|c| c.to_ascii_uppercase())
+        .collect()
 }
 
 /// A fabrica da demonstracao: entrega sempre o mesmo emissor, e diz que nada e' enviado de verdade.
@@ -326,6 +573,18 @@ pub fn roteiro_do_nome(nome: &str) -> Option<Vec<Desfecho>> {
         "autorizada" => Some(vec![Desfecho::Autorizada]),
         "rejeitada" => Some(vec![Desfecho::Rejeitada]),
         "sem-resposta" => Some(vec![Desfecho::SemResposta, Desfecho::Recuperada]),
+        _ => None,
+    }
+}
+
+/// O roteiro de um dos nomes aceitos por `--cancelamento`: `registrado`, `rejeitado` ou `sem-resposta` (o primeiro
+/// pedido fica sem resposta, e nao foi registrado; o segundo, "Tentar de novo", registra).
+#[must_use]
+pub fn cancelamento_do_nome(nome: &str) -> Option<Vec<Cancelamento>> {
+    match nome {
+        "registrado" => Some(vec![Cancelamento::Registrado]),
+        "rejeitado" => Some(vec![Cancelamento::Rejeitado]),
+        "sem-resposta" => Some(vec![Cancelamento::SemResposta, Cancelamento::Registrado]),
         _ => None,
     }
 }
@@ -425,5 +684,117 @@ mod testes {
             Some(vec![Desfecho::SemResposta, Desfecho::Recuperada])
         );
         assert_eq!(roteiro_do_nome("outra"), None);
+    }
+
+    #[test]
+    fn os_nomes_do_roteiro_de_cancelamento() {
+        assert_eq!(
+            cancelamento_do_nome("registrado"),
+            Some(vec![Cancelamento::Registrado])
+        );
+        assert_eq!(
+            cancelamento_do_nome("rejeitado"),
+            Some(vec![Cancelamento::Rejeitado])
+        );
+        assert_eq!(
+            cancelamento_do_nome("sem-resposta"),
+            Some(vec![Cancelamento::SemResposta, Cancelamento::Registrado])
+        );
+        assert_eq!(cancelamento_do_nome("outro"), None);
+    }
+
+    #[test]
+    fn consulta_devolve_a_nota_autorizada_nesta_execucao_e_nao_acha_o_resto() {
+        rodar(async {
+            let e = EmissorDemonstracao::novo(2, &[Desfecho::Autorizada], Duration::ZERO);
+            let nota = e.emitir(&dps()).await;
+            let chave = nota.chave.clone();
+            // a chave pode vir com espaco e em minuscula
+            let r = e.consultar(&chave.to_lowercase()).await;
+            assert_eq!(r.status, Status::Autorizada);
+            assert_eq!(r.chave, chave);
+            assert_eq!(r.nfse.as_ref().unwrap().numero, "7");
+            assert!(r.xml_retorno.contains("<NFSe"));
+            let outra = chave_dfe::montar_nfse(3_550_308, "11222333000181", 99, "2611", Some(1), 2)
+                .unwrap();
+            assert_eq!(e.consultar(&outra).await.status, Status::NaoEncontrada);
+            assert_eq!(e.chaves_consultadas().len(), 2);
+        });
+    }
+
+    #[test]
+    fn consulta_tambem_le_a_pasta_de_notas_do_ensaio() {
+        rodar(async {
+            let pasta =
+                std::env::temp_dir().join(format!("rustnf-gui-demo-{}", std::process::id()));
+            let notas = Notas::abrir(&pasta).unwrap();
+            let autora = EmissorDemonstracao::novo(2, &[Desfecho::Autorizada], Duration::ZERO);
+            let nota = autora.emitir(&dps()).await;
+            let n = nota.nfse.as_ref().unwrap();
+            notas
+                .guardar(&Registro::da_nfse(n), &nota.xml_retorno)
+                .unwrap();
+            let e = EmissorDemonstracao::com_ensaio(
+                2,
+                &[Desfecho::Autorizada],
+                Ensaio {
+                    cancelamento: vec![],
+                    pasta: Some(pasta.clone()),
+                },
+                Duration::ZERO,
+            );
+            assert_eq!(e.consultar(&nota.chave).await.status, Status::Autorizada);
+            assert_eq!(e.cancelada(&nota.chave).await.status, Status::NaoEncontrada);
+            notas.marcar_cancelada(&nota.chave).unwrap();
+            assert_eq!(e.cancelada(&nota.chave).await.status, Status::Ok);
+            let _ = std::fs::remove_dir_all(&pasta);
+        });
+    }
+
+    #[test]
+    fn o_cancelamento_segue_o_roteiro_e_so_registra_nota_que_conhece() {
+        rodar(async {
+            let e = EmissorDemonstracao::com_ensaio(
+                2,
+                &[Desfecho::Autorizada],
+                Ensaio {
+                    cancelamento: cancelamento_do_nome("sem-resposta").unwrap(),
+                    pasta: None,
+                },
+                Duration::ZERO,
+            );
+            let chave = e.emitir(&dps()).await.chave;
+            let r = e.cancelar(&chave, "1", "justificativa de teste").await;
+            assert_eq!(r.status, Status::Pendente);
+            assert_eq!(e.cancelada(&chave).await.status, Status::NaoEncontrada);
+            // o reenvio e' o mesmo pedido
+            let r = e.cancelar(&chave, "1", "justificativa de teste").await;
+            assert_eq!(r.status, Status::Registrado);
+            assert_eq!(e.cancelada(&chave).await.status, Status::Ok);
+            let pedidos = e.pedidos_de_cancelamento();
+            assert_eq!(pedidos.len(), 2);
+            assert_eq!(pedidos[0], pedidos[1]);
+            // chave desconhecida: a demonstracao recusa
+            let outra = chave_dfe::montar_nfse(3_550_308, "11222333000181", 98, "2611", Some(1), 2)
+                .unwrap();
+            let r = e.cancelar(&outra, "1", "justificativa de teste").await;
+            assert_eq!(r.status, Status::Rejeitada);
+            assert_eq!(r.erros.len(), 1);
+            // rejeitado: duas mensagens
+            let e = EmissorDemonstracao::com_ensaio(
+                2,
+                &[Desfecho::Autorizada],
+                Ensaio {
+                    cancelamento: cancelamento_do_nome("rejeitado").unwrap(),
+                    pasta: None,
+                },
+                Duration::ZERO,
+            );
+            let chave = e.emitir(&dps()).await.chave;
+            let r = e.cancelar(&chave, "9", "justificativa de teste").await;
+            assert_eq!(r.status, Status::Rejeitada);
+            assert_eq!(r.erros.len(), 2);
+            assert_eq!(e.cancelada(&chave).await.status, Status::NaoEncontrada);
+        });
     }
 }

@@ -147,7 +147,7 @@ impl Raiz {
             .id("proximos-passos")
             .child(titulo_do_cartao("O que fazer a seguir", IconName::Info, cx))
             .child(div().text_sm().child(
-                "Para montar e emitir uma nota, use Emitir uma nota (ou Ctrl+N). Consultar e cancelar notas, e os casos que a tela de nota não cobre (comércio exterior, obra, substituição...), ficam na linha de comando do mesmo programa:",
+                "Para montar e emitir uma nota, use Emitir uma nota (Ctrl+N). Veja, consulte e cancele notas em Notas (Ctrl+L) e Consultar (Ctrl+K); simule o IBS e a CBS na Prévia (Ctrl+P). Os casos que a tela de nota não cobre (comércio exterior, obra, substituição...) ficam na linha de comando do mesmo programa:",
             ))
             .child(
                 v_flex()
@@ -156,7 +156,7 @@ impl Raiz {
                     .text_color(muted)
                     .child("rustnf dps conferir pedido.json   (confere o pedido antes de enviar)")
                     .child("rustnf emitir pedido.json   (usa estes mesmos dados e o certificado)")
-                    .child("rustnf consultar --chave <chave>   |   rustnf cancelar ..."),
+                    .child("rustnf consultar --chave <chave>   |   rustnf cancelar ...   (as mesmas operações das telas)"),
             )
             .child(div().text_sm().child(
                 if ambiente == Ambiente::Producao {

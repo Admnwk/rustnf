@@ -34,8 +34,13 @@ use crate::modelo::nota::DadosNota;
 use crate::modelo::rascunho;
 
 mod emitir;
+mod notas;
 
 pub use emitir::{emitir, FabricaDeEmissor, FabricaReal, FabricaSemEmissor};
+pub use notas::{
+    cancelar_nota, conferir_cancelamento, consultar_nota, AbrirArquivos, Destino, DoSistema,
+    NotaDaPasta,
+};
 
 /// Leitura de variavel de ambiente (os testes trocam o ambiente).
 pub type LerAmbiente = Arc<dyn Fn(&str) -> Option<OsString> + Send + Sync>;
@@ -71,6 +76,16 @@ pub enum ErroTela {
     Pasta,
     /// A chamada de rede nao pode ser feita.
     Rede(String),
+    /// A pasta das notas nao pode ser lida (o indice esta ilegivel ou em uso).
+    LeituraDaPasta,
+    /// A nota nao consta da pasta de notas.
+    NotaAusente,
+    /// O arquivo XML da nota nao esta na pasta ou nao pode ser lido.
+    XmlAusente,
+    /// O DANFSe nao pode ser gerado: a frase diz por que.
+    Danfse(String),
+    /// O arquivo nao pode ser gravado.
+    GravacaoDoArquivo,
 }
 
 impl ErroTela {
@@ -97,6 +112,16 @@ impl ErroTela {
                     .into()
             }
             Self::Pasta => "Não foi possível usar essa pasta para guardar as notas.".into(),
+            Self::LeituraDaPasta => {
+                "Não foi possível ler a pasta de notas. O índice pode estar em uso por outro programa ou danificado."
+                    .into()
+            }
+            Self::NotaAusente => "Esta nota não consta da pasta de notas.".into(),
+            Self::XmlAusente => {
+                "O arquivo XML desta nota não está na pasta de notas ou não pôde ser lido.".into()
+            }
+            Self::Danfse(t) => t.clone(),
+            Self::GravacaoDoArquivo => "Não foi possível gravar o arquivo.".into(),
         }
     }
 
@@ -240,6 +265,7 @@ pub struct Servicos {
     conexao: Arc<dyn Conexao>,
     relogio: Relogio,
     fabrica: Arc<dyn FabricaDeEmissor>,
+    abridor: Arc<dyn AbrirArquivos>,
 }
 
 impl Servicos {
@@ -256,6 +282,7 @@ impl Servicos {
             conexao: Arc::new(ConexaoReal),
             relogio: Arc::new(Utc::now),
             fabrica: Arc::new(FabricaReal),
+            abridor: Arc::new(DoSistema),
         }
     }
 
@@ -277,6 +304,7 @@ impl Servicos {
             conexao,
             relogio,
             fabrica: Arc::new(FabricaSemEmissor),
+            abridor: Arc::new(DoSistema),
         }
     }
 

@@ -273,6 +273,36 @@ impl Notas {
         std::fs::read_to_string(caminho).map_err(|_| ErroNotas::Leitura)
     }
 
+    /// Onde esta o XML guardado de uma nota que consta do indice. O caminho e' montado so' com a chave conferida e a
+    /// data do indice, nunca com texto vindo de fora.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroNotas::ChaveInvalida`] ou [`ErroNotas::NaoEncontrada`] (a nota nao consta do indice).
+    pub fn caminho_do_xml_guardado(&self, chave: &str) -> Result<PathBuf, ErroNotas> {
+        let chave = chave_estrita(chave)?;
+        let indice = self.indice()?;
+        let registro = indice
+            .notas
+            .iter()
+            .find(|r| r.chave == chave)
+            .ok_or(ErroNotas::NaoEncontrada)?;
+        self.caminho_do_xml(&registro.chave, &registro.emissao)
+    }
+
+    /// Guarda o DANFSe (PDF) de uma nota do indice ao lado do XML dela (`<chave>.pdf`), de forma atomica, e devolve o
+    /// caminho. O PDF nao entra no indice nem na numeracao: [`Notas::listar`] nao o ve.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroNotas::ChaveInvalida`], [`ErroNotas::NaoEncontrada`] ou [`ErroNotas::Gravacao`].
+    pub fn guardar_danfse(&self, chave: &str, pdf: &[u8]) -> Result<PathBuf, ErroNotas> {
+        let xml = self.caminho_do_xml_guardado(chave)?;
+        let destino = xml.with_extension("pdf");
+        atomico::gravar(&destino, pdf).map_err(|_| ErroNotas::Gravacao)?;
+        Ok(destino)
+    }
+
     /// Marca a nota como cancelada no indice.
     ///
     /// # Errors

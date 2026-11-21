@@ -29,12 +29,26 @@ use crate::modelo::pedido::{Contexto, PedidoCongelado};
 use crate::modelo::previa::{self, PreviaIbsCbs};
 use crate::modelo::sugestao::{self, Servico, Sugestao};
 use crate::servicos::Servicos;
+use crate::telas::senha::DialogoSenha;
 
 /// O que a tela pede a janela.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(super) enum EventoNota {
     /// Ir as Configuracoes, na aba das aliquotas.
     IrParaAliquotas,
+    /// A Sefin autorizou uma nota (ou a achou ja emitida): a lista de notas deve ser lida de novo.
+    NotaAutorizada,
+}
+
+/// O que acontece quando outra tela pede para usar uma nota como modelo.
+#[derive(Debug, Clone, PartialEq)]
+pub(super) enum Modelo {
+    /// Os dados da nota viraram o formulario.
+    Aplicado,
+    /// O formulario tem dados digitados: a tela dona pergunta antes de substituir.
+    PedirConfirmacao(Box<DadosNota>),
+    /// Nao da para substituir agora: a frase diz por que.
+    Recusado(String),
 }
 
 /// Quanto tempo depois da ultima mudanca o rascunho e' gravado.
@@ -124,9 +138,8 @@ pub(super) struct NovaNota {
     pub(super) recuperado: bool,
     versao: u64,
     pub(super) valor_fiscal_entendido: bool,
-    pub(super) erro_senha: Option<String>,
-    /// O campo da senha em uso e a tentativa que espera por ela.
-    pub(super) senha_pedida: Option<(Entity<InputState>, PedidoCongelado)>,
+    /// O dialogo da senha em uso e a tentativa que espera por ela.
+    pub(super) senha_pedida: Option<(Entity<DialogoSenha>, PedidoCongelado)>,
     pub(super) sub_senha: Option<Subscription>,
     pub(super) rolagem: ScrollHandle,
     pub(super) copiada: bool,
@@ -239,7 +252,6 @@ impl NovaNota {
             recuperado: false,
             versao: 0,
             valor_fiscal_entendido: false,
-            erro_senha: None,
             senha_pedida: None,
             sub_senha: None,
             rolagem: ScrollHandle::new(),
@@ -297,6 +309,66 @@ impl NovaNota {
             },
         );
         self.subs.push(s);
+    }
+
+    /// Outra tela pede para usar uma nota como modelo. Tentativa de emissao pendente ou em curso: nao substitui. Com
+    /// algo digitado: pede confirmacao. Formulario vazio (ou tela de resultado): aplica na hora.
+    pub(super) fn receber_modelo(
+        &mut self,
+        dados: DadosNota,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> Modelo {
+        if !self.pronta {
+            return Modelo::Recusado(
+                "Complete a configuração (emitente, certificado e pasta das notas) para emitir uma nota.".into(),
+            );
+        }
+        match &self.fase {
+            Fase::Enviando { .. } => {
+                return Modelo::Recusado(
+                    "Há uma nota sendo enviada agora. Espere o resultado antes de usar outra como modelo.".into(),
+                );
+            }
+            Fase::Pendente { .. } => {
+                return Modelo::Recusado(
+                    "A Nova nota tem uma tentativa sem resposta da Sefin. Tente de novo ou desista dela antes de usar outra nota como modelo.".into(),
+                );
+            }
+            Fase::Concluida(c) => {
+                // a nota que acabou de sair e' a do formulario: nada a perder. Uma recuperada de outra tentativa deixa o
+                // formulario como a pessoa o tinha
+                if c.diferencas.is_empty() {
+                    self.dados = self.ctx.nota_nova();
+                }
+                self.fase = Fase::Editando;
+            }
+            Fase::Editando => {}
+        }
+        if self.dados.vazio(&self.ctx.hoje()) {
+            self.usar_modelo(dados, window, cx);
+            Modelo::Aplicado
+        } else {
+            Modelo::PedirConfirmacao(Box::new(dados))
+        }
+    }
+
+    /// Poe os dados da nota escolhida no formulario, no lugar do que havia (a pessoa ja confirmou).
+    pub(super) fn usar_modelo(
+        &mut self,
+        dados: DadosNota,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        if !matches!(self.fase, Fase::Editando) {
+            return;
+        }
+        self.aplicar_dados(dados, window, cx);
+        self.tocados.clear();
+        self.marcas.clear();
+        self.mostrar_tudo = false;
+        self.mudou(cx);
+        self.atualizar_numero(cx);
     }
 
     /// A janela entrega a configuracao (a efetiva: arquivo mais variaveis de ambiente) quando ela chega ou muda.

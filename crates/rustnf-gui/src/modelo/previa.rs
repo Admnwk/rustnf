@@ -5,7 +5,7 @@
 //! O resumo de valores (servico, descontos, retencoes e valor liquido) e a previa do IBS/CBS que o painel mostra.
 //! Dinheiro sempre em centavos inteiros e em texto decimal da biblioteca: nunca `f64`.
 
-use rustnf::reforma::aliquotas;
+use rustnf::reforma::aliquotas::{self, Publicadas};
 use rustnf::reforma::tabela;
 use rustnf_app::nucleo::{self, Operacao};
 use serde_json::{json, Value};
@@ -77,6 +77,8 @@ pub struct ValoresIbsCbs {
     pub cbs: Parcela,
     /// IBS total (estadual mais municipal).
     pub ibs_total: String,
+    /// IBS total mais CBS.
+    pub total: String,
     /// Observacoes da biblioteca (por exemplo, aliquota de teste de 2026).
     pub avisos: Vec<String>,
 }
@@ -98,7 +100,7 @@ pub enum PreviaIbsCbs {
     /// A biblioteca recusou a conta.
     Recusada(String),
     /// Calculada.
-    Calculada(ValoresIbsCbs),
+    Calculada(Box<ValoresIbsCbs>),
 }
 
 /// O valor do ISS em centavos: `base` x `aliquota` (percentual, ate 4 casas), arredondado para cima na metade.
@@ -152,13 +154,17 @@ fn parcela(v: &Value, nome: &str) -> Option<Parcela> {
 }
 
 fn ler_resposta(v: &Value, ano: i32) -> Option<ValoresIbsCbs> {
+    let ibs = texto_json(v, "/tributos/ibs")?;
+    let cbs = texto_json(v, "/tributos/cbs/devido")?;
+    let total = dinheiro_para_centavos(&ibs)?.checked_add(dinheiro_para_centavos(&cbs)?)?;
     Some(ValoresIbsCbs {
         ano,
         base: decimal_para_dinheiro(&texto_json(v, "/tributos/base")?),
         ibs_uf: parcela(v, "ibs_uf")?,
         ibs_mun: parcela(v, "ibs_mun")?,
         cbs: parcela(v, "cbs")?,
-        ibs_total: decimal_para_dinheiro(&texto_json(v, "/tributos/ibs")?),
+        ibs_total: decimal_para_dinheiro(&ibs),
+        total: centavos_para_dinheiro(total),
         avisos: v
             .pointer("/tributos/avisos")
             .and_then(Value::as_array)
@@ -217,19 +223,50 @@ pub fn ibscbs(d: &DadosNota, ctx: &Contexto) -> PreviaIbsCbs {
         tributos_da_base(d, servico.saturating_sub(t.desc_incondicionado), ctx);
     base["issqn"] = json!(decimal(issqn));
     base["pis"] = json!(decimal(pis_cofins));
+    conta(
+        base,
+        &Tributos {
+            data,
+            cst: d.cst(),
+            cclass_trib: classe.codigo.clone(),
+            op_simples: op,
+            ano,
+        },
+        &ctx.publicadas,
+    )
+}
+
+/// O que a conta do IBS/CBS usa da data, da classificacao e do regime.
+pub(super) struct Tributos {
+    /// O dia do fato gerador, `AAAA-MM-DD`.
+    pub(super) data: String,
+    /// O CST.
+    pub(super) cst: String,
+    /// O `cClassTrib`.
+    pub(super) cclass_trib: String,
+    /// O regime: 1 nao optante, 2 MEI, 3 ME/EPP.
+    pub(super) op_simples: u8,
+    /// O ano de `data`.
+    pub(super) ano: i32,
+}
+
+/// A conta do IBS/CBS: a `base` (entrada de `reforma::previa::bases`) e os tributos, pela biblioteca, com as aliquotas
+/// publicadas. E' o que a Nova nota e a Previa avulsa compartilham.
+pub(super) fn conta(base: Value, t: &Tributos, publicadas: &Publicadas) -> PreviaIbsCbs {
+    let (data, ano, op) = (&t.data, t.ano, t.op_simples);
     let entrada = json!({
         "base": base,
         "tributos": {
             "data": data,
-            "cst": d.cst(),
-            "cclass_trib": classe.codigo,
+            "cst": t.cst,
+            "cclass_trib": t.cclass_trib,
             "simples_nacional": op == 3,
         },
     });
     let Ok(operacao) = serde_json::from_value::<Operacao>(entrada) else {
         return PreviaIbsCbs::Recusada("Não foi possível montar a conta.".into());
     };
-    match nucleo::calcular_com(&operacao, &ctx.publicadas) {
+    match nucleo::calcular_com(&operacao, publicadas) {
         Ok(v) => {
             if v["recusado"].as_bool() == Some(true) {
                 let motivo = texto_json(&v, "/bases/erros/0/mensagem")
@@ -237,13 +274,13 @@ pub fn ibscbs(d: &DadosNota, ctx: &Contexto) -> PreviaIbsCbs {
                 return PreviaIbsCbs::Recusada(frase(&motivo));
             }
             match ler_resposta(&v, ano) {
-                Some(valores) => PreviaIbsCbs::Calculada(valores),
+                Some(valores) => PreviaIbsCbs::Calculada(Box::new(valores)),
                 None => PreviaIbsCbs::Recusada("A conta não devolveu os valores esperados.".into()),
             }
         }
         Err(e) => {
-            let sem_numero = aliquotas::aliquotas(&data, Some(&ctx.publicadas), op == 3)
-                .is_ok_and(|a| !a.confirmado);
+            let sem_numero =
+                aliquotas::aliquotas(data, Some(publicadas), op == 3).is_ok_and(|a| !a.confirmado);
             if sem_numero {
                 PreviaIbsCbs::SemAliquota { ano }
             } else {

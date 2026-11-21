@@ -231,6 +231,16 @@ fn confirmar(notas: &Notas, serie: &str, numero: &str) -> bool {
         .is_ok_and(|n| notas.confirmar_numero(serie, n).is_ok())
 }
 
+/// O que `cancelar_pedido_completo` devolve: o resultado do cliente e o que se fez com a pasta de notas.
+#[derive(Debug, Clone)]
+pub struct Cancelada {
+    /// O resultado do cliente da Sefin (registrado, rejeitado com as mensagens, ou sem confirmacao).
+    pub resultado: Resultado,
+    /// Cancelamento registrado e pasta de notas em uso: a nota foi marcada como cancelada na pasta? `Some(false)`
+    /// quando a nota nao esta na pasta ou a pasta nao pode ser atualizada; `None` nos outros casos.
+    pub marcada: Option<bool>,
+}
+
 /// Cancela a NFS-e (veja [`emissao::cancelar`]) e, com `notas`, marca a nota como cancelada na pasta. Nota que nao
 /// esta na pasta nao e' erro.
 ///
@@ -244,12 +254,38 @@ pub async fn cancelar_pedido(
     justificativa: &str,
     notas: Option<&Notas>,
 ) -> Result<Value, Erro> {
-    let saida = emissao::cancelar(emissor, chave, motivo, justificativa).await?;
-    if let Some(notas) = notas {
-        // uma nota que nao esta na pasta (emitida em outro lugar) continua cancelada na Sefin
-        let _ = notas.marcar_cancelada(chave);
+    let cancelada = cancelar_pedido_completo(emissor, chave, motivo, justificativa, notas).await;
+    emissao::resultado_json(&cancelada.resultado)
+}
+
+/// Como [`cancelar_pedido`], devolvendo o resultado do cliente como dado tipado (a rejeicao chega com os codigos e
+/// as descricoes, e a falta de resposta continua sendo "sem confirmacao") em vez de JSON ou erro. E' o que uma
+/// interface usa para mostrar cada desfecho. So' o cancelamento registrado marca a nota na pasta.
+///
+/// A Sefin recusa o evento repetido. Por isso, diante de uma recusa, a funcao confere se a nota JA tem o
+/// cancelamento (de um envio anterior cuja resposta se perdeu, ou feito em outro lugar): tendo, o desfecho e'
+/// "registrado" (`recuperada`), a pasta e' marcada e as mensagens da recusa viram alertas.
+pub async fn cancelar_pedido_completo(
+    emissor: &dyn Emissor,
+    chave: &str,
+    motivo: &str,
+    justificativa: &str,
+    notas: Option<&Notas>,
+) -> Cancelada {
+    let mut resultado = emissor.cancelar(chave, motivo, justificativa).await;
+    if resultado.status == Status::Rejeitada && emissor.cancelada(chave).await.status == Status::Ok
+    {
+        resultado.status = Status::Registrado;
+        resultado.recuperada = true;
+        resultado.frase = "A nota ja estava cancelada na Sefin.".into();
+        let recusa = std::mem::take(&mut resultado.erros);
+        resultado.alertas.extend(recusa);
     }
-    Ok(saida)
+    let marcada = match notas {
+        Some(notas) if resultado.ok() => Some(notas.marcar_cancelada(chave).is_ok()),
+        _ => None,
+    };
+    Cancelada { resultado, marcada }
 }
 
 #[cfg(test)]
@@ -334,6 +370,10 @@ mod testes {
 
         async fn cancelar(&self, _chave: &str, _motivo: &str, _justificativa: &str) -> Resultado {
             unreachable!("os testes nao cancelam")
+        }
+
+        async fn cancelada(&self, _chave: &str) -> Resultado {
+            unreachable!("os testes nao conferem cancelamento")
         }
     }
 
@@ -522,6 +562,191 @@ mod testes {
         assert_eq!(centavos("0.07"), Some(7));
         for ruim in ["", "abc", "1.234", ".5", "1.2.3", "-1"] {
             assert_eq!(centavos(ruim), None, "{ruim}");
+        }
+    }
+
+    /// Um emissor que so' cancela e consulta: responde o `status` dado e conta as chamadas.
+    struct DeCancelamento {
+        status: Status,
+        cancelamentos: AtomicUsize,
+        cancelada: Status,
+    }
+
+    #[async_trait]
+    impl Emissor for DeCancelamento {
+        fn ambiente(&self) -> u8 {
+            2
+        }
+
+        async fn emitir(&self, _dps: &Dps) -> Resultado {
+            unreachable!("esses testes nao emitem")
+        }
+
+        async fn consultar(&self, _chave: &str) -> Resultado {
+            let xml = nfse_valida();
+            let nfse = ler_nfse(&xml).unwrap();
+            let mut r = resposta(Status::Autorizada);
+            r.chave = nfse.chave.clone();
+            r.nfse = Some(nfse);
+            r.xml_retorno = xml;
+            r
+        }
+
+        async fn cancelar(&self, _chave: &str, _motivo: &str, _justificativa: &str) -> Resultado {
+            self.cancelamentos.fetch_add(1, Ordering::Relaxed);
+            let mut r = resposta(self.status);
+            if self.status == Status::Rejeitada {
+                r.erros = vec![Mensagem {
+                    codigo: "E0001".into(),
+                    descricao: "recusado".into(),
+                    complemento: String::new(),
+                }];
+            }
+            r
+        }
+
+        async fn cancelada(&self, _chave: &str) -> Resultado {
+            resposta(self.cancelada)
+        }
+    }
+
+    fn resposta(status: Status) -> Resultado {
+        Resultado {
+            status,
+            frase: "resposta de teste".into(),
+            chave: String::new(),
+            id_dps: String::new(),
+            nfse: None,
+            xml_assinado: String::new(),
+            xml_retorno: String::new(),
+            erros: vec![],
+            alertas: vec![],
+            http: 200,
+            recuperada: false,
+            corpo: None,
+            detalhe: String::new(),
+        }
+    }
+
+    fn pasta_com_a_nota(rotulo: &str) -> (PastaTemporaria, Notas, String) {
+        let pasta = PastaTemporaria::nova(rotulo);
+        let notas = Notas::abrir(pasta.caminho()).unwrap();
+        let xml = nfse_valida();
+        let nfse = ler_nfse(&xml).unwrap();
+        notas.guardar(&Registro::da_nfse(&nfse), &xml).unwrap();
+        (pasta, notas, nfse.chave)
+    }
+
+    #[test]
+    fn cancelar_completo_so_marca_a_pasta_quando_o_cancelamento_foi_registrado() {
+        for (status, marca) in [
+            (Status::Registrado, Some(true)),
+            (Status::Rejeitada, None),
+            (Status::Pendente, None),
+            (Status::Indisponivel, None),
+        ] {
+            let (_pasta, notas, chave) = pasta_com_a_nota("cancelar-completo");
+            let emissor = DeCancelamento {
+                status,
+                cancelamentos: AtomicUsize::new(0),
+                cancelada: Status::NaoEncontrada,
+            };
+            let c = bloquear(cancelar_pedido_completo(
+                &emissor,
+                &chave,
+                "1",
+                "justificativa de teste",
+                Some(&notas),
+            ));
+            assert_eq!(c.resultado.status, status);
+            assert_eq!(c.marcada, marca, "{status:?}");
+            let situacao = notas.listar().unwrap()[0].situacao;
+            assert_eq!(
+                situacao == crate::notas::Situacao::Cancelada,
+                marca == Some(true),
+                "{status:?}"
+            );
+            assert_eq!(emissor.cancelamentos.load(Ordering::Relaxed), 1);
+            // a forma JSON de sempre: so' o registrado e' sucesso
+            let json = bloquear(cancelar_pedido(
+                &emissor,
+                &chave,
+                "1",
+                "justificativa de teste",
+                None,
+            ));
+            assert_eq!(json.is_ok(), status == Status::Registrado, "{status:?}");
+        }
+        // recusa de evento repetido com a nota JA cancelada: o desfecho e' "registrado", e a pasta e' marcada
+        let (_pasta, notas, chave) = pasta_com_a_nota("cancelar-repetido");
+        let repetido = DeCancelamento {
+            status: Status::Rejeitada,
+            cancelamentos: AtomicUsize::new(0),
+            cancelada: Status::Ok,
+        };
+        let c = bloquear(cancelar_pedido_completo(
+            &repetido,
+            &chave,
+            "1",
+            "justificativa de teste",
+            Some(&notas),
+        ));
+        assert_eq!(c.resultado.status, Status::Registrado);
+        assert!(c.resultado.recuperada);
+        assert!(c.resultado.erros.is_empty());
+        assert_eq!(c.resultado.alertas[0].codigo, "E0001");
+        assert_eq!(c.marcada, Some(true));
+        assert_eq!(
+            notas.listar().unwrap()[0].situacao,
+            crate::notas::Situacao::Cancelada
+        );
+        let json = bloquear(cancelar_pedido(
+            &repetido,
+            &chave,
+            "1",
+            "justificativa de teste",
+            None,
+        ))
+        .unwrap();
+        assert_eq!(json["status"], "registrado");
+        assert_eq!(json["recuperada"], true);
+        // nota fora da pasta: o cancelamento vale, a marca nao
+        let (_pasta, notas, _) = pasta_com_a_nota("cancelar-fora");
+        let emissor = DeCancelamento {
+            status: Status::Registrado,
+            cancelamentos: AtomicUsize::new(0),
+            cancelada: Status::NaoEncontrada,
+        };
+        let outra =
+            rustnf::chave_dfe::montar_nfse(1_400_159, "11222333000181", 77, "2609", Some(1), 2)
+                .unwrap();
+        let c = bloquear(cancelar_pedido_completo(
+            &emissor,
+            &outra,
+            "1",
+            "justificativa de teste",
+            Some(&notas),
+        ));
+        assert_eq!(c.marcada, Some(false));
+    }
+
+    #[test]
+    fn consultar_completa_diz_se_a_nota_achada_esta_cancelada() {
+        for (cancelada, esperado) in [
+            (Status::Ok, Some(true)),
+            (Status::NaoEncontrada, Some(false)),
+            (Status::Pendente, None),
+            (Status::Erro, None),
+        ] {
+            let emissor = DeCancelamento {
+                status: Status::Registrado,
+                cancelamentos: AtomicUsize::new(0),
+                cancelada,
+            };
+            let c = bloquear(crate::emissao::consultar_completa(&emissor, "x"));
+            assert_eq!(c.resultado.status, Status::Autorizada);
+            assert!(c.resultado.nfse.is_some());
+            assert_eq!(c.cancelada, esperado, "{cancelada:?}");
         }
     }
 }

@@ -14,20 +14,13 @@ use gpui_kit::{
 
 use super::{Concluida, Fase, NovaNota};
 use crate::modelo::certificado::Gravidade;
+use crate::modelo::chave::em_grupos;
 use crate::modelo::emissao::{
-    texto_da_recuperada_diferente, MensagemSefin, EXPLICACAO_DE_TENTAR_DE_NOVO, TEXTO_DA_RECUPERADA,
+    texto_da_recuperada_diferente, EXPLICACAO_DE_TENTAR_DE_NOVO, TEXTO_DA_RECUPERADA,
 };
-use crate::telas::pecas::{cabecalho, cartao, faixa, linha_de_resumo, Negrito as _};
-
-/// A chave de acesso em grupos de 5, para ler e para quebrar a linha.
-fn chave_em_grupos(chave: &str) -> String {
-    chave
-        .as_bytes()
-        .chunks(5)
-        .map(|c| String::from_utf8_lossy(c).into_owned())
-        .collect::<Vec<_>>()
-        .join(" ")
-}
+use crate::telas::pecas::{
+    cabecalho, cartao, faixa, linha_de_resumo, mensagem_da_sefin, Negrito as _,
+};
 
 impl NovaNota {
     /// A tela da nota autorizada.
@@ -123,7 +116,7 @@ impl NovaNota {
                             .border_color(cx.theme().border)
                             .bg(cx.theme().muted)
                             .text_sm()
-                            .child(chave_em_grupos(&c.chave)),
+                            .child(em_grupos(&c.chave)),
                     )
                     .child(
                         h_flex().child(
@@ -158,7 +151,7 @@ impl NovaNota {
             .id("aviso-da-guarda"),
         });
         for a in &c.alertas {
-            caixa = caixa.child(self.mensagem_da_sefin(a, Gravidade::Aviso, cx));
+            caixa = caixa.child(mensagem_da_sefin(a, Gravidade::Aviso, cx));
         }
         caixa = caixa.child(h_flex().child(if outra {
             Button::new("voltar-ao-formulario")
@@ -196,53 +189,6 @@ impl NovaNota {
                     ))
                     .child(caixa),
             )
-            .into_any_element()
-    }
-
-    /// Uma mensagem da Sefin: a descricao em destaque, o codigo e o complemento em segundo plano.
-    pub(in crate::telas) fn mensagem_da_sefin(
-        &self,
-        m: &MensagemSefin,
-        gravidade: Gravidade,
-        cx: &mut Context<Self>,
-    ) -> AnyElement {
-        let muted = cx.theme().muted_foreground;
-        let mut segundo = Vec::new();
-        if !m.codigo.is_empty() {
-            segundo.push(format!("Código {}", m.codigo));
-        }
-        if !m.complemento.is_empty() {
-            segundo.push(m.complemento.clone());
-        }
-        if let Some(c) = m.campo {
-            segundo.push(format!("Campo: {}", c.rotulo()));
-        }
-        let corpo = v_flex()
-            .gap_0p5()
-            .child(div().text_sm().font_semibold().child(m.descricao.clone()))
-            .when(!segundo.is_empty(), |d| {
-                d.child(div().text_xs().text_color(muted).child(segundo.join(" · ")))
-            })
-            .when(!m.dica.is_empty(), |d| {
-                d.child(div().text_xs().text_color(muted).child(m.dica.clone()))
-            });
-        let cor = crate::telas::pecas::cor_da(gravidade, cx);
-        h_flex()
-            .gap_2()
-            .items_start()
-            .p_3()
-            .rounded_md()
-            .border_1()
-            .border_color(cor.opacity(0.45))
-            .bg(cor.opacity(0.10))
-            .child(
-                Icon::new(crate::telas::pecas::icone_da(gravidade))
-                    .small()
-                    .text_color(cor)
-                    .flex_shrink_0()
-                    .mt(px(1.)),
-            )
-            .child(div().flex_1().min_w_0().child(corpo))
             .into_any_element()
     }
 
@@ -327,7 +273,7 @@ impl NovaNota {
                         .child("Seus dados estão intactos. Corrija o que a Sefin apontou e emita de novo; o número da DPS não foi gasto."),
                 );
             for m in &msgs {
-                painel = painel.child(self.mensagem_da_sefin(m, Gravidade::Erro, cx));
+                painel = painel.child(mensagem_da_sefin(m, Gravidade::Erro, cx));
             }
             avisos.push(painel.into_any_element());
         }

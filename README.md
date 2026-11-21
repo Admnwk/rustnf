@@ -18,7 +18,7 @@ Emissor aberto de NFS-e do padrao nacional (Sefin Nacional / ADN), escrito em Ru
 | cliente da Sefin Nacional | transporte falso (resposta perdida, 5xx, E0014, consulta, cancelamento) | uma chamada real, com TLS mutuo e certificado A1 |
 | previa do IBS/CBS | casos de teste da calculadora oficial da Receita Federal | comparar com os valores de uma NFS-e autorizada |
 | DANFSe | contrato de conteudo e leiaute | comparar com um DANFSe emitido pelo portal |
-| interface de desktop (`rustnf-gui`, so' Windows) | testes do modelo (mascaras, conferencia, pedido, previa, sugestao, rascunho e desfechos da emissao), da emissao com emissor de demonstracao e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuracao e pelo exemplo de demonstracao | **emitir uma nota real pela janela: nenhuma foi emitida, so' o emissor de demonstracao respondeu**; consultar, cancelar, lista de notas, DANFSe e previa avulsa pela janela; uma chamada real a Sefin pelo botao "Testar conexao"; exame da janela em outras escalas de tela |
+| interface de desktop (`rustnf-gui`, so' Windows) | testes do modelo (mascaras, conferencia, pedido, previa, sugestao, rascunho, lista das notas, detalhe, cancelamento, consulta pela chave e previa avulsa), dos fluxos com emissor de demonstracao e pasta temporaria e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuracao e pelo exemplo de demonstracao | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, so' o emissor de demonstracao respondeu**; o DANFSe aberto no leitor de PDF de outra maquina; uma chamada real a Sefin pelo botao "Testar conexao"; exame da janela em outras escalas de tela |
 
 Se voce testar, conte como foi: abra um relato pelo modelo **"Relato de emissao"** (aba Issues), mesmo quando der
 certo. Correcao e' bem-vinda por pedido de mudanca, com a fonte oficial citada e um caso no contrato (veja
@@ -219,7 +219,9 @@ Sem `numero` no pedido, o `emitir` usa o proximo da serie. O numero so' avanca e
 (rejeitada ou pendente nao gasta numero) e nunca volta atras. Nota recuperada e' a que ja existia na Sefin com
 aquela serie e aquele numero de DPS: se os dados dela nao forem os do pedido (sobra de uma tentativa anterior), a
 resposta traz `recuperada_difere` com o que difere (tomador, valor, codigo do servico, competencia) e a nota do pedido
-NAO foi emitida; emita de novo, que o numero ja avancou. O `cancelar` marca a nota como cancelada no indice.
+NAO foi emitida; emita de novo, que o numero ja avancou. O `cancelar` marca a nota como cancelada no indice; se a Sefin
+recusar o pedido e a nota ja tiver o cancelamento registrado (envio anterior sem resposta, ou feito em outro lugar), a
+resposta e' `registrado` com `recuperada: true`, e as mensagens da recusa vem em `alertas`.
 `rustnf notas listar [--json]` lista as notas. As gravacoes sao atomicas (arquivo temporario e `rename`); o nome do
 arquivo vem so' da chave de acesso conferida.
 
@@ -336,8 +338,8 @@ O que ja faz: primeiro uso em tres passos (emitente, certificado, pasta das nota
 (emitente, Sefin Nacional com ambiente, certificado, senha, assinatura, tempo limite e folga do relogio, notas, canhoto do
 DANFSe, aliquotas por ano e tema); botoes "Testar certificado" (abre o `.pfx`, sem rede) e "Testar conexao com a Sefin"
 (chamada real a Sefin Nacional, so' quando voce clica); selo fixo do ambiente (Producao ou Producao restrita) e estado
-do certificado no rodape; e a **Nova nota** (abaixo). O que ainda **nao** faz: consultar, cancelar, listar as notas e
-abrir o DANFSe, e a previa do IBS/CBS avulsa (por enquanto, use a linha de comando para isso).
+do certificado no rodape; a **Nova nota**, as **Notas**, a **Consulta** e a **Previa** (abaixo). O que ainda **nao** faz:
+os casos de emissao fora do caso comum (veja o fim da Nova nota), que seguem pela linha de comando.
 
 ### Nova nota
 
@@ -373,25 +375,80 @@ nao e' guardada). O que a tela nao cobre (tomador no exterior, intermediario, co
 deducoes, reembolsos, substituicao, beneficio municipal, suspensao, imunidade, destinatario diferente do tomador) se emite
 pela linha de comando com o JSON completo. **Nenhuma nota real foi emitida por esta interface.**
 
+### Notas
+
+Item "Notas" da barra lateral (Ctrl+L). Lista as notas da pasta de notas, da mais recente para a mais antiga, lidas fora
+da linha da tela e desenhadas so' no que cabe na janela (a pasta pode ter milhares de notas): data, numero da NFS-e, DPS
+(serie e numero), tomador (o CPF aparece mascarado, `***.***.***-NN`; o CNPJ, inteiro), valor e situacao (autorizada ou
+cancelada). A busca (nome sem acento, CPF/CNPJ ou numero; uma chave colada tambem acha a nota) e o filtro por situacao
+valem juntos. A lista se atualiza sozinha quando a Nova nota autoriza uma nota e quando um cancelamento termina; "Atualizar"
+le a pasta de novo. Pasta vazia, leitura com erro ("Tentar de novo") e busca sem resultado tem tela propria. Setas movem
+a linha em foco, Enter abre o detalhe e Esc volta da pagina do detalhe.
+
+O **detalhe** (ao lado da lista em janela larga; pagina em janela estreita) mostra os dados lidos do XML guardado: numero,
+chave de acesso em grupos de 5 com "Copiar a chave", datas, tomador (aqui o documento aparece inteiro), servico, valores
+e situacao. XML ausente ou ilegivel e' dito sem derrubar a tela. Dele saem:
+
+* **Abrir o DANFSe**: gera o PDF fora da tela (com a marca de cancelada, quando for o caso, e o canhoto da configuracao),
+  grava `<chave>.pdf` ao lado do XML (o nome sai so' da chave conferida) e o abre no programa padrao do sistema. O PDF nao
+  entra no indice nem na numeracao. "Mostrar na pasta" mostra o XML no explorador de arquivos;
+* **Cancelar a nota** (so' nota autorizada): dialogo com o ambiente em destaque, o resumo da nota, o motivo (erro na
+  emissao, servico nao prestado ou outros) e a justificativa, de 15 a 255 caracteres, com contador e erro embaixo do campo.
+  Em producao o botao so' habilita depois de marcar "Entendo que o cancelamento tem efeito fiscal". O envio e' feito fora
+  da tela, pelo mesmo fluxo de certificado e senha da emissao. So' o cancelamento **registrado** marca a nota como cancelada
+  na pasta; rejeitado mostra as mensagens da Sefin e nao marca. **Sem resposta**: o pedido tem sempre o mesmo identificador
+  (a chave da nota mais o tipo do evento), entao reenviar nao cria um segundo cancelamento. Se o primeiro envio ja tiver sido
+  registrado, a Sefin recusa o reenvio por repeticao: diante de uma recusa, o programa confere se a nota ja tem o
+  cancelamento e, tendo, mostra que ela ja estava cancelada e marca a pasta. O dialogo oferece "Tentar de novo" (o mesmo
+  pedido) e "Conferir na Sefin" (so' consulta o evento de cancelamento da nota);
+* **Usar como modelo**: leva tomador, servico, descricao e valor da nota para a Nova nota (o que o XML permite ler; o resto
+  fica vazio e a conferencia da Nova nota aponta), com a competencia de hoje. Se a Nova nota tiver algo digitado, pergunta
+  antes de substituir; com uma tentativa de emissao pendente, nao substitui.
+
+### Consultar
+
+Item "Consultar" (Ctrl+K). O campo da chave aceita a chave colada com espacos e pontuacao, mostra-a em grupos de 5 e diz
+embaixo do campo o que falta ou por que nao confere (tamanho, formato e digito verificador, pela biblioteca). Enter no
+campo consulta. A consulta e' feita fora da tela, com o certificado, e **nao altera nada** na Sefin. O resultado e' o mesmo
+detalhe das Notas, mais: se a nota tem cancelamento registrado (o XML da nota nao diz; a tela consulta o evento e, se nao
+conseguir saber, avisa); se ela ja esta na pasta de notas, ou o botao "Guardar na pasta de notas" (so' para nota do
+emitente da configuracao; nota de outro emitente nao e' guardada); "Abrir o DANFSe" (nota que nao esta na pasta pergunta
+onde salvar); e Cancelar. A nota devolvida so' vale como resultado se a chave dela for a que se pediu. Nao encontrada, sem
+resposta e erro tem cada um o seu texto, com "Tentar de novo" quando faz sentido.
+
+### Previa
+
+Item "Previa" (Ctrl+P). Calculadora avulsa do IBS e da CBS, sem emitir nada e sem precisar de certificado nem de pasta de
+notas: valor do servico, desconto incondicionado, data do fato gerador (o ano decide as aliquotas), `cClassTrib` (com busca
+por texto na tabela oficial e o nome ao lado), regime simulado (comeca pelo do emitente) e, se houver, o ISSQN, o PIS e a
+COFINS que saem da base. Usa as `[[aliquotas]]` da configuracao; sem aliquota para o ano ela diz isso e aponta a aba
+Aliquotas. Mostra a base de calculo, a aliquota efetiva e o valor do IBS estadual, do IBS municipal e da CBS, e os totais,
+com os avisos e as recusas da biblioteca. Fora da tela, porque nao se digita ou nao faz sentido numa calculadora avulsa:
+desconto condicionado, documentos de ajuste da base, salao parceiro e locacao (os mesmos casos de `rustnf calcular` com o
+JSON completo).
+
 Para clicar em tudo sem falar com a Sefin, ha o exemplo `demonstracao` (feature `demonstracao`, desligada por padrao; o
 executavel normal nao tem como entrar nesse modo). Ele abre a mesma janela com um emissor que nao usa a rede, com selo e
-titulo proprios, e a nota "autorizada" entra de verdade na pasta de notas do arquivo de configuracao: use uma pasta de
-ensaio.
+titulo proprios. A nota "autorizada" entra de verdade na pasta de notas do arquivo de configuracao: use uma pasta de
+ensaio. A consulta devolve as notas que a demonstracao autorizou e as que estao nessa pasta; o cancelamento segue um
+roteiro, como a emissao.
 
 ```
 cargo run -p rustnf-gui                      # modo de depuracao
 cargo run -p rustnf-gui -- --config rustnf.toml
 cargo build --release -p rustnf-gui          # no Windows, precisa do fxc.exe do Windows SDK
 
-# sem falar com a Sefin: --resultado autorizada (padrao), rejeitada ou sem-resposta; --atraso-ms 1200 e a demora do "envio"
-cargo run -p rustnf-gui --features demonstracao --example demonstracao -- --config ensaio.toml --resultado autorizada
+# sem falar com a Sefin: --resultado autorizada (padrao), rejeitada ou sem-resposta (emissao);
+# --cancelamento registrado (padrao), rejeitado ou sem-resposta; --atraso-ms 1200 e a demora de cada "envio"
+cargo run -p rustnf-gui --features demonstracao --example demonstracao -- --config ensaio.toml --resultado autorizada --cancelamento registrado
 ```
 
 A compilacao **release** no Windows precisa do `fxc.exe` (compilador de shaders do Windows SDK): deixe-o no `PATH` ou
 aponte a variavel `GPUI_FXC_PATH` para ele. O modo de depuracao nao precisa. A primeira compilacao e' demorada (centenas
 de crates). O mapa da camada de janela: `crates/rustnf-gui/src/modelo` (estado dos formularios, mascaras, conferencia
-campo a campo, passos do primeiro uso; sem janela e testavel em qualquer sistema), `src/servicos.rs` (arquivo, cofre,
-certificado, conexao) e `src/telas` (so' desenho).
+campo a campo, passos do primeiro uso, lista das notas, detalhe, cancelamento, consulta e previa avulsa; sem janela e
+testavel em qualquer sistema), `src/servicos.rs` e `src/servicos` (arquivo, cofre, certificado, conexao, pasta de notas,
+DANFSe, cancelar e consultar) e `src/telas` (so' desenho).
 
 ## Ambientes
 
