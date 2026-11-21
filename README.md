@@ -14,14 +14,16 @@ Emissor aberto de NFS-e do padrao nacional (Sefin Nacional / ADN), escrito em Ru
 | parte | como foi conferida | o que falta |
 |---|---|---|
 | XML da DPS e regras antes do envio | contratos em `crates/rustnf/tests/casos/`, comparados texto a texto; regras lidas no Anexo I oficial | a Sefin Nacional aceitar uma DPS gerada aqui |
-| assinatura | conferida pelo proprio verificador e por um XML assinado fora da biblioteca | a Sefin Nacional validar uma assinatura feita aqui |
+| assinatura | conferida pelo proprio verificador e por um XML assinado fora da biblioteca | a Sefin Nacional validar uma assinatura feita aqui, em SHA-256 (o padrao) ou em SHA-1 (`--assinatura sha1`) |
 | cliente da Sefin Nacional | transporte falso (resposta perdida, 5xx, E0014, consulta, cancelamento) | uma chamada real, com TLS mutuo e certificado A1 |
 | previa do IBS/CBS | casos de teste da calculadora oficial da Receita Federal | comparar com os valores de uma NFS-e autorizada |
 | DANFSe | contrato de conteudo e leiaute | comparar com um DANFSe emitido pelo portal |
 
 Se voce testar, conte como foi: abra um relato pelo modelo **"Relato de emissao"** (aba Issues), mesmo quando der
 certo. Correcao e' bem-vinda por pedido de mudanca, com a fonte oficial citada e um caso no contrato (veja
-`CONTRIBUTING.md`). Comece sempre pela producao restrita.
+`CONTRIBUTING.md`). Comece sempre pela producao restrita. Se a assinatura for recusada, repita com
+`--assinatura sha1` e diga no relato qual das duas passou.
+
 ## O que faz
 
 | comando | o que faz |
@@ -144,6 +146,8 @@ $ rustnf cancelar --chave <chave> --motivo 1 --justificativa "Valor digitado err
   cair na regra E0008.
 * A emissao e' idempotente: resposta perdida, erro 5xx ou E0014 fazem a biblioteca consultar a DPS antes de reenviar o
   MESMO XML. Nunca renumere a DPS (`numero`) para "tentar de novo".
+* A DPS e os eventos sao assinados com RSA e SHA-256. `--assinatura sha1` (ou `RUSTNF_ASSINATURA`, ou
+  `[sefin].assinatura`) troca para SHA-1; o leiaute nao fixa o algoritmo.
 * Motivos de cancelamento: `1` erro na emissao, `2` servico nao prestado, `9` outros; a justificativa e' obrigatoria.
 * `--json` imprime o resultado completo (inclui a NFS-e lida e os alertas); sem ele, um resumo.
 
@@ -159,8 +163,8 @@ existir, valem os padroes e nada muda em relacao a usar so' opcoes. `rustnf conf
 `rustnf config mostrar [--json]` mostra a configuracao efetiva e de onde veio.
 
 **Precedencia**, em todo parametro: opcao da chamada > variavel de ambiente `RUSTNF_*` > arquivo > padrao. As
-variaveis: `RUSTNF_AMBIENTE`, `RUSTNF_PFX`, `RUSTNF_TEMPO_LIMITE_SEFIN`, `RUSTNF_FOLGA_RELOGIO`, `RUSTNF_SERIE`,
-`RUSTNF_NOTAS_PASTA`, `RUSTNF_CANHOTO`, `RUSTNF_ENDERECO`, `RUSTNF_PORTA`, `RUSTNF_LIMITE_CORPO`,
+variaveis: `RUSTNF_AMBIENTE`, `RUSTNF_PFX`, `RUSTNF_ASSINATURA`, `RUSTNF_TEMPO_LIMITE_SEFIN`, `RUSTNF_FOLGA_RELOGIO`,
+`RUSTNF_SERIE`, `RUSTNF_NOTAS_PASTA`, `RUSTNF_CANHOTO`, `RUSTNF_ENDERECO`, `RUSTNF_PORTA`, `RUSTNF_LIMITE_CORPO`,
 `RUSTNF_TEMPO_LIMITE` e `RUSTNF_ORIGENS_PERMITIDAS` (separadas por virgula). Campo desconhecido no arquivo e' recusado,
 e os valores sao conferidos (ambiente, codigo do municipio, CNPJ/CPF, numeros, anos de aliquota repetidos...) com a
 secao e o campo no erro.
@@ -168,7 +172,7 @@ secao e o campo no erro.
 | secao | campos |
 |---|---|
 | `[emitente]` | `cnpj` ou `cpf`, `nome`, `inscricao_municipal`, `municipio` (IBGE, 7 digitos), `op_simples` (1, 2 ou 3), `regime_apuracao` (0 = nao informar), `regime_especial`, `serie` |
-| `[sefin]` | `ambiente` (`producao` ou `restrita`), `pfx`, `tempo_limite_s`, `folga_relogio_s` |
+| `[sefin]` | `ambiente` (`producao` ou `restrita`), `pfx`, `assinatura` (`sha256` ou `sha1`), `tempo_limite_s`, `folga_relogio_s` |
 | `[notas]` | `pasta` (vazio = nao guardar) |
 | `[danfse]` | `canhoto` |
 | `[servidor]` | `endereco`, `porta`, `limite_corpo`, `tempo_limite_s`, `origens_permitidas` |

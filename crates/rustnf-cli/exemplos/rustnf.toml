@@ -26,6 +26,7 @@ ambiente = "restrita"            # producao | restrita
 pfx = "certificado.pfx"          # caminho do certificado A1; a senha NAO vem para ca
 tempo_limite_s = 60              # tempo limite de cada chamada a Sefin Nacional
 folga_relogio_s = 60             # segundos tirados do relogio no dhEmi que o pedido nao traz
+assinatura = "sha256"            # sha256 | sha1: algoritmo da assinatura da DPS e dos eventos
 
 [notas]
 pasta = "notas"                  # vazio = nao guardar; guarda o XML, o indice e a numeracao da DPS

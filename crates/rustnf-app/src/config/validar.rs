@@ -7,6 +7,7 @@
 use std::collections::BTreeSet;
 use std::net::IpAddr;
 
+use rustnf::assinatura::xmldsig::Algoritmo;
 use rustnf::chave_dfe::{cnpj_valido, cpf_valido};
 
 use super::modelo::{Aliquota, Config, Emitente, Sefin, Servidor};
@@ -106,6 +107,13 @@ fn sefin(s: &Sefin) -> Resultado {
             sec,
             "folga_relogio_s",
             "no maximo 3600 segundos",
+        ));
+    }
+    if Algoritmo::de_nome(&s.assinatura).is_none() {
+        return Err(ErroConfig::invalido(
+            sec,
+            "assinatura",
+            "use \"sha256\" ou \"sha1\"",
         ));
     }
     if s.pfx.contains('\0') {
@@ -239,6 +247,11 @@ mod testes {
         let mut c = Config::default();
         c.sefin.ambiente = "homologacao".into();
         assert_eq!(campo_do_erro(&c), ("sefin".into(), "ambiente".into()));
+        let mut c = Config::default();
+        c.sefin.assinatura = "sha512".into();
+        assert_eq!(campo_do_erro(&c), ("sefin".into(), "assinatura".into()));
+        c.sefin.assinatura = "sha1".into();
+        assert!(c.validar().is_ok());
 
         let mut c = Config::default();
         c.emitente.municipio = "35503".into();

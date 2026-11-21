@@ -4,6 +4,7 @@
 
 //! A forma do arquivo de configuracao. Nao ha campo de senha nem de token: segredo nunca fica no arquivo.
 
+use rustnf::assinatura::xmldsig::Algoritmo;
 use serde::{Deserialize, Serialize};
 
 /// O arquivo inteiro. Toda secao e todo campo tem padrao; campo desconhecido e' recusado.
@@ -78,6 +79,17 @@ pub struct Sefin {
     pub tempo_limite_s: u64,
     /// Segundos subtraidos do relogio ao preencher o `dhEmi` que o pedido nao traz.
     pub folga_relogio_s: u32,
+    /// Algoritmo da assinatura da DPS e dos eventos: `sha256` (padrao) ou `sha1`.
+    pub assinatura: String,
+}
+
+impl Sefin {
+    /// O algoritmo de assinatura configurado. Texto fora de `sha1` e `sha256`, que [`Config::validar`] recusa, cai no
+    /// padrao.
+    #[must_use]
+    pub fn algoritmo(&self) -> Algoritmo {
+        Algoritmo::de_nome(&self.assinatura).unwrap_or_default()
+    }
 }
 
 impl Default for Sefin {
@@ -87,6 +99,7 @@ impl Default for Sefin {
             pfx: String::new(),
             tempo_limite_s: 60,
             folga_relogio_s: 60,
+            assinatura: Algoritmo::default().nome().into(),
         }
     }
 }
