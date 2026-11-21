@@ -40,6 +40,16 @@ body:
         - Erro de rede, de certificado ou do programa
     validations:
       required: true
+  - type: dropdown
+    id: assinatura
+    attributes:
+      label: Assinatura usada
+      options:
+        - SHA-256 (o padrao)
+        - SHA-1 (--assinatura sha1)
+        - Nao sei
+    validations:
+      required: true
   - type: input
     id: municipio
     attributes:
