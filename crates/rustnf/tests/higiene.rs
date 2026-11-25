@@ -319,7 +319,14 @@ fn so_o_rodape_exato_de_autoria_passa() {
 #[test]
 fn historico_sem_termo_proibido() {
     let termos = termos();
-    let Some(saida) = git(&["log", "--all", "--format=%H%x1f%B%x1e"]) else {
+    // as branches que o Dependabot abre ficam de fora: o commit dele nunca entra na main (o conteudo e' refeito
+    // num commit do projeto), e a mensagem dele cita versoes de terceiros
+    let Some(saida) = git(&[
+        "log",
+        "--exclude=refs/remotes/*/dependabot/*",
+        "--all",
+        "--format=%H%x1f%B%x1e",
+    ]) else {
         eprintln!("historico indisponivel: varredura de commits ignorada");
         return;
     };
