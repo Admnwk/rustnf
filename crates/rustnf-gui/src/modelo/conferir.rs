@@ -143,6 +143,7 @@ pub fn explicar_falha(motivo: &str) -> (String, String) {
         let na_pasta = resto.split(" e a Sefin").next().unwrap_or("");
         let na_pasta = match na_pasta {
             "substituida" => "substituída",
+            "em analise fiscal" => "em análise fiscal",
             outra => outra,
         };
         let falta = if resto.contains("o pedido") {
@@ -411,7 +412,7 @@ mod testes {
             "divergencia: a pasta diz em analise fiscal e a Sefin nao mostra o pedido; confira a nota",
         );
         assert!(
-            houve.contains("em analise fiscal") && houve.contains("o pedido de análise fiscal")
+            houve.contains("em análise fiscal") && houve.contains("o pedido de análise fiscal")
         );
         let (houve, _) = explicar_falha(
             "divergencia: a pasta diz substituida e a Sefin nao mostra o cancelamento nem a substituicao; confira a nota",
