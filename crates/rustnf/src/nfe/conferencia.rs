@@ -131,7 +131,17 @@ fn chave_contra_ide(nfe: &Nfe) -> Vec<String> {
     let pares: [(&str, String, String); 9] = [
         ("cUF", i.cuf.clone(), format!("{:02}", k.cuf)),
         ("AAMM da emissao", aamm, k.aamm.clone()),
-        ("emitente", nfe.emit.documento.clone(), k.emitente.clone()),
+        // serie 890 a 899 fora da Nota Fiscal Facil: a chave leva o CNPJ da SEFAZ, nao o do emitente (NT 2021.002
+        // v1.12, item 2.2)
+        (
+            "emitente",
+            if (890..=899).contains(&k.serie) && k.tp_emis != 3 {
+                String::new()
+            } else {
+                nfe.emit.documento.clone()
+            },
+            k.emitente.clone(),
+        ),
         ("modelo", i.modelo.clone(), k.modelo.clone()),
         ("serie", i.serie.to_string(), k.serie.to_string()),
         ("numero", i.numero.to_string(), k.numero.to_string()),
