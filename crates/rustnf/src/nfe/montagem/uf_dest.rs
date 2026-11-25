@@ -34,6 +34,19 @@ pub(crate) fn icms_uf_dest(x: &mut X, n: &Nota, it: &Item, ac: &mut Ac, k: &str)
         ind_final(n),
         n.dest.as_ref().map_or(9, |d| d.ind_ie_dest),
     );
+    // 694 (excecao 6) e 695: o combustivel derivado de petroleo fora da lista de codigos da ANP; 694 (excecao 7) e 695
+    // (excecao 2): a UF do local de entrega contra a do emitente. As duas regras leem o mesmo contexto.
+    c.cod_anp = it
+        .combustivel
+        .as_ref()
+        .map(|cb| cb.c_prod_anp.trim().to_string())
+        .unwrap_or_default();
+    c.uf_emitente = n.emit.endereco.uf.trim().to_uppercase();
+    c.uf_entrega = n
+        .entrega
+        .as_ref()
+        .map(|e| e.endereco.uf.trim().to_uppercase())
+        .unwrap_or_default();
     if let Some(d) = it.difal_dispensado.as_deref() {
         if d != "cfop_retorno" && d != "cfop_remessa" {
             return Err(erro(

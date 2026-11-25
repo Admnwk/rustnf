@@ -94,3 +94,7 @@ required-features = ["nfe"]
 [[test]]
 name = "nfe_montar_assinatura"
 required-features = ["nfe", "cert_a1_teste"]
+
+[[test]]
+name = "nfe_montar_grupos"
+required-features = ["nfe"]
