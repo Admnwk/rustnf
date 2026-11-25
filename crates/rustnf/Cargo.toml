@@ -25,7 +25,7 @@ danfse = ["dep:krilla", "dep:skrifa", "dep:qrcode"]
 chrono = { version = "0.4", default-features = false, features = ["std", "clock", "serde"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-roxmltree = "0.20"
+roxmltree = "0.21"
 base64 = "0.22"
 flate2 = "1"
 unicode-normalization = "0.1"
