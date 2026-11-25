@@ -35,12 +35,18 @@
   cancelamento, "usar como modelo", consulta pela chave e calculadora avulsa do IBS/CBS. Testadas com o emissor de
   demonstração: **nenhuma nota real foi emitida, consultada nem cancelada por elas**.
 
+* Consulta de DPS, consulta de evento, registro de eventos do contribuinte (como o pedido de análise fiscal, 101103) e
+  conferência em lote da situação das notas contra a Sefin (cancelada, substituída, em análise fiscal), na camada de
+  aplicação, na linha de comando, na API HTTP e no MCP, testadas com transporte falso: **nenhuma consulta nem evento real
+  foi feito**. A interface de desktop só mostra as situações novas.
+
 * Entrega: interface compilada e testada no Windows pelo CI; fluxo de release que monta os executáveis (Windows sem
   dependência do Visual C++ Redistributable, e Linux só com a linha de comando) e abre a release como rascunho.
 
 ## Próximo
 
-1. Interface de desktop: os casos de emissão fora do caso comum (tomador no exterior, intermediário, comércio exterior,
+1. Interface de desktop: telas para a consulta da DPS, a consulta e o registro de eventos e a atualização das situações
+   (hoje só pela linha de comando, pela API e pelo MCP); e os casos de emissão fora do caso comum (tomador no exterior, intermediário, comércio exterior,
    obra, evento, locação, deduções, reembolsos, substituição, benefício municipal, suspensão, imunidade e destinatário
    diferente do tomador) seguem pela linha de comando. Faltam: assinatura de código (sem ela o Windows avisa no
    primeiro uso) e a versão de `rustnf-gui` para outros sistemas quando o GPUI tiver janela neles.

@@ -49,7 +49,7 @@ Os detalhes de cada passo estão em [Interface de desktop](#interface-de-desktop
 |---|---|---|
 | XML da DPS e regras antes do envio | contratos em `crates/rustnf/tests/casos/`, comparados texto a texto; regras lidas no Anexo I oficial | a Sefin Nacional aceitar uma DPS gerada aqui |
 | assinatura | conferida pelo próprio verificador e por um XML assinado fora da biblioteca | a Sefin Nacional validar uma assinatura feita aqui, em SHA-256 (o padrão) ou em SHA-1 (`--assinatura sha1`) |
-| cliente da Sefin Nacional | transporte falso (resposta perdida, 5xx, E0014, consulta, cancelamento) | uma chamada real, com TLS mútuo e certificado A1 |
+| cliente da Sefin Nacional | transporte falso (resposta perdida, 5xx, E0014, consulta da nota, da DPS e de evento, cancelamento, pedido de análise fiscal, conferência da situação das notas em lote) | uma chamada real, com TLS mútuo e certificado A1; **nenhuma consulta de DPS, consulta ou registro de evento e nenhuma atualização de situação foi feita contra a Sefin**, e o que ela responde aos eventos de manifestação (202201 e seguintes) e às sequências de um mesmo tipo de evento não foi conferido |
 | prévia do IBS/CBS | casos de teste da calculadora oficial da Receita Federal | comparar com os valores de uma NFS-e autorizada |
 | DANFSe | contrato de conteúdo e leiaute | comparar com um DANFSe emitido pelo portal |
 | interface de desktop (`rustnf-gui`, só Windows) | testes do modelo (máscaras, conferência, pedido, prévia, sugestão, rascunho, lista das notas, detalhe, cancelamento, consulta pela chave e prévia avulsa), dos fluxos com emissor de demonstração e pasta temporária e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuração e pelo exemplo de demonstração | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, só o emissor de demonstração respondeu**; o DANFSe aberto no leitor de PDF de outra máquina; uma chamada real à Sefin pelo botão "Testar conexão"; exame da janela em outras escalas de tela; o executável de release aberto numa máquina sem as ferramentas de desenvolvimento |
@@ -69,14 +69,18 @@ certo. Correção é bem-vinda por pedido de mudança, com a fonte oficial citad
 | `rustnf calcular` | prévia da base de cálculo e do IBS/CBS (Reforma Tributária, LC 214/2025), como a calculadora da Receita Federal |
 | `rustnf danfse` | gera o DANFSe em PDF (NT 008) a partir do XML da NFS-e autorizada, ou de uma nota da pasta de notas (`--chave`) |
 | `rustnf emitir` | monta, assina com o certificado A1 e envia a DPS à Sefin Nacional (idempotente) |
-| `rustnf consultar` | consulta uma NFS-e pela chave de acesso |
+| `rustnf consultar` | consulta uma NFS-e pela chave de acesso, ou a chave que uma DPS gerou (`--dps <id>` ou `--numero`) |
 | `rustnf cancelar` | cancela uma NFS-e (evento 101101) |
+| `rustnf evento consultar` | consulta um evento da NFS-e (chave, tipo e sequência) |
+| `rustnf evento registrar` | registra um evento que o contribuinte pede, como o pedido de análise fiscal (101103) |
+| `rustnf evento tipos` | lista os tipos de evento que o contribuinte registra, com a descrição e o autor |
 | `rustnf serve` | sobe a API HTTP e o servidor MCP |
 | `rustnf config mostrar` / `caminho` | a configuração efetiva e de onde veio; o arquivo em uso |
 | `rustnf senha guardar` / `apagar` | guarda a senha do certificado no cofre do sistema (Windows) |
 | `rustnf notas listar` | lista as notas guardadas na pasta de notas, com filtro por período, situação e texto; em texto, JSON ou CSV |
 | `rustnf notas exportar` | copia para uma pasta os XML das notas de um mês e a lista delas em CSV (o que vai para a contabilidade) |
 | `rustnf notas reindexar` | refaz o índice da pasta de notas a partir dos XML guardados |
+| `rustnf notas atualizar` | confere na Sefin a situação das notas da pasta (cancelada, substituída, em análise fiscal) e atualiza o índice |
 | `rustnf notas numero` | mostra a próxima DPS da série; com `--proximo`, continua a numeração de quem já emitia por outro sistema |
 | `rustnf certificado mostrar` | mostra o titular, o documento, a validade e os avisos do certificado A1 |
 | `rustnf sefin testar` | testa a conexão com a Sefin Nacional e a aceitação do certificado |
@@ -325,7 +329,44 @@ ambiente: restrita
   não respondeu ou recusou o certificado.
 
 As duas aceitam `--pfx`, `--senha-env`, `--senha-stdin` e `--json`, com as mesmas regras de
-[Emitir, consultar e cancelar](#emitir-consultar-e-cancelar).
+### Consultar a DPS, eventos e a situação das notas
+
+Mesmas opções de certificado, senha e ambiente de `emitir`, `consultar` e `cancelar`; `--json` onde há saída em texto.
+Nenhum destes comandos foi chamado contra a Sefin Nacional: veja [Estado](#estado).
+
+```
+# a chave que uma DPS gerou: pelo Id (45 posicoes) ou pela serie e o numero (o Id sai do [emitente] da configuracao)
+$ rustnf consultar --dps <id da DPS> --pfx certificado.pfx --senha-env SENHA_A1 --ambiente restrita
+$ rustnf consultar --serie 1 --numero 42 --com-nota --pfx certificado.pfx --senha-env SENHA_A1 --ambiente restrita
+
+# um evento da nota (a sequencia padrao e' 1) e os tipos que o contribuinte registra
+$ rustnf evento tipos
+$ rustnf evento consultar --chave <chave> --tipo 101103 [--sequencia 2] --pfx certificado.pfx --senha-env SENHA_A1 --ambiente restrita
+
+# pedido de analise fiscal para cancelamento (101103); com [notas].pasta, a nota passa a "em analise fiscal"
+$ rustnf evento registrar --chave <chave> --tipo 101103 --motivo 1 --justificativa "Valor digitado errado na nota" \
+    --pfx certificado.pfx --senha-env SENHA_A1 --ambiente restrita
+
+# confere na Sefin a situacao das notas da pasta, de uma em uma
+$ rustnf notas atualizar --de 2026-10-01 --ate 2026-10-31 --pfx certificado.pfx --senha-env SENHA_A1 --ambiente restrita
+```
+
+* `consultar --dps` e `--numero` devolvem a chave da NFS-e que a DPS gerou; com `--com-nota`, a nota também. DPS sem
+  NFS-e sai com 4 (não encontrada).
+* `evento consultar` só dá sucesso quando o evento devolvido é o da chave e do tipo pedidos; o evento que não existe
+  sai com 4.
+* `evento registrar` recusa (saída 3), antes de abrir o certificado, o cancelamento (101101, que tem o comando
+  `cancelar` e marca a pasta de notas) e os eventos que o fisco ou o próprio sistema registram (105102, 105104,
+  105105, 305101...). `evento tipos` mostra o que sobra, com a descrição e o autor. O autor do evento é o titular do
+  certificado. Quando a resposta do pedido se perde, a biblioteca procura o evento pelo `dhEvento` do pedido em todas
+  as sequências do tipo, e não aceita um evento antigo no lugar.
+* `notas atualizar [--de --ate --situacao --busca] [--intervalo-ms N]` consulta uma nota e uma consulta por vez, com
+  um intervalo entre elas (200 ms por padrão, cortesia com o serviço). A regra, parando no primeiro evento que decide:
+  101101 ou 105104, cancelada; 105102, substituída; 101103 sem decisão (mais pedidos do que 105105), em análise fiscal;
+  senão, autorizada, e a Sefin precisa confirmar que a nota existe. Imprime o que mudou e o que falhou e sai com 4 se
+  alguma nota não pôde ser conferida (sem resposta, recusa, nota não encontrada). Uma nota que a pasta dá como
+  cancelada ou substituída e que a Sefin não mostra assim **nunca volta para autorizada**: ela vai para as falhas, como
+  divergência, e o índice não muda.
 
 ### Pasta de notas
 
@@ -342,7 +383,7 @@ Sem `numero` no pedido, o `emitir` usa o próximo da série. O número só avan�
 (rejeitada ou pendente não gasta número) e nunca volta atrás. Nota recuperada é a que já existia na Sefin com
 aquela série e aquele número de DPS: se os dados dela não forem os do pedido (sobra de uma tentativa anterior), a
 resposta traz `recuperada_difere` com o que difere (tomador, valor, código do serviço, competência) e a nota do pedido
-NÃO foi emitida; emita de novo, que o número já avançou. O `cancelar` marca a nota como cancelada no índice; se a Sefin
+NÃO foi emitida; emita de novo, que o número já avançou. A situação de cada nota no índice é `autorizada`, `cancelada`, `substituida` ou `analise_fiscal` (um índice com as duas últimas não é lido pela versão 0.4.0). O `cancelar` marca a nota como cancelada no índice; o `evento registrar` de um 101103 a marca em análise fiscal; o `notas atualizar` confere todas na Sefin; se a Sefin
 recusar o pedido e a nota já tiver o cancelamento registrado (envio anterior sem resposta, ou feito em outro lugar), a
 resposta é `registrado` com `recuperada: true`, e as mensagens da recusa vêm em `alertas`.
 As gravações são atômicas (arquivo temporário e `rename`); o nome do arquivo vem só da chave de acesso conferida. A
@@ -394,6 +435,10 @@ limpo.
 | `POST /emitir` | JSON da DPS | JSON do resultado (só com emissão) |
 | `POST /cancelar` | `{"chave","motivo","justificativa"}` | JSON do resultado (só com emissão) |
 | `GET /nfse/{chave}` | | JSON da NFS-e (só com emissão) |
+| `GET /dps/{id}` | (`?com_nota=true` busca a nota) | a chave que a DPS gerou (só com emissão) |
+| `GET /nfse/{chave}/eventos/{tipo}/{sequencia}` | | o evento, conferido com a chave e o tipo (só com emissão) |
+| `POST /eventos` | `{"chave","tipo","motivo","justificativa"}` | JSON do resultado (só com emissão) |
+| `POST /notas/atualizar` | filtro: `{"de","ate","situacao","busca","intervalo_ms"}` (todos opcionais) | relatório: `conferidas`, `mudaram`, `iguais`, `falhas` (só com emissão) |
 | `POST /mcp` | mensagem JSON-RPC | veja abaixo |
 
 ```
@@ -412,7 +457,7 @@ $ curl -s -X POST 'http://127.0.0.1:8080/danfse?situacao=valida' --data-binary @
 
 ### Emissão pela API
 
-As rotas `/emitir`, `/cancelar` e `/nfse/{chave}` **nem existem** (404) sem `--permitir-emissao`. Com a opção, o
+As rotas `/emitir`, `/cancelar`, `/nfse/{chave}`, `/dps/{id}`, `/nfse/{chave}/eventos/{tipo}/{sequencia}`, `/eventos` e `/notas/atualizar` **nem existem** (404) sem `--permitir-emissao`. Com a opção, o
 servidor exige certificado, ambiente e um token: sem token configurado, ele recusa subir.
 
 ```
@@ -433,7 +478,7 @@ O servidor lê o mesmo arquivo de configuração da linha de comando (`rustnf se
 o `[emitente]` completa o que o pedido não traz; com `[notas].pasta`, o `numero` da DPS pode faltar (vale o próximo da
 série), a nota autorizada é guardada e a resposta traz `guardada` e `numero_dps` (e `aviso` ou `recuperada_difere`,
 nos casos descritos em [Pasta de notas](#pasta-de-notas)). No `/cancelar`, o cancelamento registrado marca a nota na
-pasta. O servidor emite uma nota por vez, para duas emissões simultâneas não pegarem o mesmo número. Sem `[emitente]`
+pasta. O servidor emite uma nota por vez, para duas emissões simultâneas não pegarem o mesmo número; o `/eventos` e o `/notas/atualizar` entram na mesma fila, e a atualização consulta uma nota e uma consulta por vez. `POST /eventos` recusa (422) o 101101 e os eventos do fisco antes de qualquer envio. `POST /notas/atualizar` responde 200 com o relatório mesmo havendo `falhas` (quem chama confere a lista); num lote grande ela passa do tempo limite da requisição, e o que foi conferido até lá já está gravado: use o filtro (período, situação) para dividir o trabalho. Sem `[emitente]`
 e sem pasta de notas, o pedido precisa vir completo, com o `numero`.
 
 Campo que a DPS não conhece: o `/emitir` recusa o pedido (422, com o campo) antes de qualquer envio; com
@@ -469,6 +514,10 @@ a versão e as capacidades em `_meta` e os cabeçalhos `MCP-Protocol-Version`, `
 | `emitir_nfse` | emite como o `POST /emitir`; só com `--permitir-emissao` e o Bearer |
 | `consultar_nfse` | consulta pela chave de acesso; só com `--permitir-emissao` e o Bearer |
 | `cancelar_nfse` | cancela como o `POST /cancelar`; só com `--permitir-emissao` e o Bearer |
+| `consultar_dps` | a chave que a DPS gerou, pelo Id ou pelo número (o emitente da configuração do servidor dá o resto); só com `--permitir-emissao` e o Bearer |
+| `consultar_evento` | consulta um evento pela chave, o tipo e a sequência; só com `--permitir-emissao` e o Bearer |
+| `registrar_evento` | registra um evento que o contribuinte pede, como o `POST /eventos` (**efeito fiscal**, como `cancelar_nfse`); só com `--permitir-emissao` e o Bearer |
+| `atualizar_situacoes` | confere a situação das notas da pasta, como o `POST /notas/atualizar`; só com `--permitir-emissao` e o Bearer |
 
 Recusa de regra fiscal volta como resultado da ferramenta com `isError: true`, não como erro de protocolo. Campo que
 a DPS não conhece volta listado em `campos_desconhecidos` no `conferir_dps`, e no `emitir_nfse` recusa o pedido

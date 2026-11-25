@@ -17,6 +17,8 @@ rustnf = { path = "../rustnf", features = ["sefin", "danfse"] }
 async-trait = "0.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+# o intervalo entre as consultas da atualizacao em lote (so' o relogio; o runtime e' de quem chama)
+tokio = { version = "1", default-features = false, features = ["time"] }
 toml = "1"
 zeroize = "1"
 # busca do CEP (so' quando pedida); a mesma versao e as mesmas opcoes que a biblioteca ja usa
@@ -25,7 +27,7 @@ reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"
 [dev-dependencies]
 rustnf = { path = "../rustnf", features = ["sefin", "danfse", "cert_a1_teste"] }
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
-tokio = { version = "1", features = ["rt", "time"] }
+tokio = { version = "1", features = ["rt", "time", "macros"] }
 
 [target.'cfg(windows)'.dependencies]
 keyring-core = "1"

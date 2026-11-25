@@ -1,5 +1,35 @@
 # Changelog
 
+## Próxima versão
+
+Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` e `analise_fiscal`). **Um índice que tenha
+alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
+`cancelada`, continua sendo lido por esta versão.
+
+* Consulta da DPS: `rustnf consultar --dps <id>` (ou `--serie` e `--numero`, com o `[emitente]` da configuração),
+  `GET /dps/{id}` e a ferramenta MCP `consultar_dps` devolvem a chave da NFS-e que a DPS gerou, e a nota com
+  `--com-nota`. O Id fora da forma é recusado antes da rede.
+* Consulta de evento: `rustnf evento consultar`, `GET /nfse/{chave}/eventos/{tipo}/{sequencia}` e `consultar_evento`.
+  O evento devolvido é conferido contra a chave e o tipo pedidos: a resposta de outra nota ou de outro tipo, ou um
+  corpo que não é um evento, é erro, não sucesso. Isso vale também para a conferência do cancelamento.
+* Eventos além do cancelamento: `rustnf evento registrar`, `POST /eventos` e `registrar_evento` registram os eventos
+  que o contribuinte pede (por exemplo o 101103, pedido de análise fiscal); o 101103 registrado marca a nota da pasta
+  como em análise fiscal. O cancelamento (101101) e os eventos do fisco e do sistema são recusados antes de qualquer
+  envio, dizendo o que fazer ou quem os registra. `rustnf evento tipos` lista os tipos do contribuinte.
+* Atualização das situações em lote: `rustnf notas atualizar`, `POST /notas/atualizar` e `atualizar_situacoes`
+  conferem na Sefin as notas da pasta (cancelada, substituída, em análise fiscal), uma nota e uma consulta por vez,
+  com intervalo entre as consultas (200 ms por padrão). Nota que a pasta dá como cancelada ou substituída e que a
+  Sefin não mostra assim nunca volta para autorizada: vai para as falhas, como divergência.
+* A situação da nota na pasta passa a ter `substituida` (105102) e `analise_fiscal` (101103 sem decisão do fisco);
+  aparecem no selo, no filtro e no detalhe da lista de notas da interface, que não ganhou tela nova. O `reindexar`
+  aproveita todas as situações do índice anterior, não só a cancelada.
+* Correção: quando a resposta do registro de um evento se perdia, a biblioteca só olhava a sequência 1 do tipo e dava
+  por registrado um pedido novo de um tipo que já tinha evento (o 101103 depois de um 105105, por exemplo). Agora ela
+  percorre as sequências do tipo e só aceita o evento que traz o mesmo `dhEvento` do pedido; não achando, devolve
+  "pendente" para reenviar o mesmo pedido.
+* `rustnf-app`: dependência direta de `tokio` (só o relógio, para o intervalo entre as consultas); a interface de
+  desktop e as demais faces usam o executor de quem chama.
+
 ## 0.4.0 - 2026-11-25
 
 Ao atualizar: a configuração nova (`aliquota_iss`) é opcional e vazia por padrão, e a prévia do IBS/CBS só muda no

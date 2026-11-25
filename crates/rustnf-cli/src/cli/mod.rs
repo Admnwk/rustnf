@@ -24,7 +24,10 @@ use std::path::PathBuf;
 use clap::{Args, Parser, Subcommand, ValueEnum};
 use rustnf::assinatura::xmldsig::Algoritmo;
 
-pub use comandos::{emitir_valor, executar, executar_com, testar_conexao, VARIAVEL_COFRE};
+pub use comandos::{
+    atualizar_com, consultar_com, emitir_valor, evento_consultar_com, evento_registrar_com,
+    executar, executar_com, testar_conexao, VARIAVEL_COFRE,
+};
 pub use servir::{servir, servir_ate};
 
 /// Emissor de NFS-e nacional: monta a DPS, calcula a previa do IBS/CBS, gera o DANFSe, emite pela Sefin Nacional e
@@ -56,10 +59,16 @@ pub enum Comando {
     Danfse(ArgDanfse),
     /// Monta, assina com o certificado A1 e envia a DPS a Sefin Nacional.
     Emitir(ArgEmitir),
-    /// Consulta uma NFS-e pela chave de acesso.
+    /// Consulta uma NFS-e pela chave de acesso, ou a chave que uma DPS gerou (pelo Id ou por serie e numero).
     Consultar(ArgConsultar),
     /// Cancela uma NFS-e (evento 101101).
     Cancelar(ArgCancelar),
+    /// Eventos da NFS-e: consultar um evento, registrar um que o contribuinte pede e listar os tipos.
+    Evento {
+        /// O que fazer.
+        #[command(subcommand)]
+        acao: AcaoEvento,
+    },
     /// Sobe a API HTTP e o servidor MCP.
     Serve(ArgServe),
     /// Mostra a configuracao efetiva e onde o arquivo mora.
@@ -99,6 +108,67 @@ pub enum Comando {
         /// O shell: powershell, bash, zsh, fish ou elvish.
         shell: clap_complete::Shell,
     },
+}
+
+/// `rustnf evento ...`.
+#[derive(Debug, Subcommand)]
+pub enum AcaoEvento {
+    /// Consulta um evento da NFS-e na Sefin Nacional. Nao altera nada. Saida 4 se o evento nao existe ou a Sefin nao
+    /// respondeu.
+    Consultar(ArgEventoConsultar),
+    /// Registra um evento que o contribuinte pede (por exemplo, 101103: pedido de analise fiscal para
+    /// cancelamento). O cancelamento tem o comando `cancelar`; os eventos do fisco nao se pedem. Operacao com efeito
+    /// fiscal.
+    Registrar(ArgEventoRegistrar),
+    /// Lista os tipos de evento que o contribuinte registra, com a descricao e o autor. Nao usa a rede.
+    Tipos {
+        /// Saida em JSON.
+        #[arg(long)]
+        json: bool,
+    },
+}
+
+/// `rustnf evento consultar`.
+#[derive(Debug, Args)]
+pub struct ArgEventoConsultar {
+    /// Chave de acesso da NFS-e (50 posicoes).
+    #[arg(long)]
+    pub chave: String,
+    /// Tipo do evento (`tpEvento`, 6 digitos): veja `rustnf evento tipos`.
+    #[arg(long, value_name = "TIPO")]
+    pub tipo: String,
+    /// Sequencia do evento do tipo na nota (comeca em 1).
+    #[arg(long, value_name = "N", default_value_t = 1)]
+    pub sequencia: u32,
+    /// Certificado, senha e ambiente.
+    #[command(flatten)]
+    pub sefin: ArgSefin,
+    /// Saida em JSON.
+    #[arg(long)]
+    pub json: bool,
+}
+
+/// `rustnf evento registrar`.
+#[derive(Debug, Args)]
+pub struct ArgEventoRegistrar {
+    /// Chave de acesso da NFS-e (50 posicoes).
+    #[arg(long)]
+    pub chave: String,
+    /// Tipo do evento (`tpEvento`, 6 digitos): veja `rustnf evento tipos`.
+    #[arg(long, value_name = "TIPO")]
+    pub tipo: String,
+    /// Codigo do motivo, quando o evento tem (101103: 1 erro na emissao, 2 servico nao prestado, 9 outros).
+    #[arg(long)]
+    pub motivo: Option<String>,
+    /// Justificativa, quando o evento tem (101103: obrigatoria, fica no documento fiscal).
+    #[arg(long)]
+    pub justificativa: Option<String>,
+    /// Certificado, senha e ambiente.
+    #[command(flatten)]
+    pub sefin: ArgSefin,
+    /// Saida em JSON.
+    #[arg(long)]
+    pub json: bool,
 }
 
 /// `rustnf certificado ...`.
@@ -223,6 +293,11 @@ pub enum AcaoNotas {
     /// Refaz o indice da pasta de notas a partir dos XML guardados (indice perdido ou ilegivel). O indice anterior
     /// fica copiado ao lado; a numeracao da DPS nao muda.
     Reindexar,
+    /// Confere na Sefin Nacional a situacao das notas da pasta (cancelada, substituida, em analise fiscal) e atualiza
+    /// o indice. Uma nota e uma consulta por vez, com um intervalo entre elas. Nota que a pasta da como cancelada ou
+    /// substituida e a Sefin nao mostra assim nunca volta para autorizada: vai para as falhas. Saida 4 se alguma
+    /// nota nao pode ser conferida.
+    Atualizar(ArgAtualizar),
     /// Mostra o proximo numero de DPS da serie ou, com `--proximo`, faz a serie continuar nele: para quem ja emitia
     /// por outro sistema, use o numero seguinte a ultima DPS de la. So' anda para a frente.
     Numero {
@@ -235,6 +310,44 @@ pub enum AcaoNotas {
     },
 }
 
+impl From<SituacaoDaNota> for rustnf_app::notas::Situacao {
+    fn from(s: SituacaoDaNota) -> Self {
+        match s {
+            SituacaoDaNota::Autorizada => Self::Autorizada,
+            SituacaoDaNota::Cancelada => Self::Cancelada,
+            SituacaoDaNota::Substituida => Self::Substituida,
+            SituacaoDaNota::AnaliseFiscal => Self::AnaliseFiscal,
+        }
+    }
+}
+
+/// `rustnf notas atualizar`.
+#[derive(Debug, Args)]
+pub struct ArgAtualizar {
+    /// So' as notas emitidas a partir deste dia (inclusive).
+    #[arg(long, value_name = "AAAA-MM-DD")]
+    pub de: Option<String>,
+    /// So' as notas emitidas ate este dia (inclusive).
+    #[arg(long, value_name = "AAAA-MM-DD")]
+    pub ate: Option<String>,
+    /// So' as notas que a pasta tem nesta situacao.
+    #[arg(long, value_enum)]
+    pub situacao: Option<SituacaoDaNota>,
+    /// So' as notas que casam com o texto: nome do tomador (sem acento), CPF/CNPJ dele, numero da NFS-e ou da DPS,
+    /// ou uma chave de acesso.
+    #[arg(long, value_name = "TEXTO")]
+    pub busca: Option<String>,
+    /// Intervalo entre duas consultas a Sefin, em milissegundos (cortesia com o servico; padrao 200).
+    #[arg(long, value_name = "MS")]
+    pub intervalo_ms: Option<u64>,
+    /// Certificado, senha e ambiente.
+    #[command(flatten)]
+    pub sefin: ArgSefin,
+    /// Saida em JSON.
+    #[arg(long)]
+    pub json: bool,
+}
+
 /// Situacao de uma nota na pasta de notas.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum)]
 pub enum SituacaoDaNota {
@@ -242,6 +355,10 @@ pub enum SituacaoDaNota {
     Autorizada,
     /// Cancelada.
     Cancelada,
+    /// Substituida por outra nota.
+    Substituida,
+    /// Com pedido de analise fiscal em aberto.
+    AnaliseFiscal,
 }
 
 /// `rustnf dps ...`.
@@ -411,12 +528,28 @@ pub struct ArgEmitir {
     pub json: bool,
 }
 
-/// `rustnf consultar`.
+/// `rustnf consultar`: uma NFS-e pela chave, ou a DPS pelo Id ou por serie e numero.
 #[derive(Debug, Args)]
 pub struct ArgConsultar {
     /// Chave de acesso da NFS-e (50 posicoes).
+    #[arg(
+        long,
+        required_unless_present_any = ["dps", "numero"],
+        conflicts_with_all = ["dps", "serie", "numero", "com_nota"]
+    )]
+    pub chave: Option<String>,
+    /// Id da DPS (45 posicoes): devolve a chave da NFS-e que ela gerou.
+    #[arg(long, value_name = "ID", conflicts_with_all = ["serie", "numero"])]
+    pub dps: Option<String>,
+    /// Serie da DPS (sem a opcao, a do `[emitente]` ou 1). O Id da DPS sai do `[emitente]`, da serie e do numero.
+    #[arg(long, requires = "numero")]
+    pub serie: Option<String>,
+    /// Numero da DPS: devolve a chave da NFS-e que ela gerou.
     #[arg(long)]
-    pub chave: String,
+    pub numero: Option<String>,
+    /// Com `--dps` ou `--numero`: busca tambem a nota inteira, nao so' a chave.
+    #[arg(long)]
+    pub com_nota: bool,
     /// Certificado, senha e ambiente.
     #[command(flatten)]
     pub sefin: ArgSefin,

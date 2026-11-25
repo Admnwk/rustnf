@@ -8,16 +8,17 @@ use std::io::Write;
 use std::path::Path;
 
 use rustnf::nfse::sefin::{ClienteNfse, Transporte};
+use rustnf_app::atualizacao::{atualizar_pedido, Pedido, Relatorio};
 use rustnf_app::cofre::{cofre_do_ambiente, Cofre};
 use rustnf_app::config::Efetiva;
-use rustnf_app::notas::Situacao;
+use rustnf_app::notas::Notas;
 use rustnf_app::pedido;
 use serde_json::{json, Value};
 
 use super::{
-    configuracao, resolver, servir, AcaoCertificado, AcaoDps, AcaoSefin, ArgCalcular, ArgCancelar,
-    ArgCertificado, ArgConsultar, ArgDanfse, ArgEmitir, ArgSefin, ArgTestar, Cli, Comando,
-    SituacaoArg,
+    configuracao, resolver, servir, AcaoCertificado, AcaoDps, AcaoEvento, AcaoNotas, AcaoSefin,
+    ArgAtualizar, ArgCalcular, ArgCancelar, ArgCertificado, ArgConsultar, ArgDanfse, ArgEmitir,
+    ArgEventoConsultar, ArgEventoRegistrar, ArgSefin, ArgTestar, Cli, Comando, SituacaoArg,
 };
 use crate::emissao::{self, Emissor};
 use crate::entrada;
@@ -64,9 +65,13 @@ pub async fn executar_com(cli: Cli, cofre: &dyn Cofre) -> Result<(), Erro> {
         Comando::Emitir(a) => emitir(a, config, cofre).await,
         Comando::Consultar(a) => consultar(a, config, cofre).await,
         Comando::Cancelar(a) => cancelar(a, config, cofre).await,
+        Comando::Evento { acao } => evento(acao, config, cofre).await,
         Comando::Serve(a) => servir(a, config, cofre).await,
         Comando::Config { acao } => configuracao::config(acao, config),
         Comando::Senha { acao } => configuracao::senha(acao, config, cofre),
+        Comando::Notas {
+            acao: AcaoNotas::Atualizar(a),
+        } => atualizar(a, config, cofre).await,
         Comando::Notas { acao } => configuracao::notas(acao, config),
         Comando::Certificado {
             acao: AcaoCertificado::Mostrar(a),
@@ -314,10 +319,7 @@ fn danfse_da_pasta(
         .collect();
     let registro = notas.registro(&chave)?;
     let xml = notas.ler_xml(&chave)?;
-    let situacao = situacao.unwrap_or(match registro.situacao {
-        Situacao::Autorizada => SituacaoNota::Valida,
-        Situacao::Cancelada => SituacaoNota::Cancelada,
-    });
+    let situacao = situacao.unwrap_or(registro.situacao.para_danfse());
     let canhoto = !a.sem_canhoto && efetiva.config.danfse.canhoto;
     let pdf = nucleo::gerar_danfse(&xml, situacao, canhoto)?;
     match &a.saida {
@@ -400,11 +402,53 @@ async fn emitir(a: ArgEmitir, config: Option<&Path>, cofre: &dyn Cofre) -> Resul
     imprimir(&v, a.json)
 }
 
+/// O que `rustnf consultar` procura.
+enum Alvo {
+    /// Uma NFS-e pela chave de acesso.
+    Chave(String),
+    /// A DPS pelo Id (45 posicoes).
+    Dps(String),
+}
+
+/// A chave, o Id da DPS ou a serie e o numero que a chamada deu; serie e numero viram o Id pelo `[emitente]`.
+fn alvo_da_consulta(a: &ArgConsultar, efetiva: &Efetiva) -> Result<Alvo, Erro> {
+    match (&a.chave, &a.dps, &a.numero) {
+        (Some(chave), _, _) => Ok(Alvo::Chave(chave.clone())),
+        (None, Some(id), _) => Ok(Alvo::Dps(id.clone())),
+        (None, None, Some(numero)) => Ok(Alvo::Dps(pedido::id_da_dps(
+            &efetiva.config.emitente,
+            a.serie.as_deref(),
+            numero,
+        )?)),
+        (None, None, None) => Err(Erro::Uso(
+            "informe --chave, --dps ou --numero (com --serie, se nao for a do [emitente])".into(),
+        )),
+    }
+}
+
+/// `rustnf consultar` com o emissor ja montado.
+///
+/// # Errors
+///
+/// Como [`emissao::consultar`] e [`emissao::consultar_dps`].
+pub async fn consultar_com(
+    emissor: &dyn Emissor,
+    a: &ArgConsultar,
+    efetiva: &Efetiva,
+) -> Result<(), Erro> {
+    let v = match alvo_da_consulta(a, efetiva)? {
+        Alvo::Chave(chave) => emissao::consultar(emissor, &chave).await?,
+        Alvo::Dps(id) => emissao::consultar_dps(emissor, &id, a.com_nota).await?,
+    };
+    imprimir(&v, a.json)
+}
+
 async fn consultar(a: ArgConsultar, config: Option<&Path>, cofre: &dyn Cofre) -> Result<(), Erro> {
     let efetiva = configuracao::carregar(config)?;
+    // o Id sai da configuracao: se nao sair, para antes de abrir o certificado
+    alvo_da_consulta(&a, &efetiva)?;
     let emissor = emissor_de(&a.sefin, &efetiva, cofre, false)?;
-    let v = emissao::consultar(emissor.as_ref(), &a.chave).await?;
-    imprimir(&v, a.json)
+    consultar_com(emissor.as_ref(), &a, &efetiva).await
 }
 
 async fn cancelar(a: ArgCancelar, config: Option<&Path>, cofre: &dyn Cofre) -> Result<(), Erro> {
@@ -420,4 +464,141 @@ async fn cancelar(a: ArgCancelar, config: Option<&Path>, cofre: &dyn Cofre) -> R
     )
     .await?;
     imprimir(&v, a.json)
+}
+
+async fn evento(acao: AcaoEvento, config: Option<&Path>, cofre: &dyn Cofre) -> Result<(), Erro> {
+    match acao {
+        AcaoEvento::Tipos { json } => tipos_de_evento(json),
+        AcaoEvento::Consultar(a) => {
+            let efetiva = configuracao::carregar(config)?;
+            let emissor = emissor_de(&a.sefin, &efetiva, cofre, false)?;
+            evento_consultar_com(emissor.as_ref(), &a).await
+        }
+        AcaoEvento::Registrar(a) => {
+            // o tipo que o contribuinte nao registra por aqui para antes de abrir o certificado
+            emissao::conferir_tipo_de_registro(&a.tipo)?;
+            let efetiva = configuracao::carregar(config)?;
+            let emissor = emissor_de(&a.sefin, &efetiva, cofre, false)?;
+            let notas = configuracao::notas_da(&efetiva)?;
+            evento_registrar_com(emissor.as_ref(), &a, notas.as_ref()).await
+        }
+    }
+}
+
+/// `rustnf evento consultar` com o emissor ja montado.
+///
+/// # Errors
+///
+/// Como [`emissao::consultar_evento`].
+pub async fn evento_consultar_com(
+    emissor: &dyn Emissor,
+    a: &ArgEventoConsultar,
+) -> Result<(), Erro> {
+    let v = emissao::consultar_evento(emissor, &a.chave, &a.tipo, a.sequencia).await?;
+    imprimir(&v, a.json)
+}
+
+/// `rustnf evento registrar` com o emissor e a pasta de notas ja prontos.
+///
+/// # Errors
+///
+/// Como [`pedido::registrar_evento_pedido`].
+pub async fn evento_registrar_com(
+    emissor: &dyn Emissor,
+    a: &ArgEventoRegistrar,
+    notas: Option<&Notas>,
+) -> Result<(), Erro> {
+    let v = pedido::registrar_evento_pedido(
+        emissor,
+        &a.tipo,
+        &a.chave,
+        a.motivo.as_deref().unwrap_or(""),
+        a.justificativa.as_deref().unwrap_or(""),
+        notas,
+    )
+    .await?;
+    imprimir(&v, a.json)
+}
+
+/// `rustnf evento tipos`: o que o contribuinte registra, sem usar a rede.
+fn tipos_de_evento(json: bool) -> Result<(), Erro> {
+    let tipos = emissao::tipos_de_evento();
+    if json {
+        return escrever_json(&tipos);
+    }
+    let mut texto = String::new();
+    for t in tipos.as_array().into_iter().flatten() {
+        let campo = |nome: &str| t.get(nome).and_then(Value::as_str).unwrap_or("");
+        texto.push_str(&format!(
+            "{}\t{}\t{}\t({})\n",
+            campo("tipo"),
+            campo("autor"),
+            campo("descricao"),
+            campo("comando"),
+        ));
+    }
+    escrever_stdout(texto.as_bytes())
+}
+
+/// O relatorio da atualizacao: o que mudou e o que falhou, e a contagem.
+fn imprimir_relatorio(r: &Relatorio, json: bool) -> Result<(), Erro> {
+    if json {
+        return escrever_json(&r.para_json());
+    }
+    let mut texto = format!(
+        "{} nota(s) conferida(s): {} mudou(aram), {} igual(is), {} falha(s)\n",
+        r.conferidas,
+        r.mudaram.len(),
+        r.iguais,
+        r.falhas.len()
+    );
+    for m in &r.mudaram {
+        texto.push_str(&format!(
+            "mudou\t{}\t{} -> {}\n",
+            m.chave,
+            m.de.texto(),
+            m.para.texto()
+        ));
+    }
+    for f in &r.falhas {
+        texto.push_str(&format!("falha\t{}\t{}\n", f.chave, f.motivo));
+    }
+    escrever_stdout(texto.as_bytes())
+}
+
+/// `rustnf notas atualizar` com o emissor e a pasta de notas ja prontos: imprime o relatorio e, havendo nota que nao
+/// pode ser conferida, devolve o erro (saida 4).
+///
+/// # Errors
+///
+/// Os de [`atualizar_pedido`] e [`Erro::Rede`] se alguma nota foi para as falhas.
+pub async fn atualizar_com(
+    emissor: &dyn Emissor,
+    a: &ArgAtualizar,
+    notas: &Notas,
+) -> Result<(), Erro> {
+    let pedido = Pedido {
+        de: a.de.clone(),
+        ate: a.ate.clone(),
+        situacao: a.situacao.map(Into::into),
+        busca: a.busca.clone(),
+        intervalo_ms: a.intervalo_ms,
+    };
+    let relatorio = atualizar_pedido(emissor, notas, &pedido).await?;
+    imprimir_relatorio(&relatorio, a.json)?;
+    if relatorio.falhas.is_empty() {
+        Ok(())
+    } else {
+        Err(Erro::Rede(format!(
+            "{} nota(s) nao puderam ser conferidas (veja as falhas acima)",
+            relatorio.falhas.len()
+        )))
+    }
+}
+
+async fn atualizar(a: ArgAtualizar, config: Option<&Path>, cofre: &dyn Cofre) -> Result<(), Erro> {
+    let efetiva = configuracao::carregar(config)?;
+    let notas = configuracao::notas_exigida(&efetiva)?;
+    let emissor = emissor_de(&a.sefin, &efetiva, cofre, false)?;
+    atualizar_com(emissor.as_ref(), &a, &notas).await
 }

@@ -375,6 +375,84 @@ pub fn consulta() -> Value {
     })
 }
 
+/// Schema de `consultar_dps`: o Id da DPS, ou o numero (e a serie, se nao for a do emitente do servidor).
+#[must_use]
+pub fn consulta_dps() -> Value {
+    json!({
+        "type": "object",
+        "properties": {
+            "id_dps": texto("Id da DPS (45 posicoes). Sem ele, informe o numero."),
+            "serie": texto("Serie da DPS; sem ela vale a do emitente do servidor, ou 1."),
+            "numero": valor("Numero da DPS; o Id sai do emitente do servidor, da serie e deste numero."),
+            "com_nota": {
+                "type": "boolean",
+                "description": "Busca tambem a nota inteira, nao so' a chave (padrao: so' a chave)."
+            }
+        },
+        "anyOf": [{"required": ["id_dps"]}, {"required": ["numero"]}],
+        "additionalProperties": false
+    })
+}
+
+/// Schema de `consultar_evento`.
+#[must_use]
+pub fn consulta_evento() -> Value {
+    json!({
+        "type": "object",
+        "properties": {
+            "chave": texto("Chave de acesso da NFS-e (50 posicoes)."),
+            "tipo": texto("Tipo do evento (tpEvento, 6 digitos), por exemplo 101103."),
+            "sequencia": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Sequencia do evento do tipo na nota (padrao 1)."
+            }
+        },
+        "required": ["chave", "tipo"],
+        "additionalProperties": false
+    })
+}
+
+/// Schema de `registrar_evento`.
+#[must_use]
+pub fn registro_de_evento() -> Value {
+    json!({
+        "type": "object",
+        "properties": {
+            "chave": texto("Chave de acesso da NFS-e (50 posicoes)."),
+            "tipo": texto("Tipo do evento (tpEvento, 6 digitos) que o contribuinte registra, por exemplo 101103 (pedido de analise fiscal). O cancelamento (101101) tem a ferramenta cancelar_nfse."),
+            "motivo": texto("Codigo do motivo, nos eventos que o tem (101103: 1 erro na emissao, 2 servico nao prestado, 9 outros)."),
+            "justificativa": texto("Justificativa, nos eventos que a tem (101103: obrigatoria, de 15 a 255 caracteres; fica no documento fiscal).")
+        },
+        "required": ["chave", "tipo"],
+        "additionalProperties": false
+    })
+}
+
+/// Schema de `atualizar_situacoes`.
+#[must_use]
+pub fn atualizacao() -> Value {
+    json!({
+        "type": "object",
+        "properties": {
+            "de": texto("So' as notas emitidas a partir deste dia, AAAA-MM-DD (inclusive)."),
+            "ate": texto("So' as notas emitidas ate este dia, AAAA-MM-DD (inclusive)."),
+            "situacao": {
+                "type": "string",
+                "enum": ["autorizada", "cancelada", "substituida", "analise_fiscal"],
+                "description": "So' as notas que a pasta tem nesta situacao."
+            },
+            "busca": texto("So' as notas que casam com o texto: nome do tomador, CPF/CNPJ dele, numero da NFS-e ou da DPS, ou uma chave de acesso."),
+            "intervalo_ms": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Intervalo entre duas consultas a Sefin, em milissegundos (padrao 200)."
+            }
+        },
+        "additionalProperties": false
+    })
+}
+
 /// Schema de `cancelar_nfse`.
 #[must_use]
 pub fn cancelamento() -> Value {

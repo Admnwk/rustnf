@@ -41,6 +41,22 @@ pub struct PedidoCancelamento {
     pub justificativa: String,
 }
 
+/// Pedido de registro de evento (os que o contribuinte pede, fora o cancelamento).
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PedidoEvento {
+    /// Chave de acesso da NFS-e (50 posicoes).
+    pub chave: String,
+    /// Tipo do evento (`tpEvento`, 6 digitos).
+    pub tipo: String,
+    /// Codigo do motivo, nos eventos que o tem.
+    #[serde(default)]
+    pub motivo: String,
+    /// Justificativa, nos eventos que a tem.
+    #[serde(default)]
+    pub justificativa: String,
+}
+
 /// Le o JSON de uma DPS.
 ///
 /// # Errors
@@ -274,6 +290,21 @@ pub fn resumo_texto(v: &Value) -> String {
     item("dps", campo("id_dps"));
     if let Some(numero) = v.pointer("/nfse/numero").and_then(Value::as_str) {
         item("numero", numero);
+    }
+    if let Some(e) = v.get("evento").filter(|e| e.is_object()) {
+        let dele = |nome: &str| e.get(nome).and_then(Value::as_str).unwrap_or("");
+        item("evento", &format!("{} {}", dele("tipo"), dele("descricao")));
+        item("sequencia", dele("sequencia"));
+        item("processado em", dele("processado_em"));
+        item("motivo", dele("motivo"));
+    }
+    match v.get("marcada").and_then(Value::as_bool) {
+        Some(true) => item("pasta de notas", "nota marcada em analise fiscal"),
+        Some(false) => item(
+            "pasta de notas",
+            "a nota nao foi marcada (nao esta na pasta como autorizada)",
+        ),
+        None => {}
     }
     item("mensagem", campo("frase"));
     if v.get("recuperada").and_then(Value::as_bool) == Some(true) {

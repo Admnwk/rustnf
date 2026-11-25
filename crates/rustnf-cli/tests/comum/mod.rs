@@ -263,6 +263,38 @@ pub fn pedido_sem_emitente() -> Value {
     v
 }
 
+/// O XML de um evento registrado (`<evento>` com o pedRegEvento dentro).
+pub fn evento_xml(ch: &str, tipo: &str, seq: u32) -> String {
+    format!(
+        "<evento xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infEvento Id=\"EVT{ch}{tipo}\">\
+         <nSeqEvento>{seq}</nSeqEvento><dhProc>2026-11-25T10:00:05-03:00</dhProc>\
+         <pedRegEvento versao=\"1.01\"><infPedReg Id=\"PRE{ch}{tipo}\"><dhEvento>2026-11-25T10:00:00-03:00</dhEvento>\
+         <CNPJAutor>11222333000181</CNPJAutor><chNFSe>{ch}</chNFSe><e{tipo}><xDesc>evento</xDesc></e{tipo}>\
+         </infPedReg></pedRegEvento></infEvento></evento>"
+    )
+}
+
+/// Resposta de consulta de um evento que existe.
+pub fn evento_consultado(ch: &str, tipo: &str, seq: u32) -> Resp {
+    json_resp(
+        200,
+        json!({"eventoXmlGZipB64": compactar(&evento_xml(ch, tipo, seq))}),
+    )
+}
+
+/// Resposta de registro de um evento do tipo dado.
+pub fn evento_registrado_de(ch: &str, tipo: &str) -> Resp {
+    json_resp(
+        201,
+        json!({"eventoXmlGZipB64": compactar(&evento_xml(ch, tipo, 1))}),
+    )
+}
+
+/// Resposta de consulta da DPS que gerou a nota.
+pub fn dps_achada(id: &str, ch: &str) -> Resp {
+    json_resp(200, json!({"chaveAcesso": ch, "idDps": id}))
+}
+
 /// Resposta de evento registrado.
 pub fn evento_registrado() -> Resp {
     json_resp(201, json!({"eventoXmlGZipB64": compactar("<evento/>")}))

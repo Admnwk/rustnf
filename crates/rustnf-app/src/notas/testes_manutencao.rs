@@ -381,3 +381,24 @@ fn reindexar_ignora_xml_fora_da_pasta_do_mes_dele() {
     assert_eq!((feito.notas, feito.ignorados), (1, 2));
     assert_eq!(notas.listar().unwrap()[0].chave, chave(42));
 }
+
+#[test]
+fn reindexar_aproveita_tambem_a_substituida_e_a_em_analise_fiscal() {
+    let p = PastaTemporaria::nova("notas-reindexar-situacoes");
+    let notas = Notas::abrir(p.caminho()).unwrap();
+    for n in [42, 43, 44] {
+        guardar_nota(&notas, n);
+    }
+    notas.marcar_cancelada(&chave(42)).unwrap();
+    notas
+        .definir_situacao(&chave(43), Situacao::Substituida)
+        .unwrap();
+    notas
+        .definir_situacao(&chave(44), Situacao::AnaliseFiscal)
+        .unwrap();
+    let antes = notas.listar().unwrap();
+    let feito = notas.reindexar().unwrap();
+    assert_eq!(feito.notas, 3);
+    assert_eq!(feito.canceladas, 1);
+    assert_eq!(notas.listar().unwrap(), antes);
+}

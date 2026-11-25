@@ -12,9 +12,7 @@ use rustnf_app::notas::{Filtro, Notas, Situacao, INDICE_ANTERIOR, LISTA_CSV};
 use serde_json::json;
 
 use super::comandos::{escrever_json, escrever_stdout};
-use super::{
-    certificado, resolver, AcaoConfig, AcaoNotas, AcaoSenha, ArgCofre, ArgGuardar, SituacaoDaNota,
-};
+use super::{certificado, resolver, AcaoConfig, AcaoNotas, AcaoSenha, ArgCofre, ArgGuardar};
 use crate::erro::Erro;
 
 /// Acha o arquivo, aplica o ambiente e confere os valores.
@@ -163,7 +161,7 @@ pub(super) fn notas(acao: AcaoNotas, explicito: Option<&Path>) -> Result<(), Err
             let feito = notas.reindexar()?;
             if feito.indice_ilegivel {
                 eprintln!(
-                    "aviso: o indice que havia estava ilegivel (ficou guardado como {INDICE_ANTERIOR}). O XML nao diz se a nota foi cancelada: todas voltaram como autorizadas; confira as canceladas na Sefin"
+                    "aviso: o indice que havia estava ilegivel (ficou guardado como {INDICE_ANTERIOR}). O XML nao diz se a nota foi cancelada: todas voltaram como autorizadas; confira a situacao na Sefin com `rustnf notas atualizar`"
                 );
             }
             if feito.ignorados > 0 {
@@ -180,6 +178,8 @@ pub(super) fn notas(acao: AcaoNotas, explicito: Option<&Path>) -> Result<(), Err
                 .as_bytes(),
             )
         }
+        // `atualizar` fala com a Sefin: `executar_com` o desvia antes de chegar aqui
+        AcaoNotas::Atualizar(_) => Err(Erro::Interno),
         AcaoNotas::Listar {
             json,
             csv,
@@ -191,10 +191,7 @@ pub(super) fn notas(acao: AcaoNotas, explicito: Option<&Path>) -> Result<(), Err
             let filtro = Filtro::novo(
                 de.as_deref(),
                 ate.as_deref(),
-                situacao.map(|s| match s {
-                    SituacaoDaNota::Autorizada => Situacao::Autorizada,
-                    SituacaoDaNota::Cancelada => Situacao::Cancelada,
-                }),
+                situacao.map(Situacao::from),
                 busca.as_deref().unwrap_or(""),
             )?;
             let lista = filtro.aplicar(notas.listar()?);

@@ -14,12 +14,14 @@
 //! * [`cofre`] -- onde a senha do certificado fica guardada;
 //! * [`certificado`] -- abrir o certificado A1 e montar o cliente da Sefin Nacional;
 //! * [`notas`] -- a pasta de notas autorizadas e a numeracao da DPS;
+//! * [`atualizacao`] -- a situacao das notas da pasta conferida contra a Sefin, em lote;
 //! * [`atomico`] -- gravacao atomica de arquivo, para quem guarda algo na pasta de notas.
 #![forbid(unsafe_code)]
 #![deny(clippy::unwrap_used, clippy::expect_used, clippy::panic)]
 #![cfg_attr(test, allow(clippy::unwrap_used, clippy::expect_used, clippy::panic))]
 
 pub mod atomico;
+pub mod atualizacao;
 pub mod cep;
 pub mod certificado;
 pub mod cofre;
@@ -33,3 +35,7 @@ pub mod segredo;
 
 #[cfg(test)]
 mod testes_comuns;
+#[cfg(test)]
+mod testes_eventos;
+#[cfg(test)]
+mod testes_sefin;

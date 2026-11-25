@@ -20,6 +20,7 @@ use axum::response::{IntoResponse, Response};
 use axum::routing::{get, post};
 use axum::Router;
 use rustnf::reforma::aliquotas::Publicadas;
+use rustnf_app::atualizacao::{self, Pedido as PedidoAtualizacao};
 use rustnf_app::config::Emitente;
 use rustnf_app::notas::Notas;
 use rustnf_app::pedido;
@@ -29,7 +30,7 @@ pub use auth::Token;
 
 use crate::emissao::Emissor;
 use crate::erro::Erro;
-use crate::nucleo::PedidoCancelamento;
+use crate::nucleo::{PedidoCancelamento, PedidoEvento};
 
 /// Ajustes do servidor.
 #[derive(Debug, Clone)]
@@ -143,6 +144,52 @@ impl Estado {
         .await
     }
 
+    /// Registra um evento que o contribuinte pede. Uma operacao com a Sefin por vez, como a emissao: o pedido de
+    /// analise fiscal muda a pasta de notas.
+    ///
+    /// # Errors
+    ///
+    /// Como [`pedido::registrar_evento_pedido`].
+    pub(crate) async fn registrar_evento(
+        &self,
+        em: &Emissao,
+        p: &PedidoEvento,
+    ) -> Result<Value, Erro> {
+        let _vez = self.fila.lock().await;
+        pedido::registrar_evento_pedido(
+            em.emissor.as_ref(),
+            &p.tipo,
+            &p.chave,
+            &p.motivo,
+            &p.justificativa,
+            self.notas.as_ref(),
+        )
+        .await
+    }
+
+    /// Confere na Sefin a situacao das notas da pasta. Uma operacao com a Sefin por vez, como a emissao, e uma
+    /// consulta por vez dentro dela. Pode passar do tempo limite da requisicao: o que foi conferido ate la ja esta
+    /// gravado, e um filtro (periodo, situacao) divide o trabalho.
+    ///
+    /// # Errors
+    ///
+    /// [`Erro::Entrada`] se o servidor nao tem pasta de notas; os de [`atualizacao::atualizar_pedido`].
+    pub(crate) async fn atualizar(
+        &self,
+        em: &Emissao,
+        p: &PedidoAtualizacao,
+    ) -> Result<Value, Erro> {
+        let notas = self.notas.as_ref().ok_or_else(|| {
+            Erro::Entrada(
+                "o servidor nao tem pasta de notas: configure [notas].pasta ou RUSTNF_NOTAS_PASTA"
+                    .into(),
+            )
+        })?;
+        let _vez = self.fila.lock().await;
+        let relatorio = atualizacao::atualizar_pedido(em.emissor.as_ref(), notas, p).await?;
+        Ok(relatorio.para_json())
+    }
+
     /// Cancela a nota e, registrado o cancelamento, marca-a na pasta de notas.
     ///
     /// # Errors
@@ -189,7 +236,14 @@ pub fn roteador(estado: Estado) -> Router {
         r = r
             .route("/emitir", post(rotas::emitir))
             .route("/cancelar", post(rotas::cancelar))
-            .route("/nfse/{chave}", get(rotas::consultar));
+            .route("/nfse/{chave}", get(rotas::consultar))
+            .route("/dps/{id}", get(rotas::consultar_dps))
+            .route(
+                "/nfse/{chave}/eventos/{tipo}/{sequencia}",
+                get(rotas::consultar_evento),
+            )
+            .route("/eventos", post(rotas::registrar_evento))
+            .route("/notas/atualizar", post(rotas::atualizar));
     }
     r.fallback(rotas::nao_encontrado)
         .layer(middleware::from_fn_with_state(
@@ -205,10 +259,12 @@ pub fn roteador(estado: Estado) -> Router {
         .with_state(estado)
 }
 
-/// Nome da rota para o registro: a chave de acesso nunca vai para o log.
+/// Nome da rota para o registro: a chave de acesso e o Id da DPS nunca vao para o log.
 fn rota_para_log(caminho: &str) -> &str {
     if caminho.starts_with("/nfse/") {
         "/nfse/{chave}"
+    } else if caminho.starts_with("/dps/") && !matches!(caminho, "/dps/conferir" | "/dps/montar") {
+        "/dps/{id}"
     } else {
         caminho
     }
@@ -335,6 +391,9 @@ mod testes {
     #[test]
     fn rota_de_nota_nao_vai_com_a_chave_para_o_log() {
         assert_eq!(rota_para_log("/nfse/123"), "/nfse/{chave}");
+        assert_eq!(rota_para_log("/nfse/123/eventos/101103/1"), "/nfse/{chave}");
+        assert_eq!(rota_para_log("/dps/DPS123"), "/dps/{id}");
+        assert_eq!(rota_para_log("/dps/conferir"), "/dps/conferir");
         assert_eq!(rota_para_log("/health"), "/health");
     }
 }

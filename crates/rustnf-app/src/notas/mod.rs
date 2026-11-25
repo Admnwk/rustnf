@@ -227,7 +227,8 @@ impl Notas {
     }
 
     /// Guarda o XML da NFS-e autorizada e poe (ou troca) a linha no indice. Guardar de novo a mesma chave troca o
-    /// XML e a linha, mas uma nota ja cancelada continua cancelada.
+    /// XML e a linha, mas uma nota que ja saiu de autorizada (cancelada, substituida, em analise fiscal) continua
+    /// como estava.
     ///
     /// # Errors
     ///
@@ -241,8 +242,8 @@ impl Notas {
         let mut indice = self.indice()?;
         let mut novo = registro.clone();
         if let Some(i) = indice.notas.iter().position(|r| r.chave == novo.chave) {
-            if indice.notas[i].situacao == Situacao::Cancelada {
-                novo.situacao = Situacao::Cancelada;
+            if indice.notas[i].situacao != Situacao::Autorizada {
+                novo.situacao = indice.notas[i].situacao;
             }
             indice.notas.remove(i);
         }
@@ -320,6 +321,16 @@ impl Notas {
     ///
     /// [`ErroNotas::ChaveInvalida`] ou [`ErroNotas::NaoEncontrada`].
     pub fn marcar_cancelada(&self, chave: &str) -> Result<(), ErroNotas> {
+        self.definir_situacao(chave, Situacao::Cancelada)
+    }
+
+    /// Poe a situacao da nota no indice, sob a trava da pasta. Nao confere a transicao: quem chama decide (a
+    /// atualizacao em lote nunca devolve a autorizada uma nota cancelada ou substituida).
+    ///
+    /// # Errors
+    ///
+    /// [`ErroNotas::ChaveInvalida`] ou [`ErroNotas::NaoEncontrada`].
+    pub fn definir_situacao(&self, chave: &str, situacao: Situacao) -> Result<(), ErroNotas> {
         let chave = chave_estrita(chave)?;
         let _trava = Trava::obter(&self.pasta)?;
         let mut indice = self.indice()?;
@@ -328,7 +339,7 @@ impl Notas {
             .iter_mut()
             .find(|r| r.chave == chave)
             .ok_or(ErroNotas::NaoEncontrada)?;
-        registro.situacao = Situacao::Cancelada;
+        registro.situacao = situacao;
         gravar_json(&self.pasta.join(INDICE), &indice)
     }
 

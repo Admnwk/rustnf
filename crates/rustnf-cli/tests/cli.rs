@@ -699,3 +699,183 @@ fn os_exemplos_do_readme_funcionam() {
     assert_eq!(s.codigo, 0, "{}", s.err);
     assert!(std::fs::read(&saida).unwrap().starts_with(b"%PDF-"));
 }
+
+#[test]
+fn evento_tipos_lista_o_que_o_contribuinte_registra() {
+    let s = rodar(&["evento", "tipos"], None, &[]);
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    let texto = String::from_utf8(s.out).unwrap();
+    // o pedido de analise fiscal e as manifestacoes, com autor e descricao
+    assert!(texto.contains("101103\temitente\t"), "{texto}");
+    assert!(texto.contains("Análise Fiscal"), "{texto}");
+    assert!(texto.contains("202201\tprestador\t"), "{texto}");
+    // o cancelamento tem comando proprio
+    assert!(
+        texto
+            .lines()
+            .any(|l| l.starts_with("101101") && l.contains("(cancelar)")),
+        "{texto}"
+    );
+    // o que o fisco e o sistema registram nao e' do contribuinte
+    for tipo in ["105102", "105104", "105105", "305101"] {
+        assert!(!texto.contains(tipo), "{tipo} nao deveria constar: {texto}");
+    }
+    let s = rodar(&["evento", "tipos", "--json"], None, &[]);
+    assert_eq!(s.codigo, 0);
+    let v: Value = serde_json::from_slice(&s.out).unwrap();
+    assert!(v.as_array().unwrap().iter().any(|t| t["tipo"] == "101103"));
+}
+
+#[test]
+fn evento_registrar_recusa_cancelamento_e_tipo_do_fisco_antes_do_certificado() {
+    let ch = chave();
+    // sem certificado nem configuracao: a recusa (3) vem antes do erro de certificado (2)
+    for (tipo, diz) in [
+        ("101101", "cancelar"),
+        ("105104", "fisco"),
+        ("105102", "DPS"),
+    ] {
+        let s = rodar(
+            &["evento", "registrar", "--chave", &ch, "--tipo", tipo],
+            None,
+            &[],
+        );
+        assert_eq!(s.codigo, 3, "{tipo}: {}", s.err);
+        assert!(s.err.contains(diz), "{tipo}: {}", s.err);
+    }
+}
+
+#[test]
+fn evento_consultar_com_chave_ruim_para_antes_da_rede() {
+    let pfx = pfx_de_teste("teste");
+    let env = [("RUSTNF_TESTE_SENHA", "teste")];
+    let s = rodar(
+        &[
+            "evento",
+            "consultar",
+            "--chave",
+            "123",
+            "--tipo",
+            "101103",
+            "--pfx",
+            &pfx,
+            "--ambiente",
+            "restrita",
+            "--senha-env",
+            "RUSTNF_TESTE_SENHA",
+        ],
+        None,
+        &env,
+    );
+    assert_eq!(s.codigo, 3, "{}", s.err);
+    let s = rodar(
+        &[
+            "evento",
+            "registrar",
+            "--chave",
+            "123",
+            "--tipo",
+            "101103",
+            "--motivo",
+            "1",
+            "--justificativa",
+            "Valor digitado errado na nota",
+            "--pfx",
+            &pfx,
+            "--ambiente",
+            "restrita",
+            "--senha-env",
+            "RUSTNF_TESTE_SENHA",
+        ],
+        None,
+        &env,
+    );
+    assert_eq!(s.codigo, 3, "{}", s.err);
+}
+
+#[test]
+fn consultar_a_dps_pede_um_alvo_e_o_numero_precisa_do_emitente() {
+    // nenhum alvo: uso (2)
+    let s = rodar(&["consultar"], None, &[]);
+    assert_eq!(s.codigo, 2, "{}", s.err);
+    // alvos que nao se combinam: uso (2)
+    let s = rodar(&["consultar", "--chave", "1", "--dps", "2"], None, &[]);
+    assert_eq!(s.codigo, 2, "{}", s.err);
+    // Id da DPS fora da forma: recusa (3), antes da rede
+    let pfx = pfx_de_teste("teste");
+    let env = [("RUSTNF_TESTE_SENHA", "teste")];
+    let s = rodar(
+        &[
+            "consultar",
+            "--dps",
+            "DPS123",
+            "--pfx",
+            &pfx,
+            "--ambiente",
+            "restrita",
+            "--senha-env",
+            "RUSTNF_TESTE_SENHA",
+        ],
+        None,
+        &env,
+    );
+    assert_eq!(s.codigo, 3, "{}", s.err);
+    // serie e numero sem o [emitente]: entrada (2), antes de abrir o certificado
+    let s = rodar(&["consultar", "--serie", "1", "--numero", "42"], None, &[]);
+    assert_eq!(s.codigo, 2, "{}", s.err);
+    assert!(s.err.contains("emitente"), "{}", s.err);
+}
+
+#[test]
+fn notas_atualizar_sem_notas_nao_chama_a_sefin() {
+    let pfx = pfx_de_teste("teste");
+    let pasta_de_notas = pasta().join("notas-atualizar");
+    let _ = std::fs::remove_dir_all(&pasta_de_notas);
+    let pasta_texto = pasta_de_notas.to_string_lossy().into_owned();
+    let env = [
+        ("RUSTNF_TESTE_SENHA", "teste"),
+        ("RUSTNF_NOTAS_PASTA", pasta_texto.as_str()),
+    ];
+    let comum = [
+        "--pfx",
+        pfx.as_str(),
+        "--ambiente",
+        "restrita",
+        "--senha-env",
+        "RUSTNF_TESTE_SENHA",
+    ];
+    let mut args = vec!["notas", "atualizar", "--intervalo-ms", "0"];
+    args.extend_from_slice(&comum);
+    let s = rodar(&args, None, &env);
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    let texto = String::from_utf8(s.out).unwrap();
+    assert!(texto.contains("0 nota(s) conferida(s)"), "{texto}");
+    args.push("--json");
+    let s = rodar(&args, None, &env);
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    let v: Value = serde_json::from_slice(&s.out).unwrap();
+    assert_eq!(v["conferidas"], 0);
+    // situacao desconhecida: uso (2)
+    let s = rodar(
+        &["notas", "atualizar", "--situacao", "suspensa"],
+        None,
+        &env,
+    );
+    assert_eq!(s.codigo, 2, "{}", s.err);
+}
+
+#[test]
+fn completar_cobre_os_comandos_novos() {
+    let s = rodar(&["completar", "bash"], None, &[]);
+    let texto = String::from_utf8(s.out).unwrap();
+    for palavra in [
+        "evento",
+        "registrar",
+        "tipos",
+        "atualizar",
+        "--com-nota",
+        "--intervalo-ms",
+    ] {
+        assert!(texto.contains(palavra), "faltou {palavra}");
+    }
+}
