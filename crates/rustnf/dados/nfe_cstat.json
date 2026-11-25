@@ -1,0 +1,4197 @@
+{
+ "fonte": "MOC 7.00 (novembro de 2020), Anexo I, secao 4.4 (tabelas 4.4.1, 4.4.2 e 4.4.3) e codigos que so' aparecem nas regras de validacao das secoes 4.1 a 4.3. Codigo criado depois por Nota Tecnica traz a NT em `origem`; `outras` guarda a segunda mensagem de um codigo que a regra escreve de dois jeitos.",
+ "efeito": "processamento = resultado de processamento (tabela 4.4.1); rejeicao = tabela 4.4.2 e regras; denegacao = tabela 4.4.3 e o 110 (Uso Denegado, da 4.4.1).",
+ "notas_tecnicas": [
+  "NT 2023.002 v1.02",
+  "NT 2025.002 v1.53",
+  "NT 2026.002 v1.11",
+  "NT 2026.005 v1.00",
+  "NT 2026.006 v1.01",
+  "NT 2026.007 v1.11",
+  "NT 2026.008 v1.01",
+  "NT 2026.009 v1.00"
+ ],
+ "cstat": {
+  "100": {
+   "efeito": "processamento",
+   "mensagem": "Autorizado o uso da NF-e"
+  },
+  "101": {
+   "efeito": "processamento",
+   "mensagem": "Cancelamento de NF-e homologado"
+  },
+  "102": {
+   "efeito": "processamento",
+   "mensagem": "Inutilização de número homologado"
+  },
+  "103": {
+   "efeito": "processamento",
+   "mensagem": "Lote recebido com sucesso"
+  },
+  "104": {
+   "efeito": "processamento",
+   "mensagem": "Lote processado"
+  },
+  "105": {
+   "efeito": "processamento",
+   "mensagem": "Lote em processamento"
+  },
+  "106": {
+   "efeito": "processamento",
+   "mensagem": "Lote não localizado"
+  },
+  "107": {
+   "efeito": "processamento",
+   "mensagem": "Serviço em Operação"
+  },
+  "108": {
+   "efeito": "processamento",
+   "mensagem": "Serviço Paralisado Momentaneamente (curto prazo)"
+  },
+  "109": {
+   "efeito": "processamento",
+   "mensagem": "Serviço Paralisado sem Previsão"
+  },
+  "110": {
+   "efeito": "denegacao",
+   "mensagem": "Uso Denegado"
+  },
+  "111": {
+   "efeito": "processamento",
+   "mensagem": "Consulta cadastro com uma ocorrência"
+  },
+  "112": {
+   "efeito": "processamento",
+   "mensagem": "Consulta cadastro com mais de uma ocorrência"
+  },
+  "124": {
+   "efeito": "processamento",
+   "mensagem": "EPEC Autorizado"
+  },
+  "126": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Enviado lote com mais de 1 NFC-e",
+   "origem": "NT 2023.002 v1.02"
+  },
+  "128": {
+   "efeito": "processamento",
+   "mensagem": "Lote de Evento Processado"
+  },
+  "129": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: A autorização deve ser solicitada de forma síncrona.",
+   "origem": "NT 2023.002 v1.02"
+  },
+  "135": {
+   "efeito": "processamento",
+   "mensagem": "Evento registrado e vinculado a NF-e"
+  },
+  "136": {
+   "efeito": "processamento",
+   "mensagem": "Evento registrado, mas não vinculado a NF-e"
+  },
+  "137": {
+   "efeito": "processamento",
+   "mensagem": "Nenhum documento localizado para o Destinatário"
+  },
+  "138": {
+   "efeito": "processamento",
+   "mensagem": "Documento localizado para o Destinatário"
+  },
+  "139": {
+   "efeito": "processamento",
+   "mensagem": "Pedido de Download processado"
+  },
+  "140": {
+   "efeito": "processamento",
+   "mensagem": "Download disponibilizado"
+  },
+  "142": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Ambiente de Contingência EPEC bloqueado para o Emitente"
+  },
+  "150": {
+   "efeito": "processamento",
+   "mensagem": "Autorizado o uso da NF-e, autorização fora de prazo"
+  },
+  "151": {
+   "efeito": "processamento",
+   "mensagem": "Cancelamento de NF-e homologado fora de prazo"
+  },
+  "156": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e não pode ser emitida por contribuinte exclusivo do IBS/CBS.",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "157": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Obrigatório informar CNPJ do emitente para contribuinte exclusivo do IBS/CBS.",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "158": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Proibido informar IEST para contribuinte exclusivo do IBS/CBS",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "159": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Operação não permitida para contribuinte exclusivo do IBS/CBS. [nItem:999]",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "161": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Proibido informar ICMS para contribuinte exclusivo do IBS/CBS [nItem:999]",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "162": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo IBS/CBS obrigatório para contribuinte exclusivo do IBS/CBS [nItem:999]",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "163": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Emitente possui inscrição estadual ativa no cadastro da UF",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "164": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Emitente com situação irregular na UF",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "165": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do Local de Retirada com situação irregular na UF",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "166": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: UF de autorização não permitida para contribuinte exclusivo do IBS/CBS",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "167": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do local de retirada não está ativa na UF",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "168": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do local de retirada não informada",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "169": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ do Local de Retirada com situação irregular na UF",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "170": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ do Autor de Evento com situação irregular na Receita Federal",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "171": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do local de entrega não cadastrada",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "173": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do Local de Entrega com situação irregular na UF",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "175": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do local de Entrega não está ativa na UF",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "176": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do local de Entrega não informada",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "177": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ do Local de Entrega com situação irregular na UF",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "178": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ [XX.XXX.XXX/XXXX-DV] do emitente não cadastrado na Receita Federal",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "179": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ [XX.XXX.XXX/XXXX-DV] do emitente com situação irregular na Receita Federal",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "180": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Regime Tributário do emitente diverge do cadastro na Receita Federal",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "181": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ [XX.XXX.XXX/XXXX-DV] do destinatário não cadastrado na Receita Federal",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "182": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ [XX.XXX.XXX/XXXX-DV] do Destinatário com situação irregular na Receita Federal",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "183": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ [XX.XXX.XXX/XXXX-DV] do Local de Retirada não cadastrado na Receita Federal",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "184": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ [XX.XXX.XXX/XXXX-DV] do Local de Retirada com situação irregular na Receita Federal",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "185": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ [XX.XXX.XXX/XXXX-DV] do Local de Entrega não cadastrado na Receita Federal",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "186": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ [XX.XXX.XXX/XXXX-DV] do Local de Entrega com situação irregular na Receita Federal",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "187": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ [XX.XXX.XXX/XXXX-DV] do Autor de Evento não cadastrado na Receita Federal",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "188": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Evento de NF-e de contribuinte exclusivo do IBS/CBS deve ser autorizado na SVRS",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "201": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Número máximo de numeração a inutilizar ultrapassou o limite"
+  },
+  "203": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Emissor não habilitado para emissão da NF-e"
+  },
+  "204": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Duplicidade de NF-e [nRec:999999999999999]"
+  },
+  "205": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e está denegada na base de dados da SEFAZ [nRec:999999999999999]"
+  },
+  "206": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e já está inutilizada na Base de Dados da SEFAZ"
+  },
+  "207": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ do emitente inválido"
+  },
+  "208": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ do destinatário inválido"
+  },
+  "209": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do emitente inválida"
+  },
+  "210": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do destinatário inválida"
+  },
+  "211": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do substituto inválida"
+  },
+  "212": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de emissão NF-e posterior a data de recebimento"
+  },
+  "213": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ-Base do Emitente difere do CNPJ-Base do Certificado Digital"
+  },
+  "214": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tamanho da mensagem excedeu o limite estabelecido"
+  },
+  "215": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Falha no schema XML"
+  },
+  "217": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e não consta na base de dados da SEFAZ"
+  },
+  "218": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e já está cancelada na base de dados da SEFAZ [nRec:999999999999999]"
+  },
+  "219": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Circulação da NF-e verificada"
+  },
+  "220": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Destinatário com identificação igual à identificação do emitente"
+  },
+  "221": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Confirmado o recebimento da NF-e pelo destinatário"
+  },
+  "222": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Protocolo de Autorização de Uso difere do cadastrado"
+  },
+  "223": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ/CPF do transmissor do lote difere do CNPJ/CPF do transmissor da consulta"
+  },
+  "224": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: A faixa inicial é maior que a faixa final"
+  },
+  "225": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Falha no Schema XML do lote de NFe"
+  },
+  "226": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código da UF do Emitente diverge da UF autorizadora"
+  },
+  "227": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF do Emitente difere do CPF do Certificado Digital"
+  },
+  "228": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de Emissão muito atrasada"
+  },
+  "229": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do emitente não informada"
+  },
+  "230": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do emitente não cadastrada"
+  },
+  "231": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do emitente não vinculada ao CNPJ"
+  },
+  "232": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do destinatário não informada"
+  },
+  "233": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do destinatário não cadastrada"
+  },
+  "234": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do destinatário não vinculada ao CNPJ"
+  },
+  "235": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Inscrição SUFRAMA inválida"
+  },
+  "236": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso com dígito verificador inválido"
+  },
+  "237": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF do destinatário inválido"
+  },
+  "239": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Versão do arquivo XML não suportada (NT 2108.004)"
+  },
+  "240": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Irregularidade Fiscal do Emitente"
+  },
+  "241": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Um número da faixa já foi utilizado"
+  },
+  "243": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: XML Mal Formado"
+  },
+  "244": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Processo de Emissão pelo Contribuinte incompatível com a Série da NF"
+  },
+  "245": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ Emitente não cadastrado"
+  },
+  "246": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ Destinatário não cadastrado"
+  },
+  "247": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Sigla da UF do Emitente diverge da UF autorizadora"
+  },
+  "248": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: UF do Recibo diverge da UF autorizadora"
+  },
+  "249": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: UF da Chave de Acesso diverge da UF autorizadora"
+  },
+  "250": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: UF diverge da UF autorizadora"
+  },
+  "251": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: UF/Município destinatário não pertence a SUFRAMA"
+  },
+  "252": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Ambiente informado diverge do Ambiente de recebimento"
+  },
+  "253": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Digito Verificador da chave de acesso composta inválida"
+  },
+  "254": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e complementar não possui NF referenciada"
+  },
+  "255": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e complementar possui mais de uma NF referenciada"
+  },
+  "256": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Uma NF-e da faixa já está inutilizada na Base de dados da SEFAZ"
+  },
+  "257": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Solicitante não habilitado para emissão da NF-e"
+  },
+  "258": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ da consulta inválido"
+  },
+  "259": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ da consulta não cadastrado como contribuinte na UF"
+  },
+  "260": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE da consulta inválida"
+  },
+  "261": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE da consulta não cadastrada como contribuinte na UF"
+  },
+  "262": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: UF não fornece consulta por CPF"
+  },
+  "263": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF da consulta inválido"
+  },
+  "264": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF da consulta não cadastrado como contribuinte na UF"
+  },
+  "265": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Sigla da UF da consulta difere da UF do Web Service"
+  },
+  "266": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Série utilizada não permitida no Web Service"
+  },
+  "267": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso referenciada inexistente [nRef: xxx]"
+  },
+  "268": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF Complementar referencia uma outra NF-e Complementar"
+  },
+  "269": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ/CPF Emitente da NF Complementar difere do CNPJ/CPF da NF Referenciada"
+  },
+  "270": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município do Fato Gerador de ICMS inexistente"
+  },
+  "271": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município do Fato Gerador: difere da UF do emitente"
+  },
+  "272": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município do Emitente inexistente"
+  },
+  "273": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município do Emitente: difere da UF do emitente"
+  },
+  "274": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município do Destinatário inexistente"
+  },
+  "275": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município do Destinatário: difere da UF do Destinatário"
+  },
+  "276": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município do Local de Retirada inexistente"
+  },
+  "277": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município do Local de Retirada: difere da UF do Local de Retirada"
+  },
+  "278": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município do Local de Entrega inexistente"
+  },
+  "279": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município do Local de Entrega: difere da UF do Local de Entrega"
+  },
+  "280": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Certificado Transmissor inválido"
+  },
+  "281": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Certificado Transmissor Data Validade"
+  },
+  "282": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Certificado Transmissor sem CNPJ/CPF"
+  },
+  "283": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Certificado Transmissor - erro Cadeia de Certificação"
+  },
+  "284": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Certificado Transmissor revogado"
+  },
+  "285": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Certificado Transmissor difere ICP-Brasil"
+  },
+  "286": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Certificado Transmissor erro no acesso a LCR"
+  },
+  "287": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município do Fato Gerador de ISSQN inexistente [nItem:nnn]"
+  },
+  "288": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município do Fato Gerador do Transporte inexistente"
+  },
+  "289": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código da UF informada diverge da UF solicitada"
+  },
+  "290": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Certificado Assinatura inválido"
+  },
+  "291": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Certificado Assinatura Data Validade"
+  },
+  "292": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Certificado de Assinatura sem CNPJ/CPF"
+  },
+  "293": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Certificado Assinatura - erro Cadeia de Certificação"
+  },
+  "294": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Certificado Assinatura revogado"
+  },
+  "295": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Certificado Assinatura difere ICP-Brasil"
+  },
+  "296": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Certificado Assinatura erro no acesso a LCR"
+  },
+  "297": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Assinatura difere do calculado"
+  },
+  "298": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Assinatura difere do padrão do Sistema"
+  },
+  "301": {
+   "efeito": "denegacao",
+   "mensagem": "Uso Denegado: Irregularidade fiscal do emitente"
+  },
+  "302": {
+   "efeito": "denegacao",
+   "mensagem": "Uso Denegado: Irregularidade fiscal do destinatário"
+  },
+  "303": {
+   "efeito": "denegacao",
+   "mensagem": "Uso Denegado: Destinatário não habilitado a operar na UF"
+  },
+  "304": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Pedido de Cancelamento para NF-e com evento da Suframa"
+  },
+  "305": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Destinatário bloqueado na UF [NT 2019.001]"
+  },
+  "306": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do destinatário não está ativa na UF [NT 2019.001]"
+  },
+  "315": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de Emissão anterior ao início da autorização de Nota Fiscal na UF"
+  },
+  "316": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso referenciada com a mesma Chave de Acesso da Nota Fiscal atual [nOcor:nnn]"
+  },
+  "317": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF modelo 1 referenciada com data de emissão inválida [nOcor:nnn]"
+  },
+  "318": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Contranota de Produtor sem Nota Fiscal referenciada"
+  },
+  "319": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Contranota de Produtor não pode referenciar somente Nota Fiscal de entrada"
+  },
+  "320": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Contranota de Produtor referencia somente NF de outro emitente"
+  },
+  "321": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e de devolução de mercadoria não possui documento fiscal referenciado"
+  },
+  "322": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF de produtor referenciada com data de emissão inválida [nOcor:nnn]"
+  },
+  "323": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ autorizado para download inválido"
+  },
+  "324": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ do destinatário já autorizado para download"
+  },
+  "325": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF autorizado para download inválido"
+  },
+  "326": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF do destinatário já autorizado para download"
+  },
+  "327": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP inválido para Nota Fiscal com finalidade de devolução de mercadoria[nItem:nnn]"
+  },
+  "328": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP de devolução de mercadoria para NF-e que não tem finalidade de devolução de mercadoria [nItem:nnn]"
+  },
+  "329": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Número da DI /DSI inválido"
+  },
+  "330": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informar o Valor da AFRMM na importação por via marítima"
+  },
+  "331": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informar o CNPJ do adquirente ou do encomendante nesta forma de importação"
+  },
+  "332": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ do adquirente ou do encomendante da importação inválido"
+  },
+  "333": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informar a UF do adquirente ou do encomendante nesta forma de importação"
+  },
+  "334": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Número do processo de drawback não informado na importação"
+  },
+  "335": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Número do processo de drawback na importação inválido"
+  },
+  "336": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado o grupo de exportação no item em operação que não é com exterior [nItem: nnn]"
+  },
+  "337": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e para emitente pessoa física"
+  },
+  "338": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Número do processo de drawback não informado na exportação"
+  },
+  "339": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Número do processo de drawback na exportação inválido"
+  },
+  "340": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado o grupo de exportação indireta no item"
+  },
+  "341": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Número do registro de exportação inválido"
+  },
+  "342": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso informada na Exportação Indireta com DV inválido"
+  },
+  "343": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Modelo da NF-e informada na Exportação Indireta diferente de 55"
+  },
+  "344": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Duplicidade de NF-e informada na Exportação Indireta (Chave de Acesso informada mais de uma vez)"
+  },
+  "345": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso informada na Exportação Indireta não consta como NF-e referenciada"
+  },
+  "346": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Somatório das quantidades informadas na Exportação Indireta não corresponde a quantidade total do item"
+  },
+  "347": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada IE do substituto tributário em operação que não é interestadual"
+  },
+  "348": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com grupo RECOPI"
+  },
+  "349": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Número RECOPI não informado"
+  },
+  "350": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Número RECOPI inválido"
+  },
+  "351": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do ICMS da Operação no CST=51 difere do produto BC e Alíquota [ nItem: 999]"
+  },
+  "352": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do ICMS Diferido no CST=51 difere do produto Valor ICMS Operação e percentual diferimento [nItem: 999]"
+  },
+  "353": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do ICMS no CST=51 não corresponde a diferença do ICMS operação e ICMS diferido [nItem: 999]"
+  },
+  "354": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado grupo de devolução de tributos para NF-e que não tem finalidade de devolução de mercadoria"
+  },
+  "355": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informar o local de saída do Pais no caso da exportação"
+  },
+  "356": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informar o local de saída do Pais somente no caso da exportação"
+  },
+  "357": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso do grupo de Exportação Indireta inexistente [nRef: xxx]"
+  },
+  "358": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso do grupo de Exportação Indireta cancelada ou denegada [nRef: xxx ]"
+  },
+  "359": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e de venda a Órgão Público sem informar a Nota de Empenho"
+  },
+  "360": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com Nota de Empenho inválida para a UF."
+  },
+  "361": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com Nota de Empenho inexistente na UF."
+  },
+  "362": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Venda de combustível sem informação do Transportador"
+  },
+  "363": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do substituto tributário idêntica à IE do emitente ou do destinatário"
+  },
+  "364": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do valor da dedução do ISS difere do somatório dos itens"
+  },
+  "365": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total de outras retenções difere do somatório dos itens"
+  },
+  "366": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do desconto incondicionado ISS difere do somatório dos itens"
+  },
+  "367": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do desconto condicionado ISS difere do somatório dos itens"
+  },
+  "368": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total de ISS retido difere do somatório dos itens"
+  },
+  "369": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado o grupo avulsa na emissão pelo Fisco"
+  },
+  "370": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Processo de emissão pelo Fisco com Tipo de Emissão inválido"
+  },
+  "372": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Destinatário com identificação de estrangeiro com caracteres inválidos"
+  },
+  "373": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Descrição do primeiro item diferente de NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL [nItem:nnn]"
+  },
+  "374": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP incompatível com o grupo de tributação [nItem: nnn]"
+  },
+  "375": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com lançamento relativo a Cupom Fiscal referencia uma NFC-e [nItem: nnn]"
+  },
+  "376": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data do Desembaraço Aduaneiro inválida [nItem: nnn]"
+  },
+  "377": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código de País do destinatário inexistente"
+  },
+  "378": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de Combustível sem a informação de Encerrante [nItem: nnn]"
+  },
+  "379": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de Encerrante na NF-e (modelo 55) para CFOP diferente de venda de combustível para consumidor final [nItem:nnn]"
+  },
+  "380": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do Encerrante final não é superior ao Encerrante inicial [nItem: nnn]"
+  },
+  "381": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de tributação ICMS90, informando dados do ICMS-ST [nItem:nnn]"
+  },
+  "382": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP não permitido para o CST informado [nItem:nnn]"
+  },
+  "383": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Item com CSOSN indevido [nItem: nnn]"
+  },
+  "384": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CSOSN não permitido para a UF [nItem: nnn]"
+  },
+  "385": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de tributação ICMSSN900, informando dados do ICMS-ST [nItem: nnn]"
+  },
+  "386": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP não permitido para o CSOSN informado [nItem: nnn]"
+  },
+  "387": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código de Enquadramento Legal do IPI inválido [nItem: nnn]"
+  },
+  "388": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código de Situação Tributária do IPI incompatível com o Código de Enquadramento Legal do IPI [nItem: nnn]"
+  },
+  "389": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município ISSQN inexistente [nItem:nnn]"
+  },
+  "390": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Nota Fiscal com grupo de devolução de Tributos [nItem: nnn]"
+  },
+  "391": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informados os dados do cartão de crédito / débito nas Formas de Pagamento da Nota Fiscal"
+  },
+  "392": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informados os dados da operação de pagamento por cartão de crédito / débito"
+  },
+  "393": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com o grupo de Informações Suplementares"
+  },
+  "394": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Nota Fiscal sem a informação do QR-Code"
+  },
+  "395": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Endereço do site da UF da Consulta via QR-Code diverge do previsto"
+  },
+  "396": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Parâmetro do QR-Code inexistente: [Nome do parâmetro do QR Code: xxx)]"
+  },
+  "397": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Parâmetro do QR-Code divergente da Nota Fiscal: [Nome do parâmetro do QR Code:: xxx)]"
+  },
+  "398": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Parâmetro Versão informada no QR-Code diverge do previsto (\"2\")"
+  },
+  "399": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Parâmetro de Identificação do destinatário no QR-Code para Nota Fiscal sem identificação do destinatário"
+  },
+  "400": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Parâmetro do QR-Code não está no formato hexadecimal: [Nome do parâmetro do QR Code: xxx)]"
+  },
+  "401": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF do emitente inválido"
+  },
+  "402": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: XML da área de dados com codificação diferente de UTF-8"
+  },
+  "403": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: O grupo de informações da NF-e avulsa é de uso exclusivo do Fisco"
+  },
+  "404": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Uso de prefixo de namespace não permitido"
+  },
+  "407": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF do Emitente somente no serviço de Nota Fiscal Avulsa no site do Fisco"
+  },
+  "408": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Evento não disponível para Autor pessoa física"
+  },
+  "410": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: UF informada no campo cUF não é atendida pelo WebService (NT 2018.004)"
+  },
+  "417": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do ICMS superior ao valor limite estabelecido"
+  },
+  "418": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do ICMS ST superior ao valor limite estabelecido"
+  },
+  "434": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e sem indicativo do intermediador (NT 2020.006)"
+  },
+  "435": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e não pode ter o indicativo do intermediador (NT 2020.006)"
+  },
+  "436": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado 99-Outros como meio de pagamento (NT 2020.006)"
+  },
+  "437": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ da instituição de pagamento inválido (NT 2020.006)"
+  },
+  "438": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Obrigatória as informações do intermediador da transação para operação por site de terceiros (NT 2020.006)"
+  },
+  "439": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informações do intermediador da transação para operação por site de terceiros preenchido indevidamente (NT 2020.006)"
+  },
+  "440": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ do intermediador da transação inválido (NT 2020.006)"
+  },
+  "445": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Parâmetro assinatura não deve ser informado no qrCode",
+   "origem": "NT 2026.002 v1.11"
+  },
+  "450": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Modelo da NF-e diferente de 55"
+  },
+  "451": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Processo de Emissão pelo Fisco incompatível com a Série da NF"
+  },
+  "453": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Ano de inutilização não pode ser superior ao Ano atual"
+  },
+  "454": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Ano de inutilização não pode ser inferior a 2006"
+  },
+  "455": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Órgão Autor do evento diferente da UF da Chave de Acesso"
+  },
+  "459": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Cancelamento de Evento inexistente",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "460": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Protocolo do Evento difere do cadastrado",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "461": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado campos de percentual de GLP e/ou GLGNn e/ou GLGNi para produto diferente de GLP [nItem: 999]"
+  },
+  "462": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Identificador do CSC no QR-Code não cadastrado na SEFAZ"
+  },
+  "463": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Identificador do CSC no QR-Code foi revogado pela empresa"
+  },
+  "464": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código de Hash no QR-Code difere do calculado"
+  },
+  "465": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Número de Controle da FCI inexistente"
+  },
+  "466": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Evento com Tipo de Autor incompatível"
+  },
+  "467": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Dados da NF-e divergentes do EPEC [tag: xxxx]"
+  },
+  "468": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com Tipo Emissão = 4, sem EPEC correspondente"
+  },
+  "471": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado NCM=00 indevidamente"
+  },
+  "472": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF consultado difere do CPF do Certificado Digital"
+  },
+  "474": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Parâmetro assinatura deve ser informado no qrCode",
+   "origem": "NT 2026.002 v1.11"
+  },
+  "476": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código da UF diverge da UF da primeira NF-e do Lote"
+  },
+  "477": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código do órgão diverge do órgão do primeiro evento do Lote"
+  },
+  "478": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Local da entrega não informado para faturamento direto de veículos novos"
+  },
+  "479": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de Emissão anterior a data de credenciamento ou anterior a Data de Abertura do estabelecimento"
+  },
+  "480": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município do Emitente diverge do cadastrado na UF"
+  },
+  "481": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Regime Tributário do emitente diverge do cadastro na SEFAZ"
+  },
+  "482": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código do Município do Destinatário diverge do cadastrado na UF"
+  },
+  "483": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do desconto maior que valor do produto [nItem: nnn]"
+  },
+  "484": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso com tipo de emissão diferente de 4 (posição 35 da Chave de Acesso)"
+  },
+  "485": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Duplicidade de numeração do EPEC (Modelo, CNPJ ou CPF, Série e Número)"
+  },
+  "486": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado o Grupo de Autorização para UF que exige a identificação do Escritório de Contabilidade na Nota Fiscal"
+  },
+  "487": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Escritório de Contabilidade não cadastrado na SEFAZ"
+  },
+  "488": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Vendas do Emitente incompatíveis com o Porte da Empresa"
+  },
+  "489": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ informado inválido (DV ou zeros)",
+   "outras": [
+    "Rejeição: CNPJ informado inválido (DV ou zeros) [nItem: 999]"
+   ]
+  },
+  "490": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF informado inválido (DV ou zeros)"
+  },
+  "491": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: O tpEvento informado inválido",
+   "origem": "MOC 7.00, Anexo I, regra de validacao"
+  },
+  "492": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: O verEvento informado inválido",
+   "origem": "MOC 7.00, Anexo I, regra de validacao"
+  },
+  "493": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Evento não atende o Schema XML específico",
+   "origem": "MOC 7.00, Anexo I, regra de validacao"
+  },
+  "494": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso inexistente [chNFe:99999999999999999999999999999999999999999999]"
+  },
+  "495": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF do Emitente com Série incompatível"
+  },
+  "501": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Prazo de cancelamento superior ao previsto na Legislação"
+  },
+  "502": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Erro na Chave de Acesso - Campo Id não corresponde à concatenação dos campos correspondentes"
+  },
+  "503": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ do emitente com Série incompatível"
+  },
+  "504": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de Entrada/Saída posterior ao permitido"
+  },
+  "505": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de Entrada/Saída anterior ao permitido"
+  },
+  "506": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de Saída menor que a Data de Emissão"
+  },
+  "508": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST incompatível na operação com Não Contribuinte [nItem: 999]"
+  },
+  "509": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado código de município diferente de \"9999999\" para operação com o exterior"
+  },
+  "510": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Operação com Exterior e Código País destinatário é 1058 (Brasil) ou não informado"
+  },
+  "511": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não é de Operação com Exterior e Código País destinatário difere de 1058 (Brasil)"
+  },
+  "512": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ do Local de Retirada inválido"
+  },
+  "513": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município do Local de Retirada deve ser 9999999 para UF retirada = \"EX\"."
+  },
+  "514": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ do Local de Entrega inválido"
+  },
+  "515": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Município do Local de Entrega deve ser 9999999 para UF entrega = \"EX\"."
+  },
+  "516": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Falha no schema XML ­ inexiste a tag raiz esperada para a mensagem"
+  },
+  "517": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Falha no schema XML ­ inexiste atributo versao na tag raiz da mensagem"
+  },
+  "518": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP de entrada para NF-e de saída"
+  },
+  "519": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP de saída para NF-e de entrada"
+  },
+  "520": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP de Operação com Exterior e UF destinatário difere de \"EX\""
+  },
+  "521": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Operação Interna e UF do emitente difere da UF do destinatário/remetente contribuinte do ICMS"
+  },
+  "522": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso referenciada com UF inválida[nOcor:nnn]"
+  },
+  "523": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP não é de Operação Estadual e UF emitente igual à UF destinatário [nItem: 999]"
+  },
+  "524": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso referenciada com Ano-Mês inválido [nOcor: 999]"
+  },
+  "525": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP de Importação e não informado dados da DI [nItem: 999]"
+  },
+  "526": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Consulta a uma Chave de Acesso muito antiga"
+  },
+  "527": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Operação de Exportação com informação de ICMS incompatível"
+  },
+  "528": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do ICMS difere do produto BC e Alíquota [nItem: 999]"
+  },
+  "529": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST incompatível na operação com Contribuinte Isento de Inscrição Estadual [nItem: 999]"
+  },
+  "530": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Operação com tributação de ISSQN sem informar a Inscrição Municipal"
+  },
+  "531": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total da BC ICMS difere do somatório dos itens"
+  },
+  "532": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do ICMS difere do somatório dos itens"
+  },
+  "533": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total da BC ICMS-ST difere do somatório dos itens"
+  },
+  "534": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do ICMS-ST difere do somatório dos itens"
+  },
+  "535": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do Frete difere do somatório dos itens"
+  },
+  "536": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do Seguro difere do somatório dos itens"
+  },
+  "537": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do Desconto difere do somatório dos itens"
+  },
+  "538": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do IPI difere do somatório dos itens"
+  },
+  "539": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Duplicidade de NF-e com diferença na Chave de Acesso [chNFe: 99999999999999999999999999999999999999999999][nRec:999999999999999]"
+  },
+  "540": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF do Local de Retirada inválido"
+  },
+  "541": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF do Local de Entrega inválido"
+  },
+  "542": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ do Transportador inválido"
+  },
+  "543": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF do Transportador inválido"
+  },
+  "544": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do Transportador inválida"
+  },
+  "545": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e de devolução com valor total superior a NF-e devolvida",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "546": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e de devolução com valor do ICMS superior a NF-e devolvida",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "547": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso referenciada com Dígito Verificador inválido[nOcor:nnn]"
+  },
+  "548": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF modelo 1 referenciada com data de emissão inválida [nOcor:nnn]"
+  },
+  "549": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ da NF referenciada de produtor inválido [nOcor: 999]"
+  },
+  "550": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF da NF referenciada de produtor inválido."
+  },
+  "551": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE da NF referenciada de produtor inválido."
+  },
+  "552": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso referenciada com CNPJ/CPF inválido[nOcor:nnn]"
+  },
+  "553": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tipo autorizador do recibo diverge do Órgão Autorizador."
+  },
+  "554": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do Emitente informada como ISENTO indevidamente"
+  },
+  "556": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Justificativa de entrada em contingência não deve ser informada para tipo de emissão normal"
+  },
+  "557": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: A Justificativa de entrada em contingência deve ser informada"
+  },
+  "558": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de entrada em contingência posterior a data de recebimento"
+  },
+  "559": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: UF do Transportador não informada"
+  },
+  "560": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ base/CPF do emitente difere do CNPJ base/CPF da primeira NF-e do lote recebido"
+  },
+  "561": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Mês de Emissão informado na Chave de Acesso difere do Mês de Emissão da NF-e"
+  },
+  "562": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código Numérico informado na Chave de Acesso difere do Código Numérico da NF-e [chNFe:99999999999999999999999999999999999999999999"
+  },
+  "563": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Já existe pedido de Inutilização com a mesma faixa de inutilização"
+  },
+  "564": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do Produto / Serviço difere do somatório dos itens"
+  },
+  "565": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Falha no schema XML ­ inexiste a tag raiz esperada para o lote de NF-e"
+  },
+  "566": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e de devolução com valor do FCP superior a NF-e devolvida",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "567": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e de devolução com valor do ICMS da UF Destino superior a NF-e devolvida",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "568": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Falha no schema XML ­ inexiste atributo versao na tag raiz do lote de NF-e"
+  },
+  "569": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de entrada em contingência muito atrasada"
+  },
+  "570": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tipo de Emissão 3, 6 ou 7 só é válido nas contingências SCAN/SVC"
+  },
+  "571": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Processo de emissão pelo Fisco com Certificado de Transmissão incompatível"
+  },
+  "572": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Erro Atributo ID do evento não corresponde a concatenação dos campos (\"ID\" + tpEvento + chNFe + nSeqEvento)"
+  },
+  "573": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Duplicidade de Evento"
+  },
+  "574": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: O autor do evento diverge do emissor da NF-e"
+  },
+  "575": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: O autor do evento diverge do destinatário da NF-e"
+  },
+  "576": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: O autor do evento não é um órgão autorizado a gerar o evento"
+  },
+  "577": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: A data do evento não pode ser menor que a data de emissão da NF-e"
+  },
+  "578": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: A data do evento não pode ser maior que a data do processamento"
+  },
+  "579": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: A data do evento não pode ser menor que a data de autorização para NF-e não emitida em contingência"
+  },
+  "580": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: O evento exige uma NF-e autorizada"
+  },
+  "581": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e de devolução com valor do FCP da UF Destino superior a NF-e devolvida",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "583": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da assinatura do qrCode difere do valor calculado",
+   "origem": "NT 2026.002 v1.11"
+  },
+  "587": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Usar somente o namespace padrão da NF-e"
+  },
+  "588": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não é permitida a presença de caracteres de edição no início/fim da mensagem ou entre as tags da mensagem"
+  },
+  "589": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Número do NSU informado superior ao maior NSU do Ambiente Nacional"
+  },
+  "590": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado CST para emissor do Simples Nacional (CRT=1)"
+  },
+  "591": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado CSOSN para emissor que não é do Simples Nacional (CRT diferente de 1)"
+  },
+  "592": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: A NF-e deve ter pelo menos um item de produto sujeito ao ICMS."
+  },
+  "593": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ-Base consultado difere do CNPJ-Base do Certificado Digital"
+  },
+  "594": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: O número de sequencia do evento informado é maior que o permitido"
+  },
+  "595": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Obrigatória a informação da justificativa do evento."
+  },
+  "596": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Evento apresentado fora do prazo: [prazo vigente]"
+  },
+  "597": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP de Importação e não informado dados de IPI"
+  },
+  "598": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e emitida em ambiente de homologação com Razão Social do destinatário diferente de NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL"
+  },
+  "599": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP de Importação e não informado dados de II [nItem: 999]"
+  },
+  "600": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CSOSN incompatível na operação com Não Contribuinte [nItem: 999]"
+  },
+  "601": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do II difere do somatório dos itens"
+  },
+  "602": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do PIS difere do somatório dos itens sujeitos ao ICMS"
+  },
+  "603": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total da COFINS difere do somatório dos itens sujeitos ao ICMS"
+  },
+  "604": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do vOutro difere do somatório dos itens"
+  },
+  "605": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do vServ difere do somatório do vProd dos itens sujeitos ao ISSQN"
+  },
+  "606": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do vBC do ISS difere do somatório dos itens"
+  },
+  "607": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do ISS difere do somatório dos itens"
+  },
+  "608": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do PIS difere do somatório dos itens sujeitos ao ISSQN"
+  },
+  "609": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total da COFINS difere do somatório dos itens sujeitos ao ISSQN"
+  },
+  "610": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total da NF difere do somatório dos Valores compõe o valor Total da NF."
+  },
+  "611": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: GTIN (cEAN) inválido [nItem:999]"
+  },
+  "612": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: GTIN da unidade tributável (cEANTrib) inválido [nItem:999]"
+  },
+  "613": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso difere da existente em BD"
+  },
+  "614": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso inválida (Código UF inválido)"
+  },
+  "615": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso inválida (Ano < 06 ou Ano maior que Ano Corrente)"
+  },
+  "616": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso inválida (Mês < 1 ou Mês > 12)"
+  },
+  "617": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso inválida (CNPJ/CPF zerado ou dígito inválido)"
+  },
+  "618": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso inválida (modelo diferente de 55 e 65)"
+  },
+  "619": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso inválida (número NF = 0)"
+  },
+  "621": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF Emitente não cadastrado"
+  },
+  "622": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE emitente não vinculada ao CPF"
+  },
+  "623": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CPF Destinatário não cadastrado"
+  },
+  "624": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE Destinatário não vinculada ao CPF"
+  },
+  "625": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Inscrição SUFRAMA deve ser informada na venda com isenção para ZFM [nItem: 999]"
+  },
+  "626": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP de operação isenta para ZFM diferente do previsto [nItem: 999]"
+  },
+  "627": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: O valor do ICMS desonerado deve ser informado [nItem: 999]"
+  },
+  "628": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total da NF superior ao valor limite estabelecido pela SEFAZ [Limite]"
+  },
+  "629": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do Produto difere do produto Valor Unitário de Comercialização e Quantidade Comercial [nItem: 999]"
+  },
+  "630": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do Produto difere do produto Valor Unitário de Tributação e Quantidade Tributável [nItem: 999]"
+  },
+  "631": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ-Base do Destinatário difere do CNPJ-Base do Certificado Digital"
+  },
+  "632": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Solicitação fora de prazo, a NF-e não está mais disponível para download"
+  },
+  "633": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e indisponível para download devido a ausência de Manifestação do Destinatário"
+  },
+  "634": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Destinatário da NF-e não tem o mesmo CNPJ raiz do solicitante do download"
+  },
+  "635": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com mesmo número e série já transmitida e aguardando processamento"
+  },
+  "636": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: O tipo do evento de cancelamento não corresponde ao tipo do evento a ser cancelado"
+  },
+  "638": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: A quantidade de Pedidos de Prorrogação 1º prazo excede o valor limite de 20 Pedidos de Prorrogação autorizados e sem resposta do Fisco"
+  },
+  "639": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: A quantidade de Pedidos de Prorrogação 2° prazo excede o valor limite de 20 Pedidos de Prorrogação autorizados e sem resposta do Fisco."
+  },
+  "640": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ/CPF do interessado não possui permissão para consultar esta NF-e",
+   "outras": [
+    "Rejeição: ID do Pedido de Prorrogação inválido"
+   ]
+  },
+  "641": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: A data do evento não pode ser menor que a data de autorização para o evento",
+   "outras": [
+    "Rejeição: NF-e indisponível para o emitente"
+   ]
+  },
+  "650": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Evento de \"Ciência da Emissão\" para NF-e Cancelada ou Denegada"
+  },
+  "651": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Evento de \"Desconhecimento da Operação\" para NF-e Cancelada ou Denegada"
+  },
+  "652": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e para emitente pessoa física"
+  },
+  "653": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e Cancelada, arquivo indisponível para download"
+  },
+  "654": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e Denegada, arquivo indisponível para download"
+  },
+  "655": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Evento de Ciência da Emissão informado após a manifestação final do destinatário"
+  },
+  "656": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Consumo indevido pelo aplicativo da empresa [det: DESC_ERRO]"
+  },
+  "657": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código do Órgão diverge do órgão autorizador"
+  },
+  "658": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: UF do destinatário da Chave de Acesso diverge da UF autorizadora"
+  },
+  "659": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Ano-Mês da Data de Emissão diverge do Ano_Mês da Chave de Acesso"
+  },
+  "660": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP de Combustível e não informado grupo de combustível da NF-e [nItem: nnn]"
+  },
+  "661": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e já existente para o número do EPEC informado"
+  },
+  "662": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Numeração do EPEC está inutilizada na Base de Dados da SEFAZ"
+  },
+  "663": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Alíquota do ICMS com valor superior a 4 por cento na operação de saída interestadual com produtos importados [nItem: 999]"
+  },
+  "669": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Local de retirada informado indevidamente",
+   "origem": "NT 2026.002 v1.11"
+  },
+  "670": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Local de entrega informado indevidamente",
+   "origem": "NT 2026.002 v1.11"
+  },
+  "672": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com DANFE Simplificado Tipo 2 com versão de qrCode não permitida",
+   "origem": "NT 2026.002 v1.11"
+  },
+  "678": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF referenciada com UF diferente da NF-e complementar"
+  },
+  "679": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso referenciada com Modelo inválido[nOcor:nnn]"
+  },
+  "680": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso referenciada em duplicidade na NF-e [nOcor:nnn]"
+  },
+  "681": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Duplicidade de NF Modelo 1 referenciada (CNPJ, Modelo, Série e Número) [nOcor: nnn]"
+  },
+  "682": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Duplicidade de NF de Produtor referenciada (IE, Modelo, Série e Número) [nOcor: 999]"
+  },
+  "683": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso referenciada com Número inválido[nOcor:nnn]"
+  },
+  "684": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Duplicidade de Cupom Fiscal referenciado (Modelo, Número de Ordem e COO) [nOcor: 999]"
+  },
+  "685": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do Valor Aproximado dos Tributos difere do somatório dos itens"
+  },
+  "686": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF Complementar referencia uma NF-e cancelada"
+  },
+  "687": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF Complementar referencia uma NF-e denegada"
+  },
+  "688": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF referenciada de Produtor com IE inexistente [nRef: xxx]"
+  },
+  "689": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF referenciada de Produtor com IE não vinculada ao CNPJ/CPF informado [nRef: xxx]"
+  },
+  "690": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Pedido de Cancelamento para NF-e com CT-e ou MDF-e"
+  },
+  "691": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso da NF-e diverge da Chave de Acesso do EPEC [Chave EPEC: xxxxxxxxx]"
+  },
+  "692": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Existe EPEC registrado para esta Série e Número [Chave EPEC: xxxxxxxxxxx]"
+  },
+  "693": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Alíquota de ICMS superior à definida para a operação interestadual [nItem: 999]"
+  },
+  "694": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado o grupo de ICMS para a UF de destino [nItem: 999]"
+  },
+  "695": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado indevidamente o grupo de ICMS para a UF de destino [nItem:999]"
+  },
+  "696": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Operação com não contribuinte deve indicar operação com consumidor final"
+  },
+  "697": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Alíquota interestadual do ICMS com origem diferente do previsto [nItem:999]"
+  },
+  "698": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Alíquota interestadual do ICMS incompatível com as UF envolvidas na operação [nItem:999]"
+  },
+  "699": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Percentual do ICMS Interestadual para a UF de destino difere do previsto para o ano da Data de Emissão [nItem: 999]"
+  },
+  "701": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado Nota Fiscal referenciada (CFOP de Exportação Indireta) [nItem: nnn]",
+   "outras": [
+    "Rejeição: Não informado Nota Fiscal referenciada (Lançamento relativo a Cupom Fiscal) [nItem: nnn]"
+   ]
+  },
+  "702": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e não é aceita pela UF do Emitente"
+  },
+  "703": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data-Hora de Emissão posterior ao horário de recebimento"
+  },
+  "704": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com Data-Hora de emissão atrasada"
+  },
+  "705": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com data de entrada/saída"
+  },
+  "706": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e para operação de entrada"
+  },
+  "707": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e para operação interestadual ou com o exterior"
+  },
+  "708": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e não pode referenciar documento fiscal"
+  },
+  "709": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com formato de DANFE inválido"
+  },
+  "710": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com formato de DANFE inválido"
+  },
+  "711": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com contingência off-line"
+  },
+  "712": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com contingência off-line para a UF"
+  },
+  "713": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tipo de Emissão diferente de 6 ou 7 para contingência da SVC acessada"
+  },
+  "714": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com contingência inválida (tpEmis=2, 4 (a critério da UF) ou 5)"
+  },
+  "715": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com finalidade inválida"
+  },
+  "716": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e em operação não destinada a consumidor final"
+  },
+  "717": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e em operação não presencial"
+  },
+  "718": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e não deve informar IE de Substituto Tributário"
+  },
+  "719": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e sem a identificação do destinatário"
+  },
+  "720": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Na operação com Exterior deve ser informada tag idEstrangeiro"
+  },
+  "721": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado idEstrangeiro e Operação não é com consumidor final.",
+   "outras": [
+    "Rejeição: Operação interestadual deve informar CNPJ ou CPF"
+   ]
+  },
+  "722": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP de Transporte Inexistente"
+  },
+  "724": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e sem o nome do destinatário"
+  },
+  "725": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com CFOP inválido[nItem:nnn]"
+  },
+  "726": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e sem a informação de endereço do destinatário"
+  },
+  "727": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Operação com Exterior e UF diferente de EX"
+  },
+  "728": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e sem informação da IE do destinatário"
+  },
+  "729": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com informação da IE do destinatário"
+  },
+  "730": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com Inscrição Suframa"
+  },
+  "731": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP de operação com Exterior e idDest <> 3"
+  },
+  "732": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP de operação interestadual e idDest <> 2"
+  },
+  "733": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP de operação interna e idDest <> 1"
+  },
+  "734": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com Unidade de Comercialização inválida [nItem: 999]"
+  },
+  "735": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com Unidade de Tributação inválida [nItem: 999]"
+  },
+  "736": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com grupo de Veículos novos"
+  },
+  "737": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Pagamento com cartão de crédito em sistema de automação não integrado"
+  },
+  "738": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com grupo de Armamentos"
+  },
+  "739": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código de País do ISSQN Inexistente"
+  },
+  "740": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Item com Repasse de ICMS retido por Substituto Tributário [nItem: nnn]"
+  },
+  "741": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com Partilha de ICMS entre UF"
+  },
+  "742": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com grupo do IPI"
+  },
+  "743": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com grupo do II"
+  },
+  "745": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e sem grupo do PIS"
+  },
+  "746": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com grupo do PIS-ST"
+  },
+  "748": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e sem grupo da COFINS"
+  },
+  "749": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com grupo da COFINS-ST"
+  },
+  "750": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com valor total superior ao permitido para destinatário não identificado (Código) [Limite]"
+  },
+  "751": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com valor total superior ao permitido para destinatário não identificado (Nome) [Limite]"
+  },
+  "752": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com valor total superior ao permitido para destinatário não identificado (End ereço) [Limite]"
+  },
+  "753": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com Frete"
+  },
+  "754": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com dados do Transportador"
+  },
+  "755": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com dados de Retenção do ICMS no Transporte"
+  },
+  "756": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com dados do veículo de Transporte"
+  },
+  "757": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com dados de Reboque do veículo de Transporte"
+  },
+  "758": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com dados do Vagão de Transporte"
+  },
+  "759": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com dados da Balsa de Transporte"
+  },
+  "760": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com dados de cobrança (Fatura, Duplicata)"
+  },
+  "761": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código de Produto ANP inexistente [nItem: 999]"
+  },
+  "762": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com dados de compras (Empenho, Pedido, Contrato)"
+  },
+  "763": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com dados de aquisição de Cana"
+  },
+  "764": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Solicitada resposta síncrona para Lote com mais de uma NF-e (indSinc=1)",
+   "origem": "MOC 7.00, Anexo I, regra de validacao"
+  },
+  "765": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Lote só poderá conter NF-e ou NFC-e"
+  },
+  "766": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Item com CST indevido [nItem:nnn]"
+  },
+  "770": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP Inexistente [nItem:nnn]"
+  },
+  "771": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado idEstrangeiro em operação interestadual"
+  },
+  "772": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Operação Interestadual e UF de destino igual à UF de origem"
+  },
+  "773": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Operação Interna e UF de destino difere da UF de origem"
+  },
+  "774": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com indicador de item não participante do total [nItem: 999]"
+  },
+  "775": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Modelo da NFC-e diferente de 65"
+  },
+  "776": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Solicitada resposta síncrona para UF que não disponibiliza este atendimento (indSinc=1)",
+   "origem": "MOC 7.00, Anexo I, regra de validacao"
+  },
+  "777": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Obrigatória a informação do NCM completo (redação dada pela NT 2013/005 v 1.20) [nItem: 999]"
+  },
+  "778": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado NCM inexistente[nItem:nnn]"
+  },
+  "779": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com NCM incompatível [nItem: 999]"
+  },
+  "780": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total da NFC-e superior ao valor limite estabelecido pela SEFAZ [Limite]"
+  },
+  "781": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Emissor não habilitado para emissão da NFC-e"
+  },
+  "782": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CSOSN inválido para emitente MEI (CRT=4) [nItem:nnn]",
+   "origem": "NT 2026.002 v1.11"
+  },
+  "783": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e não é autorizada pela SVC"
+  },
+  "784": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e não permite o evento de Carta de Correção"
+  },
+  "785": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com entrega a domicílio não permitida pela UF"
+  },
+  "786": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e de entrega a domicílio sem dados do Transportador"
+  },
+  "787": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e de entrega a domicílio sem a identificação do destinatário"
+  },
+  "788": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e de entrega a domicílio sem o endereço do destinatário"
+  },
+  "789": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e para destinatário contribuinte de ICMS"
+  },
+  "790": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Operação com Exterior para destinatário Contribuinte de ICMS"
+  },
+  "791": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com indicação de destinatário isento de IE, com a informação da IE do destinatário"
+  },
+  "792": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada a IE do destinatário para operação com destinatário no Exterior"
+  },
+  "793": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do ICMS relativo ao Fundo de Combate à Pobreza na UF de destino difere do calculado [nItem: 999]"
+  },
+  "794": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com indicativo de NFC-e com entrega a domicílio"
+  },
+  "795": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do ICMS desonerado difere do somatório dos itens"
+  },
+  "798": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor total do ICMS relativo Fundo de Combate à Pobreza (FCP) da UF de destino difere do somatório do valor dos itens"
+  },
+  "799": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor total do ICMS Interestadual da UF de destino difere do somatório dos itens"
+  },
+  "800": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor total do ICMS Interestadual da UF do remetente difere do somatório dos itens"
+  },
+  "805": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: A SEFAZ do destinatário não permite Contribuinte Isento de Inscrição Estadual"
+  },
+  "806": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Operação com ICMS-ST sem informação do CEST [nItem: 999]"
+  },
+  "807": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com grupo de ICMS para a UF do destinatário"
+  },
+  "811": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Pedido de Prorrogação deferido impede o cancelamento da NF-e"
+  },
+  "812": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Regime Tributário SN, com excesso de sublimite não é permitido para Emitentes desta UF"
+  },
+  "813": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: QR-Code com sequência de escape para o e-comercial. Usar CDATA"
+  },
+  "814": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Nota Fiscal com grupo de comércio exterior"
+  },
+  "815": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do ICMS Interestadual para UF de Destino difere do calculado [nItem: 999] (Valor Informado: XXX, Valor Calculado:XXX)"
+  },
+  "816": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do ICMS Interestadual para UF do Remetente difere do calculado [nItem: 999] (Valor Informado: XXX, Valor Calculado:XXX)"
+  },
+  "817": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Unidade Tributável incompatível com o NCM informado na operação com Comércio Exterior [nItem: 999]"
+  },
+  "827": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Obrigatório informar o tipo de autorização"
+  },
+  "828": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não permitido informar o campo tipo de autorização"
+  },
+  "829": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Condição de uso não informado para o tipo de autorização de uso"
+  },
+  "830": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não permitido preencher o campo Condição de Uso"
+  },
+  "840": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NCM de medicamento e não informado o grupo de medicamento (med) [nItem:nnn]",
+   "origem": "NT 2026.002 v1.11"
+  },
+  "850": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de vencimento da parcela não informada ou menor que a Data de vencimento da parcela anterior [nOcor: 999]"
+  },
+  "851": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Soma do valor das parcelas difere do Valor Líquido da Fatura"
+  },
+  "852": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Número da parcela inválido ou não informado [nOcor: 999]"
+  },
+  "854": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Unidade Tributável (tag:uTrib) incompatível com produto informado [nItem: 999]"
+  },
+  "855": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Somatório percentuais de GLP derivado do petróleo, GLGNn e GLGNi diferente de 100 [nItem: 999]."
+  },
+  "856": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Campo valor de partida não preenchido para produto GLP [nItem: 999]."
+  },
+  "857": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado Duplicata Mercantil como Forma de Pagamento"
+  },
+  "858": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de Tributação informado indevidamente [nItem: 999]"
+  },
+  "859": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do FCP retido anteriormente por Substituição Tributária difere do somatório dos itens"
+  },
+  "860": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do FCP informado difere de base de cálculo*alíquota [nItem: 999]"
+  },
+  "861": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do FCP difere do somatório dos itens"
+  },
+  "862": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do FCP ST difere do somatório dos itens"
+  },
+  "863": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do IPI devolvido difere do somatório dos itens"
+  },
+  "864": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com indicativo de Operação presencial, fora do estabelecimento e não informada NF referenciada"
+  },
+  "865": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total dos pagamentos menor que o total da nota"
+  },
+  "866": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Ausência de troco quando o valor dos pagamentos informados for maior que o total da nota"
+  },
+  "868": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupos Veiculo Transporte e Reboque não devem ser informados"
+  },
+  "869": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do troco incorreto"
+  },
+  "870": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de validade incompatível com data de fabricação [nItem: 999]"
+  },
+  "871": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: O campo Meio de Pagamento deve ser preenchido com a opção Sem Pagamento"
+  },
+  "873": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Operação com medicamentos e não informado os campos de rastreabilidade [nItem: 999]"
+  },
+  "874": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Percentual de FCP inválido [nItem: 999]"
+  },
+  "875": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Percentual de FCPST inválido [nItem: 999]"
+  },
+  "876": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Operação interestadual para Consumidor Final e valor do FCP informado em campo diferente de vFCPUFDest (id:NA13) [nItem: 999]"
+  },
+  "877": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de fabricação maior que a data de processamento [nItem: 999]"
+  },
+  "878": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Endereço do site da UF da Consulta por chave de acesso diverge do previsto"
+  },
+  "879": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado item \"Produzido em Escala NÃO Relevante\" e não informado CNPJ do Fabricante [nItem: 999]"
+  },
+  "880": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Percentual de FCP igual a zero [nItem: 999]"
+  },
+  "881": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Percentual de FCPST igual a zero [nItem: 999]"
+  },
+  "882": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: GTIN (cEAN) com prefixo inválido [nItem:999]"
+  },
+  "883": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: GTIN (cEAN) sem informação [nItem: 999]"
+  },
+  "884": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: GTIN da unidade tributável (cEANTrib) com prefixo inválido [nItem:999]"
+  },
+  "885": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: GTIN informado, mas não informado o GTIN da unidade tributável [nItem:999]"
+  },
+  "886": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: GTIN da unidade tributável informado, mas não informado o GTIN [nItem:999]"
+  },
+  "888": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: GTIN da unidade tributável (cEANTrib) sem informação [nItem:999]"
+  },
+  "889": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Obrigatória a informação do GTIN para o produto [nItem: 999]"
+  },
+  "890": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: GTIN inexistente no Cadastro Centralizado de GTIN (CCG) [nItem:999]"
+  },
+  "891": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: GTIN incompatível com a NCM [nItem:999; NCM esperada: 99999999]"
+  },
+  "892": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: GTIN incompatível com CEST [nItem:999; CEST esperado: 9999999]"
+  },
+  "893": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: GTIN da unidade tributável diverge do GTIN Contido cadastrado no CCG [nItem:999; GTIN Contido esperado: 99999999999999]"
+  },
+  "894": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: GTIN da unidade tributável inexistente no Cadastro Centralizado de GTIN (CCG) [nItem:999]"
+  },
+  "895": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: GTIN da unidade tributável incompatível com a NCM [nItem:999; NCM esperada: 99999999]"
+  },
+  "896": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: GTIN da unidade tributável incompatível com CEST [nItem:999; CEST esperado: 9999999]"
+  },
+  "897": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código numérico em formato inválido.",
+   "origem": "MOC 7.00, Anexo I, regra de validacao"
+  },
+  "899": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado incorretamente o campo meio de pagamento"
+  },
+  "900": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de vencimento da parcela não informada ou menor que Data de Emissão [nOcor: 999]"
+  },
+  "901": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do Desconto da Fatura maior que Valor Original da Fatura"
+  },
+  "902": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor Liquido da Fatura difere do Valor Original menos o Valor do Desconto"
+  },
+  "903": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição Versão informada no QR-Code (\"100\") não é mais válida para a data de emissão"
+  },
+  "904": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado indevidamente campo valor de pagamento"
+  },
+  "905": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Campos do grupo Fatura não informados"
+  },
+  "906": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informados os campos para informações do ICMS Efetivo. [nItem: nnn] [ NT 2018.005]"
+  },
+  "908": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Obrigatório o preenchimento do índice de mistura do Biocombustível. [nItem:999]",
+   "origem": "NT 2026.002 v1.11"
+  },
+  "909": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Obrigatório o preenchimento do grupo de UF de origem do combustível [nItem:999]",
+   "origem": "NT 2026.002 v1.11",
+   "outras": [
+    "Rejeição: Obrigatório o preenchimento do grupo de UF de origem"
+   ]
+  },
+  "910": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso NF-e Substituta inválida (<nome do campo>) [NT 2018.004]"
+  },
+  "911": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de Acesso NF-e Substituta incorreta (<nome do campo>) [NT 2018.004]"
+  },
+  "912": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e Substituta inexistente [NT 2018.004]"
+  },
+  "913": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e Substituta Denegada ou Cancelada [NT 2018.004]"
+  },
+  "914": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de emissão da NF-e Substituta maior que 2 horas da data de emissão da NF-e a ser cancelada [NT 2018.004]"
+  },
+  "915": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor total da NF-e Substituta difere do valor da NF-e a ser cancelada [NT 2018.004]"
+  },
+  "916": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor total do ICMS da NF-e Substituta difere do valor da NF-e a ser cancelada [NT 2018.004]"
+  },
+  "917": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Identificação do destinatário da NF-e Substituta difere da identificação do destinatário da NF-e a ser cancelada. [NT 2018.004]"
+  },
+  "918": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Quantidade de itens da NF-e Substituta difere da quantidade de itens da NF-e a ser cancelada. [NT 2018.004]"
+  },
+  "919": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Item da NF-e Substituta difere do mesmo item da NF-e a ser cancelada. [NT 2018.004]"
+  },
+  "920": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tipo de Emissão inválido no Cancelamento por Substituição [NT 2018.004]"
+  },
+  "922": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Contranota de Produtor só pode referenciar NF-e ou NF de Produtor Modelo 4 [NT 2019.001]"
+  },
+  "923": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Referenciado documento de operação interna em operação interestadual ou com o exterior [NT 2019.001]"
+  },
+  "924": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado Cupom Fiscal referenciado. [NT 2019.001]"
+  },
+  "925": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com identificação de estrangeiro e inscrição estadual informada para destinatário [NT 2019.001]"
+  },
+  "926": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Operação com Exterior e país de destino igual a Brasil. [NT 2019.001]"
+  },
+  "927": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Número do item fora da ordem sequencial. [NT 2019.001]"
+  },
+  "928": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado código de benefício fiscal para CST sem benefício fiscal [nItem: nnn] [NT 2019.001]"
+  },
+  "929": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado CST de diferimento sem as informações de diferimento [nItem: nnn] [NT 2019.001]"
+  },
+  "930": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST com benefício fiscal e não informado o código de benefício fiscal [nItem: nnn] [NT 2019.001]"
+  },
+  "931": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST não corresponde ao tipo de código de benefício fiscal [nItem: nnn] [NT 2019.001]"
+  },
+  "932": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada modalidade de determinação da BC da ST como MVA e não informado o campo pMVAST [nItem: nnn] [NT 2019.001]"
+  },
+  "933": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada modalidade de determinação da BC da ST diferente de MVA e informado o campo pMVAST [nItem: nnn] [NT 2019.001]"
+  },
+  "934": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado valor do ICMS desonerado ou o Motivo de desoneração [nItem: nnn] [NT 2019.001]"
+  },
+  "935": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor total da Base de Cálculo superior ao valor limite estabelecido [Valor Limite: R$ XXX.XXX,XX] (valor definido pela UF) [NT 2019.001]"
+  },
+  "936": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Razão Social do emitente diverge do informado no cadastro da SEFAZ"
+  },
+  "938": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada BCST, pST e ICMSST retido na operação anterior [nItem: 999] [NT 2018.005]"
+  },
+  "942": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE do local de retirada não cadastrada",
+   "origem": "NT 2026.007 v1.11"
+  },
+  "946": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado código de benefício fiscal incorreto ou inexistente na UF [nItem: nnn]"
+  },
+  "953": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado ECF referenciado para CFOP 5.929 em UF que não permite essa referência",
+   "origem": "NT 2026.002 v1.11"
+  },
+  "957": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tipo de emissão incompatível com o Processo de Emissão",
+   "origem": "NT 2023.002 v1.02"
+  },
+  "960": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Obrigatório o preenchimento de Grupo de Tributação do ICMS monofásica sobre combustíveis. [nItem:999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "961": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Enviado lote com mais de 1 NFC-e",
+   "origem": "NT 2023.002 v1.02"
+  },
+  "966": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Obrigatório o preenchimento da origem da mercadoria [nItem:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "970": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código de País inexistente [local de retirada/entrega] [NT 2018.005]"
+  },
+  "971": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: IE inválida [local de retirada/entrega] [NT 2018.005]"
+  },
+  "972": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Obrigatória as informações do responsável técnico [NT 2018.005]"
+  },
+  "973": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ do responsável técnico inválido [NT 2018.005]"
+  },
+  "974": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ do responsável técnico diverge do cadastrado [NT 2018.005]"
+  },
+  "975": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Obrigatória a informação do identificador do CSRT e do Hash do CSRT [NT 2018.005]"
+  },
+  "976": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Identificador do CSRT não cadastrado na SEFAZ [NT 2018.005]"
+  },
+  "977": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Identificador do CSRT revogado [NT 2018.005]"
+  },
+  "978": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Hash do CSRT diverge do calculado [NT 2018.005]"
+  },
+  "998": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Serviço Desativado",
+   "origem": "NT 2023.002 v1.02"
+  },
+  "999": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Erro não catalogado (informar a mensagem de erro capturado no tratamento da exceção)"
+  },
+  "1000": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Município do fato gerador do IBS informado indevidamente",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1001": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com finalidade de débito ou crédito somente para IBS/CBS",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1002": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e sem informação de ICMS / ISSQN",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1003": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e de crédito faz referência a documento fiscal diferente de NF-e modelo 55",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1004": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor total da NF-e com IBS / CBS / IS (vNFTot) não informado",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1005": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Operação presencial fora do estabelecimento sem informação do município do fato gerador do IBS",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1006": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFCe com grupo de compra governamental",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1007": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST do IBS/CBS informado não permite informação de redução de alíquota municipal [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1008": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Nota de compra governamental e alíquota dos outros entes informada incorretamente",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1009": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado tipo de nota de débito",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1010": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com referenciamento de documento a nível de nota e a nível de item [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1011": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não é permitido uso do Imposto Seletivo para esta classificação da operação [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1012": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: É exigido o uso do Imposto Seletivo para esta classificação da operação [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1013": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: É exigido o uso do Imposto Seletivo para esta classificação da operação para este NCM [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1014": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST do Imposto Seletivo informado inexistente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1015": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Classificação Tributária do Imposto Seletivo informada inexistente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1016": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST do Imposto Seletivo obriga informação de alíquota de Imposto Seletivo [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1017": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Obrigatório informação de alíquota específica de Imposto Seletivo [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1018": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Unidade tributável (uTrib) e Quantidade tributável (qTrib) do imposto seletivo não informados [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1019": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do Imposto Seletivo difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1020": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST do IBS/CBS informado inexistente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1021": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo gIBSCBS informado indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1022": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo gIBSCBS não informado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1023": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Classificação Tributária do IBS/CBS informada inexistente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1024": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Rejeição: Classificação Tributária do IBS e da CBS incompatível com o CST informado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1025": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: cClassTrib do IBS/CBS não permitido neste modelo de DFe [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1026": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Alíquota do IBS da UF inválida [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1027": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF referenciada informada indevidamente",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1028": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST do IBS/CBS informado não permite informação de redução de alíquota da CBS [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1029": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST do IBS/CBS informado não permite informação de diferimento Estadual [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1030": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST do IBS/CBS informado obriga informação de diferimento Estadual [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1031": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do Diferimento da UF difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1032": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST do IBS/CBS informado não permite informação de redução de alíquota Estadual [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1033": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado o grupo de redução de alíquota Estadual [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1034": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Percentual de redução de alíquota da UF não é válido para este cClassTrib [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1035": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da Alíquota Efetiva do IBS da UF calculado incorretamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1036": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Alíquota do IBS do Município inválida [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1037": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Alíquota da CBS inválida [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1038": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFeReferenciado não informado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1039": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: nItem do DFeReferenciado informado indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1040": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do Tributo Regular da UF difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1041": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS da UF difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1042": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e com referenciamento a nível de item informado indevidamente",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1043": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Índice de mistura do Biocombustível inferior ao obrigatório para esta Classificação Tributária do IBS e CBS [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1044": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST do IBS/CBS informado obriga informação de diferimento Municipal [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1045": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do Diferimento do Município difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1046": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Percentual de redução de alíquota do Município não é válido para este cClassTrib [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1047": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da Alíquota Efetiva do IBS do Município calculado incorretamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1048": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: nItem do DFeReferenciado não informado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1049": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não é permitido o uso de Crédito Presumido na NFC-e modelo 65 [nItem: 999]",
+   "origem": "NT 2025.002 v1.53",
+   "outras": [
+    "Rejeição: Não é permitido o uso de Crédito Presumido na NFC-e modelo 65"
+   ]
+  },
+  "1050": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Crédito Presumido para a CBS informado indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1051": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do Tributo Regular do Município difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1052": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS Municipal difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1053": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Crédito Presumido para o IBS informado indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1054": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Crédito Presumido para o IBS não informado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1055": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código de Crédito Presumido (cCredPres) da Operação inexistente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1056": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do Crédito Presumido em condição suspensiva do IBS informado indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1058": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Crédito Presumido para a CBS não informado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1059": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Índice de mistura do Biocombustível superior ao obrigatório para esta Classificação Tributária do IBS e CBS [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1060": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do Crédito Presumido da CBS informado indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1061": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST do IBS/CBS informado obriga informação de diferimento da CBS [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1062": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do Diferimento da CBS difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1063": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Percentual de redução de alíquota da CBS não é válido para este cClassTrib [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1064": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da Alíquota Efetiva da CBS calculado incorretamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1065": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Classificação Tributária do IBS e da CBS informada obriga informação da tributação regular [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1066": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST do IBS e da CBS informado no grupo de tributação regular inexistente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1067": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Classificação Tributária do IBS e da CBS informada no grupo de tributação regular inexistente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1068": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do Tributo Regular da CBS difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1069": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da CBS difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1070": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS monofásico difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1071": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da CBS monofásico difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1072": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe/Item referenciado em duplicidade [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1073": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total de IS informado indevidamente",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1074": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado o grupo de redução de alíquota Municipal [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1075": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do Imposto Seletivo difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1076": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total da BC do IBS e da CBS difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1077": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total de Diferimento do IBS UF difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1078": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total Devolvido do IBS UF difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1079": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado o grupo de redução de alíquota da CBS [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1080": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total de IBS UF difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1081": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total de Diferimento do IBS Municipal difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1082": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total Devolvido do IBS Municipal difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1083": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST do IBS/CBS informado não permite informação de diferimento Municipal [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1084": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total de IBS Municipal difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1085": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do IBS difere da soma do vIBS dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1086": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total de Crédito Presumido do IBS UF difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1087": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total de Crédito Presumido da CBS difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1088": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total de Diferimento da CBS difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1089": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total Devolvido da CBS difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1090": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST do IBS/CBS informado não permite informação de diferimento da CBS [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1091": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total de CBS difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1092": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do IBS monofásico difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1093": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total da CBS monofásica difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1094": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total da NFe difere da soma do total dos itens da Nota",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1095": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Chave de acesso referenciada deve existir e não estar cancelada [nRef: xxx]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1096": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Número de item não existe na NFe",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1097": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: O valor do IBS do item não pode ser maior que o valor do IBS do respectivo item na NFe.",
+   "origem": "NT 2025.002 v1.53",
+   "outras": [
+    "Rejeição: O valor do crédito de IBS do item não pode ser maior que o valor do IBS do respectivo item na NFe."
+   ]
+  },
+  "1098": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: O valor da CBS do item não pode ser maior que o valor da CBS do respectivo item na NFe.",
+   "origem": "NT 2025.002 v1.53",
+   "outras": [
+    "Rejeição: O valor do crédito de CBS do item não pode ser maior que o valor da CBS do respectivo item na NFe."
+   ]
+  },
+  "1099": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não é permitido o uso do código indicador do local da operação de fornecimento na NFC-e modelo 65",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1100": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: A quantidade imobilizada não pode ser maior que a quantidade do respectivo item na NFe (qCom)",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1101": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: A quantidade do item a ser consumido não pode ser maior que a quantidade do respectivo item na NFe (qCom)",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1102": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Código indicador do local de operação de fornecimento não permitido neste modelo de DFe",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1103": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da Base de cálculo do Imposto Seletivo difere do somatório dos valores que a compõem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1104": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da Base de cálculo do IBS e CBS difere do somatório dos valores que a compõem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1105": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor total do Item (vItem) difere do somatório dos valores que o compõem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1106": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado grupo de combustível para cClassTrib de Combustível [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1107": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do Crédito Presumido do IBS não pode ser superior a vProd [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1108": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada a Tributação Monofásica Retida Anteriormente do IBS Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1109": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada indevidamente a Tributação Monofásica Retida Anteriormente do IBS Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1110": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Local de Retirada não informado",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1111": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de Devolução do IBS da UF informado indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1112": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de Devolução do IBS do Município informado indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1113": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Autor do Evento de Cancelamento diverge do Autor do Evento a ser cancelado",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1114": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Classificação Tributária do IBS e da CBS informada não permite informação da tributação regular [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1115": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo IBSCBS não informado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1116": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo gIBSCBSMono não informado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1117": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total de IS não informado",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1118": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total de IBS e CBS informado indevidamente",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1119": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total de IBS e CBS não informado",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1120": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do IBS monofásico sujeito à retenção difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1121": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total da CBS monofásica sujeita à retenção difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1122": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do IBS monofásico retido anteriormente difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1123": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total da CBS monofásica retida anteriormente difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1124": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do Crédito Presumido da CBS não pode ser superior a vProd [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1125": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada a Tributação Monofásica Padrão de Combustível do IBS Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1126": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada indevidamente a Tributação Monofásica Padrão de Combustível do IBS Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1127": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada a Tributação Monofásica de Combustível com Retenção do IBS Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1128": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada indevidamente a Tributação Monofásica de Combustível com Retenção do IBS Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1129": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS ou da CBS deve ser maior que zero na transferência de crédito. [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1130": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Mais de um documento fiscal referenciado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1131": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de transferência de crédito informado indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1132": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de transferência de crédito não informado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1133": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Finalidade de Emissão da Nota Fiscal incompatível com o CST [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1134": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST do IBS/CBS informado não permite informação do grupo para apropriação de crédito presumido de IBS sobre o saldo devedor na ZFM [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1135": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CST do IBS/CBS informado exige a informação do grupo para apropriação de crédito presumido de IBS sobre o saldo devedor na ZFM [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1136": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não é possível repetir o Tipo de Classificação para o cálculo do crédito presumido na ZFM neste DFe [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1137": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor total do Item (vItem) não informado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1138": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não é permitido o uso de Crédito Presumido ZFM na NFC-e modelo 65 [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1139": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tipo de nota de débito informado indevidamente",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1141": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de informações da composição do valor do IBS e da CBS em compras governamentais não informado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1142": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Soma dos valores de IBS e CBS em compras governamentais divergente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1143": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e referenciada de pagamento antecipado deve ser do tipo débito, pagamento antecipado",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1144": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de informações da composição do valor do IBS e da CBS em compras governamentais informado indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1145": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tipo de nota de crédito só pode ser usado a partir de janeiro/2029.",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1146": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e referenciada de pagamento antecipado informada indevidamente",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1147": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NF-e referenciada de pagamento antecipado inexistente",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1148": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado o grupo de informações sobre mistura de EAC com gasolina A em percentual inferior ou superior ao obrigatório da CBS Monofásica Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1149": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado indevidamente o grupo de informações sobre mistura de EAC com gasolina A em percentual inferior ou superior ao obrigatório da CBS Monofásica Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1150": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS do Item (vIBS) difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1151": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo gIBSCBSMono informado indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1152": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tipo de Operação incompatível com NF-e de Crédito do tipo Retorno",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1153": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: NFC-e com data de previsão de entrega",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1154": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de previsão de entrega posterior ao permitido",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1155": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de previsão de entrega anterior ao permitido",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1156": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de previsão de entrega não permitida para a finalidade de emissão informada",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1157": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Data de previsão de entrega não permitida para a modalidade de frete informada",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1158": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tipo de Nota de Crédito não permite o grupo para apropriação de crédito presumido de IBS sobre o saldo devedor na ZFM [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1159": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tipo de Nota de Crédito exige o grupo para apropriação de crédito presumido de IBS sobre o saldo devedor na ZFM [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1160": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Ano e mês referência do período de apuração superior ao ano e mês atual [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1161": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tipo de Operação incompatível com NF-e de Crédito",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1162": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tipo de Operação incompatível com NF-e de Débito",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1163": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tipo de nota de crédito informado indevidamente",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1164": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado tipo de nota de crédito",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1165": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não é permitido informar a classificação para subapuração do IBS na ZFM na NFC-e modelo 65 [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1166": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Classificação para subapuração do IBS na ZFM informado indevidamente. [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1167": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Classificação para subapuração do IBS na ZFM não informada [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1168": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tipo de Nota de Débito incompatível com o CST [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1169": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de Ajuste de Competência informado indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1170": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de Ajuste de Competência não informado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1171": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS ou da CBS deve ser maior que zero no ajuste de competência [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1172": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de Estorno de Crédito informado indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1173": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de Estorno de Crédito não informado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1174": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS ou da CBS deve ser maior que zero no estorno de crédito [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1175": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de Crédito Presumido na Operação informado indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1176": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do IBS estornado difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1177": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total da CBS estornada difere da soma dos itens",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1178": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Órgão do Autor do Evento de Cancelamento diverge do órgão do Autor do Evento a ser cancelado",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1179": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CFOP inválido para Nota Fiscal de devolução ou de retorno de mercadoria emitida por MEI [nItem:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1185": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Município do Emitente não pertence à área incentivada - CBS",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1186": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Inscrição do emitente na Suframa com dígito verificador inválido",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1187": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de Devolução da CBS informado indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1188": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Percentual de devolução da CBS não informado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1189": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da CBS devolvida difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1190": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Inscrição do emitente na Suframa não informado",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1191": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de operações em áreas incentivadas (ALC/ZFM) - CBS (alíquota zero) não permitido [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1192": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Número do processo na Suframa não informado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1193": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Emitente das NFe Referenciadas deve ser o mesmo em todos os itens [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1194": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Destinatário da NF-e deve ser o igual ao Emitente da NF referenciada [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1195": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Referenciado indevidamente DFe anterior em operação com ente governamental na operação de fornecimento com pagamento posterior",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1196": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não referenciado DFe anterior em operação com ente governamental na operação de recebimento do pagamento com fornecimento já realizado",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1197": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Referenciado mais de um DFe anterior em operação com ente governamental na operação de recebimento do pagamento com fornecimento já realizado",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1198": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não referenciado DFe anterior em operação com ente governamental na operação de fornecimento com pagamento já realizado",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1199": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Referenciado indevidamente DFe anterior em operação com ente governamental na operação de recebimento do pagamento com fornecimento posterior",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1200": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: cClassTrib incompatível com o tipo de Nota de Débito [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1201": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: cClassTrib incompatível com o tipo de Nota de Crédito [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1202": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: cClassTrib incompatível com a finalidade da nota ou com o tipo de Nota de Débito ou Crédito [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1203": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe referenciado em operação com ente governamental com tamanho inválido [nOcor:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1204": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe referenciado em operação com ente governamental com Dígito Verificador inválido [nOcor:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1205": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe referenciado em operação com ente governamental com UF inválida [nOcor:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1206": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe referenciado em operação com ente governamental com Ano inválido [nOcor:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1207": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe referenciado em operação com ente governamental com Mês inválido [nOcor:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1208": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe referenciado em operação com ente governamental com CNPJ/CPF inválido [nOcor:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1209": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe referenciado em operação com ente governamental com Modelo inválido [nOcor:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1210": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe referenciado em operação com ente governamental com Número inválido [nOcor:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1211": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe referenciado em operação com ente governamental em duplicidade [nOcor:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1212": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe referenciado em operação com ente governamental com a mesma Chave de Acesso da Nota Fiscal atual [nOcor:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1213": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe referenciado em operação com ente governamental com tipo de emissão inválido [nOcor:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1214": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe referenciado em operação com ente governamental deve existir e não estar cancelada [nOcor:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1215": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe referenciado em operação com ente governamental deve possuir o mesmo CNPJ base ou CPF do emitente do documento [nOcor:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1216": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe referenciado em operação com ente governamental deve ser de fornecimento com pagamento posterior [nOcor:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1217": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: DFe referenciado em operação com ente governamental deve ser de recebimento do pagamento com fornecimento posterior [nOcor:nnn]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1218": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da CBS para operação fora de áreas ou regimes incentivado difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1219": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tributação Monofásica Ad Rem do IBS informada indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1220": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada Tributação Monofásica Ad Rem do IBS [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1221": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS Monofásico Padrão Ad Rem difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1222": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS Monofásico Ad Rem com Retenção difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1223": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS Monofásico Ad Rem retido anteriormente difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1224": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado o grupo de informações sobre mistura de EAC com gasolina A em percentual inferior ou superior ao obrigatório do IBS Monofásico Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1225": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado indevidamente o grupo de informações sobre mistura de EAC com gasolina A em percentual inferior ou superior ao obrigatório do IBS Monofásico Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1226": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Quantidade de Biocombustível (EAC) a recolher ou a ressarcir do IBS Monofásico Ad Rem difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1227": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS Monofásico Ad Rem correspondente a diferença em relação ao pBioObrigatorio difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1228": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tributação Monofásica Ad Valorem do IBS informada indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1229": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada Tributação Monofásica Ad Valorem do IBS [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1230": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada a Tributação Monofásica Padrão de Combustível do IBS Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1231": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada indevidamente a Tributação Monofásica Padrão de Combustível do IBS Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1232": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS Monofásico Padrão Ad Valorem Estadual difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1233": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS Monofásico Padrão Ad Valorem Municipal difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1234": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS Monofásico Padrão Ad Valorem difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1235": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada a Tributação Monofásica de Combustível com Retenção do IBS Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1236": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada indevidamente a Tributação Monofásica de Combustível com Retenção do IBS Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1237": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS Monofásico Ad Valorem com Retenção difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1238": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada a Tributação Monofásica Retida Anteriormente do IBS Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1239": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada indevidamente a Tributação Monofásica Retida Anteriormente do IBS Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1240": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS Monofásico Ad Valorem retido anteriormente difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1241": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado o grupo de informações sobre mistura de EAC com gasolina A em percentual inferior ou superior ao obrigatório do IBS Monofásico Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1242": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado indevidamente o grupo de informações sobre mistura de EAC com gasolina A em percentual inferior ou superior ao obrigatório do IBS Monofásico Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1243": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Quantidade de Biocombustível (EAC) a recolher ou a ressarcir do IBS Monofásico Ad Valorem difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1244": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor do IBS Monofásico Ad Valorem correspondente a diferença em relação ao pBioObrigatorio difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1245": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tributação Monofásica Ad Rem da CBS informada indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1246": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada Tributação Monofásica Ad Rem da CBS [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1247": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada a Tributação Monofásica Padrão de Combustível da CBS Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1248": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada indevidamente a Tributação Monofásica Padrão de Combustível da CBS Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1249": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da CBS Monofásica Padrão Ad Rem difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1250": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada a Tributação Monofásica de Combustível com Retenção da CBS Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1251": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada indevidamente a Tributação Monofásica de Combustível com Retenção da CBS Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1252": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da CBS Monofásica Ad Rem com Retenção difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1253": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada a Tributação Monofásica Retida Anteriormente da CBS Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1254": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada indevidamente a Tributação Monofásica Retida Anteriormente da CBS Ad Rem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1255": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da CBS Monofásica Ad Rem retido anteriormente difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1256": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Quantidade de Biocombustível (EAC) a recolher ou a ressarcir da CBS Monofásica Ad Rem difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1257": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da CBS Monofásica Ad Rem correspondente a diferença em relação ao pBioObrigatorio difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1258": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Tributação Monofásica Ad Valorem da CBS informada indevidamente [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1259": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada Tributação Monofásica Ad Valorem da CBS [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1260": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada a Tributação Monofásica Padrão de Combustível da CBS Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1261": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada indevidamente a Tributação Monofásica Padrão de Combustível da CBS Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1262": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da CBS Monofásica Padrão Ad Valorem difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1263": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada a Tributação Monofásica de Combustível com Retenção da CBS Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1264": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada indevidamente a Tributação Monofásica de Combustível com Retenção da CBS Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1265": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da CBS Monofásica Ad Valorem com Retenção difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1266": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informada a Tributação Monofásica Retida Anteriormente da CBS Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1267": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informada indevidamente a Tributação Monofásica Retida Anteriormente da CBS Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1268": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da CBS Monofásica Ad Valorem retido anteriormente difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1269": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado o grupo de informações sobre mistura de EAC com gasolina A em percentual inferior ou superior ao obrigatório da CBS Monofásica Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1270": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado indevidamente o grupo de informações sobre mistura de EAC com gasolina A em percentual inferior ou superior ao obrigatório da CBS Monofásica Ad Valorem [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1271": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Quantidade de Biocombustível (EAC) a recolher ou a ressarcir da CBS Monofásica Ad Valorem difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1272": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor da CBS Monofásica Ad Valorem correspondente a diferença em relação ao pBioObrigatorio difere do calculado [nItem: 999]",
+   "origem": "NT 2025.002 v1.53"
+  },
+  "1273": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Meio de pagamento inválido [nPag: 999]",
+   "origem": "NT 2026.006 v1.01",
+   "outras": [
+    "Rejeição: Meio de pagamento inválido"
+   ]
+  },
+  "1274": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: CNPJ do recebedor do pagamento inválido [nPag: 999]",
+   "origem": "NT 2026.006 v1.01",
+   "outras": [
+    "Rejeição: CNPJ do recebedor do pagamento inválido"
+   ]
+  },
+  "1275": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de totais do IBS e da CBS para o Simples Nacional não informado",
+   "origem": "NT 2026.005 v1.00"
+  },
+  "1276": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo de totais do IBS e da CBS para o Simples Nacional informado indevidamente",
+   "origem": "NT 2026.005 v1.00"
+  },
+  "1277": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total do IBS para o Simples Nacional difere da soma dos itens",
+   "origem": "NT 2026.005 v1.00"
+  },
+  "1278": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor Líquido do Produto não informado [nItem: 999]",
+   "origem": "NT 2026.008 v1.01"
+  },
+  "1279": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Valor Líquido do Produto difere do calculado [nItem: 999]",
+   "origem": "NT 2026.008 v1.01"
+  },
+  "1280": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo do ICMS Previsto no Pagamento Antecipado informado indevidamente [nItem: 999]",
+   "origem": "NT 2026.008 v1.01"
+  },
+  "1281": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Grupo do ICMS Previsto no Pagamento Antecipado não informado [nItem: 999]",
+   "origem": "NT 2026.008 v1.01"
+  },
+  "1282": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total Líquido não informado",
+   "origem": "NT 2026.008 v1.01"
+  },
+  "1283": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Total Líquido difere do somatório dos itens",
+   "origem": "NT 2026.008 v1.01"
+  },
+  "1284": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição Total da CBS para o Simples Nacional difere da soma dos itens",
+   "origem": "NT 2026.005 v1.00"
+  }
+ }
+}

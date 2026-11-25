@@ -1,0 +1,129 @@
+{
+ "_doc": "Mensagens conferidas a mao contra o MOC 7.00 Anexo I (secao 4.4, linhas 9132-10455 do texto extraido) e a NT 2023.002 v1.02 (secao 3.1 e 4.4). Classe: pela familia do codigo.",
+ "conferidos": [
+  {
+   "cstat": "100",
+   "mensagem": "Autorizado o uso da NF-e",
+   "origem": null
+  },
+  {
+   "cstat": "108",
+   "mensagem": "Serviço Paralisado Momentaneamente (curto prazo)",
+   "origem": null
+  },
+  {
+   "cstat": "204",
+   "mensagem": "Rejeição: Duplicidade de NF-e [nRec:999999999999999]",
+   "origem": null
+  },
+  {
+   "cstat": "301",
+   "mensagem": "Uso Denegado: Irregularidade fiscal do emitente",
+   "origem": null
+  },
+  {
+   "cstat": "539",
+   "mensagem": "Rejeição: Duplicidade de NF-e com diferença na Chave de Acesso [chNFe: 99999999999999999999999999999999999999999999][nRec:999999999999999]",
+   "origem": null
+  },
+  {
+   "cstat": "999",
+   "mensagem": "Rejeição: Erro não catalogado (informar a mensagem de erro capturado no tratamento da exceção)",
+   "origem": null
+  },
+  {
+   "cstat": "129",
+   "mensagem": "Rejeição: A autorização deve ser solicitada de forma síncrona.",
+   "origem": "NT 2023.002 v1.02"
+  },
+  {
+   "cstat": "998",
+   "mensagem": "Rejeição: Serviço Desativado",
+   "origem": "NT 2023.002 v1.02"
+  },
+  {
+   "cstat": "897",
+   "mensagem": "Rejeição: Código numérico em formato inválido.",
+   "origem": "MOC 7.00, Anexo I, regra de validacao"
+  }
+ ],
+ "classes": [
+  {
+   "classe": "autorizada",
+   "codigos": [
+    "100",
+    "150"
+   ]
+  },
+  {
+   "classe": "cancelada",
+   "codigos": [
+    "101",
+    "151"
+   ]
+  },
+  {
+   "classe": "denegada",
+   "codigos": [
+    "110",
+    "301",
+    "302",
+    "303"
+   ]
+  },
+  {
+   "classe": "processamento",
+   "codigos": [
+    "102",
+    "103",
+    "104",
+    "105",
+    "106",
+    "107",
+    "108",
+    "109",
+    "111",
+    "112",
+    "124",
+    "128",
+    "135",
+    "136",
+    "137",
+    "138",
+    "139",
+    "140"
+   ]
+  },
+  {
+   "classe": "rejeitada",
+   "codigos": [
+    "204",
+    "205",
+    "225",
+    "539",
+    "897",
+    "999",
+    "129",
+    "998",
+    "142"
+   ]
+  },
+  {
+   "classe": "desconhecida",
+   "codigos": [
+    "155",
+    "0",
+    "9999",
+    "abc"
+   ]
+  }
+ ],
+ "total": 952,
+ "contagem": {
+  "autorizada": 2,
+  "cancelada": 2,
+  "denegada": 4,
+  "processamento": 18,
+  "rejeitada": 926
+ }
+}

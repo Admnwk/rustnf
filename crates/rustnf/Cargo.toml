@@ -74,3 +74,15 @@ required-features = ["danfse"]
 [[test]]
 name = "nfe_chave"
 required-features = ["nfe"]
+
+[[test]]
+name = "nfe_cstat"
+required-features = ["nfe"]
+
+[[test]]
+name = "nfe_leitura"
+required-features = ["nfe"]
+
+[[test]]
+name = "nfe_vigencias"
+required-features = ["nfe"]
