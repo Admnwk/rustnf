@@ -1,0 +1,4887 @@
+{
+ "_nota": "Casos do medicamento (grupo K) e da rastreabilidade (grupo I80) da NF-e modelo 55. Pedidos com documentos e nomes ficticios; o XML esperado foi escrito direto do leiaute (XSD PL_010h v1.03) por um montador a parte e validado nesse XSD.",
+ "casos": [
+  {
+   "nome": "med_com_dois_lotes",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "med": {
+       "c_prod_anvisa": "1234567890123",
+       "v_pmc": "19.9"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31",
+        "c_agreg": "AG1"
+       },
+       {
+        "n_lote": "L002",
+        "q_lote": "1.5",
+        "d_fab": "2026-02-01",
+        "d_val": "2028-01-31"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>M1</cProd><cEAN>SEM GTIN</cEAN><xProd>Dipirona 500mg cx 10</xProd><NCM>30049099</NCM><CFOP>5102</CFOP><uCom>CX</uCom><qCom>3.0000</qCom><vUnCom>12.5000000000</vUnCom><vProd>37.50</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>CX</uTrib><qTrib>3.0000</qTrib><vUnTrib>12.5000000000</vUnTrib><indTot>1</indTot><rastro><nLote>L001</nLote><qLote>2.000</qLote><dFab>2026-01-10</dFab><dVal>2027-12-31</dVal><cAgreg>AG1</cAgreg></rastro><rastro><nLote>L002</nLote><qLote>1.500</qLote><dFab>2026-02-01</dFab><dVal>2028-01-31</dVal></rastro><med><cProdANVISA>1234567890123</cProdANVISA><vPMC>19.90</vPMC></med></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>37.50</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>37.50</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>37.50</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "37.50",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vNF": "37.50"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "med_registro_de_11_digitos",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "med": {
+       "c_prod_anvisa": "12345678901",
+       "v_pmc": "7"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>M1</cProd><cEAN>SEM GTIN</cEAN><xProd>Dipirona 500mg cx 10</xProd><NCM>30049099</NCM><CFOP>5102</CFOP><uCom>CX</uCom><qCom>3.0000</qCom><vUnCom>12.5000000000</vUnCom><vProd>37.50</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>CX</uTrib><qTrib>3.0000</qTrib><vUnTrib>12.5000000000</vUnTrib><indTot>1</indTot><rastro><nLote>L001</nLote><qLote>2.000</qLote><dFab>2026-01-10</dFab><dVal>2027-12-31</dVal></rastro><med><cProdANVISA>12345678901</cProdANVISA><vPMC>7.00</vPMC></med></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>37.50</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>37.50</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>37.50</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "37.50",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vNF": "37.50"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "med_isento_com_motivo",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "med": {
+       "c_prod_anvisa": "isento",
+       "x_motivo_isencao": "RDC 1234/2026",
+       "v_pmc": "0"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>M1</cProd><cEAN>SEM GTIN</cEAN><xProd>Dipirona 500mg cx 10</xProd><NCM>30049099</NCM><CFOP>5102</CFOP><uCom>CX</uCom><qCom>3.0000</qCom><vUnCom>12.5000000000</vUnCom><vProd>37.50</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>CX</uTrib><qTrib>3.0000</qTrib><vUnTrib>12.5000000000</vUnTrib><indTot>1</indTot><rastro><nLote>L001</nLote><qLote>2.000</qLote><dFab>2026-01-10</dFab><dVal>2027-12-31</dVal></rastro><med><cProdANVISA>ISENTO</cProdANVISA><xMotivoIsencao>RDC 1234/2026</xMotivoIsencao><vPMC>0.00</vPMC></med></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>37.50</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>37.50</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>37.50</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "37.50",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vNF": "37.50"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "med_sem_rastro_em_venda_para_entrega_futura",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5922",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "med": {
+       "c_prod_anvisa": "1234567890123",
+       "v_pmc": "19.9"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>M1</cProd><cEAN>SEM GTIN</cEAN><xProd>Dipirona 500mg cx 10</xProd><NCM>30049099</NCM><CFOP>5922</CFOP><uCom>CX</uCom><qCom>3.0000</qCom><vUnCom>12.5000000000</vUnCom><vProd>37.50</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>CX</uTrib><qTrib>3.0000</qTrib><vUnTrib>12.5000000000</vUnTrib><indTot>1</indTot><med><cProdANVISA>1234567890123</cProdANVISA><vPMC>19.90</vPMC></med></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>37.50</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>37.50</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>37.50</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "37.50",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vNF": "37.50"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "med_sem_rastro_em_nota_de_entrada",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "1102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "med": {
+       "c_prod_anvisa": "1234567890123",
+       "v_pmc": "19.9"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ],
+    "tp_nf": 0
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>0</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>M1</cProd><cEAN>SEM GTIN</cEAN><xProd>Dipirona 500mg cx 10</xProd><NCM>30049099</NCM><CFOP>1102</CFOP><uCom>CX</uCom><qCom>3.0000</qCom><vUnCom>12.5000000000</vUnCom><vProd>37.50</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>CX</uTrib><qTrib>3.0000</qTrib><vUnTrib>12.5000000000</vUnTrib><indTot>1</indTot><med><cProdANVISA>1234567890123</cProdANVISA><vPMC>19.90</vPMC></med></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>37.50</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>37.50</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>37.50</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "37.50",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vNF": "37.50"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "rastro_em_produto_comum",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "rastro": [
+       {
+        "n_lote": "LOTE-77",
+        "q_lote": "10",
+        "d_fab": "2026-03-01",
+        "d_val": "2026-09-30"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>M1</cProd><cEAN>SEM GTIN</cEAN><xProd>Dipirona 500mg cx 10</xProd><NCM>30049099</NCM><CFOP>5102</CFOP><uCom>CX</uCom><qCom>3.0000</qCom><vUnCom>12.5000000000</vUnCom><vProd>37.50</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>CX</uTrib><qTrib>3.0000</qTrib><vUnTrib>12.5000000000</vUnTrib><indTot>1</indTot><rastro><nLote>LOTE-77</nLote><qLote>10.000</qLote><dFab>2026-03-01</dFab><dVal>2026-09-30</dVal></rastro></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>37.50</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>37.50</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>37.50</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "37.50",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vNF": "37.50"
+   },
+   "conferir": []
+  }
+ ],
+ "regras": [],
+ "erros": [
+  {
+   "nome": "med_sem_rastro_873",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "med": {
+       "c_prod_anvisa": "1234567890123",
+       "v_pmc": "19.9"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "rastro",
+   "regra": "873"
+  },
+  {
+   "nome": "med_com_lista_de_rastro_vazia_873",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "med": {
+       "c_prod_anvisa": "1234567890123",
+       "v_pmc": "19.9"
+      },
+      "rastro": []
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "rastro",
+   "regra": "873"
+  },
+  {
+   "nome": "fabricacao_depois_da_emissao_877",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-10-04",
+        "d_val": "2027-12-31"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "dFab",
+   "regra": "877"
+  },
+  {
+   "nome": "validade_antes_da_fabricacao_870",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-05-01",
+        "d_val": "2026-04-30"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "dVal",
+   "regra": "870"
+  },
+  {
+   "nome": "anvisa_com_12_digitos",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "med": {
+       "c_prod_anvisa": "123456789012",
+       "v_pmc": "1"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "item 1: cProdANVISA"
+  },
+  {
+   "nome": "med_sem_pmc",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "med": {
+       "c_prod_anvisa": "1234567890123"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "item 1: vPMC"
+  },
+  {
+   "nome": "motivo_da_isencao_com_256_caracteres",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "med": {
+       "c_prod_anvisa": "ISENTO",
+       "x_motivo_isencao": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+       "v_pmc": "1"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "item 1: xMotivoIsencao"
+  },
+  {
+   "nome": "lote_sem_quantidade",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": null,
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "item 1: qLote"
+  },
+  {
+   "nome": "quantidade_do_lote_com_4_casas",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": "1.2345",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "item 1: qLote"
+  },
+  {
+   "nome": "quantidade_do_lote_com_9_inteiros",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": "123456789",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "item 1: qLote"
+  },
+  {
+   "nome": "lote_sem_numero",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "rastro": [
+       {
+        "n_lote": "",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "item 1: nLote"
+  },
+  {
+   "nome": "fabricacao_com_mes_13",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-13-01",
+        "d_val": "2027-12-31"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "item 1: dFab"
+  },
+  {
+   "nome": "validade_de_1999",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2000-01-01",
+        "d_val": "1999-12-31"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "item 1: dVal"
+  },
+  {
+   "nome": "501_lotes",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       },
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       }
+      ]
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "item 1: rastro"
+  },
+  {
+   "nome": "med_e_veiculo_no_mesmo_item",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "med": {
+       "c_prod_anvisa": "1234567890123",
+       "v_pmc": "19.9"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       }
+      ],
+      "veiculo": {
+       "tp_op": "1",
+       "chassi": "9BWZZZ377VT004251",
+       "c_cor": "1",
+       "x_cor": "BRANCA",
+       "pot": "100",
+       "cilin": "1600",
+       "peso_l": "1000",
+       "peso_b": "1500",
+       "n_serie": "1",
+       "tp_comb": "16",
+       "n_motor": "ABC123",
+       "cmt": "2",
+       "dist": "2500",
+       "ano_mod": "2026",
+       "ano_fab": "2026",
+       "tp_pint": "M",
+       "tp_veic": "6",
+       "esp_veic": "1",
+       "vin": "N",
+       "cond_veic": "1",
+       "c_mod": "123456",
+       "c_cor_denatran": "1",
+       "lota": "5",
+       "tp_rest": "0"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "med"
+  },
+  {
+   "nome": "med_e_combustivel_no_mesmo_item",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "M1",
+      "descricao": "Dipirona 500mg cx 10",
+      "ncm": "30049099",
+      "cfop": "5102",
+      "unidade": "CX",
+      "quantidade": "3",
+      "valor_unitario": "12.50",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "med": {
+       "c_prod_anvisa": "1234567890123",
+       "v_pmc": "19.9"
+      },
+      "rastro": [
+       {
+        "n_lote": "L001",
+        "q_lote": "2",
+        "d_fab": "2026-01-10",
+        "d_val": "2027-12-31"
+       }
+      ],
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "37.50"
+     }
+    ]
+   },
+   "campo": "comb"
+  }
+ ]
+}

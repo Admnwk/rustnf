@@ -137,6 +137,9 @@ Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endere
 | `itens[].icms_uf_dest` | NA01 `ICMSUFDest` (DIFAL), calculado por [`difal::calcular`]. |
 | `itens[].difal_dispensado` | Dispensa do DIFAL pelas excecoes da rejeicao 694: `cfop_retorno` ou `cfop_remessa`. |
 | `itens[].veiculo` | J `veicProd`. |
+| `itens[].combustivel` | LA `comb`: combustivel liquido e lubrificante. Um grupo especifico so' por item (`veicProd`, `med` ou `comb`). |
+| `itens[].med` | K `med`: medicamento. Exige o `rastro` (rejeicao 873), salvo as excecoes da regra K01-20. |
+| `itens[].rastro` | I80 `rastro`: lotes do item, de 0 a 500. |
 
 ## itens[].icms
 
@@ -547,6 +550,68 @@ Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endere
 | `itens[].veiculo.c_cor_denatran` | `cCorDENATRAN`. |
 | `itens[].veiculo.lota` | `lota`. |
 | `itens[].veiculo.tp_rest` | `tpRest`. |
+
+## itens[].combustivel
+
+| campo | o que e' |
+|---|---|
+| `itens[].combustivel.c_prod_anp` | LA02 `cProdANP`: 9 digitos (codificacao do SIMP, da ANP). |
+| `itens[].combustivel.desc_anp` | LA03 `descANP`: de 2 a 95 caracteres. |
+| `itens[].combustivel.uf_cons` | LA06 `UFCons`: sigla da UF de consumo, ou `EX`. |
+| `itens[].combustivel.p_glp` | LA03a `pGLP`: so' no GLP (`cProdANP` 210203001); ausente = 0. Em outro produto e' a rejeicao 461. |
+| `itens[].combustivel.p_gn_n` | LA03b `pGNn`: so' no GLP; ausente = 0. |
+| `itens[].combustivel.p_gn_i` | LA03c `pGNi`: so' no GLP; ausente = 0. `pGLP`, `pGNn` e `pGNi` somam 100 (rejeicao 855). |
+| `itens[].combustivel.v_part` | LA03d `vPart`: so' no GLP, valor por quilograma sem ICMS; obrigatorio nele (rejeicao 856). O GLP exige `uTrib` em `kg` (rejeicao 817). |
+| `itens[].combustivel.codif` | LA04 `CODIF`: de 1 a 21 digitos. |
+| `itens[].combustivel.q_temp` | LA05 `qTemp`: 4 casas; zero ou ausente = a tag nao sai (o XSD nao aceita zero). |
+| `itens[].combustivel.cide` | LA07 `CIDE`. |
+| `itens[].combustivel.encerrante` | LA11 `encerrante`: so' com o CFOP 5656 ou 5667 (rejeicao 379). |
+| `itens[].combustivel.p_bio` | LA17 `pBio`: maior que 0 e ate 100; zero ou ausente = a tag nao sai. |
+| `itens[].combustivel.origens` | LA18 `origComb`, de 0 a 30. Gas natural no GLP (`pGNn` ou `pGNi` diferente de 0) exige ao menos uma, salvo consumidor final, `finNFe` 2 ou 4, CFOP 5922 ou 6922 e `tpImp` 6 (rejeicao 909). |
+
+## itens[].combustivel.cide
+
+| campo | o que e' |
+|---|---|
+| `itens[].combustivel.cide.q_bc_prod` | LA08 `qBCProd`: base em quantidade (ate 12 inteiros e 4 casas). |
+| `itens[].combustivel.cide.v_aliq_prod` | LA09 `vAliqProd`: aliquota em reais por unidade (4 casas). |
+| `itens[].combustivel.cide.v_cide` | LA10 `vCIDE` (2 casas). |
+
+## itens[].combustivel.encerrante
+
+| campo | o que e' |
+|---|---|
+| `itens[].combustivel.encerrante.n_bico` | LA12 `nBico`: de 0 a 999. |
+| `itens[].combustivel.encerrante.n_tanque` | LA14 `nTanque`: de 0 a 999. |
+| `itens[].combustivel.encerrante.v_enc_ini` | LA15 `vEncIni` (3 casas). |
+| `itens[].combustivel.encerrante.v_enc_fin` | LA16 `vEncFin` (3 casas); tem de ser maior que o `vEncIni` (rejeicao 380). |
+| `itens[].combustivel.encerrante.n_bomba` | LA13 `nBomba`: de 0 a 999; ausente = a tag nao sai. |
+
+## itens[].combustivel.origens[]
+
+| campo | o que e' |
+|---|---|
+| `itens[].combustivel.origens[].ind_import` | LA19 `indImport`: 0 nacional, 1 importado. |
+| `itens[].combustivel.origens[].c_uf_orig` | LA20 `cUFOrig`: codigo IBGE da UF (`"35"`) ou a sigla (`"SP"`); sai o codigo. |
+| `itens[].combustivel.origens[].p_orig` | LA21 `pOrig`: maior que 0 e ate 100, ate 4 casas. |
+
+## itens[].med
+
+| campo | o que e' |
+|---|---|
+| `itens[].med.c_prod_anvisa` | K01a `cProdANVISA`: numero do registro (11 ou 13 digitos) ou o literal `ISENTO`. |
+| `itens[].med.x_motivo_isencao` | K01b `xMotivoIsencao`: numero da decisao que isenta o registro (de 1 a 255 caracteres). |
+| `itens[].med.v_pmc` | K06 `vPMC`: preco maximo ao consumidor (2 casas). |
+
+## itens[].rastro[]
+
+| campo | o que e' |
+|---|---|
+| `itens[].rastro[].n_lote` | I81 `nLote`: de 1 a 20 caracteres. |
+| `itens[].rastro[].q_lote` | I82 `qLote`: ate 8 inteiros e 3 casas. |
+| `itens[].rastro[].d_fab` | I83 `dFab`: `AAAA-MM-DD`; nao pode ser depois da emissao (rejeicao 877). |
+| `itens[].rastro[].d_val` | I84 `dVal`: `AAAA-MM-DD`; nao pode ser antes da fabricacao (rejeicao 870). |
+| `itens[].rastro[].c_agreg` | I85 `cAgreg`: de 1 a 20 caracteres. |
 
 ## pagamentos[]
 

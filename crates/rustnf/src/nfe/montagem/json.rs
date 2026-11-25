@@ -12,6 +12,7 @@ use crate::reforma::calculo::{ibscbs_do_item, EntradaItem};
 
 use super::difal;
 use super::formato::*;
+use super::json_grupos::{combustivel_de, medicamento_de, rastros_de};
 use super::modelo::*;
 use super::VER_PROC;
 
@@ -324,6 +325,9 @@ pub fn nota_de_json(v: &Value) -> Res<Nota> {
             },
             difal_dispensado: s_(it, "difal_dispensado"),
             veiculo: veic,
+            combustivel: combustivel_de(it)?,
+            med: medicamento_de(it)?,
+            rastro: rastros_de(it)?,
         });
     }
     let mut pagamentos = Vec::new();

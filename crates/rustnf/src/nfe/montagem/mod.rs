@@ -33,8 +33,10 @@ use crate::reforma::aliquotas::tributos_somam_no_total;
 use crate::reforma::calculo::{totalizar, vnftot, ItemIbsCbs};
 
 mod assinar;
+mod comb;
 pub mod difal;
 mod esquema;
+mod esquema_grupos;
 mod formato;
 mod gtin;
 mod icms;
@@ -42,13 +44,16 @@ mod icms_regras;
 mod ide;
 mod item;
 mod json;
+mod json_grupos;
 mod modelo;
 mod partes;
+mod produto;
 mod regras;
 mod total;
 mod uf_dest;
 
 pub use assinar::assinar;
+pub use comb::{Cide, Combustivel, Encerrante, OrigemComb};
 pub use esquema::{campos_conhecidos, campos_desconhecidos, nota_de_json_estrito};
 pub use formato::{ErroMontagem, Res};
 pub use json::nota_de_json;
@@ -56,6 +61,7 @@ pub use modelo::{
     Cartao, CompraGov, Destinatario, Emitente, Endereco, Icms, Ipi, Item, Local, Montada, Nota,
     Pagamento, PisCofins, RespTec, Veiculo,
 };
+pub use produto::{Medicamento, Rastro};
 pub use regras::conferir;
 
 use formato::{documento, erro, erro_r, na_uf, uf_codigo};

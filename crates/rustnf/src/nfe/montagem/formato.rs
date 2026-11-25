@@ -6,7 +6,7 @@
 
 use std::fmt;
 
-use chrono::{DateTime, FixedOffset, NaiveDateTime, Offset, Utc};
+use chrono::{DateTime, Datelike, FixedOffset, NaiveDate, NaiveDateTime, Offset, Utc};
 
 // ------------------------------------------------------------------------------------------------------- erro
 
@@ -224,6 +224,20 @@ pub(crate) fn num(v: Dec, casas: u32, campo: &str) -> Res<String> {
         ));
     }
     Ok(v.fixo(casas))
+}
+
+/// Como [`num`], e confere tambem as casas inteiras que o tipo do XSD comporta (`TDec_1302` leva ate 13 digitos
+/// antes da virgula e 2 depois: `casas` = 2, `inteiros` = 13).
+pub(crate) fn num_lim(v: Dec, inteiros: usize, casas: u32, campo: &str) -> Res<String> {
+    let s = num(v, casas, campo)?;
+    let int = s.split('.').next().map_or(0, str::len);
+    if int > inteiros {
+        return Err(erro(
+            format!("{campo}: {s} tem mais de {inteiros} digitos antes da virgula"),
+            campo,
+        ));
+    }
+    Ok(s)
 }
 
 pub(crate) fn num_txt(v: &Option<String>, casas: u32, campo: &str) -> Res<String> {
@@ -480,6 +494,24 @@ pub(crate) fn na_uf(quando: &DateTime<FixedOffset>, uf: &str) -> DateTime<FixedO
 /// `AAAA-MM-DDThh:mm:ss-03:00` no fuso da UF.
 pub(crate) fn dh(quando: &DateTime<FixedOffset>, uf: &str) -> String {
     na_uf(quando, uf).format("%Y-%m-%dT%H:%M:%S%:z").to_string()
+}
+
+/// Data `AAAA-MM-DD` (tipo `TData` do XSD: ano de 2000 a 2099, dia que existe no mes).
+pub(crate) fn data_xml(v: &str, campo: &str) -> Res<NaiveDate> {
+    let s = v.trim();
+    let d = (s.len() == 10)
+        .then(|| NaiveDate::parse_from_str(s, "%Y-%m-%d").ok())
+        .flatten()
+        .filter(|d| (2000..=2099).contains(&d.year()));
+    d.ok_or_else(|| {
+        erro(
+            format!(
+                "{campo}: '{}' nao e' data AAAA-MM-DD (ano de 2000 a 2099)",
+                corta(v, 20)
+            ),
+            campo,
+        )
+    })
 }
 
 /// ISO 8601 COM fuso. Sem fuso e' erro em `campo_fuso`: nao se chuta o horario de Brasilia.

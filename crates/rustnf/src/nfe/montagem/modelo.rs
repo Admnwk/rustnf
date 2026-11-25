@@ -11,7 +11,9 @@ use chrono::{DateTime, FixedOffset};
 
 use crate::reforma::calculo::ItemIbsCbs;
 
+use super::comb::Combustivel;
 use super::difal;
+use super::produto::{Medicamento, Rastro};
 
 /// Endereco do emitente, do destinatario, da retirada ou da entrega.
 #[derive(Debug, Clone, Default)]
@@ -381,6 +383,12 @@ pub struct Item {
     pub difal_dispensado: Option<String>,
     /// J `veicProd`.
     pub veiculo: Option<Veiculo>,
+    /// LA `comb`: combustivel liquido e lubrificante. Um grupo especifico so' por item (`veicProd`, `med` ou `comb`).
+    pub combustivel: Option<Combustivel>,
+    /// K `med`: medicamento. Exige o `rastro` (rejeicao 873), salvo as excecoes da regra K01-20.
+    pub med: Option<Medicamento>,
+    /// I80 `rastro`: lotes do item, de 0 a 500.
+    pub rastro: Vec<Rastro>,
 }
 
 /// Dados do cartao de um pagamento (`card`).
