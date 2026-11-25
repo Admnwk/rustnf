@@ -24,6 +24,7 @@ use super::{iniciar, Raiz, Tela};
 use crate::demonstracao::{
     Cancelamento, Desfecho, EmissorDemonstracao, Ensaio, FabricaDemonstracao,
 };
+use crate::demonstracao_eventos::RegistroDeEvento;
 use crate::modelo::nota::CampoNota;
 use crate::servicos::{Conexao, FuturoConexao, Preparo, Servicos};
 use crate::testes_comuns::{AbridorDeTeste, PastaTemporaria};
@@ -131,6 +132,34 @@ pub(super) fn cenario_de_cancelamento(
     largura: f32,
     altura: f32,
 ) -> Cenario {
+    cenario_de_eventos(
+        cx,
+        ambiente,
+        roteiro,
+        cancelamento,
+        &[],
+        false,
+        completo,
+        largura,
+        altura,
+    )
+}
+
+/// Como `cenario_de_cancelamento`, com o roteiro dos eventos (analise fiscal, confirmar, recusar; vazio: registrado) e,
+/// com `recebida`, a nota recebida de outro emitente (o tomador e' o emitente da configuracao). As consultas do lote
+/// e do historico andam sem pausa entre elas.
+#[allow(clippy::too_many_arguments)]
+pub(super) fn cenario_de_eventos(
+    cx: &mut TestAppContext,
+    ambiente: &str,
+    roteiro: &[Desfecho],
+    cancelamento: &[Cancelamento],
+    evento: &[RegistroDeEvento],
+    recebida: bool,
+    completo: bool,
+    largura: f32,
+    altura: f32,
+) -> Cenario {
     // a rede roda em outra linha (o runtime proprio): o agendador do teste precisa saber
     cx.executor().allow_parking();
     let pasta = PastaTemporaria::nova("janela-nota");
@@ -143,7 +172,9 @@ pub(super) fn cenario_de_cancelamento(
         roteiro,
         Ensaio {
             cancelamento: cancelamento.to_vec(),
+            evento: evento.to_vec(),
             pasta: Some(pasta.caminho().join("notas")),
+            recebida_para: recebida.then(|| CNPJ.to_string()),
         },
         Duration::from_millis(120),
     );
@@ -161,7 +192,8 @@ pub(super) fn cenario_de_cancelamento(
         .com_fabrica(FabricaDemonstracao::nova(emissor.clone()))
         .com_abridor(abridor.clone())
         // nenhum teste chama a rede: a busca de CEP responde de uma tabela
-        .com_busca_cep(Arc::new(CepDeTeste)),
+        .com_busca_cep(Arc::new(CepDeTeste))
+        .com_intervalo(Duration::ZERO),
     );
     let (janela, raiz) = abrir_janela(cx, servicos, largura, altura);
     cx.run_until_parked();

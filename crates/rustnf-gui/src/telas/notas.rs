@@ -7,7 +7,6 @@
 //! A lista, a busca e o filtro moram em `modelo::lista`; aqui so' ha desenho e ligacao de eventos.
 
 use std::ops::Range;
-use std::path::PathBuf;
 use std::sync::Arc;
 
 use gpui_kit::component::button::{Button, ButtonVariants as _, Toggle, ToggleGroup};
@@ -18,20 +17,24 @@ use gpui_kit::component::{
 use gpui_kit::prelude::FluentBuilder as _;
 use gpui_kit::{
     div, px, uniform_list, AnyElement, AppContext as _, Context, Entity, EventEmitter, FocusHandle,
-    InteractiveElement as _, IntoElement, KeyDownEvent, ParentElement as _, PathPromptOptions,
-    Render, ScrollStrategy, SharedString, StatefulInteractiveElement as _, Styled as _,
-    Subscription, UniformListScrollHandle, Window,
+    InteractiveElement as _, IntoElement, KeyDownEvent, ParentElement as _, Render, ScrollStrategy,
+    SharedString, StatefulInteractiveElement as _, Styled as _, Subscription,
+    UniformListScrollHandle, Window,
 };
 use rustnf_app::config::Config;
+use rustnf_app::notas::Situacao;
 
 use super::cancelar::Cancelamento;
+use super::conferir::{ConferirNaSefin, EventoConferir};
 use super::detalhe::{EventoDetalhe, VisaoDetalhe};
 use super::pecas::{cabecalho, estado_vazio, faixa, selo_da_situacao, Negrito as _};
 use crate::modelo::certificado::Gravidade;
 use crate::modelo::lista::{contagem_de_notas, FiltroDeSituacao, ListaDeNotas, Periodo};
 use crate::modelo::nota::DadosNota;
-use crate::servicos::{Destino, Servicos};
+use crate::servicos::Servicos;
 use crate::telas::LARGURA_DA_LATERAL;
+
+mod exportar;
 
 /// Largura minima da area de conteudo para o detalhe ficar ao lado da lista; abaixo disso ele e' uma pagina.
 const LARGURA_PARA_DETALHE_AO_LADO: f32 = 1060.0;
@@ -77,6 +80,8 @@ pub(super) struct TelaNotas {
     pub(super) lista: ListaDeNotas,
     busca: Entity<InputState>,
     pub(super) detalhe: Entity<VisaoDetalhe>,
+    /// "Conferir situacao na Sefin": o lote, o andamento e o resultado.
+    pub(super) conferir: Entity<ConferirNaSefin>,
     /// A chave da nota escolhida.
     pub(super) escolhida: Option<String>,
     /// A linha em foco para o teclado (posicao entre as visiveis).
@@ -108,6 +113,27 @@ impl TelaNotas {
             let servicos = Arc::clone(&servicos);
             cx.new(|cx| VisaoDetalhe::new(servicos, cancelamento, window, cx))
         };
+        let conferir = {
+            let servicos = Arc::clone(&servicos);
+            cx.new(|_| ConferirNaSefin::new(servicos))
+        };
+        let s3 = cx.subscribe_in(
+            &conferir,
+            window,
+            |this, _, evento: &EventoConferir, _, cx| {
+                let EventoConferir::Atualizou(chaves) = evento;
+                this.recarregar(cx);
+                // o detalhe aberto mostra a nota como estava: le de novo se ela mudou
+                if let Some(aberta) = this
+                    .escolhida
+                    .clone()
+                    .filter(|c| chaves.iter().any(|m| m == c))
+                {
+                    this.detalhe
+                        .update(cx, |d, cx| d.mostrar_da_pasta(&aberta, cx));
+                }
+            },
+        );
         let s1 = cx.subscribe_in(
             &busca,
             window,
@@ -139,6 +165,7 @@ impl TelaNotas {
             lista: ListaDeNotas::default(),
             busca,
             detalhe,
+            conferir,
             escolhida: None,
             em_foco: None,
             detalhe_aberto: false,
@@ -147,7 +174,7 @@ impl TelaNotas {
             versao: 0,
             exportando: false,
             exportacao: None,
-            _subs: vec![s1, s2],
+            _subs: vec![s1, s2, s3],
         }
     }
 
@@ -161,6 +188,9 @@ impl TelaNotas {
         let mudou_a_pasta = self.config.notas.pasta != config.notas.pasta;
         self.config = config.clone();
         self.pronta = completa;
+        let para_conferir = config.clone();
+        self.conferir
+            .update(cx, |c, cx| c.definir_config(para_conferir, cx));
         self.detalhe
             .update(cx, |d, cx| d.definir_config(config, cx));
         if completa && (self.carga == Carga::Nova || mudou_a_pasta) {
@@ -217,12 +247,20 @@ impl TelaNotas {
         .detach();
     }
 
-    /// Uma nota foi cancelada: atualiza o detalhe aberto e a lista.
-    pub(super) fn cancelada(&mut self, chave: &str, cx: &mut Context<Self>) {
+    /// A Sefin registrou um evento para uma nota (`situacao`: a que ela passou a ter, se mudou): atualiza o detalhe
+    /// aberto e a lista.
+    pub(super) fn evento_registrado(
+        &mut self,
+        chave: &str,
+        situacao: Option<Situacao>,
+        cx: &mut Context<Self>,
+    ) {
         let chave = chave.to_string();
         self.detalhe
-            .update(cx, |d, cx| d.marcar_cancelada(&chave, cx));
-        self.recarregar(cx);
+            .update(cx, |d, cx| d.evento_registrado(&chave, situacao, cx));
+        if situacao.is_some() {
+            self.recarregar(cx);
+        }
     }
 
     /// Abre o detalhe da nota na posicao `i` entre as visiveis.
@@ -282,89 +320,6 @@ impl TelaNotas {
         self.em_foco = None;
         self.exportacao = None;
         cx.notify();
-    }
-
-    /// "Exportar a lista": pergunta a pasta de destino e grava nela o que esta na lista.
-    fn exportar(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        if self.exportando || self.lista.quantas() == 0 {
-            return;
-        }
-        let recebe = cx.prompt_for_paths(PathPromptOptions {
-            files: false,
-            directories: true,
-            multiple: false,
-            prompt: Some("Exportar para esta pasta".into()),
-        });
-        cx.spawn_in(window, async move |this, cx| {
-            if let Ok(Ok(Some(caminhos))) = recebe.await {
-                if let Some(destino) = caminhos.into_iter().next() {
-                    this.update(cx, |this, cx| this.exportar_para(destino, cx))
-                        .ok();
-                }
-            }
-        })
-        .detach();
-    }
-
-    /// Grava em `destino`, fora da linha da tela, o XML de cada nota da lista e a lista em CSV (`notas.csv`); depois
-    /// abre a pasta. Nada sai da pasta de notas.
-    pub(super) fn exportar_para(&mut self, destino: PathBuf, cx: &mut Context<Self>) {
-        let registros = self.lista.registros_visiveis();
-        if self.exportando || registros.is_empty() {
-            return;
-        }
-        self.exportando = true;
-        self.exportacao = None;
-        cx.notify();
-        let servicos = Arc::clone(&self.servicos);
-        let config = self.config.clone();
-        let pasta = destino.clone();
-        cx.spawn(async move |this, cx| {
-            let quantas = registros.len();
-            let r = cx
-                .background_spawn(async move { servicos.exportar_notas(&config, &registros, &pasta) })
-                .await;
-            this.update(cx, |this, cx| {
-                this.exportando = false;
-                let nome = destino
-                    .file_name()
-                    .map_or_else(String::new, |n| n.to_string_lossy().into_owned());
-                this.exportacao = Some(match r {
-                    Ok(feito) if feito.sem_xml.is_empty() => {
-                        if this.servicos.abridor().pedir(Destino::Abrir, &destino) {
-                            cx.open_with_system(&destino);
-                        }
-                        (
-                            Gravidade::Ok,
-                            format!("{} exportada(s) para a pasta {nome}: os XML e a lista notas.csv.", contagem_de_notas(quantas, quantas)),
-                        )
-                    }
-                    Ok(feito) => (
-                        Gravidade::Aviso,
-                        format!(
-                            "{} exportada(s) para a pasta {nome}, mas {} sem o XML na pasta de notas: elas estão na lista notas.csv, sem o arquivo.",
-                            contagem_de_notas(quantas, quantas),
-                            contagem_de_notas(feito.sem_xml.len(), feito.sem_xml.len())
-                        ),
-                    ),
-                    Err(e) => (Gravidade::Erro, e.texto()),
-                });
-                cx.notify();
-            })
-            .ok();
-        })
-        .detach();
-    }
-
-    /// "Abrir a pasta": pede ao sistema que abra a pasta de notas inteira no gerenciador de arquivos.
-    fn abrir_a_pasta(&mut self, cx: &mut Context<Self>) {
-        let pasta = PathBuf::from(self.config.notas.pasta.trim());
-        if pasta.as_os_str().is_empty() {
-            return;
-        }
-        if self.servicos.abridor().pedir(Destino::Abrir, &pasta) {
-            cx.open_with_system(&pasta);
-        }
     }
 
     fn limpar_a_busca(&mut self, window: &mut Window, cx: &mut Context<Self>) {
@@ -502,6 +457,7 @@ impl TelaNotas {
 
     fn barra(&mut self, cx: &mut Context<Self>) -> AnyElement {
         let muted = cx.theme().muted_foreground;
+        let ocupada = self.conferir.read(cx).ocupada();
         let atual = self.lista.filtro();
         let filtro = ToggleGroup::new("filtro-de-notas")
             .segmented()
@@ -544,6 +500,20 @@ impl TelaNotas {
                     .child(contagem),
             )
             .child(div().flex_1())
+            .child(
+                Button::new("conferir-na-sefin")
+                    .label("Conferir situação na Sefin")
+                    .icon(IconName::RefreshCw)
+                    .outline()
+                    .small()
+                    .loading(ocupada)
+                    .disabled(ocupada || !self.pronta)
+                    .on_click(cx.listener(|this, _, window, cx| {
+                        let registros = this.lista.registros_visiveis();
+                        this.conferir
+                            .update(cx, |c, cx| c.iniciar(registros, window, cx));
+                    })),
+            )
             .child(
                 Button::new("abrir-pasta-de-notas")
                     .label("Abrir a pasta")
@@ -706,6 +676,7 @@ impl TelaNotas {
             ))
             .child(self.barra(cx))
             .child(self.barra_do_periodo(cx))
+            .child(self.conferir.clone())
             .child(div().flex_1().min_h_0().child(corpo))
             .into_any_element()
     }

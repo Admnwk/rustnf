@@ -63,6 +63,15 @@ alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o �
 * A situação da nota na pasta passa a ter `substituida` (105102) e `analise_fiscal` (101103 sem decisão do fisco);
   aparecem no selo, no filtro e no detalhe da lista de notas da interface, que não ganhou tela nova. O `reindexar`
   aproveita todas as situações do índice anterior, não só a cancelada.
+* Interface de desktop, **eventos na tela**: "Conferir situação na Sefin" nas Notas (as notas que a lista mostra, com
+  andamento, Parar, confirmação acima de 50 notas e resultado em palavras: o que mudou de-para, quantas estavam iguais e,
+  de cada falha, o que fazer); "Histórico na Sefin" no detalhe da nota; "Pedir análise fiscal do cancelamento" (mesmo
+  diálogo do cancelamento; o pedido sem resposta é conferido, não reenviado às cegas); Consultar pela série e número da
+  DPS; e, para a nota recebida (de outro emitente, com o emitente da configuração como tomador), "Confirmar que o serviço
+  foi prestado" e "Recusar esta nota". `rustnf-app`: `atualizar_lista` (a conferência em lote com acompanhamento e parada)
+  e `marcar_analise_fiscal` pública. O emissor de demonstração responde consulta de DPS e de evento e registra eventos por
+  roteiro (`--evento`). Testados com a demonstração e com a janela no ambiente de teste do GPUI: **nenhuma consulta nem
+  evento real foi feito pela interface**.
 * Correção: quando a resposta do registro de um evento se perdia, a biblioteca só olhava a sequência 1 do tipo e dava
   por registrado um pedido novo de um tipo que já tinha evento (o 101103 depois de um 105105, por exemplo). Agora ela
   percorre as sequências do tipo e só aceita o evento que traz o mesmo `dhEvento` do pedido; não achando, devolve

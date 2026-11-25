@@ -38,7 +38,13 @@
 * Consulta de DPS, consulta de evento, registro de eventos do contribuinte (como o pedido de análise fiscal, 101103) e
   conferência em lote da situação das notas contra a Sefin (cancelada, substituída, em análise fiscal), na camada de
   aplicação, na linha de comando, na API HTTP e no MCP, testadas com transporte falso: **nenhuma consulta nem evento real
-  foi feito**. A interface de desktop só mostra as situações novas.
+  foi feito**.
+
+* Interface de desktop, eventos na tela: conferir a situação das notas em lote (com andamento e Parar), histórico de
+  eventos de uma nota, pedido de análise fiscal do cancelamento, consulta pela série e número da DPS e, para a nota
+  recebida, confirmar e recusar. Testada com a demonstração e a janela de teste: **nenhuma consulta nem evento real foi
+  feito pela interface**. Pendente: a recusa do cancelamento por prazo não é reconhecida (o código da Sefin não está nas
+  regras da biblioteca), então o pedido de análise fiscal fica só como ação do detalhe.
 
 * Entrega: interface compilada e testada no Windows pelo CI; fluxo de release que monta os executáveis (Windows sem
   dependência do Visual C++ Redistributable, e Linux só com a linha de comando) e abre a release como rascunho.

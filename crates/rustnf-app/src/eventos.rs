@@ -114,8 +114,9 @@ pub async fn registrar_evento_pedido(
 }
 
 /// A nota autorizada da pasta passa a em analise fiscal. Nota ja em analise conta como marcada; a cancelada ou a
-/// substituida nao volta atras por um pedido novo.
-fn marcar_analise_fiscal(notas: &Notas, chave: &str) -> bool {
+/// substituida nao volta atras por um pedido novo. Diz se a nota ficou marcada.
+#[must_use]
+pub fn marcar_analise_fiscal(notas: &Notas, chave: &str) -> bool {
     match notas.registro(chave).map(|r| r.situacao) {
         Ok(Situacao::AnaliseFiscal) => true,
         Ok(Situacao::Autorizada) => notas

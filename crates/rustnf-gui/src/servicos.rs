@@ -17,6 +17,7 @@ use std::time::Duration;
 use chrono::{DateTime, Utc};
 use rustnf::assinatura::cert_a1::Certificado;
 use rustnf::assinatura::xmldsig::Algoritmo;
+use rustnf_app::atualizacao::INTERVALO_PADRAO;
 use rustnf_app::certificado;
 use rustnf_app::cofre::{
     chave_do_certificado, cofre_do_ambiente, Cofre, ErroCofre, VARIAVEL_COFRE,
@@ -34,9 +35,14 @@ use crate::modelo::nota::DadosNota;
 use crate::modelo::rascunho;
 
 mod emitir;
+mod eventos;
 mod notas;
 
 pub use emitir::{emitir, FabricaDeEmissor, FabricaReal, FabricaSemEmissor};
+pub use eventos::{
+    conferir_evento, conferir_lote, consultar_dps_nota, historico_da_nota, registrar_evento_nota,
+    ParadaDoLote,
+};
 pub use notas::{
     cancelar_nota, conferir_cancelamento, consultar_nota, AbrirArquivos, Destino, DoSistema,
     NotaDaPasta,
@@ -292,6 +298,7 @@ pub struct Servicos {
     fabrica: Arc<dyn FabricaDeEmissor>,
     abridor: Arc<dyn AbrirArquivos>,
     cep: Arc<dyn BuscaCep>,
+    intervalo: Duration,
 }
 
 impl Servicos {
@@ -310,6 +317,7 @@ impl Servicos {
             fabrica: Arc::new(FabricaReal),
             abridor: Arc::new(DoSistema),
             cep: Arc::new(CepReal),
+            intervalo: INTERVALO_PADRAO,
         }
     }
 
@@ -346,6 +354,7 @@ impl Servicos {
             fabrica: Arc::new(FabricaSemEmissor),
             abridor: Arc::new(DoSistema),
             cep: Arc::new(CepReal),
+            intervalo: INTERVALO_PADRAO,
         }
     }
 

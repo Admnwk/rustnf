@@ -5,7 +5,8 @@
 //! O cancelamento de uma nota, num dialogo: motivo, justificativa (com os limites da biblioteca), o ambiente em
 //! destaque e, em producao, a marcacao explicita do efeito fiscal. O envio roda fora da linha da tela, pelo mesmo
 //! fluxo de certificado e senha da emissao. Cada desfecho tem o seu texto; sem resposta oferece tentar de novo e
-//! conferir na Sefin.
+//! conferir na Sefin. O mesmo dialogo serve aos outros eventos que a pessoa pede (pedir a analise fiscal do
+//! cancelamento, confirmar e recusar a nota recebida): `TipoDeEvento` traz o texto e as regras de cada um.
 
 use std::sync::Arc;
 
@@ -13,6 +14,7 @@ use gpui_kit::component::button::{Button, ButtonVariants as _, Toggle, ToggleGro
 use gpui_kit::component::checkbox::Checkbox;
 use gpui_kit::component::dialog::DialogFooter;
 use gpui_kit::component::input::{InputEvent, Textarea, TextareaState};
+use gpui_kit::component::radio::RadioGroup;
 use gpui_kit::component::{
     h_flex, v_flex, ActiveTheme as _, Disableable as _, Icon, IconName, WindowExt as _,
 };
@@ -30,21 +32,25 @@ use super::senha::{classificar, Credencial, DialogoSenha, EventoSenha};
 use crate::fora;
 use crate::modelo::ambiente::{Ambiente, CORES_DA_DEMONSTRACAO, SELO_DA_DEMONSTRACAO};
 use crate::modelo::cancelamento::{
-    DesfechoDoCancelamento, FormularioDeCancelamento, AVISO_DA_PASTA, EXPLICACAO_DE_TENTAR_DE_NOVO,
-    MOTIVOS, TEXTO_DA_RECUPERADA,
+    DesfechoDoCancelamento, FormularioDeCancelamento, AVISO_DA_PASTA, TEXTO_DA_RECUPERADA,
 };
 use crate::modelo::certificado::Gravidade;
-use crate::servicos::{cancelar_nota, conferir_cancelamento, Servicos};
+use crate::modelo::evento::TipoDeEvento;
+use crate::servicos::{conferir_evento, registrar_evento_nota, Servicos};
 
 /// A nota que se vai cancelar, com o que o dialogo mostra dela.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct AlvoDoCancelamento {
+    /// O que se pede a Sefin sobre a nota.
+    pub(super) tipo: TipoDeEvento,
     /// A chave de acesso.
     pub(super) chave: String,
     /// O numero da NFS-e.
     pub(super) numero: String,
     /// O nome do tomador.
     pub(super) tomador: String,
+    /// O nome do emitente (o resumo o mostra no lugar do tomador quando a nota e' recebida).
+    pub(super) emitente: String,
     /// O valor do servico, em dinheiro brasileiro.
     pub(super) valor: String,
 }
@@ -52,8 +58,13 @@ pub(super) struct AlvoDoCancelamento {
 /// O que o dialogo avisa as telas.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) enum EventoCancelamento {
-    /// A Sefin registrou o cancelamento desta nota (a chave).
-    Registrado(String),
+    /// A Sefin registrou o evento pedido para esta nota.
+    Registrado {
+        /// A chave de acesso.
+        chave: String,
+        /// O que foi registrado.
+        tipo: TipoDeEvento,
+    },
 }
 
 /// O que esta acontecendo de verdade no envio.
@@ -114,7 +125,7 @@ impl Cancelamento {
     ) -> Self {
         let justificativa = cx.new(|cx| {
             TextareaState::new(window, cx)
-                .placeholder("Por que a nota está sendo cancelada (fica no documento fiscal)")
+                .placeholder("Escreva aqui (fica registrado no documento fiscal)")
                 .auto_grow(3, 6)
         });
         let sub = cx.subscribe_in(
@@ -164,8 +175,8 @@ impl Cancelamento {
         if matches!(self.fase, Fase::Trabalhando(_)) {
             return;
         }
+        self.form = FormularioDeCancelamento::de(alvo.tipo);
         self.alvo = Some(alvo);
-        self.form = FormularioDeCancelamento::default();
         self.tocada = false;
         self.fase = Fase::Preenchendo;
         self.senha_da_sessao = None;
@@ -238,7 +249,12 @@ impl Cancelamento {
         let servicos = Arc::clone(&self.servicos);
         let fabrica = servicos.fabrica();
         let config = self.config.clone();
-        let motivo = self.form.motivo.unwrap_or("1").to_string();
+        let tipo = self.form.tipo;
+        let motivo = self
+            .form
+            .motivo
+            .unwrap_or(if tipo.motivos().is_empty() { "" } else { "1" })
+            .to_string();
         let justificativa = self.form.justificativa_para_enviar();
         let usada = digitada.or_else(|| {
             self.senha_da_sessao
@@ -286,10 +302,19 @@ impl Cancelamento {
             let trabalho = async move {
                 match operacao {
                     Operacao::Cancelar => {
-                        cancelar_nota(fabrica, preparo, config, chave, motivo, justificativa).await
+                        registrar_evento_nota(
+                            fabrica,
+                            preparo,
+                            config,
+                            tipo,
+                            chave,
+                            motivo,
+                            justificativa,
+                        )
+                        .await
                     }
                     Operacao::Conferir => {
-                        conferir_cancelamento(fabrica, preparo, config, chave).await
+                        conferir_evento(fabrica, preparo, config, tipo, chave).await
                     }
                 }
             };
@@ -298,7 +323,7 @@ impl Cancelamento {
                     tarefa
                         .await
                         .unwrap_or_else(|_| DesfechoDoCancelamento::SemResposta {
-                            texto: crate::modelo::cancelamento::TEXTO_SEM_RESPOSTA.into(),
+                            texto: tipo.sem_resposta(),
                         })
                 }
                 None => DesfechoDoCancelamento::Recusado {
@@ -320,7 +345,10 @@ impl Cancelamento {
         if desfecho.registrado() {
             self.senha_da_sessao = None;
             if let Some(a) = &self.alvo {
-                cx.emit(EventoCancelamento::Registrado(a.chave.clone()));
+                cx.emit(EventoCancelamento::Registrado {
+                    chave: a.chave.clone(),
+                    tipo: a.tipo,
+                });
             }
         }
         self.fase = Fase::Desfecho(desfecho);
@@ -363,11 +391,11 @@ impl Cancelamento {
 
     // ---------------------------------------------------------------- desenho
 
-    fn trabalhando_texto(etapa: Etapa) -> &'static str {
+    fn trabalhando_texto(tipo: TipoDeEvento, etapa: Etapa) -> &'static str {
         match etapa {
             Etapa::Certificado => "Abrindo o certificado...",
-            Etapa::Enviando => "Enviando o pedido de cancelamento à Sefin Nacional...",
-            Etapa::Conferindo => "Conferindo na Sefin se o cancelamento foi registrado...",
+            Etapa::Enviando => tipo.enviando(),
+            Etapa::Conferindo => tipo.conferindo(),
         }
     }
 
@@ -405,40 +433,74 @@ impl Cancelamento {
                         .child(SELO_DA_DEMONSTRACAO),
                 )
             })
-            .child(div().text_sm().child(match ambiente {
-                Ambiente::Producao => "Em produção, o cancelamento de uma nota tem efeito fiscal.",
-                Ambiente::Restrita => "Ambiente de testes: o cancelamento não tem efeito fiscal.",
-            }))
+            .child(div().text_sm().child(
+                if self.form.tipo == TipoDeEvento::Cancelar && ambiente == Ambiente::Restrita {
+                    self.form.tipo.efeito_nos_testes()
+                } else {
+                    self.form.tipo.efeito()
+                },
+            ))
+            .when(
+                self.form.tipo != TipoDeEvento::Cancelar && ambiente == Ambiente::Restrita,
+                |d| {
+                    d.child(
+                        div()
+                            .text_sm()
+                            .font_semibold()
+                            .child(self.form.tipo.efeito_nos_testes()),
+                    )
+                },
+            )
             .into_any_element()
     }
 
     fn formulario(&self, dialogo: &Entity<Self>, cx: &App) -> AnyElement {
         let alvo = self.alvo.clone().unwrap_or(AlvoDoCancelamento {
+            tipo: TipoDeEvento::Cancelar,
             chave: String::new(),
             numero: String::new(),
             tomador: String::new(),
+            emitente: String::new(),
             valor: String::new(),
         });
+        let tipo = self.form.tipo;
+        let recebida = matches!(tipo, TipoDeEvento::Confirmar | TipoDeEvento::Recusar);
         let ambiente = self.ambiente();
         let motivo_atual = self.form.motivo;
         let d1 = dialogo.clone();
         let d2 = dialogo.clone();
-        let motivo = ToggleGroup::new("motivo-do-cancelamento")
-            .segmented()
-            .single()
-            .children(MOTIVOS.iter().map(|(codigo, rotulo)| {
-                Toggle::new(SharedString::from(format!("motivo-cancelamento-{codigo}")))
-                    .label(*rotulo)
-                    .checked(motivo_atual == Some(*codigo))
-            }))
-            .on_click(move |estados: &Vec<bool>, window, cx| {
-                if let Some(i) = estados.iter().position(|e| *e) {
-                    if let Some((codigo, _)) = MOTIVOS.get(i) {
+        let motivos = tipo.rotulos_dos_motivos();
+        let motivo: AnyElement = if motivos.len() > 3 {
+            // seis motivos nao cabem lado a lado: uma lista, um por linha
+            RadioGroup::vertical("motivo-do-evento")
+                .selected_index(motivo_atual.and_then(|c| motivos.iter().position(|m| m.0 == c)))
+                .children(motivos.iter().map(|(_, rotulo)| *rotulo))
+                .on_click(move |i: &usize, window, cx| {
+                    if let Some((codigo, _)) = motivos.get(*i) {
                         d1.update(cx, |c, cx| c.escolher_motivo(codigo, cx));
                         window.refresh();
                     }
-                }
-            });
+                })
+                .into_any_element()
+        } else {
+            ToggleGroup::new("motivo-do-cancelamento")
+                .segmented()
+                .single()
+                .children(motivos.iter().map(|(codigo, rotulo)| {
+                    Toggle::new(SharedString::from(format!("motivo-cancelamento-{codigo}")))
+                        .label(*rotulo)
+                        .checked(motivo_atual == Some(*codigo))
+                }))
+                .on_click(move |estados: &Vec<bool>, window, cx| {
+                    if let Some(i) = estados.iter().position(|e| *e) {
+                        if let Some((codigo, _)) = motivos.get(i) {
+                            d1.update(cx, |c, cx| c.escolher_motivo(codigo, cx));
+                            window.refresh();
+                        }
+                    }
+                })
+                .into_any_element()
+        };
         let erro = self.form.erro_da_justificativa(self.tocada);
         let contador = SharedString::from(self.form.contador());
         let resumo = v_flex()
@@ -449,11 +511,14 @@ impl Cancelamento {
             .border_color(cx.theme().border)
             .child(linha_de_resumo("Nota", format!("nº {}", alvo.numero), cx))
             .child(linha_de_resumo(
-                "Tomador",
-                if alvo.tomador.is_empty() {
-                    "-".to_string()
+                if recebida { "Emitente" } else { "Tomador" },
+                match if recebida {
+                    &alvo.emitente
                 } else {
-                    alvo.tomador.clone()
+                    &alvo.tomador
+                } {
+                    nome if nome.is_empty() => "-".to_string(),
+                    nome => nome.clone(),
                 },
                 cx,
             ))
@@ -464,20 +529,34 @@ impl Cancelamento {
             .gap_3()
             .child(self.selo())
             .child(resumo)
-            .child(campo("Motivo", true, None, None, motivo))
-            .child(campo(
-                "Justificativa",
-                true,
-                Some(contador),
-                erro,
-                div()
-                    .id("cancelamento-justificativa")
-                    .child(Textarea::new(&self.justificativa)),
-            ))
+            .when(!motivos.is_empty(), |d| {
+                d.child(campo(
+                    if recebida {
+                        "Motivo da recusa"
+                    } else {
+                        "Motivo"
+                    },
+                    true,
+                    None,
+                    None,
+                    motivo,
+                ))
+            })
+            .when(tipo.tem_justificativa(), |d| {
+                d.child(campo(
+                    "Justificativa",
+                    tipo.exige_justificativa(motivo_atual),
+                    Some(contador),
+                    erro,
+                    div()
+                        .id("cancelamento-justificativa")
+                        .child(Textarea::new(&self.justificativa)),
+                ))
+            })
             .when(produ, |d| {
                 d.child(
                     Checkbox::new("entendo-efeito-fiscal")
-                        .label("Entendo que o cancelamento tem efeito fiscal")
+                        .label(tipo.marcacao_de_producao())
                         .checked(marcado)
                         .on_click(move |marcou: &bool, window, cx| {
                             d2.update(cx, |c, cx| c.marcar_efeito_fiscal(*marcou, cx));
@@ -490,6 +569,7 @@ impl Cancelamento {
 
     fn desfecho(&self, dialogo: &Entity<Self>, d: &DesfechoDoCancelamento, cx: &App) -> AnyElement {
         let muted = cx.theme().muted_foreground;
+        let tipo = self.form.tipo;
         let nova = |rotulo: &'static str, id: &'static str, icone: IconName, primario: bool| {
             let b = Button::new(id).label(rotulo).icon(icone);
             if primario {
@@ -530,11 +610,7 @@ impl Cancelamento {
             DesfechoDoCancelamento::Registrado { recuperada, marcada } => v_flex()
                 .id("cancelamento-registrado")
                 .gap_3()
-                .child(faixa(
-                    Gravidade::Ok,
-                    "Cancelamento registrado na Sefin Nacional. A nota está cancelada.",
-                    cx,
-                ))
+                .child(faixa(Gravidade::Ok, tipo.registrado(), cx))
                 .when(*recuperada, |c| {
                     c.child(div().text_sm().text_color(muted).child(TEXTO_DA_RECUPERADA))
                 })
@@ -551,11 +627,14 @@ impl Cancelamento {
                             .gap_2()
                             .items_center()
                             .child(Icon::new(IconName::CircleAlert).text_color(cx.theme().danger))
-                            .child(div().font_semibold().child("A Sefin recusou o cancelamento")),
+                            .child(div().font_semibold().child(tipo.recusou())),
                     )
-                    .child(div().text_sm().text_color(muted).child(
-                        "A nota continua valendo. Seus dados estão como você deixou: corrija o que a Sefin apontou, se for o caso, e tente de novo.",
-                    ));
+                    .child(
+                        div()
+                            .text_sm()
+                            .text_color(muted)
+                            .child(tipo.depois_de_recusar()),
+                    );
                 for m in mensagens {
                     c = c.child(mensagem_da_sefin(m, Gravidade::Erro, cx));
                 }
@@ -565,15 +644,29 @@ impl Cancelamento {
                 .id("cancelamento-sem-resposta")
                 .gap_3()
                 .child(faixa(Gravidade::Aviso, texto.clone(), cx))
-                .child(div().text_sm().text_color(muted).child(EXPLICACAO_DE_TENTAR_DE_NOVO))
-                .child(h_flex().gap_2().child(tentar).child(conferir))
+                .child(
+                    div()
+                        .text_sm()
+                        .text_color(muted)
+                        .child(tipo.explicacao_de_tentar_de_novo()),
+                )
+                .child(if tipo == TipoDeEvento::Cancelar {
+                    h_flex().gap_2().child(tentar).child(conferir)
+                } else {
+                    // so' o cancelamento tem pedido que se reenvia sem risco: os outros conferem primeiro
+                    h_flex().gap_2().child(conferir)
+                })
                 .into_any_element(),
             DesfechoDoCancelamento::NaoRegistrado => v_flex()
                 .id("cancelamento-nao-registrado")
                 .gap_3()
                 .child(faixa(
                     Gravidade::Neutro,
-                    "A Sefin não tem cancelamento registrado para esta nota: ela continua válida. Pode tentar de novo.",
+                    if tipo == TipoDeEvento::Cancelar {
+                        "A Sefin não tem cancelamento registrado para esta nota: ela continua válida. Pode tentar de novo."
+                    } else {
+                        "A Sefin confirma que este pedido não foi registrado: nada mudou na nota. Pode pedir de novo."
+                    },
                     cx,
                 ))
                 .child(h_flex().gap_2().child(tentar))
@@ -595,10 +688,11 @@ impl Cancelamento {
             let trabalhando = matches!(c.fase, Fase::Trabalhando(_));
             let preenchendo = matches!(c.fase, Fase::Preenchendo);
             let producao = c.ambiente() == Ambiente::Producao;
-            let titulo = format!(
-                "Cancelar a NFS-e nº {}",
-                c.alvo.as_ref().map_or("", |a| a.numero.as_str())
-            );
+            let titulo = c
+                .form
+                .tipo
+                .titulo(c.alvo.as_ref().map_or("", |a| a.numero.as_str()));
+            let tipo = c.form.tipo;
             let pode = c.pode_enviar();
             let motivo = if preenchendo {
                 c.form.motivo_de_nao_enviar(c.ambiente())
@@ -613,7 +707,7 @@ impl Cancelamento {
                     .items_center()
                     .p_4()
                     .child(Icon::new(IconName::LoaderCircle))
-                    .child(div().text_sm().child(Self::trabalhando_texto(etapa)))
+                    .child(div().text_sm().child(Self::trabalhando_texto(tipo, etapa)))
                     .into_any_element(),
                 Fase::Desfecho(d) => c.desfecho(&ent, &d, cx),
             };
@@ -633,11 +727,7 @@ impl Cancelamento {
                 .when(preenchendo, |f| {
                     f.child(
                         Button::new("cancelamento-enviar")
-                            .label(if producao {
-                                "Cancelar a nota em produção"
-                            } else {
-                                "Cancelar a nota"
-                            })
+                            .label(tipo.rotulo_de_enviar(c.ambiente()))
                             .when(producao, |b| b.danger())
                             .when(!producao, |b| b.primary())
                             .disabled(!pode)

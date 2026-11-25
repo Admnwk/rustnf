@@ -29,7 +29,11 @@ use crate::modelo::consulta::DesfechoDaConsulta;
 use crate::modelo::previa::PreviaIbsCbs;
 use crate::servicos::Destino;
 
-fn esperar_ate(cx: &mut TestAppContext, o_que: &str, pronto: impl Fn(&mut TestAppContext) -> bool) {
+pub(super) fn esperar_ate(
+    cx: &mut TestAppContext,
+    o_que: &str,
+    pronto: impl Fn(&mut TestAppContext) -> bool,
+) {
     cx.executor().allow_parking();
     let t0 = Instant::now();
     loop {
@@ -45,12 +49,12 @@ fn esperar_ate(cx: &mut TestAppContext, o_que: &str, pronto: impl Fn(&mut TestAp
     }
 }
 
-fn ir_para(cx: &mut TestAppContext, c: &Cenario, tela: Tela) {
+pub(super) fn ir_para(cx: &mut TestAppContext, c: &Cenario, tela: Tela) {
     cx.update(|cx| c.raiz.update(cx, |r, cx| r.ir_para(tela, cx)));
     cx.run_until_parked();
 }
 
-fn dps(numero: u64, documento: &str, nome: &str, valor: &str, prestador: &str) -> Dps {
+pub(super) fn dps(numero: u64, documento: &str, nome: &str, valor: &str, prestador: &str) -> Dps {
     serde_json::from_value(json!({
         "prestador": {"documento": prestador, "nome": "OFICINA DE TESTE LTDA", "im": "123456", "op_simples": 3},
         "cmun_emissor": "3550308",
@@ -65,7 +69,7 @@ fn dps(numero: u64, documento: &str, nome: &str, valor: &str, prestador: &str) -
     .unwrap()
 }
 
-fn rodar<T>(futuro: impl std::future::Future<Output = T>) -> T {
+pub(super) fn rodar<T>(futuro: impl std::future::Future<Output = T>) -> T {
     tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
@@ -74,13 +78,13 @@ fn rodar<T>(futuro: impl std::future::Future<Output = T>) -> T {
 }
 
 /// Faz o emissor de demonstracao "autorizar" uma nota (sem guarda-la na pasta) e devolve a chave e o XML.
-fn autorizar(c: &Cenario, d: &Dps) -> (String, String) {
+pub(super) fn autorizar(c: &Cenario, d: &Dps) -> (String, String) {
     let r = rodar(rustnf_app::emissao::Emissor::emitir(&*c.emissor, d));
     (r.chave, r.xml_retorno)
 }
 
 /// Poe uma nota na pasta de notas do ensaio e devolve a chave.
-fn semear(c: &Cenario, numero: u64, documento: &str, nome: &str, valor: &str) -> String {
+pub(super) fn semear(c: &Cenario, numero: u64, documento: &str, nome: &str, valor: &str) -> String {
     let (chave, xml) = autorizar(c, &dps(numero, documento, nome, valor, CNPJ));
     let nfse = rustnf::nfse::leitura::ler_nfse(&xml).unwrap();
     let notas = Notas::abrir(&c.notas).unwrap();
@@ -88,11 +92,14 @@ fn semear(c: &Cenario, numero: u64, documento: &str, nome: &str, valor: &str) ->
     chave
 }
 
-fn tela_notas(cx: &mut TestAppContext, c: &Cenario) -> gpui_kit::Entity<super::notas::TelaNotas> {
+pub(super) fn tela_notas(
+    cx: &mut TestAppContext,
+    c: &Cenario,
+) -> gpui_kit::Entity<super::notas::TelaNotas> {
     cx.update(|cx| c.raiz.read(cx).notas.clone())
 }
 
-fn esperar_a_lista(cx: &mut TestAppContext, c: &Cenario, total: usize) {
+pub(super) fn esperar_a_lista(cx: &mut TestAppContext, c: &Cenario, total: usize) {
     let notas = tela_notas(cx, c);
     esperar_ate(cx, "a lista", move |cx| {
         cx.update(|cx| {
@@ -102,7 +109,7 @@ fn esperar_a_lista(cx: &mut TestAppContext, c: &Cenario, total: usize) {
     });
 }
 
-fn situacoes(c: &Cenario) -> Vec<Situacao> {
+pub(super) fn situacoes(c: &Cenario) -> Vec<Situacao> {
     Notas::abrir(&c.notas)
         .unwrap()
         .listar()
@@ -123,7 +130,7 @@ fn lista_na_tela(cx: &mut TestAppContext, c: &Cenario) -> bool {
 }
 
 /// Abre o detalhe da nota `i` e espera a leitura do XML.
-fn abrir_o_detalhe(cx: &mut TestAppContext, c: &Cenario, i: usize, chave: &str) {
+pub(super) fn abrir_o_detalhe(cx: &mut TestAppContext, c: &Cenario, i: usize, chave: &str) {
     let notas = tela_notas(cx, c);
     let a_abrir = notas.clone();
     cx.update_window(c.janela.into(), |_, window, cx| {
@@ -145,7 +152,7 @@ fn abrir_o_detalhe(cx: &mut TestAppContext, c: &Cenario, i: usize, chave: &str) 
     });
 }
 
-fn escrever_a_justificativa(cx: &mut TestAppContext, c: &Cenario, texto: &str) {
+pub(super) fn escrever_a_justificativa(cx: &mut TestAppContext, c: &Cenario, texto: &str) {
     let canc = cx.update(|cx| c.raiz.read(cx).cancelamento.clone());
     cx.update_window(c.janela.into(), |_, window, cx| {
         window.render_frame(cx);
@@ -157,11 +164,11 @@ fn escrever_a_justificativa(cx: &mut TestAppContext, c: &Cenario, texto: &str) {
     cx.run_until_parked();
 }
 
-fn fase_do_cancelamento(cx: &mut TestAppContext, c: &Cenario) -> FaseDoCancelamento {
+pub(super) fn fase_do_cancelamento(cx: &mut TestAppContext, c: &Cenario) -> FaseDoCancelamento {
     cx.update(|cx| c.raiz.read(cx).cancelamento.read(cx).fase.clone())
 }
 
-fn desfecho_do_cancelamento(
+pub(super) fn desfecho_do_cancelamento(
     cx: &mut TestAppContext,
     c: &Cenario,
 ) -> Option<DesfechoDoCancelamento> {
@@ -172,7 +179,7 @@ fn desfecho_do_cancelamento(
 }
 
 /// Abre o dialogo de cancelar a nota 0 e preenche motivo e justificativa.
-fn preencher_o_cancelamento(cx: &mut TestAppContext, c: &Cenario) {
+pub(super) fn preencher_o_cancelamento(cx: &mut TestAppContext, c: &Cenario) {
     clicar(cx, c, "cancelar-nota");
     assert!(existe(cx, c, "cancelamento-enviar"));
     clicar(cx, c, "motivo-cancelamento-1");
@@ -777,11 +784,11 @@ fn com_uma_tentativa_pendente_o_modelo_nao_substitui(cx: &mut TestAppContext) {
 
 // ---------------------------------------------------------------- consultar
 
-fn consulta_fase(cx: &mut TestAppContext, c: &Cenario) -> FaseDaConsulta {
+pub(super) fn consulta_fase(cx: &mut TestAppContext, c: &Cenario) -> FaseDaConsulta {
     cx.update(|cx| c.raiz.read(cx).consultar.read(cx).fase.clone())
 }
 
-fn esperar_a_consulta(cx: &mut TestAppContext, c: &Cenario) -> DesfechoDaConsulta {
+pub(super) fn esperar_a_consulta(cx: &mut TestAppContext, c: &Cenario) -> DesfechoDaConsulta {
     esperar_ate(cx, "a consulta", |cx| {
         matches!(consulta_fase(cx, c), FaseDaConsulta::Desfecho(_))
     });

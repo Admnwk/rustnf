@@ -17,6 +17,7 @@ use gpui_kit::{
     AppContext as _, Context, Entity, PathPromptOptions, ScrollHandle, Subscription, Window,
 };
 use rustnf_app::config::Config;
+use rustnf_app::notas::Situacao;
 use rustnf_app::segredo::Segredo;
 
 use super::cancelar::{Cancelamento, EventoCancelamento};
@@ -28,6 +29,7 @@ use crate::fora;
 use crate::modelo::ambiente::{Ambiente, Tema};
 use crate::modelo::campo::{Campo, CampoAliquota, Erros};
 use crate::modelo::certificado::{EstadoCertificado, InfoCertificado};
+use crate::modelo::evento::TipoDeEvento;
 use crate::modelo::formulario::{Formulario, OPCOES_APURACAO, OPCOES_REGIME_ESPECIAL};
 use crate::modelo::nota::DadosNota;
 use crate::modelo::passos::{configuracao_completa, pendentes, Passo};
@@ -376,10 +378,18 @@ impl Raiz {
             &self.cancelamento.clone(),
             window,
             |this, _, evento: &EventoCancelamento, _, cx| match evento {
-                EventoCancelamento::Registrado(chave) => {
+                EventoCancelamento::Registrado { chave, tipo } => {
+                    // o que o evento faz com a situacao da nota (confirmar e recusar nao mexem nela)
+                    let situacao = match tipo {
+                        TipoDeEvento::Cancelar => Some(Situacao::Cancelada),
+                        TipoDeEvento::AnaliseFiscal => Some(Situacao::AnaliseFiscal),
+                        TipoDeEvento::Confirmar | TipoDeEvento::Recusar => None,
+                    };
                     let (a, b) = (chave.clone(), chave.clone());
-                    this.notas.update(cx, |n, cx| n.cancelada(&a, cx));
-                    this.consultar.update(cx, |c, cx| c.cancelada(&b, cx));
+                    this.notas
+                        .update(cx, |n, cx| n.evento_registrado(&a, situacao, cx));
+                    this.consultar
+                        .update(cx, |c, cx| c.evento_registrado(&b, situacao, cx));
                 }
             },
         );
