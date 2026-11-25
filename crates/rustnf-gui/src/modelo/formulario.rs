@@ -160,6 +160,8 @@ pub struct Dados {
     pub municipio: String,
     /// Serie da DPS.
     pub serie: String,
+    /// Aliquota padrao do ISS ("2,00"); vazio = nao informar.
+    pub aliquota_iss: String,
     /// Simples Nacional: 1, 2 ou 3.
     pub op_simples: u8,
     /// Regime de apuracao (so' ME/EPP); 0 = nao informar.
@@ -213,6 +215,7 @@ impl Dados {
             inscricao_municipal: c.emitente.inscricao_municipal.clone(),
             municipio: c.emitente.municipio.clone(),
             serie: c.emitente.serie.clone(),
+            aliquota_iss: c.emitente.aliquota_iss.replace('.', ","),
             op_simples: c.emitente.op_simples,
             regime_apuracao: c.emitente.regime_apuracao,
             regime_especial: c.emitente.regime_especial,
@@ -270,6 +273,9 @@ fn mensagem(campo: Campo, motivo: &str, documento: &str) -> String {
         },
         Campo::Municipio => "Informe o código IBGE com 7 dígitos.".into(),
         Campo::Serie => "Use até 5 dígitos.".into(),
+        Campo::AliquotaIssPadrao => {
+            "Use um percentual de 0 a 5, com até 2 casas (ex.: 2,00).".into()
+        }
         Campo::Pfx => "Caminho do certificado inválido.".into(),
         Campo::TempoLimite => "Use um valor entre 1 e 600 segundos.".into(),
         Campo::FolgaRelogio => "Use no máximo 3600 segundos.".into(),
@@ -335,6 +341,7 @@ fn destino(erro: &ErroConfig) -> Destino {
         ("emitente", "op_simples") => Some(Campo::OpSimples),
         ("emitente", "regime_apuracao") => Some(Campo::RegimeApuracao),
         ("emitente", "serie") => Some(Campo::Serie),
+        ("emitente", "aliquota_iss") => Some(Campo::AliquotaIssPadrao),
         ("sefin", "pfx") => Some(Campo::Pfx),
         ("sefin", "tempo_limite_s") => Some(Campo::TempoLimite),
         ("sefin", "folga_relogio_s") => Some(Campo::FolgaRelogio),
@@ -370,6 +377,7 @@ impl Formulario {
             Campo::InscricaoMunicipal => d.inscricao_municipal.clone(),
             Campo::Municipio => d.municipio.clone(),
             Campo::Serie => d.serie.clone(),
+            Campo::AliquotaIssPadrao => d.aliquota_iss.clone(),
             Campo::Pfx => d.pfx.clone(),
             Campo::TempoLimite => d.tempo_limite.clone(),
             Campo::FolgaRelogio => d.folga_relogio.clone(),
@@ -395,6 +403,7 @@ impl Formulario {
             Campo::Documento => formatar_documento(texto),
             Campo::Municipio => so_digitos(texto, 7),
             Campo::Serie => so_digitos(texto, 5),
+            Campo::AliquotaIssPadrao => filtrar_decimal(texto),
             Campo::TempoLimite | Campo::FolgaRelogio => so_digitos(texto, 5),
             Campo::Aliquota(_, CampoAliquota::Ano) => so_digitos(texto, 4),
             Campo::Aliquota(
@@ -418,6 +427,7 @@ impl Formulario {
             Campo::InscricaoMunicipal => d.inscricao_municipal.clone_from(&normal),
             Campo::Municipio => d.municipio.clone_from(&normal),
             Campo::Serie => d.serie.clone_from(&normal),
+            Campo::AliquotaIssPadrao => d.aliquota_iss.clone_from(&normal),
             Campo::Pfx => d.pfx.clone_from(&normal),
             Campo::TempoLimite => d.tempo_limite.clone_from(&normal),
             Campo::FolgaRelogio => d.folga_relogio.clone_from(&normal),
@@ -488,6 +498,7 @@ impl Formulario {
         c.emitente.inscricao_municipal = d.inscricao_municipal.trim().to_string();
         c.emitente.municipio.clone_from(&d.municipio);
         c.emitente.serie.clone_from(&d.serie);
+        c.emitente.aliquota_iss = d.aliquota_iss.trim().replace(',', ".");
         c.emitente.op_simples = d.op_simples;
         c.emitente.regime_apuracao = d.regime_apuracao;
         c.emitente.regime_especial = d.regime_especial;
@@ -560,6 +571,10 @@ impl Formulario {
         registrar(
             Campo::Serie,
             isolar(|c| c.emitente.serie.clone_from(&d.serie)),
+        );
+        registrar(
+            Campo::AliquotaIssPadrao,
+            isolar(|c| c.emitente.aliquota_iss = d.aliquota_iss.trim().replace(',', ".")),
         );
         registrar(Campo::Pfx, isolar(|c| c.sefin.pfx.clone_from(&d.pfx)));
         registrar(

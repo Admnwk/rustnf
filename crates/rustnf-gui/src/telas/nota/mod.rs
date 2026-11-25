@@ -388,7 +388,16 @@ impl NovaNota {
     ) {
         let primeira = !self.carregada && completa;
         self.ctx = self.servicos.contexto_da_nota(&config);
-        // formulario ainda sem nada digitado: a chave do grupo IBS/CBS acompanha o regime da configuracao que chegou
+        // a aliquota padrao do emitente aparece como dica no campo (vale quando ele fica vazio)
+        let padrao = self.ctx.emitente.aliquota_iss.trim().replace('.', ",");
+        let dica_iss = if padrao.is_empty() {
+            dica(CampoNota::AliquotaIss).to_string()
+        } else {
+            format!("Padrão: {padrao}")
+        };
+        if let Some(e) = self.entradas.get(&CampoNota::AliquotaIss).cloned() {
+            e.update(cx, |s, cx| s.set_placeholder(dica_iss, window, cx));
+        } // formulario ainda sem nada digitado: a chave do grupo IBS/CBS acompanha o regime da configuracao que chegou
         if matches!(self.fase, Fase::Editando) && self.dados.vazio(&self.ctx.hoje()) {
             self.dados.ibscbs_ativo = self.ctx.regime().informa_ibscbs_por_padrao();
         }

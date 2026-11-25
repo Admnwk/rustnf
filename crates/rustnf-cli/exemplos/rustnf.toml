@@ -20,6 +20,8 @@ op_simples = 3                   # 1 nao optante, 2 MEI, 3 ME/EPP
 regime_apuracao = 1              # regime de apuracao do Simples Nacional; 0 = nao informar
 regime_especial = 0              # regime especial de tributacao; 0 = nenhum
 serie = "1"                      # serie da DPS (ate 5 digitos)
+aliquota_iss = ""                # aliquota padrao do ISS (ex. "2.00"); vazio = nao informar. So' para municipio sem
+                                 # convenio com o sistema nacional, ou ME/EPP com ISS retido
 
 [sefin]
 ambiente = "restrita"            # producao | restrita

@@ -67,6 +67,8 @@ pub enum Campo {
     RegimeEspecial,
     /// Serie da DPS.
     Serie,
+    /// Aliquota padrao do ISS do emitente.
+    AliquotaIssPadrao,
     /// Arquivo do certificado.
     Pfx,
     /// Senha do certificado (nunca guardada neste modelo: so' o erro dela).

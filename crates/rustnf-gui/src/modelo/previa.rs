@@ -15,6 +15,7 @@ use super::mascara::{
 };
 use super::nota::DadosNota;
 use super::pedido::{percentual, Contexto};
+use rustnf_app::config::{aliquota_iss_vai_na_dps, Emitente};
 
 /// O dinheiro da nota, em centavos.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -51,6 +52,53 @@ pub fn totais(d: &DadosNota) -> Totais {
                 .saturating_sub(retencoes)
         }),
     }
+}
+
+/// O ISS que a nota deve ter, estimado na tela.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct IssEstimado {
+    /// A aliquota usada, em percentual (`2,00`).
+    pub aliquota: String,
+    /// Veio da configuracao (alíquota padrao do emitente), nao do que foi digitado.
+    pub padrao: bool,
+    /// O valor, em centavos: (servico - desconto incondicionado) x aliquota.
+    pub valor: i64,
+    /// Retido pelo tomador: sai do valor liquido.
+    pub retido: bool,
+}
+
+/// O ISS estimado: com a aliquota digitada ou, sem ela, com a padrao do `[emitente]` quando ela vai na DPS. `None`
+/// quando nao ha aliquota conhecida (a Sefin calcula com a do municipio) ou quando a nota nao tem ISS destacado
+/// (MEI, regime especial, servico sem incidencia). A base ignora deducoes e reducoes: o valor final e' o da Sefin.
+#[must_use]
+pub fn iss_estimado(d: &DadosNota, emitente: &Emitente) -> Option<IssEstimado> {
+    if !aliquota_iss_vai_na_dps(
+        emitente.op_simples,
+        emitente.regime_especial,
+        d.tributacao,
+        d.retencao,
+    ) && d.aliquota_iss.trim().is_empty()
+    {
+        return None;
+    }
+    if emitente.op_simples == 2 || emitente.regime_especial != 0 || d.tributacao != 1 {
+        return None;
+    }
+    let (texto, padrao) = if d.aliquota_iss.trim().is_empty() {
+        (emitente.aliquota_iss.trim().replace('.', ","), true)
+    } else {
+        (d.aliquota_iss.trim().to_string(), false)
+    };
+    let pct = dinheiro_para_centavos(&texto).filter(|p| (0..=500).contains(p))?;
+    let servico = dinheiro_para_centavos(&d.valor_servico)?;
+    let base = servico.saturating_sub(dinheiro_para_centavos(&d.desc_incondicionado).unwrap_or(0));
+    let valor = (i128::from(base) * i128::from(pct) + 5_000) / 10_000;
+    Some(IssEstimado {
+        aliquota: centavos_para_dinheiro(pct),
+        padrao,
+        valor: i64::try_from(valor).unwrap_or(0),
+        retido: matches!(d.retencao, 2 | 3),
+    })
 }
 
 /// Uma parcela do IBS/CBS (estadual, municipal ou CBS), ja em texto da tela.
@@ -294,6 +342,62 @@ pub(super) fn conta(base: Value, t: &Tributos, publicadas: &Publicadas) -> Previ
 #[must_use]
 pub fn mostrar(centavos: i64) -> String {
     centavos_para_dinheiro(centavos)
+}
+
+#[cfg(test)]
+mod testes_do_iss {
+    use super::*;
+
+    fn emitente(op: u8, padrao: &str) -> Emitente {
+        Emitente {
+            op_simples: op,
+            aliquota_iss: padrao.into(),
+            ..Emitente::default()
+        }
+    }
+
+    fn nota(valor: &str, aliquota: &str, retencao: u8) -> DadosNota {
+        let mut d = DadosNota::novo("21/11/2026");
+        d.valor_servico = valor.into();
+        d.aliquota_iss = aliquota.into();
+        d.retencao = retencao;
+        d
+    }
+
+    #[test]
+    fn iss_com_a_aliquota_digitada_ou_a_padrao() {
+        // digitada: 1.000,00 x 2,5% = 25,00
+        let i = iss_estimado(&nota("1.000,00", "2,5", 1), &emitente(1, "")).unwrap();
+        assert_eq!(
+            (i.aliquota.as_str(), i.valor, i.padrao, i.retido),
+            ("2,50", 2500, false, false)
+        );
+        // padrao do emitente (nao optante): 1.000,00 x 2% = 20,00
+        let i = iss_estimado(&nota("1.000,00", "", 1), &emitente(1, "2.00")).unwrap();
+        assert_eq!((i.valor, i.padrao), (2000, true));
+        // desconto incondicionado sai da base
+        let mut d = nota("1.000,00", "2", 2);
+        d.desc_incondicionado = "100,00".into();
+        let i = iss_estimado(&d, &emitente(1, "")).unwrap();
+        assert_eq!((i.valor, i.retido), (1800, true));
+    }
+
+    #[test]
+    fn sem_aliquota_conhecida_ou_sem_iss_destacado_nao_ha_estimativa() {
+        // sem digitar e sem padrao: a Sefin calcula
+        assert!(iss_estimado(&nota("1.000,00", "", 1), &emitente(1, "")).is_none());
+        // ME/EPP sem retencao: a padrao nao vale (E0625)
+        assert!(iss_estimado(&nota("1.000,00", "", 1), &emitente(3, "2")).is_none());
+        // ME/EPP com retencao: vale
+        assert_eq!(
+            iss_estimado(&nota("1.000,00", "", 2), &emitente(3, "2")).map(|i| i.valor),
+            Some(2000)
+        );
+        // MEI: nunca
+        assert!(iss_estimado(&nota("1.000,00", "2", 1), &emitente(2, "2")).is_none());
+        // sem valor de servico
+        assert!(iss_estimado(&nota("", "2", 1), &emitente(1, "")).is_none());
+    }
 }
 
 #[cfg(test)]

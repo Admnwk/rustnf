@@ -16,7 +16,7 @@ use gpui_kit::{
 
 use super::{EstadoDoRascunho, Etapa, Fase, NovaNota};
 use crate::modelo::certificado::Gravidade;
-use crate::modelo::previa::{mostrar, totais};
+use crate::modelo::previa::{iss_estimado, mostrar, totais};
 use crate::telas::pecas::{
     cor_da, corpo_da_previa, faixa, icone_da, linha_de_numero, titulo_do_bloco,
 };
@@ -156,13 +156,41 @@ impl NovaNota {
                 cx,
             ));
         }
+        let iss = iss_estimado(&self.dados, &self.ctx.emitente);
+        let regime = self.ctx.regime();
+        let mut liquido = t.liquido;
+        match &iss {
+            Some(i) => {
+                let rotulo = match (i.retido, i.padrao) {
+                    (true, _) => format!("ISS retido ({}%)", i.aliquota),
+                    (false, true) => format!("ISS ({}%, padrão)", i.aliquota),
+                    (false, false) => format!("ISS ({}%)", i.aliquota),
+                };
+                let texto = if i.retido {
+                    liquido = liquido.map(|l| l.saturating_sub(i.valor));
+                    negativo(i.valor)
+                } else {
+                    format!("R$ {}", mostrar(i.valor))
+                };
+                bloco = bloco.child(linha_de_numero(&rotulo, texto, false, cx));
+            }
+            None if regime.mostra_aliquota_iss(self.dados.tributacao) && tem_servico => {
+                bloco = bloco.child(linha_de_numero(
+                    "ISS",
+                    "calculado pela Sefin".into(),
+                    false,
+                    cx,
+                ));
+            }
+            None => {}
+        }
         let borda = cx.theme().border;
         bloco
             .child(div().h(px(1.)).w_full().bg(borda).my_1())
             .child(linha_de_numero(
                 "Valor líquido",
                 if tem_servico {
-                    format!("R$ {}", mostrar(t.liquido.unwrap_or(0)))
+                    format!("R$ {}", mostrar(liquido.unwrap_or(0)))
                 } else {
                     "-".into()
                 },
@@ -173,7 +201,7 @@ impl NovaNota {
                 div()
                     .text_xs()
                     .text_color(cx.theme().muted_foreground)
-                    .child("Estimado: o ISS retido e o PIS/COFINS retidos não entram nesta conta."),
+                    .child("Estimado: o PIS/COFINS retidos não entram nesta conta, e o ISS final é o que a Sefin calcular com a alíquota do município."),
             )
             .into_any_element()
     }
