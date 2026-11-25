@@ -66,7 +66,8 @@ alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o �
 * Interface de desktop, **eventos na tela**: "Conferir situação na Sefin" nas Notas (as notas que a lista mostra, com
   andamento, Parar, confirmação acima de 50 notas e resultado em palavras: o que mudou de-para, quantas estavam iguais e,
   de cada falha, o que fazer); "Histórico na Sefin" no detalhe da nota; "Pedir análise fiscal do cancelamento" (mesmo
-  diálogo do cancelamento; o pedido sem resposta é conferido, não reenviado às cegas); Consultar pela série e número da
+  diálogo do cancelamento, oferecido também quando a Sefin recusa o cancelamento por prazo, E0822; o pedido sem
+  resposta é conferido, não reenviado às cegas); Consultar pela série e número da
   DPS; e, para a nota recebida (de outro emitente, com o emitente da configuração como tomador), "Confirmar que o serviço
   foi prestado" e "Recusar esta nota". `rustnf-app`: `atualizar_lista` (a conferência em lote com acompanhamento e parada)
   e `marcar_analise_fiscal` pública. O emissor de demonstração responde consulta de DPS e de evento e registra eventos por

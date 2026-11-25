@@ -32,7 +32,8 @@ use super::senha::{classificar, Credencial, DialogoSenha, EventoSenha};
 use crate::fora;
 use crate::modelo::ambiente::{Ambiente, CORES_DA_DEMONSTRACAO, SELO_DA_DEMONSTRACAO};
 use crate::modelo::cancelamento::{
-    DesfechoDoCancelamento, FormularioDeCancelamento, AVISO_DA_PASTA, TEXTO_DA_RECUPERADA,
+    DesfechoDoCancelamento, FormularioDeCancelamento, AVISO_DA_PASTA, TEXTO_DA_OFERTA_DE_ANALISE,
+    TEXTO_DA_RECUPERADA,
 };
 use crate::modelo::certificado::Gravidade;
 use crate::modelo::evento::TipoDeEvento;
@@ -197,6 +198,29 @@ impl Cancelamento {
 
     /// Volta ao formulario depois de uma rejeicao ou de uma recusa, com tudo como estava.
     fn voltar_ao_formulario(&mut self, cx: &mut Context<Self>) {
+        self.fase = Fase::Preenchendo;
+        cx.notify();
+    }
+
+    /// Depois da recusa por prazo, o mesmo dialogo passa a pedir a analise fiscal do cancelamento, com o motivo e a
+    /// justificativa ja escritos. A marcacao de producao volta desmarcada: e' outro pedido, e se confirma de novo.
+    fn pedir_analise(&mut self, cx: &mut Context<Self>) {
+        let prazo = matches!(self.fase, Fase::Desfecho(ref d) if d.recusado_por_prazo());
+        if !prazo || self.form.tipo != TipoDeEvento::Cancelar {
+            return;
+        }
+        let Some(alvo) = self.alvo.as_mut() else {
+            return;
+        };
+        alvo.tipo = TipoDeEvento::AnaliseFiscal;
+        let anterior = std::mem::replace(
+            &mut self.form,
+            FormularioDeCancelamento::de(TipoDeEvento::AnaliseFiscal),
+        );
+        if let Some(m) = anterior.motivo {
+            self.form.escolher_motivo(m);
+        }
+        self.form.justificativa = anterior.justificativa;
         self.fase = Fase::Preenchendo;
         cx.notify();
     }
@@ -637,6 +661,23 @@ impl Cancelamento {
                     );
                 for m in mensagens {
                     c = c.child(mensagem_da_sefin(m, Gravidade::Erro, cx));
+                }
+                if tipo == TipoDeEvento::Cancelar && d.recusado_por_prazo() {
+                    let d_analise = dialogo.clone();
+                    let analise = nova(
+                        TipoDeEvento::AnaliseFiscal.rotulo_da_acao(),
+                        "cancelamento-pedir-analise",
+                        IconName::Eye,
+                        true,
+                    )
+                    .on_click(move |_, window, cx| {
+                        d_analise.update(cx, |c, cx| c.pedir_analise(cx));
+                        window.refresh();
+                    });
+                    c = c
+                        .child(faixa(Gravidade::Neutro, TEXTO_DA_OFERTA_DE_ANALISE, cx))
+                        .child(h_flex().gap_2().child(analise).child(voltar));
+                    return c.into_any_element();
                 }
                 c.child(h_flex().child(voltar)).into_any_element()
             }

@@ -647,8 +647,8 @@ e situação. XML ausente ou ilegível é dito sem derrubar a tela. Dele saem:
   de 15 a 255 caracteres e, em produção, a marcação "Entendo que este pedido tem efeito fiscal e será analisado pelo
   fisco"). Registrado, a nota passa a "Em análise fiscal" na pasta e na lista. Sem resposta, o pedido **não** é reenviado
   às cegas (um segundo pedido poderia valer como outro): o diálogo oferece "Conferir na Sefin" (só consulta) e, se a Sefin
-  disser que não há registro, "Tentar de novo". A ação fica sempre no detalhe; o programa **não** a oferece sozinho na
-  recusa do cancelamento, porque o código com que a Sefin recusa por prazo não está nas regras que a biblioteca conhece;
+  disser que não há registro, "Tentar de novo". A ação fica sempre no detalhe e aparece também no desfecho do
+  cancelamento recusado por prazo (E0822, Anexo II), já com o motivo e a justificativa que a pessoa escreveu;
 * **Histórico na Sefin**: botão que consulta os eventos da nota (cancelamento, substituição, pedido de análise fiscal,
   decisão do fisco, manifestações) e os mostra do mais antigo para o mais novo, com data, quem registrou e o motivo.
   Só consulta; uma consulta por tipo de evento, com a mesma pausa do lote;
@@ -692,7 +692,7 @@ executável normal não tem como entrar nesse modo). Ele abre a mesma janela com
 título próprios. A nota "autorizada" entra de verdade na pasta de notas do arquivo de configuração: use uma pasta de
 ensaio. A consulta (pela chave e pela DPS) devolve as notas que a demonstração autorizou e as que estão nessa pasta; o
 cancelamento e os pedidos de evento seguem um roteiro, como a emissão (`--cancelamento`, `--evento`). O cancelamento
-`rejeitado` reproduz a recusa por prazo (a mensagem diz que o prazo passou). A demonstração também "recebeu" uma nota de
+`rejeitado` reproduz a recusa por prazo (o E0822, com o texto do Anexo II). A demonstração também "recebeu" uma nota de
 outra pessoa, com o emitente das Configurações como tomador: ao abrir, o exemplo escreve a chave dela, para você colar em
 Consultar e ver Confirmar e Recusar. Os eventos que a demonstração "registrou" voltam no histórico da nota.
 

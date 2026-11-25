@@ -206,7 +206,9 @@ fn o_cancelamento_segue_o_roteiro_e_so_registra_nota_que_conhece() {
         let chave = e.emitir(&dps()).await.chave;
         let r = e.cancelar(&chave, "9", "justificativa de teste").await;
         assert_eq!(r.status, Status::Rejeitada);
-        assert_eq!(r.erros.len(), 2);
+        // a recusa por prazo do Anexo II, a que a tela responde oferecendo a analise fiscal
+        assert_eq!(r.erros.len(), 1);
+        assert_eq!(r.erros[0].codigo, "E0822");
         assert_eq!(e.cancelada(&chave).await.status, Status::NaoEncontrada);
     });
 }

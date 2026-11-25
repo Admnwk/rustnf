@@ -186,7 +186,21 @@ pub const TEXTO_DA_RECUPERADA: &str = "O cancelamento já estava registrado na S
 /// O aviso quando o cancelamento foi registrado mas a pasta nao foi atualizada.
 pub const AVISO_DA_PASTA: &str = "O cancelamento foi registrado na Sefin, mas a pasta de notas não pôde marcar esta nota como cancelada. Use Atualizar ou consulte a nota pela chave.";
 
+/// A recusa do cancelamento por prazo: "O prazo para o cancelamento da NFS-e expirou, conforme parametrizacao do
+/// municipio emissor da NFS-e" (Anexo II do pedido de registro de evento, v1.01 de 22/01/2026, regra 25). Fora do
+/// prazo, o caminho e' o pedido de analise fiscal do cancelamento.
+pub const RECUSA_POR_PRAZO: &str = "E0822";
+
+/// O que a tela explica quando oferece a analise fiscal depois da recusa por prazo.
+pub const TEXTO_DA_OFERTA_DE_ANALISE: &str = "O prazo que o município dá para cancelar direto já passou. Você ainda pode pedir ao fisco do município que analise o cancelamento: o motivo e a justificativa que você escreveu vão junto, e a nota fica em análise até o fisco decidir.";
+
 impl DesfechoDoCancelamento {
+    /// O cancelamento foi recusado por prazo: a tela oferece pedir a analise fiscal ([`RECUSA_POR_PRAZO`]).
+    #[must_use]
+    pub fn recusado_por_prazo(&self) -> bool {
+        matches!(self, Self::Rejeitado { mensagens } if mensagens.iter().any(|m| m.codigo == RECUSA_POR_PRAZO))
+    }
+
     /// O desfecho do que `cancelar_pedido_completo` devolveu.
     #[must_use]
     pub fn de(c: Cancelada) -> Self {
@@ -419,6 +433,27 @@ mod testes {
             panic!("esperava rejeitado");
         };
         assert_eq!(mensagens[0].descricao, "Frase da biblioteca");
+    }
+
+    #[test]
+    fn so_a_recusa_por_prazo_oferece_a_analise_fiscal() {
+        let recusa = |codigos: &[&str]| {
+            let mut r = resultado(Status::Rejeitada);
+            r.erros = codigos
+                .iter()
+                .map(|c| Mensagem {
+                    codigo: format!(" {c} "),
+                    descricao: "recusa".into(),
+                    complemento: String::new(),
+                })
+                .collect();
+            DesfechoDoCancelamento::de(cancelada(r, None))
+        };
+        assert!(recusa(&["E0822"]).recusado_por_prazo());
+        assert!(recusa(&["E0001", "E0822"]).recusado_por_prazo());
+        assert!(!recusa(&["E0001"]).recusado_por_prazo());
+        assert!(!recusa(&[]).recusado_por_prazo());
+        assert!(!DesfechoDoCancelamento::NaoRegistrado.recusado_por_prazo());
     }
 
     #[test]

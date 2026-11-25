@@ -628,18 +628,12 @@ impl Emissor for EmissorDemonstracao {
                 );
                 r.http = 400;
                 r.erros = if conhecida {
-                    vec![
-                        mensagem(
-                            "DEMO-C1",
-                            "O prazo para cancelar esta nota diretamente no sistema já passou.",
-                            "Demonstração: nenhuma regra real foi consultada.",
-                        ),
-                        mensagem(
-                            "DEMO-C2",
-                            "Peça a análise fiscal do cancelamento ao município.",
-                            "",
-                        ),
-                    ]
+                    // o codigo e o texto da recusa por prazo do Anexo II (regra 25): a tela oferece a analise fiscal
+                    vec![mensagem(
+                        crate::modelo::cancelamento::RECUSA_POR_PRAZO,
+                        "O prazo para o cancelamento da NFS-e expirou, conforme parametrização do município emissor da NFS-e.",
+                        "Demonstração: nenhuma regra real foi consultada.",
+                    )]
                 } else {
                     vec![mensagem(
                         "DEMO-C3",

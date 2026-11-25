@@ -43,8 +43,8 @@
 * Interface de desktop, eventos na tela: conferir a situação das notas em lote (com andamento e Parar), histórico de
   eventos de uma nota, pedido de análise fiscal do cancelamento, consulta pela série e número da DPS e, para a nota
   recebida, confirmar e recusar. Testada com a demonstração e a janela de teste: **nenhuma consulta nem evento real foi
-  feito pela interface**. Pendente: a recusa do cancelamento por prazo não é reconhecida (o código da Sefin não está nas
-  regras da biblioteca), então o pedido de análise fiscal fica só como ação do detalhe.
+  feito pela interface**. O pedido de análise fiscal é oferecido no desfecho do cancelamento recusado por prazo (E0822) e
+  como ação do detalhe.
 
 * Entrega: interface compilada e testada no Windows pelo CI; fluxo de release que monta os executáveis (Windows sem
   dependência do Visual C++ Redistributable, e Linux só com a linha de comando) e abre a release como rascunho.

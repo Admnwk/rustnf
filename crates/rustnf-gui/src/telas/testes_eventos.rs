@@ -298,8 +298,10 @@ fn depois_do_cancelamento_recusado_pedir_a_analise_fiscal_marca_a_nota(cx: &mut 
         )
     });
     assert_eq!(situacoes(&c), vec![Situacao::Autorizada]);
+    // a recusa e' a do prazo (E0822): o proprio desfecho oferece a analise
+    assert!(existe(cx, &c, "cancelamento-pedir-analise"));
     clicar(cx, &c, "cancelamento-fechar");
-    // a acao esta no detalhe da nota autorizada do emitente
+    // a acao tambem esta no detalhe da nota autorizada do emitente
     assert!(existe(cx, &c, "pedir-analise-fiscal"));
     assert!(!existe(cx, &c, "confirmar-nota-recebida"));
     assert!(!existe(cx, &c, "recusar-nota-recebida"));
@@ -342,6 +344,66 @@ fn depois_do_cancelamento_recusado_pedir_a_analise_fiscal_marca_a_nota(cx: &mut 
     clicar(cx, &c, "cancelamento-fechar");
     assert!(!existe(cx, &c, "pedir-analise-fiscal"));
     assert!(!existe(cx, &c, "cancelar-nota"));
+}
+
+#[gpui_kit::test]
+fn a_recusa_por_prazo_leva_ao_pedido_de_analise_com_o_que_ja_foi_escrito(cx: &mut TestAppContext) {
+    let c = cenario(cx, "restrita", &[Cancelamento::Rejeitado], &[], false);
+    let chave = semear(&c, 1, "52998224725", "Maria de Teste", "100.50");
+    abrir_a_nota_da_lista(cx, &c, 1, &chave);
+    clicar(cx, &c, "cancelar-nota");
+    preencher_o_dialogo_de_evento(cx, &c);
+    clicar(cx, &c, "cancelamento-enviar");
+    esperar_ate(cx, "a recusa por prazo", |cx| {
+        desfecho_do_cancelamento(cx, &c).is_some_and(|d| d.recusado_por_prazo())
+    });
+    clicar(cx, &c, "cancelamento-pedir-analise");
+    // o mesmo dialogo, agora para a analise, com o motivo e a justificativa do cancelamento recusado
+    let d = dialogo(cx, &c);
+    cx.update(|cx| {
+        let d = d.read(cx);
+        assert_eq!(d.form.tipo, TipoDeEvento::AnaliseFiscal);
+        assert_eq!(d.form.motivo, Some("1"));
+        assert_eq!(d.form.justificativa, JUSTIFICATIVA);
+    });
+    assert!(c.emissor.pedidos_de_evento().is_empty());
+    clicar(cx, &c, "cancelamento-enviar");
+    esperar_ate(cx, "o pedido registrado", |cx| {
+        desfecho_do_cancelamento(cx, &c).is_some_and(|d| d.registrado())
+    });
+    let pedidos = c.emissor.pedidos_de_evento();
+    assert_eq!(pedidos.len(), 1);
+    assert_eq!(
+        (pedidos[0].tipo.as_str(), pedidos[0].motivo.as_str()),
+        ("101103", "1")
+    );
+    assert_eq!(pedidos[0].justificativa, JUSTIFICATIVA);
+    assert_eq!(
+        c.emissor.pedidos_de_cancelamento().len(),
+        1,
+        "so' o recusado"
+    );
+    assert_eq!(situacoes(&c), vec![Situacao::AnaliseFiscal]);
+}
+
+#[gpui_kit::test]
+fn em_producao_a_oferta_de_analise_pede_a_marcacao_de_novo(cx: &mut TestAppContext) {
+    let c = cenario(cx, "producao", &[Cancelamento::Rejeitado], &[], false);
+    let chave = semear(&c, 1, "52998224725", "Maria de Teste", "100.50");
+    abrir_a_nota_da_lista(cx, &c, 1, &chave);
+    clicar(cx, &c, "cancelar-nota");
+    preencher_o_dialogo_de_evento(cx, &c);
+    clicar(cx, &c, "entendo-efeito-fiscal");
+    clicar(cx, &c, "cancelamento-enviar");
+    esperar_ate(cx, "a recusa por prazo", |cx| {
+        desfecho_do_cancelamento(cx, &c).is_some_and(|d| d.recusado_por_prazo())
+    });
+    clicar(cx, &c, "cancelamento-pedir-analise");
+    let chamadas = c.emissor.total_de_chamadas();
+    clicar(cx, &c, "cancelamento-enviar");
+    assert!(c.emissor.pedidos_de_evento().is_empty());
+    assert_eq!(c.emissor.total_de_chamadas(), chamadas);
+    assert_eq!(situacoes(&c), vec![Situacao::Autorizada]);
 }
 
 #[gpui_kit::test]
