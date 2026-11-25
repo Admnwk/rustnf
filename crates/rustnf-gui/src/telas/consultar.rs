@@ -14,7 +14,8 @@ use gpui_kit::component::input::{Input, InputEvent, InputState};
 use gpui_kit::component::{h_flex, v_flex, ActiveTheme as _, Disableable as _, Icon, IconName};
 use gpui_kit::{
     div, px, AppContext as _, Context, Entity, EventEmitter, InteractiveElement as _, IntoElement,
-    ParentElement as _, Render, StatefulInteractiveElement as _, Styled as _, Subscription, Window,
+    ParentElement as _, Render, ScrollHandle, StatefulInteractiveElement as _, Styled as _,
+    Subscription, Window,
 };
 use rustnf_app::config::Config;
 use rustnf_app::segredo::Segredo;
@@ -72,6 +73,8 @@ pub(super) struct TelaConsultar {
     senha_pedida: Option<Entity<DialogoSenha>>,
     sub_senha: Option<Subscription>,
     _subs: Vec<Subscription>,
+    /// A rolagem da tela (teclado e campo focado).
+    pub(super) rolagem: ScrollHandle,
 }
 
 impl EventEmitter<EventoConsulta> for TelaConsultar {}
@@ -126,6 +129,7 @@ impl TelaConsultar {
             senha_pedida: None,
             sub_senha: None,
             _subs: vec![s1, s2],
+            rolagem: ScrollHandle::new(),
         }
     }
 
@@ -384,6 +388,7 @@ impl Render for TelaConsultar {
             .id("tela-consultar")
             .size_full()
             .overflow_y_scroll()
+            .track_scroll(&self.rolagem)
             .child(
                 v_flex()
                     .w_full()

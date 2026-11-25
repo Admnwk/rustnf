@@ -19,9 +19,10 @@ use gpui_kit::{
 
 use super::pecas::{cor_da, faixa, icone_da, Negrito as _};
 use super::raiz::{Estado, Raiz, Tela};
+use super::rolagem::{revelar, Passo};
 use super::{
-    DescartarConfiguracao, IrParaConsultar, IrParaNotas, IrParaNovaNota, IrParaPrevia,
-    SalvarConfiguracao,
+    DescartarConfiguracao, IrAoFim, IrAoTopo, IrParaConsultar, IrParaNotas, IrParaNovaNota,
+    IrParaPrevia, PaginaAbaixo, PaginaAcima, RolarAbaixo, RolarAcima, SalvarConfiguracao,
 };
 use crate::modelo::ambiente::{Ambiente, CORES_DA_DEMONSTRACAO, SELO_DA_DEMONSTRACAO};
 use crate::modelo::certificado::Gravidade;
@@ -231,6 +232,7 @@ impl Render for Raiz {
         let titulo = self.barra_de_titulo();
         let lateral = self.lateral(cx);
         let conteudo = self.conteudo(window, cx);
+        let rolagem = self.rolagem_da_tela(cx);
         let estado = self.barra_de_estado(cx);
         v_flex()
             .id("raiz")
@@ -260,14 +262,44 @@ impl Render for Raiz {
             .on_action(cx.listener(|this, _: &IrParaPrevia, _, cx| {
                 this.ir_para(Tela::Previa, cx);
             }))
+            .on_action(cx.listener(|this, _: &RolarAcima, _, cx| {
+                if !this.rolar_tela(Passo::LinhaAcima, cx) {
+                    cx.propagate();
+                }
+            }))
+            .on_action(cx.listener(|this, _: &RolarAbaixo, _, cx| {
+                if !this.rolar_tela(Passo::LinhaAbaixo, cx) {
+                    cx.propagate();
+                }
+            }))
+            .on_action(cx.listener(|this, _: &PaginaAcima, _, cx| {
+                if !this.rolar_tela(Passo::PaginaAcima, cx) {
+                    cx.propagate();
+                }
+            }))
+            .on_action(cx.listener(|this, _: &PaginaAbaixo, _, cx| {
+                if !this.rolar_tela(Passo::PaginaAbaixo, cx) {
+                    cx.propagate();
+                }
+            }))
+            .on_action(cx.listener(|this, _: &IrAoTopo, _, cx| {
+                if !this.rolar_tela(Passo::Topo, cx) {
+                    cx.propagate();
+                }
+            }))
+            .on_action(cx.listener(|this, _: &IrAoFim, _, cx| {
+                if !this.rolar_tela(Passo::Fim, cx) {
+                    cx.propagate();
+                }
+            }))
             .child(titulo)
-            .child(
-                h_flex()
-                    .flex_1()
-                    .min_h_0()
-                    .child(lateral)
-                    .child(div().flex_1().min_w_0().h_full().child(conteudo)),
-            )
+            .child(h_flex().flex_1().min_h_0().child(lateral).child(
+                div().flex_1().min_w_0().h_full().child(match rolagem {
+                    // o campo que ganha o foco aparece na tela
+                    Some(r) => revelar(&r, conteudo).into_any_element(),
+                    None => conteudo,
+                }),
+            ))
             .child(estado)
     }
 }

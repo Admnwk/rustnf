@@ -8,6 +8,9 @@
   partir do pedido em JSON, assina com um certificado A1 de teste e confere a assinatura, sem rede.
 * CI: documentação gerada com aviso virando erro, o exemplo da biblioteca roda, e o histórico inteiro passa pelo
   gitleaks (binário oficial conferido pelo SHA-256); as ações do GitHub foram para as versões em Node.js 24.
+* Interface de desktop pelo teclado: o Tab leva a tela até o campo que ganha o foco (antes ele podia ficar fora de
+  vista), PageUp/PageDown rolam a tela mesmo com o foco num campo, e as setas e Ctrl+Home/Ctrl+End rolam quando o
+  foco não está num campo. Na lista de notas as setas continuam andando pela lista.
 * Quem já emitia por outro sistema continua a numeração de lá: `rustnf notas numero --proximo <N>` ou, na interface,
   Configurações > Notas e DANFSe > "Continuar deste número". A série passa a seguir do número informado; a
   numeração só anda para a frente (um número já usado faria a Sefin devolver a nota antiga). Sem `--proximo`, o

@@ -538,3 +538,113 @@ fn quem_ja_emitia_continua_a_numeracao_pela_tela(cx: &mut TestAppContext) {
         assert_eq!(r.proximo_dps, Some(1501));
     });
 }
+
+/// Como [`abrir`], numa janela baixa: o formulario nao cabe e a tela precisa rolar.
+fn abrir_baixa(
+    cx: &mut TestAppContext,
+    servicos: Arc<Servicos>,
+) -> (WindowHandle<gpui_kit::base::Root>, Entity<Raiz>) {
+    cx.update(iniciar);
+    cx.update(|cx| {
+        let (janela, raiz) = gpui_kit::open_window(
+            WindowOptions {
+                window_bounds: Some(WindowBounds::Windowed(Bounds {
+                    origin: Point::default(),
+                    size: size(px(1120.), px(480.)),
+                })),
+                ..Default::default()
+            },
+            cx,
+            move |window, cx| cx.new(|cx| Raiz::new(servicos, window, cx)),
+        )
+        .unwrap();
+        (janela.downcast::<gpui_kit::base::Root>().unwrap(), raiz)
+    })
+}
+
+fn deslocamento(cx: &mut TestAppContext, raiz: &Entity<Raiz>) -> f32 {
+    cx.update(|cx| {
+        let r = raiz.read(cx);
+        f32::from(r.rolagem_da_tela(cx).unwrap().offset().y)
+    })
+}
+
+fn apertar(cx: &mut TestAppContext, janela: WindowHandle<gpui_kit::base::Root>, tecla: &str) {
+    cx.update_window(janela.into(), |_, window, cx| {
+        window.render_frame(cx);
+        window.press(tecla, cx);
+    })
+    .unwrap();
+    cx.run_until_parked();
+    cx.update_window(janela.into(), |_, window, cx| window.render_frame(cx))
+        .unwrap();
+}
+
+#[gpui_kit::test]
+fn o_teclado_rola_a_tela_e_o_tab_leva_a_tela_ate_o_campo(cx: &mut TestAppContext) {
+    let pasta = PastaTemporaria::nova("janela-rolagem");
+    let pfx = pasta.certificado("a.pfx", CNPJ, SENHA, 365);
+    let arquivo = arquivo_completo(&pasta, &pfx);
+    let (janela, raiz) = abrir_baixa(
+        cx,
+        servicos(&arquivo, Arc::new(CofreEmMemoria::novo()), sem_rede()),
+    );
+    cx.run_until_parked();
+    cx.update(|cx| {
+        raiz.update(cx, |r, cx| {
+            r.tela = Tela::Configuracoes;
+            cx.notify();
+        });
+    });
+    cx.update_window(janela.into(), |_, window, cx| window.render_frame(cx))
+        .unwrap();
+    assert_eq!(deslocamento(cx, &raiz), 0.0);
+
+    // com o foco num campo, PageDown rola a tela (o campo de uma linha nao usa a tecla)
+    clicar(cx, janela, "documento");
+    apertar(cx, janela, "pagedown");
+    let depois_da_pagina = deslocamento(cx, &raiz);
+    assert!(depois_da_pagina < -100.0, "PageDown: {depois_da_pagina}");
+    // PageUp volta
+    apertar(cx, janela, "pageup");
+    assert_eq!(deslocamento(cx, &raiz), 0.0, "PageUp");
+    cx.update(|cx| {
+        raiz.update(cx, |r, cx| {
+            r.rolagem.set_offset(Point::default());
+            cx.notify();
+        });
+    });
+
+    // Tab de campo em campo: o campo que ganha o foco aparece; a tela desce sozinha
+    clicar(cx, janela, "documento");
+    // documento -> inscricao -> nome -> municipio -> serie, que fica abaixo da dobra nesta janela
+    for _ in 0..4 {
+        apertar(cx, janela, "tab");
+    }
+    cx.update_window(janela.into(), |_, window, cx| {
+        window.render_frame(cx);
+        assert_eq!(
+            window.find("serie").focused(),
+            Some(true),
+            "o Tab devia chegar na serie"
+        );
+    })
+    .unwrap();
+    let depois_do_tab = deslocamento(cx, &raiz);
+    assert!(depois_do_tab < -50.0, "Tab: {depois_do_tab}");
+    // a tela vai ao fim; Shift+Tab ate o documento (primeiro campo, agora acima da area) traz a tela de volta
+    apertar(cx, janela, "pagedown");
+    apertar(cx, janela, "pagedown");
+    let longe = deslocamento(cx, &raiz);
+    assert!(longe < depois_do_tab, "PageDown: {longe}");
+    for _ in 0..4 {
+        apertar(cx, janela, "shift-tab");
+    }
+    cx.update_window(janela.into(), |_, window, cx| {
+        window.render_frame(cx);
+        assert_eq!(window.find("documento").focused(), Some(true));
+    })
+    .unwrap();
+    let de_volta = deslocamento(cx, &raiz);
+    assert!(de_volta > longe, "Shift+Tab: {de_volta} x {longe}");
+}

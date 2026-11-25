@@ -564,6 +564,7 @@ impl Raiz {
                     .flex_1()
                     .min_h_0()
                     .overflow_y_scroll()
+                    .track_scroll(&self.rolagem)
                     .child(
                         v_flex()
                             .w_full()
