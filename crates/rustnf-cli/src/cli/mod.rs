@@ -223,6 +223,16 @@ pub enum AcaoNotas {
     /// Refaz o indice da pasta de notas a partir dos XML guardados (indice perdido ou ilegivel). O indice anterior
     /// fica copiado ao lado; a numeracao da DPS nao muda.
     Reindexar,
+    /// Mostra o proximo numero de DPS da serie ou, com `--proximo`, faz a serie continuar nele: para quem ja emitia
+    /// por outro sistema, use o numero seguinte a ultima DPS de la. So' anda para a frente.
+    Numero {
+        /// A serie; sem a opcao, a do `[emitente]` ou 1.
+        #[arg(long, value_name = "SERIE")]
+        serie: Option<String>,
+        /// O numero da proxima DPS da serie.
+        #[arg(long, value_name = "N")]
+        proximo: Option<u64>,
+    },
 }
 
 /// Situacao de uma nota na pasta de notas.

@@ -12,7 +12,7 @@ use rustnf::nfse::base::{brasilia, de_datahora};
 use rustnf_app::certificado;
 use rustnf_app::config::Config;
 use rustnf_app::emissao::Emissor;
-use rustnf_app::notas::Notas;
+use rustnf_app::notas::{ErroNotas, Notas};
 use rustnf_app::pedido::emitir_pedido_completo;
 use rustnf_app::segredo::Segredo;
 
@@ -101,6 +101,34 @@ impl Servicos {
         Notas::abrir(&config.notas.pasta)
             .and_then(|n| n.proximo_numero(&serie))
             .map_err(|_| ErroTela::Pasta)
+    }
+
+    /// Faz a serie do emitente continuar em `proximo` (quem ja emitia por outro sistema) e devolve o proximo numero
+    /// que vale agora. So' anda para a frente.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroTela::Valor`] com a frase para a tela quando o numero ja foi usado ou nao serve; [`ErroTela::Pasta`] se a
+    /// pasta nao pode ser usada.
+    pub fn definir_proximo(&self, config: &Config, proximo: u64) -> Result<u64, ErroTela> {
+        let serie = self.contexto_da_nota(config).serie();
+        let notas = Notas::abrir(&config.notas.pasta).map_err(|_| ErroTela::Pasta)?;
+        match notas.definir_proximo(&serie, proximo) {
+            Ok(()) => {}
+            Err(ErroNotas::NumeroJaUsado) => {
+                let atual = notas.proximo_numero(&serie).map_err(|_| ErroTela::Pasta)?;
+                return Err(ErroTela::Valor(format!(
+                    "O número {proximo} já foi usado na série {serie}. A próxima DPS só pode ser a nº {atual} ou uma depois dela."
+                )));
+            }
+            Err(ErroNotas::NumeroInvalido) => {
+                return Err(ErroTela::Valor(
+                    "Informe um número de 1 a 999999999999999.".into(),
+                ))
+            }
+            Err(_) => return Err(ErroTela::Pasta),
+        }
+        notas.proximo_numero(&serie).map_err(|_| ErroTela::Pasta)
     }
 
     /// Congela o pedido da nota: o proximo numero da pasta de notas e a data e hora de emissao de agora (menos a

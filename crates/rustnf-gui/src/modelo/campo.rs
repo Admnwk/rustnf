@@ -77,6 +77,8 @@ pub enum Campo {
     FolgaRelogio,
     /// Pasta das notas.
     NotasPasta,
+    /// O numero em que a serie da DPS deve continuar (nao e' gravado no arquivo: vai para a pasta de notas).
+    ProximoDps,
     /// Uma celula da tabela de aliquotas: linha e coluna.
     Aliquota(usize, CampoAliquota),
 }

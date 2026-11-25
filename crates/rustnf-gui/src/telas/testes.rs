@@ -455,3 +455,86 @@ fn tab_percorre_os_campos_na_ordem_visual_e_enter_confirma_o_primeiro_uso(cx: &m
             .is_some());
     });
 }
+
+#[gpui_kit::test]
+fn quem_ja_emitia_continua_a_numeracao_pela_tela(cx: &mut TestAppContext) {
+    let pasta = PastaTemporaria::nova("janela-numero-inicial");
+    let pfx = pasta.certificado("a.pfx", CNPJ, SENHA, 365);
+    let arquivo = arquivo_completo(&pasta, &pfx);
+    let notas_dir = pasta.caminho().join("notas");
+    let (janela, raiz) = abrir(
+        cx,
+        servicos(&arquivo, Arc::new(CofreEmMemoria::novo()), sem_rede()),
+    );
+    cx.run_until_parked();
+    cx.update(|cx| {
+        raiz.update(cx, |r, cx| {
+            r.tela = Tela::Configuracoes;
+            r.secao = super::Secao::Notas;
+            cx.notify();
+        });
+    });
+    cx.run_until_parked();
+    cx.update(|cx| assert_eq!(raiz.read(cx).proximo_dps, Some(1)));
+
+    // texto que nao e' numero: aviso no campo, sem perguntar nada
+    digitar(cx, janela, "proximo-numero-dps", "15a", true);
+    clicar(cx, janela, "continuar-deste-numero");
+    cx.update(|cx| {
+        assert!(raiz
+            .read(cx)
+            .erros_externos
+            .contains_key(&crate::modelo::campo::Campo::ProximoDps));
+    });
+
+    // a ultima DPS do outro sistema foi a 1500: pergunta e, confirmado, a serie continua na 1501
+    digitar(cx, janela, "proximo-numero-dps", "1501", true);
+    clicar(cx, janela, "continuar-deste-numero");
+    assert_eq!(
+        rustnf_app::notas::Notas::abrir(&notas_dir)
+            .unwrap()
+            .proximo_numero("1")
+            .unwrap(),
+        1,
+        "so' a confirmacao muda a numeracao"
+    );
+
+    clicar(cx, janela, "ok");
+    cx.run_until_parked();
+
+    assert_eq!(
+        rustnf_app::notas::Notas::abrir(&notas_dir)
+            .unwrap()
+            .proximo_numero("1")
+            .unwrap(),
+        1501
+    );
+    cx.update(|cx| {
+        let r = raiz.read(cx);
+        assert_eq!(r.proximo_dps, Some(1501));
+        assert!(!r
+            .erros_externos
+            .contains_key(&crate::modelo::campo::Campo::ProximoDps));
+        // a Nova nota ja' mostra o numero novo
+        assert_eq!(r.nova.read(cx).numero_provisorio, 1501);
+    });
+
+    // voltar atras: recusado com a frase do numero que vale, e nada muda
+    digitar(cx, janela, "proximo-numero-dps", "100", true);
+    clicar(cx, janela, "continuar-deste-numero");
+    clicar(cx, janela, "ok");
+    cx.run_until_parked();
+    cx.update(|cx| {
+        let r = raiz.read(cx);
+        let erro = r
+            .erros_externos
+            .get(&crate::modelo::campo::Campo::ProximoDps)
+            .cloned()
+            .unwrap_or_default();
+        assert!(
+            erro.contains("já foi usado") && erro.contains("1501"),
+            "{erro}"
+        );
+        assert_eq!(r.proximo_dps, Some(1501));
+    });
+}

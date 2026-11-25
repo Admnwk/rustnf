@@ -109,6 +109,8 @@ pub(super) struct Ocupado {
     pub(super) senha: bool,
     /// Conferindo o passo do primeiro uso.
     pub(super) passo: bool,
+    /// Mudando o proximo numero da DPS.
+    pub(super) numero: bool,
 }
 
 /// Aviso de pagina (erro que nao e' de campo, ou confirmacao).
@@ -144,6 +146,8 @@ pub(super) struct Entradas {
     pub(super) tempo: Entity<InputState>,
     pub(super) folga: Entity<InputState>,
     pub(super) notas: Entity<InputState>,
+    /// O numero em que a serie deve continuar (quem ja emitia por outro sistema).
+    pub(super) proximo: Entity<InputState>,
     /// Uma linha por aliquota, uma entrada por coluna (na ordem de `CampoAliquota::TODOS`).
     pub(super) aliquotas: Vec<Vec<Entity<InputState>>>,
 }
@@ -174,6 +178,8 @@ pub struct Raiz {
     pub(super) resultado_conexao: Option<(bool, String)>,
     pub(super) erros_externos: BTreeMap<Campo, String>,
     pub(super) aviso: Option<Aviso>,
+    /// O proximo numero de DPS da serie, pela pasta de notas gravada; `None` = sem pasta ou ainda lendo.
+    pub(super) proximo_dps: Option<u64>,
     fixas: Vec<Subscription>,
     das_aliquotas: Vec<Subscription>,
 }
@@ -216,6 +222,7 @@ impl Raiz {
             tempo: entrada(window, cx, "60"),
             folga: entrada(window, cx, "60"),
             notas: entrada(window, cx, "Pasta das notas"),
+            proximo: entrada(window, cx, "Ex.: 1501"),
             aliquotas: Vec::new(),
         };
         let apuracao = selecao(window, cx, &OPCOES_APURACAO);
@@ -265,6 +272,7 @@ impl Raiz {
             resultado_conexao: None,
             erros_externos: BTreeMap::new(),
             aviso: None,
+            proximo_dps: None,
             fixas: Vec::new(),
             das_aliquotas: Vec::new(),
         };
@@ -511,6 +519,109 @@ impl Raiz {
         self.consultar.update(cx, |c, cx| c.definir_config(e, cx));
         self.previa
             .update(cx, |p, cx| p.definir_config(&efetiva, window, cx));
+        self.atualizar_proximo_dps(efetiva, window, cx);
+    }
+
+    /// Le de novo o proximo numero de DPS da serie (para a secao Notas das Configuracoes).
+    fn atualizar_proximo_dps(
+        &mut self,
+        efetiva: Config,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.proximo_dps = None;
+        if efetiva.notas.pasta.trim().is_empty() {
+            return;
+        }
+        let servicos = Arc::clone(&self.servicos);
+        cx.spawn_in(window, async move |this, cx| {
+            let r = cx
+                .background_spawn(async move { servicos.proximo_numero(&efetiva) })
+                .await;
+            this.update(cx, |this, cx| {
+                this.proximo_dps = r.ok();
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    /// "Continuar deste numero": confere o que foi digitado e pergunta antes de mudar a numeracao.
+    pub(super) fn pedir_proximo_dps(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        let digitado = self.entradas.proximo.read(cx).value().trim().to_string();
+        let Some(proximo) = digitado
+            .parse::<u64>()
+            .ok()
+            .filter(|n| *n > 0 && digitado.chars().all(|c| c.is_ascii_digit()))
+        else {
+            self.erros_externos.insert(
+                Campo::ProximoDps,
+                "Digite só o número da próxima DPS, por exemplo 1501.".into(),
+            );
+            cx.notify();
+            return;
+        };
+        self.erros_externos.remove(&Campo::ProximoDps);
+        let serie = self
+            .servicos
+            .contexto_da_nota(&self.servicos.efetiva(&self.salvo))
+            .serie();
+        let raiz = cx.entity();
+        window.open_alert_dialog(cx, move |alerta, _, _| {
+            let raiz = raiz.clone();
+            alerta
+                .title(format!("A próxima DPS da série {serie} será a nº {proximo}?"))
+                .description(
+                    "Use o número seguinte ao da última DPS emitida no outro sistema. Um número já usado faz a Sefin devolver a nota antiga em vez de autorizar a nova. A numeração não volta atrás depois.",
+                )
+                .confirm()
+                .ok_text("Continuar deste número")
+                .cancel_text("Cancelar")
+                .on_ok(move |_, window, cx| {
+                    raiz.update(cx, |this, cx| this.definir_proximo_dps(proximo, window, cx));
+                    true
+                })
+        });
+    }
+
+    fn definir_proximo_dps(&mut self, proximo: u64, window: &mut Window, cx: &mut Context<Self>) {
+        if self.ocupado.numero {
+            return;
+        }
+        let efetiva = self.servicos.efetiva(&self.salvo);
+        let servicos = Arc::clone(&self.servicos);
+        self.ocupado.numero = true;
+        cx.notify();
+        cx.spawn_in(window, async move |this, cx| {
+            let r = cx
+                .background_spawn(async move { servicos.definir_proximo(&efetiva, proximo) })
+                .await;
+            this.update_in(cx, |this, window, cx| {
+                this.ocupado.numero = false;
+                match r {
+                    Ok(n) => {
+                        this.entradas
+                            .proximo
+                            .update(cx, |e, cx| e.set_value("", window, cx));
+                        window.push_notification(
+                            Notification::success(format!("A próxima DPS será a nº {n}."))
+                                .title("Numeração alterada"),
+                            cx,
+                        );
+                        this.proximo_dps = Some(n);
+                        // a Nova nota mostra o numero da proxima DPS: le de novo
+                        this.nova.update(cx, |nova, cx| nova.atualizar_numero(cx));
+                    }
+                    Err(erro) => {
+                        this.erros_externos.insert(Campo::ProximoDps, erro.texto());
+                    }
+                }
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
     }
 
     /// Muda a tela. Notas le a pasta de novo ao abrir, para a lista nao ficar atras do que a Nova nota e os

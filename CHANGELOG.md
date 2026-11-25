@@ -8,6 +8,10 @@
   partir do pedido em JSON, assina com um certificado A1 de teste e confere a assinatura, sem rede.
 * CI: documentação gerada com aviso virando erro, o exemplo da biblioteca roda, e o histórico inteiro passa pelo
   gitleaks (binário oficial conferido pelo SHA-256); as ações do GitHub foram para as versões em Node.js 24.
+* Quem já emitia por outro sistema continua a numeração de lá: `rustnf notas numero --proximo <N>` ou, na interface,
+  Configurações > Notas e DANFSe > "Continuar deste número". A série passa a seguir do número informado; a
+  numeração só anda para a frente (um número já usado faria a Sefin devolver a nota antiga). Sem `--proximo`, o
+  comando mostra a próxima DPS da série.
 * `rustnf completar <shell>`: imprime o script que completa comandos e opções com Tab no PowerShell, bash, zsh,
   fish ou elvish (veja "Linha de comando" no README).
 * Dependências: atualização semanal proposta pelo Dependabot, agrupada, sempre passando pelo CI antes de entrar; o

@@ -129,6 +129,17 @@ pub(super) fn notas(acao: AcaoNotas, explicito: Option<&Path>) -> Result<(), Err
     let e = carregar(explicito)?;
     let notas = notas_exigida(&e)?;
     match acao {
+        AcaoNotas::Numero { serie, proximo } => {
+            let serie = serie
+                .or_else(|| Some(e.config.emitente.serie.trim().to_string()))
+                .filter(|s| !s.is_empty())
+                .unwrap_or_else(|| "1".into());
+            if let Some(n) = proximo {
+                notas.definir_proximo(&serie, n)?;
+            }
+            let n = notas.proximo_numero(&serie)?;
+            escrever_stdout(format!("serie {serie}: proxima DPS {n}\n").as_bytes())
+        }
         AcaoNotas::Exportar { mes, para } => {
             let lista = Filtro::do_mes(&mes)?.aplicar(notas.listar()?);
             if lista.is_empty() {

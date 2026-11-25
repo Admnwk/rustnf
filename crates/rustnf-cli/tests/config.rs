@@ -688,6 +688,63 @@ fn notas_exportar_copia_os_xml_do_mes_e_a_lista() {
 }
 
 #[test]
+fn notas_numero_mostra_e_continua_a_numeracao_de_outro_sistema() {
+    let p = Pasta::nova();
+    let pasta = p.caminho("notas");
+    let cfg = p.escrever(
+        "notas.toml",
+        format!(
+            "[emitente]\nserie = '3'\n[notas]\npasta = '{}'\n",
+            pasta.to_string_lossy()
+        )
+        .as_bytes(),
+    );
+    let s = rodar(&p, &["notas", "numero", "--config", &cfg], None, &[]);
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    assert_eq!(s.out.trim(), "serie 3: proxima DPS 1");
+    // a ultima DPS do outro sistema foi a 1500
+    let s = rodar(
+        &p,
+        &["notas", "numero", "--proximo", "1501", "--config", &cfg],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    assert_eq!(s.out.trim(), "serie 3: proxima DPS 1501");
+    let notas = Notas::abrir(&pasta).unwrap();
+    assert_eq!(notas.proximo_numero("3").unwrap(), 1501);
+    assert_eq!(notas.proximo_numero("1").unwrap(), 1);
+    // outra serie, pela opcao
+    let s = rodar(
+        &p,
+        &[
+            "notas",
+            "numero",
+            "--serie",
+            "1",
+            "--proximo",
+            "20",
+            "--config",
+            &cfg,
+        ],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    assert_eq!(notas.proximo_numero("1").unwrap(), 20);
+    // voltar atras e' erro de entrada, e nada muda
+    let s = rodar(
+        &p,
+        &["notas", "numero", "--proximo", "100", "--config", &cfg],
+        None,
+        &[],
+    );
+    assert_eq!(s.codigo, 2, "{}", s.out);
+    assert!(s.err.contains("ja foi usado"), "{}", s.err);
+    assert_eq!(notas.proximo_numero("3").unwrap(), 1501);
+}
+
+#[test]
 fn notas_reindexar_refaz_o_indice_ilegivel() {
     let p = Pasta::nova();
     let pasta = p.caminho("notas");

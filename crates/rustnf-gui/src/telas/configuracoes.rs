@@ -238,6 +238,7 @@ impl Raiz {
                     .child(self.titulo_do_grupo("Notas", None, cx))
                     .child(self.campo_da_pasta(false, cx)),
             )
+            .child(self.bloco_da_numeracao(cx))
             .child(
                 v_flex()
                     .gap_3()
@@ -255,6 +256,69 @@ impl Raiz {
                                 cx.notify();
                             })),
                     ),
+            )
+            .into_any_element()
+    }
+
+    /// A numeracao da DPS: o proximo numero da serie e, para quem ja emitia por outro sistema, onde continuar.
+    fn bloco_da_numeracao(&mut self, cx: &mut Context<Self>) -> AnyElement {
+        let erro = self.erros_externos.get(&Campo::ProximoDps).cloned();
+        let pasta_gravada = !self.salvo.notas.pasta.trim().is_empty();
+        let ocupado = self.ocupado.numero;
+        let serie = self
+            .servicos
+            .contexto_da_nota(&self.servicos.efetiva(&self.salvo))
+            .serie();
+        let situacao = match (pasta_gravada, self.proximo_dps) {
+            (false, _) => "Salve a pasta das notas para ver e ajustar a numeração.".to_string(),
+            (true, None) => "Lendo a numeração da pasta de notas...".to_string(),
+            (true, Some(n)) => format!("Série {serie}: a próxima DPS será a nº {n}."),
+        };
+        let muted = cx.theme().muted_foreground;
+        v_flex()
+            .gap_3()
+            .child(self.titulo_do_grupo(
+                "Numeração da DPS",
+                Some("Cada série numera as suas DPS em sequência, a partir da 1."),
+                cx,
+            ))
+            .child(
+                div()
+                    .id("proxima-dps")
+                    .text_sm()
+                    .child(situacao),
+            )
+            .child(campo(
+                "Já emitia por outro sistema?",
+                false,
+                Some(
+                    "Informe o número seguinte ao da última DPS que você emitiu lá. A numeração só anda para a frente."
+                        .into(),
+                ),
+                erro,
+                h_flex()
+                    .gap_2()
+                    .child(
+                        div()
+                            .w(px(180.))
+                            .child(Input::new(&self.entradas.proximo).id("proximo-numero-dps")),
+                    )
+                    .child(
+                        Button::new("continuar-deste-numero")
+                            .label("Continuar deste número")
+                            .outline()
+                            .loading(ocupado)
+                            .disabled(!pasta_gravada || ocupado)
+                            .on_click(cx.listener(|this, _, window, cx| {
+                                this.pedir_proximo_dps(window, cx);
+                            })),
+                    ),
+            ))
+            .child(
+                div()
+                    .text_xs()
+                    .text_color(muted)
+                    .child("Na linha de comando: rustnf notas numero --proximo <N>."),
             )
             .into_any_element()
     }

@@ -108,6 +108,51 @@ fn numeracao_so_avanca_quando_confirmada() {
 }
 
 #[test]
+fn quem_ja_emitia_em_outro_sistema_comeca_no_numero_seguinte() {
+    let p = PastaTemporaria::nova("notas-numero-inicial");
+    let notas = Notas::abrir(p.caminho()).unwrap();
+    // a ultima DPS do outro sistema foi a 1500: a primeira daqui e' a 1501
+    notas.definir_proximo("1", 1501).unwrap();
+    assert_eq!(notas.proximo_numero("1").unwrap(), 1501);
+    // so' a serie pedida muda
+    assert_eq!(notas.proximo_numero("2").unwrap(), 1);
+    // a emissao confirma e segue dali
+    notas.confirmar_numero("1", 1501).unwrap();
+    assert_eq!(notas.proximo_numero("1").unwrap(), 1502);
+    // pular para a frente pode; o mesmo numero de agora tambem (nada muda)
+    notas.definir_proximo("1", 1502).unwrap();
+    notas.definir_proximo("1", 2000).unwrap();
+    assert_eq!(notas.proximo_numero("1").unwrap(), 2000);
+    // voltar para um numero ja usado nao: a Sefin devolveria a nota antiga
+    assert_eq!(
+        notas.definir_proximo("1", 1501).unwrap_err(),
+        ErroNotas::NumeroJaUsado
+    );
+    // nem abaixo de uma nota guardada na pasta
+    let mut r = registro(2500);
+    r.numero_dps = "2500".into();
+    notas.guardar(&r, "<x/>").unwrap();
+    assert_eq!(
+        notas.definir_proximo("1", 2400).unwrap_err(),
+        ErroNotas::NumeroJaUsado
+    );
+    assert_eq!(notas.proximo_numero("1").unwrap(), 2501);
+    // fora da faixa e serie ruim
+    assert_eq!(
+        notas.definir_proximo("1", 0).unwrap_err(),
+        ErroNotas::NumeroInvalido
+    );
+    assert_eq!(
+        notas.definir_proximo("1", NUMERO_MAXIMO + 1).unwrap_err(),
+        ErroNotas::NumeroInvalido
+    );
+    assert_eq!(
+        notas.definir_proximo("abc", 10).unwrap_err(),
+        ErroNotas::SerieInvalida
+    );
+}
+
+#[test]
 fn serie_e_numero_invalidos_sao_recusados() {
     let p = PastaTemporaria::nova("notas-numero-ruim");
     let notas = Notas::abrir(p.caminho()).unwrap();
