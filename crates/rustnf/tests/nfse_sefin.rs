@@ -14,6 +14,7 @@ use chrono::Utc;
 use rustnf::assinatura::cert_a1::{self, Certificado};
 use rustnf::assinatura::xmldsig::{self, Algoritmo};
 use rustnf::chave_dfe;
+use rustnf::nfse::eventos::{self, DadosEvento};
 use rustnf::nfse::sefin::{ClienteNfse, FalhaRede, Status, Transporte};
 use rustnf::nfse::{compactar, descompactar, Dps};
 use serde_json::{json, Value};
@@ -57,6 +58,26 @@ fn nfse_xml(ch: &str) -> String {
 enum Resp {
     R(u16, Vec<u8>),
     F(FalhaRede),
+    /// O evento de sequencia `n` que carrega o pedido enviado por ultimo, como o SEFIN o devolve.
+    Eco(u32),
+}
+
+/// O XML de um evento registrado (`<evento>` com o pedRegEvento dentro).
+fn evento_xml(ch: &str, tipo: &str, seq: u32, dh_evento: &str) -> String {
+    format!(
+        "<evento xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infEvento Id=\"EVT{ch}{tipo}\">\
+         <nSeqEvento>{seq}</nSeqEvento><dhProc>2026-11-25T10:00:05-03:00</dhProc>\
+         <pedRegEvento versao=\"1.01\"><infPedReg Id=\"PRE{ch}{tipo}\"><tpAmb>2</tpAmb>\
+         <dhEvento>{dh_evento}</dhEvento><CNPJAutor>11222333000181</CNPJAutor><chNFSe>{ch}</chNFSe>\
+         <e{tipo}><xDesc>evento</xDesc></e{tipo}></infPedReg></pedRegEvento></infEvento></evento>"
+    )
+}
+
+fn evento_resp(ch: &str, tipo: &str, seq: u32, dh_evento: &str) -> Resp {
+    j(
+        200,
+        json!({"eventoXmlGZipB64": compactar(&evento_xml(ch, tipo, seq, dh_evento))}),
+    )
 }
 
 fn j(st: u16, v: Value) -> Resp {
@@ -82,6 +103,25 @@ impl Falso {
     fn pedidos(&self) -> Vec<(String, String, Option<Value>)> {
         self.pedidos.lock().unwrap().clone()
     }
+
+    /// A resposta de consulta do evento de sequencia `seq` que carrega o ultimo pedido assinado enviado.
+    fn eco(&self, seq: u32) -> Vec<u8> {
+        let enviados = self.pedidos();
+        let corpo = enviados
+            .iter()
+            .rev()
+            .find_map(|(_, _, c)| c.as_ref()?["pedidoRegistroEventoXmlGZipB64"].as_str())
+            .unwrap();
+        let pedido = descompactar(corpo).unwrap();
+        let interno = pedido.split_once("?>").unwrap().1;
+        let xml = format!(
+            "<evento xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infEvento Id=\"EVT\">\
+             <nSeqEvento>{seq}</nSeqEvento><dhProc>2026-11-25T10:00:05-03:00</dhProc>{interno}</infEvento></evento>"
+        );
+        json!({"eventoXmlGZipB64": compactar(&xml)})
+            .to_string()
+            .into_bytes()
+    }
 }
 
 #[async_trait]
@@ -106,6 +146,7 @@ impl Transporte for Falso {
             return match r.remove(i).2 {
                 Resp::R(st, b) => Ok((st, b)),
                 Resp::F(f) => Err(f),
+                Resp::Eco(seq) => Ok((200, self.eco(seq))),
             };
         }
         Ok((
@@ -387,11 +428,7 @@ async fn cancelar_assina_e_sem_resposta_consulta_o_evento() {
     );
     let (c, _) = cli(vec![
         ("POST", "/eventos".into(), Resp::F(FalhaRede::Tempo)),
-        (
-            "GET",
-            format!("/nfse/{ch}/eventos/101101/1"),
-            j(200, json!({"eventoXmlGZipB64": compactar("<e/>")})),
-        ),
+        ("GET", format!("/nfse/{ch}/eventos/101101/1"), Resp::Eco(1)),
     ]);
     let r = c.cancelar(&ch, "1", "Valor digitado errado na nota").await;
     assert!(r.status == Status::Registrado && r.recuperada);
@@ -440,7 +477,7 @@ async fn consultar_nfse_e_cancelada() {
     let (c, _) = cli(vec![(
         "GET",
         format!("/nfse/{ch}/eventos/101101/1"),
-        j(200, json!({"eventoXmlGZipB64": compactar("<e/>")})),
+        evento_resp(&ch, "101101", 1, "2026-11-25T09:00:00-03:00"),
     )]);
     assert_eq!(c.cancelada(&ch).await.status, Status::Ok);
 }
@@ -454,4 +491,143 @@ fn base_http_so_no_loopback() {
         ClienteNfse::com_transporte(a1(), 2, Some("http://exemplo.com.br"), Falso::default())
             .is_err()
     );
+}
+
+/// O pedido de analise fiscal com a data do evento fixa, para o teste saber o que o SEFIN deve devolver.
+fn pedido_de_analise(ch: &str, dh_evento: &str) -> eventos::Pedido {
+    eventos::montar(&DadosEvento {
+        tipo: eventos::ANALISE_FISCAL,
+        chave: ch,
+        autor: "11222333000181",
+        motivo: "1",
+        justificativa: "Valor digitado errado na nota",
+        dh_evento: Some(dh_evento),
+        ..Default::default()
+    })
+    .unwrap()
+}
+
+#[tokio::test]
+async fn resposta_perdida_nao_toma_o_evento_antigo_da_sequencia_1_pelo_pedido() {
+    let ch = chave();
+    let pedido = pedido_de_analise(&ch, "2026-11-25T10:00:00-03:00");
+    // o SEFIN ja tinha um 101103 (sequencia 1, de outro dia) e nada na sequencia 2: o pedido de agora nao esta la
+    let (c, f) = cli(vec![
+        ("POST", "/eventos".into(), Resp::F(FalhaRede::Tempo)),
+        (
+            "GET",
+            format!("/nfse/{ch}/eventos/101103/1"),
+            evento_resp(&ch, "101103", 1, "2026-11-10T08:00:00-03:00"),
+        ),
+    ]);
+    let r = c.registrar_evento(&pedido).await;
+    assert_eq!(r.status, Status::Pendente, "{}", r.frase);
+    assert!(!r.recuperada);
+    assert!(
+        r.pode_reenviar(),
+        "o mesmo pedido assinado volta para reenvio"
+    );
+    let consultas: Vec<_> = f.pedidos().into_iter().filter(|p| p.0 == "GET").collect();
+    assert_eq!(
+        consultas.len(),
+        2,
+        "consulta a sequencia 1 e a 2: {consultas:?}"
+    );
+}
+
+#[tokio::test]
+async fn resposta_perdida_acha_o_proprio_pedido_na_sequencia_maior() {
+    let ch = chave();
+    let pedido = pedido_de_analise(&ch, "2026-11-25T10:00:00-03:00");
+    let (c, _) = cli(vec![
+        ("POST", "/eventos".into(), Resp::F(FalhaRede::Tempo)),
+        (
+            "GET",
+            format!("/nfse/{ch}/eventos/101103/1"),
+            evento_resp(&ch, "101103", 1, "2026-11-10T08:00:00-03:00"),
+        ),
+        ("GET", format!("/nfse/{ch}/eventos/101103/2"), Resp::Eco(2)),
+    ]);
+    let r = c.registrar_evento(&pedido).await;
+    assert!(
+        r.status == Status::Registrado && r.recuperada,
+        "{}",
+        r.frase
+    );
+    assert!(r.xml_retorno.contains("<nSeqEvento>2</nSeqEvento>"));
+}
+
+#[tokio::test]
+async fn consultar_evento_confere_chave_e_tipo_da_resposta() {
+    let ch = chave();
+    let outra = chave_dfe::montar_nfse(3550308, "11222333000181", 43, "2610", Some(1), 2).unwrap();
+    let url = format!("/nfse/{ch}/eventos/101103/1");
+    let antigo = "2026-11-10T08:00:00-03:00";
+    let (c, _) = cli(vec![(
+        "GET",
+        url.clone(),
+        evento_resp(&ch, "101103", 1, antigo),
+    )]);
+    let r = c.consultar_evento(&ch, "101103", 1).await;
+    assert_eq!(r.status, Status::Ok, "{}", r.frase);
+    // resposta de outra nota
+    let (c, _) = cli(vec![(
+        "GET",
+        url.clone(),
+        evento_resp(&outra, "101103", 1, antigo),
+    )]);
+    assert_eq!(
+        c.consultar_evento(&ch, "101103", 1).await.status,
+        Status::Erro
+    );
+    // resposta de outro tipo de evento
+    let (c, _) = cli(vec![("GET", url, evento_resp(&ch, "101101", 1, antigo))]);
+    assert_eq!(
+        c.consultar_evento(&ch, "101103", 1).await.status,
+        Status::Erro
+    );
+    // corpo que nao e' um evento
+    let (c, _) = cli(vec![(
+        "GET",
+        format!("/nfse/{ch}/eventos/101103/1"),
+        j(200, json!({"eventoXmlGZipB64": compactar("<e/>")})),
+    )]);
+    assert_eq!(
+        c.consultar_evento(&ch, "101103", 1).await.status,
+        Status::Erro
+    );
+}
+
+#[tokio::test]
+async fn consultas_com_identificador_ruim_nao_chegam_a_rede() {
+    let ch = chave();
+    let (c, f) = cli(vec![]);
+    for id in ["", "DPS1", "../nfse", &format!("{ID}/x")] {
+        assert_eq!(
+            c.consultar_dps(id, false).await.status,
+            Status::Erro,
+            "{id}"
+        );
+    }
+    for (chave, tipo, seq) in [
+        ("123", "101103", 1),
+        (ch.as_str(), "10110", 1),
+        (ch.as_str(), "../1011", 1),
+        (ch.as_str(), "101103", 0),
+    ] {
+        let r = c.consultar_evento(chave, tipo, seq).await;
+        assert_eq!(r.status, Status::Erro, "{chave} {tipo} {seq}");
+    }
+    assert!(f.pedidos().is_empty(), "nada saiu para a rede");
+}
+
+#[tokio::test]
+async fn registrar_recusa_antes_da_rede_o_evento_de_outro_autor() {
+    let ch = chave();
+    let (c, f) = cli(vec![]);
+    for tipo in ["105102", "105104", "305101", "999999"] {
+        let r = c.registrar(tipo, &ch, "", "").await;
+        assert_eq!(r.status, Status::Erro, "{tipo}");
+    }
+    assert!(f.pedidos().is_empty(), "nada saiu para a rede");
 }

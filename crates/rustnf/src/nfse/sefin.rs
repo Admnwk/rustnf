@@ -17,10 +17,10 @@ use std::time::Duration;
 use async_trait::async_trait;
 use serde_json::{json, Value};
 
-use super::base::{so_alnum, ErroNfse};
+use super::base::{casa_id_dps, so_alnum, ErroNfse};
 use super::dps::{montar, Dps};
 use super::eventos::{self, Pedido};
-use super::leitura::{compactar, descompactar, ler_nfse, mensagens, Mensagem, Nfse};
+use super::leitura::{compactar, descompactar, ler_evento, ler_nfse, mensagens, Mensagem, Nfse};
 use crate::assinatura::cert_a1::Certificado;
 use crate::assinatura::xmldsig::{self, Algoritmo};
 
@@ -32,6 +32,8 @@ pub const SEFIN_RESTRITA: &str = "https://sefin.producaorestrita.nfse.gov.br/Sef
 pub const TRANSITORIAS: &[&str] = &["E1217", "E1206"];
 /// Serie+numero+municipio+inscricao ja geraram NFS-e.
 pub const JA_EXISTE: &str = "E0014";
+/// Quantas sequencias de um mesmo tipo de evento a recuperacao de um pedido sem resposta confere, no maximo.
+const SEQUENCIAS_CONFERIDAS: u32 = 20;
 
 /// Falha sem resposta HTTP.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -565,8 +567,18 @@ impl<T: Transporte> ClienteNfse<T> {
     }
 
     /// `GET /dps/{id}` devolve SO' a chave; com `com_nota` busca a NFS-e pela chave.
+    ///
+    /// O `id_dps` precisa ter a forma do Id da DPS (45 posicoes); fora dela volta `Erro` sem tocar a rede.
     pub async fn consultar_dps(&self, id_dps: &str, com_nota: bool) -> Resultado {
         let id = id_dps.trim();
+        if !casa_id_dps(id) {
+            let mut r = Resultado::novo(
+                Status::Erro,
+                "O Id da DPS tem 45 posicoes: DPS + municipio(7) + tipo de inscricao(1) + inscricao(14) + serie(5) + numero(15).",
+            );
+            r.id_dps = id.into();
+            return r;
+        }
         let (st, _, corpo, rede) = self
             .chamar(
                 "GET",
@@ -719,8 +731,7 @@ impl<T: Transporte> ClienteNfse<T> {
             r.corpo = corpo;
             return r;
         }
-        let mut achou = self.consultar_evento(&pedido.chave, &pedido.tipo, 1).await;
-        if achou.status == Status::Ok {
+        if let Some(mut achou) = self.achar_registrado(pedido).await {
             achou.status = Status::Registrado;
             achou.recuperada = true;
             achou.xml_assinado = xml;
@@ -748,9 +759,46 @@ impl<T: Transporte> ClienteNfse<T> {
         r
     }
 
+    /// O pedido ja esta registrado? O SEFIN numera os eventos de um mesmo tipo (um 101103 pode vir depois de outro
+    /// ja decidido), entao o evento da sequencia 1 pode ser de um pedido anterior. Percorre as sequencias do tipo
+    /// ate a primeira que nao existe e so' aceita o evento que traz o mesmo `dhEvento` do pedido (o pedido assinado
+    /// segue dentro do evento registrado).
+    async fn achar_registrado(&self, pedido: &Pedido) -> Option<Resultado> {
+        let enviado = ler_evento(&pedido.xml).ok()?.data_evento;
+        if enviado.is_empty() {
+            return None;
+        }
+        for sequencia in 1..=SEQUENCIAS_CONFERIDAS {
+            let r = self
+                .consultar_evento(&pedido.chave, &pedido.tipo, sequencia)
+                .await;
+            if r.status != Status::Ok {
+                return None;
+            }
+            if ler_evento(&r.xml_retorno).is_ok_and(|e| e.data_evento == enviado) {
+                return Some(r);
+            }
+        }
+        None
+    }
+
     /// 101101. Autor = documento do A1 (E0812/E0815: tem de ser o mesmo).
     pub async fn cancelar(&self, chave: &str, motivo: &str, justificativa: &str) -> Resultado {
+        self.registrar(eventos::CANCELAMENTO, chave, motivo, justificativa)
+            .await
+    }
+
+    /// Monta, assina e registra um evento que o contribuinte pode pedir (`tipo` e' o `tpEvento`). Autor = documento
+    /// do A1. Tipo desconhecido, de outro autor ou com motivo fora da regra volta `Erro` sem tocar a rede.
+    pub async fn registrar(
+        &self,
+        tipo: &str,
+        chave: &str,
+        motivo: &str,
+        justificativa: &str,
+    ) -> Resultado {
         match eventos::montar(&eventos::DadosEvento {
+            tipo,
             chave,
             autor: self.certificado.documento(),
             motivo,
@@ -769,8 +817,24 @@ impl<T: Transporte> ClienteNfse<T> {
     }
 
     /// `GET /nfse/{chave}/eventos/{tipo}/{seq}`.
+    ///
+    /// `Ok` so' quando o evento devolvido e' mesmo o da chave e do tipo pedidos; outro evento, ou um corpo que nao e'
+    /// um evento, volta `Erro`. Chave, tipo (6 digitos) ou sequencia (a partir de 1) fora da forma voltam `Erro` sem
+    /// tocar a rede.
     pub async fn consultar_evento(&self, chave: &str, tipo: &str, sequencia: u32) -> Resultado {
         let ch = so_alnum(chave);
+        if ch.len() != 50
+            || tipo.len() != 6
+            || !tipo.bytes().all(|b| b.is_ascii_digit())
+            || sequencia == 0
+        {
+            let mut r = Resultado::novo(
+                Status::Erro,
+                "Consulta de evento: a chave tem 50 posicoes, o tipo 6 digitos e a sequencia comeca em 1.",
+            );
+            r.chave = ch;
+            return r;
+        }
         let (st, _, corpo, rede) = self
             .chamar(
                 "GET",
@@ -786,9 +850,19 @@ impl<T: Transporte> ClienteNfse<T> {
             .unwrap_or("")
             .to_string();
         if st == 200 && !b64.is_empty() {
-            let mut r = Resultado::novo(Status::Ok, format!("Evento {tipo} registrado na nota."));
+            let xml = descompactar(&b64).unwrap_or_default();
+            let confere =
+                ler_evento(&xml).is_ok_and(|e| so_alnum(&e.chave) == ch && e.tipo == tipo);
+            let mut r = if confere {
+                Resultado::novo(Status::Ok, format!("Evento {tipo} registrado na nota."))
+            } else {
+                Resultado::novo(
+                    Status::Erro,
+                    "O SEFIN respondeu com um evento que nao e' o pedido (outra nota, outro tipo ou ilegivel).",
+                )
+            };
             r.chave = ch;
-            r.xml_retorno = descompactar(&b64).unwrap_or_default();
+            r.xml_retorno = xml;
             r.http = st;
             r.corpo = corpo;
             return r;
