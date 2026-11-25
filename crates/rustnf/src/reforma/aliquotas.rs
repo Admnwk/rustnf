@@ -336,8 +336,12 @@ fn aliquotas_base(
         ));
     }
     let avisos: Vec<String> = if simples_nacional {
-        vec!["optante do Simples sem a opcao do art. 41 par. 3o segue as regras do Simples (LC 214/2025 art. 41 par. 2o: \
-              IBS e CBS dentro do DAS, LC 123/2006); o adquirente credita o valor pago no DAS (art. 47 par. 9o, II)"
+        vec!["optante do Simples sem a opcao pelo regime regular segue as regras do Simples (LC 214/2025 art. 41 par. \
+              2o: IBS e CBS dentro do DAS, LC 123/2006); o adquirente credita o valor pago no DAS (art. 47 par. 9o, \
+              II). A opcao pelo regime regular (LC 214/2025 art. 41 par. 3o; LC 123/2006 art. 13 par. 9o a 11, \
+              incluidos pela LC 214/2025 art. 517 na redacao da LC 227/2026, com efeito a partir de 1o/1/2027) vale \
+              por semestre iniciado em janeiro ou julho, e' irretratavel no semestre e e' feita em setembro ou marco, \
+              antes do semestre"
             .into()]
     } else {
         vec![]

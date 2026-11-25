@@ -99,3 +99,26 @@ fn classificacoes_de_servico_existem_e_filtram_por_documento() {
         "o filtro por documento tem de cortar"
     );
 }
+
+#[test]
+fn optante_do_simples_e_avisado_da_opcao_semestral_pelo_regime_regular() {
+    let a = aliquotas::aliquotas("2027-03-10", None, true).unwrap();
+    let aviso = a
+        .avisos
+        .iter()
+        .find(|x| x.contains("Simples"))
+        .expect("aviso do optante");
+    for trecho in [
+        "art. 41 par. 3o",
+        "art. 13 par. 9o a 11",
+        "LC 227/2026",
+        "1o/1/2027",
+        "semestre iniciado em janeiro ou julho",
+        "irretratavel",
+        "setembro ou marco",
+    ] {
+        assert!(aviso.contains(trecho), "falta {trecho:?} em {aviso}");
+    }
+    let sem = aliquotas::aliquotas("2027-03-10", None, false).unwrap();
+    assert!(!sem.avisos.iter().any(|x| x.contains("Simples")));
+}
