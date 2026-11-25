@@ -6,6 +6,20 @@ Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` 
 alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
 `cancelada`, continua sendo lido por esta versão.
 
+* NF-e (modelo 55), base da biblioteca, atrás da feature `nfe` (sem dependência nova). **A NF-e ainda não emite**: só
+  chave, leitura e tabelas.
+  * `chave_dfe`: a chave de acesso de 44 posições (NF-e e NFC-e). `montar` recusa campo que não cabe, UF ou modelo
+    desconhecido, CPF ou CNPJ do emitente com dígito verificador inválido e `cNF` que a regra B09-30 recusa; `validar`,
+    `decompor`, `formatar`, `limpar` e `achar` (texto de OCR e URL de QR Code) completam. O que a NFS-e usa não mudou.
+  * `nfe::ler`: lê o `nfeProc` ou a `NFe` solta (leiautes 3.10 e 4.00) para a struct `Nfe`, com decimal exato e data com
+    fuso; recusa DTD, XML de outro documento, modelo diferente de 55 e campo fora do formato, com erro tipado.
+    **A leitura não confere a assinatura XML nem o `digVal`.** `nfe::conferir` aponta divergência entre a chave e o `ide`,
+    entre os totais e a soma dos itens e entre as duplicatas e a fatura.
+  * `nfe::cstat`: tabela dos 952 códigos de retorno (MOC 7.00 Anexo I e Notas Técnicas), com a mensagem oficial e a
+    classe (autorizada, cancelada, denegada, rejeitada, processamento). O `cStat` 110 (Uso Denegado) é classe denegada.
+  * `nfe::vigencias`: calendário das Notas Técnicas por ambiente, com as datas conferidas no cronograma de cada NT.
+  * A chave de acesso e a leitura da NF-e partiram da `gaialib`; aqui foram reescritas e cobertas por casos novos, com
+    documentos fictícios.
 * Consulta da DPS: `rustnf consultar --dps <id>` (ou `--serie` e `--numero`, com o `[emitente]` da configuração),
   `GET /dps/{id}` e a ferramenta MCP `consultar_dps` devolvem a chave da NFS-e que a DPS gerou, e a nota com
   `--com-nota`. O Id fora da forma é recusado antes da rede.

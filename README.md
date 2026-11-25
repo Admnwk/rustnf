@@ -91,6 +91,11 @@ lê o retorno, calcula a prévia do IBS/CBS, gera o DANFSe e fala com a Sefin Na
 Valores e percentuais usam inteiros de ponto fixo, nunca ponto flutuante. A DPS não leva IBS/CBS calculado (quem
 calcula é a Sefin Nacional): `calcular` é só uma prévia; vale o que voltar na NFS-e.
 
+A biblioteca tem também, atrás da feature `nfe`, a base da NF-e (modelo 55): a chave de acesso de 44 posições
+(montar, conferir, decompor e achar em texto), o calendário das Notas Técnicas, a leitura do XML autorizado para uma
+struct e a tabela de códigos de retorno (`cStat`) do MOC. **Por enquanto só lê e confere: a NF-e ainda NÃO é emitida
+(sem montagem, envio nem DANFE).** A leitura não confere a assinatura XML.
+
 ## Instalação
 
 ### Baixar pronto
