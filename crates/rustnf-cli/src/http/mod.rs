@@ -22,6 +22,7 @@ use axum::Router;
 use rustnf::reforma::aliquotas::Publicadas;
 use rustnf_app::atualizacao::{self, Pedido as PedidoAtualizacao};
 use rustnf_app::config::Emitente;
+use rustnf_app::eventos;
 use rustnf_app::notas::Notas;
 use rustnf_app::pedido;
 use serde_json::{json, Value};
@@ -149,14 +150,14 @@ impl Estado {
     ///
     /// # Errors
     ///
-    /// Como [`pedido::registrar_evento_pedido`].
+    /// Como [`eventos::registrar_evento_pedido`].
     pub(crate) async fn registrar_evento(
         &self,
         em: &Emissao,
         p: &PedidoEvento,
     ) -> Result<Value, Erro> {
         let _vez = self.fila.lock().await;
-        pedido::registrar_evento_pedido(
+        eventos::registrar_evento_pedido(
             em.emissor.as_ref(),
             &p.tipo,
             &p.chave,

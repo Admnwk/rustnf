@@ -10,8 +10,8 @@ use serde_json::json;
 use crate::config::Emitente;
 use crate::emissao;
 use crate::erro::Erro;
+use crate::eventos::{id_da_dps, registrar_evento_completo, registrar_evento_pedido};
 use crate::notas::Situacao;
-use crate::pedido::{id_da_dps, registrar_evento_completo, registrar_evento_pedido};
 use crate::testes_sefin::{chave, emissor, id_dps, pasta_com, registro, situacao_de, Falso};
 
 const JUSTIFICATIVA: &str = "Valor digitado errado na nota";

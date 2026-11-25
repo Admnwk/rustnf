@@ -15,7 +15,7 @@ use crate::emissao;
 use crate::erro::Erro;
 use crate::http::Estado;
 use crate::nucleo::{self, SituacaoNota};
-use rustnf_app::pedido;
+use rustnf_app::eventos;
 
 /// Definicao de uma ferramenta.
 pub struct Ferramenta {
@@ -205,7 +205,7 @@ fn id_da_consulta(estado: &Estado, p: &PedidoConsultaDps) -> Result<String, Erro
         Some(Value::Number(n)) => n.to_string(),
         _ => return Err(Erro::Entrada("informe id_dps ou numero".into())),
     };
-    pedido::id_da_dps(&estado.emitente, p.serie.as_deref(), &numero)
+    eventos::id_da_dps(&estado.emitente, p.serie.as_deref(), &numero)
 }
 
 async fn danfse(args: Value) -> Result<Value, Erro> {

@@ -11,6 +11,7 @@ use rustnf::nfse::sefin::{ClienteNfse, Transporte};
 use rustnf_app::atualizacao::{atualizar_pedido, Pedido, Relatorio};
 use rustnf_app::cofre::{cofre_do_ambiente, Cofre};
 use rustnf_app::config::Efetiva;
+use rustnf_app::eventos;
 use rustnf_app::notas::Notas;
 use rustnf_app::pedido;
 use serde_json::{json, Value};
@@ -415,7 +416,7 @@ fn alvo_da_consulta(a: &ArgConsultar, efetiva: &Efetiva) -> Result<Alvo, Erro> {
     match (&a.chave, &a.dps, &a.numero) {
         (Some(chave), _, _) => Ok(Alvo::Chave(chave.clone())),
         (None, Some(id), _) => Ok(Alvo::Dps(id.clone())),
-        (None, None, Some(numero)) => Ok(Alvo::Dps(pedido::id_da_dps(
+        (None, None, Some(numero)) => Ok(Alvo::Dps(eventos::id_da_dps(
             &efetiva.config.emitente,
             a.serie.as_deref(),
             numero,
@@ -502,13 +503,13 @@ pub async fn evento_consultar_com(
 ///
 /// # Errors
 ///
-/// Como [`pedido::registrar_evento_pedido`].
+/// Como [`eventos::registrar_evento_pedido`].
 pub async fn evento_registrar_com(
     emissor: &dyn Emissor,
     a: &ArgEventoRegistrar,
     notas: Option<&Notas>,
 ) -> Result<(), Erro> {
-    let v = pedido::registrar_evento_pedido(
+    let v = eventos::registrar_evento_pedido(
         emissor,
         &a.tipo,
         &a.chave,

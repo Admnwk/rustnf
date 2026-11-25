@@ -13,6 +13,7 @@
 //! * [`config`] -- o arquivo de configuracao (TOML), comum a todas as interfaces;
 //! * [`cofre`] -- onde a senha do certificado fica guardada;
 //! * [`certificado`] -- abrir o certificado A1 e montar o cliente da Sefin Nacional;
+//! * [`eventos`] -- o Id da DPS pelo `[emitente]` e o registro de eventos do contribuinte;
 //! * [`notas`] -- a pasta de notas autorizadas e a numeracao da DPS;
 //! * [`atualizacao`] -- a situacao das notas da pasta conferida contra a Sefin, em lote;
 //! * [`atomico`] -- gravacao atomica de arquivo, para quem guarda algo na pasta de notas.
@@ -28,6 +29,7 @@ pub mod cofre;
 pub mod config;
 pub mod emissao;
 pub mod erro;
+pub mod eventos;
 pub mod notas;
 pub mod nucleo;
 pub mod pedido;
