@@ -114,8 +114,8 @@ fn pis_cofins(n: &Nota, v: &mut Vec<Aviso>) {
     let Some(regime) = n.regime_pis_cofins else {
         return;
     };
-    // A LC 214/2025 extingue o PIS e a COFINS (as notas do Planalto na Lei 10.637 e na Lei 9.715 remetem os efeitos ao
-    // art. 544 da LC 214, que nao foi aberto aqui): por cautela o aviso so' vale para a emissao ate 2026.
+    // A LC 214/2025, art. 542, revoga a partir de 1o/1/2027 os artigos das leis acima que este aviso usa (incisos IX, X,
+    // XVIII e XXI; efeito pelo art. 544, III, na redacao da LC 227/2026): o aviso so' vale para a emissao ate 2026.
     let Ok(uf) = uf_nota(n) else { return };
     if na_uf(&n.emissao, &uf).year() >= 2027 {
         return;
