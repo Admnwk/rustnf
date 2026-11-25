@@ -165,7 +165,7 @@ mod testes {
 
     #[test]
     fn a_tabela_embutida_le_e_tem_o_tamanho_conferido() {
-        assert_eq!(tabela().len(), 952);
+        assert_eq!(tabela().len(), 953);
     }
 
     #[test]

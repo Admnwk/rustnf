@@ -15,7 +15,7 @@ alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o �
     fuso; recusa DTD, XML de outro documento, modelo diferente de 55 e campo fora do formato, com erro tipado.
     **A leitura não confere a assinatura XML nem o `digVal`.** `nfe::conferir` aponta divergência entre a chave e o `ide`,
     entre os totais e a soma dos itens e entre as duplicatas e a fatura.
-  * `nfe::cstat`: tabela dos 952 códigos de retorno (MOC 7.00 Anexo I e Notas Técnicas), com a mensagem oficial e a
+  * `nfe::cstat`: tabela dos 953 códigos de retorno (MOC 7.00 Anexo I e Visão Geral, e Notas Técnicas), com a mensagem oficial e a
     classe (autorizada, cancelada, denegada, rejeitada, processamento). O `cStat` 110 (Uso Denegado) é classe denegada.
   * `nfe::vigencias`: calendário das Notas Técnicas por ambiente, com as datas conferidas no cronograma de cada NT.
   * A chave de acesso e a leitura da NF-e partiram da `gaialib`; aqui foram reescritas e cobertas por casos novos, com
