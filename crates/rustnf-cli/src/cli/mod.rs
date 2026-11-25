@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! Linha de comando: as definicoes do `clap`. A execucao de cada subcomando esta em [`comandos`].
+//! Linha de comando: as definicoes do `clap`. A execucao de cada subcomando esta em `comandos`.
 //!
 //! Convencoes: dado no stdout, diagnostico no stderr; `--json` onde a saida padrao e' texto; saida 0 ok, 2 erro de
 //! uso ou de entrada, 3 recusa de regra, 4 rede ou Sefin, 1 o resto. Onde um arquivo e' esperado, `-` le do stdin.

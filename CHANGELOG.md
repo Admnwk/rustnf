@@ -1,5 +1,18 @@
 # Changelog
 
+## Próxima versão
+
+* Versão mínima do Rust declarada no `Cargo.toml` (`rust-version = "1.92"`) e conferida no CI, que compila o
+  workspace nessa versão além do Rust estável.
+* Exemplo da biblioteca: `cargo run -p rustnf --example montar_e_assinar --features cert_a1_teste` monta uma DPS a
+  partir do pedido em JSON, assina com um certificado A1 de teste e confere a assinatura, sem rede.
+* CI: documentação gerada com aviso virando erro, o exemplo da biblioteca roda, e o histórico inteiro passa pelo
+  gitleaks (binário oficial conferido pelo SHA-256); as ações do GitHub foram para as versões em Node.js 24.
+* Dependência `url` 2.5.8 -> 2.5.9 (RUSTSEC-2026-0592, estouro de pilha em `Url::origin()`; chega pela interface
+  de desktop).
+* Release: cada arquivo publicado ganha um atestado de procedência do GitHub, conferível com
+  `gh attestation verify <arquivo> --repo Admnwk/rustnf`.
+
 ## 0.3.0 - 2026-11-21
 
 Atenção ao atualizar: a emissão passa a recusar o pedido com campo de nome errado (veja "Mudança de comportamento"

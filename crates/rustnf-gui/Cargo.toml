@@ -3,6 +3,7 @@ name = "rustnf-gui"
 description = "Interface de desktop do rustnf (GPUI): configuracao, certificado e primeiro uso. Somente Windows nesta versao."
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 license.workspace = true
 authors.workspace = true
 repository.workspace = true

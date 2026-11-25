@@ -3,6 +3,7 @@ name = "rustnf"
 description = "Emissor aberto de NFS-e nacional (padrao Sefin Nacional / ADN) com o grupo IBS/CBS da Reforma Tributaria."
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 license.workspace = true
 authors.workspace = true
 repository.workspace = true
@@ -51,6 +52,10 @@ serde_json = { version = "1", features = ["preserve_order"] }
 rustnf = { path = ".", features = ["cert_a1_teste", "sefin", "danfse"] }
 async-trait = "0.1"
 tokio = { version = "1", features = ["rt", "rt-multi-thread", "macros", "time"] }
+
+[[example]]
+name = "montar_e_assinar"
+required-features = ["cert_a1_teste"]
 
 [[test]]
 name = "nfse_assinatura"

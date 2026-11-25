@@ -18,7 +18,7 @@ jobs:
       # A biblioteca C vai dentro do executavel: quem baixa nao precisa instalar o Visual C++ Redistributable.
       RUSTFLAGS: -C target-feature=+crt-static
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
@@ -54,7 +54,7 @@ jobs:
           New-Item -ItemType Directory $nome | Out-Null
           Copy-Item target\release\rustnf.exe, target\release\rustnf-gui.exe, LICENSE, NOTICE, README.md, CHANGELOG.md $nome
           Compress-Archive -Path $nome -DestinationPath "$nome.zip"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: windows
           path: rustnf-*-windows-x64.zip
@@ -64,7 +64,7 @@ jobs:
     # So' a linha de comando: a interface de desktop nao tem janela fora do Windows.
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
@@ -77,7 +77,7 @@ jobs:
           mkdir "$nome"
           cp target/release/rustnf LICENSE NOTICE README.md CHANGELOG.md "$nome"
           tar -czf "$nome.tar.gz" "$nome"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: linux
           path: rustnf-*-linux-x64.tar.gz
@@ -90,12 +90,19 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      # atestado de procedencia: prova publica de que cada arquivo saiu deste fluxo, neste commit
+      id-token: write
+      attestations: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           merge-multiple: true
       - name: SHA-256 dos arquivos
         run: sha256sum rustnf-* > SHA256SUMS.txt && cat SHA256SUMS.txt
+      - name: Atestado de procedencia
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-checksums: SHA256SUMS.txt
       - name: Abrir a release como rascunho
         env:
           GH_TOKEN: ${{ github.token }}
