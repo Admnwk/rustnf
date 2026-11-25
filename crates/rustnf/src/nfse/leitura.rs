@@ -262,10 +262,16 @@ pub struct Mensagem {
 
 impl Mensagem {
     /// Orientacao para os retornos mais comuns de configuracao errada, ou vazio. A mensagem oficial nao diz o que
-    /// fazer: E0037 (Anexo I, `cLocEmi`: municipio fora do cadastro de convenio) e E0312 (codigo de tributacao nacional
-    /// nao administrado pelo municipio de incidencia na competencia).
+    /// fazer: E0008 (Anexo I, `dhEmi` posterior ao processamento: relogio adiantado), E0037 (`cLocEmi`: municipio fora
+    /// do cadastro de convenio) e E0312 (codigo de tributacao nacional nao administrado pelo municipio de incidencia na
+    /// competencia).
     pub fn dica(&self) -> &'static str {
         match self.codigo.trim() {
+            "E0008" => concat!(
+                "a hora de emissao ficou depois da hora da Sefin: o relogio deste computador esta adiantado. Acerte o ",
+                "relogio ou aumente a folga (`folga_relogio_s` em [sefin], padrao 60 s); com `dhEmi` no pedido, ",
+                "informe uma hora que ja passou"
+            ),
             "E0037" => concat!(
                 "o municipio emissor (cLocEmi) nao esta ativo no sistema nacional NAQUELE ambiente: producao e ",
                 "producao restrita tem cadastros de convenio separados. Confira o ambiente usado e se o municipio ",
