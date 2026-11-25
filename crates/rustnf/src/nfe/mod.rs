@@ -2,12 +2,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! NF-e (modelo 55), leiaute 4.00: a base da biblioteca. Por enquanto so' le e confere; a NF-e ainda NAO e' emitida.
+//! NF-e (modelo 55), leiaute 4.00: leitura, conferencia, montagem e assinatura. A NF-e ainda NAO e' enviada a SEFAZ.
 //!
 //! * [`leitura`]: o XML (`nfeProc` ou `NFe` solta) para a struct [`Nfe`]; [`conferencia`]: a situacao pelo protocolo e
 //!   as divergencias entre as partes do proprio XML;
 //! * [`cstat`]: a tabela dos codigos de retorno (`cStat`) do MOC, com a mensagem oficial e a classe;
 //! * [`vigencias`]: o calendario das Notas Tecnicas por ambiente;
+//! * [`montagem`]: o pedido em JSON vira o XML da NF-e, conferido pelas regras do MOC e das Notas Tecnicas, com o IBS/CBS, e
+//!   o `infNFe` e' assinado com o A1;
 //! * a chave de acesso de 44 posicoes esta em [`crate::chave_dfe`] (a mesma biblioteca que confere a da NFS-e).
 //!
 //! Fontes publicas: Manual de Orientacao do Contribuinte (MOC) 7.00, Anexo I (leiaute e regras de validacao), e as
@@ -20,6 +22,7 @@ pub mod decimal;
 pub mod erro;
 pub mod leitura;
 pub mod modelo;
+pub mod montagem;
 pub mod vigencias;
 mod xml;
 
