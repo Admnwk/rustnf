@@ -56,9 +56,15 @@
 * Base (feature `nfe`): chave de acesso de 44 posições, calendário das Notas Técnicas, leitura do XML autorizado e
   tabela de `cStat`. Feita nesta frente.
 * Montagem e assinatura do modelo 55 (feature `nfe`): leiaute 4.00, regras do MOC e das NT conferidas antes do envio,
-  IBS/CBS de mercadoria, Simples Nacional. Feita nesta frente. **Fica para a próxima:** cobrança (`cobr`),
-  transportadora, volumes e lacres, exportação, compra, rastreabilidade, medicamento, combustível e armamento, imposto
-  seletivo, imposto de importação, e o QR Code do DANFE simplificado.
+  IBS/CBS de mercadoria, Simples Nacional. Feita nesta frente.
+* Grupos da montagem: combustível, medicamento e rastreabilidade do item, cobrança, transporte completo (transportadora,
+  retenção do ICMS, veículo, reboques, vagão, balsa, volumes e lacres), exportação e compra, o conserto do DIFAL (UF da
+  entrega e combustível nas regras 694 e 695) e o canal de avisos da montagem (PIS/COFINS por regime e Simples sem regime
+  regular). Feita nesta frente. **Fica para a próxima:** imposto de importação (`II`, `DI`, `adi`), imposto seletivo,
+  `detExport`, armamento, `NVE`, `ISSQN` e `ISSQNtot`, `retTrib`, `obsCont` e `obsFisco`, `procRef`, `cana`,
+  `agropecuario`, `impostoDevol` e o QR Code do DANFE simplificado. Sem tabela publicada à parte não há conferência do
+  código do produto da ANP (761), do combustível da tabela monofásica (908 e 909 pela tabela), do CFOP de combustível
+  (660), do CFOP e do município da retenção do transporte (722 e 288) nem da inscrição estadual da transportadora (544).
 * Webservices da SEFAZ, com contingência.
 * DANFE.
 * Faces: aplicação, linha de comando, API HTTP e MCP.

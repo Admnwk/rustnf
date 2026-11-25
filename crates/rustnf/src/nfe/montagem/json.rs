@@ -12,6 +12,10 @@ use crate::reforma::calculo::{ibscbs_do_item, EntradaItem};
 
 use super::difal;
 use super::formato::*;
+use super::json_grupos::{
+    cobr_de, combustivel_de, compra_de, exporta_de, medicamento_de, rastros_de,
+    regime_pis_cofins_de, transp_de,
+};
 use super::modelo::*;
 use super::VER_PROC;
 
@@ -324,6 +328,9 @@ pub fn nota_de_json(v: &Value) -> Res<Nota> {
             },
             difal_dispensado: s_(it, "difal_dispensado"),
             veiculo: veic,
+            combustivel: combustivel_de(it)?,
+            med: medicamento_de(it)?,
+            rastro: rastros_de(it)?,
         });
     }
     let mut pagamentos = Vec::new();
@@ -444,6 +451,11 @@ pub fn nota_de_json(v: &Value) -> Res<Nota> {
         c_ind_op: s_(v, "c_ind_op"),
         retirada,
         entrega,
+        transp: transp_de(v)?,
+        cobr: cobr_de(v)?,
+        exporta: exporta_de(v),
+        compra: compra_de(v),
+        regime_pis_cofins: regime_pis_cofins_de(v)?,
     })
 }
 

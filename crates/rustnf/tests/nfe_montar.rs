@@ -70,10 +70,21 @@ fn os_casos_montam_o_xml_a_chave_e_os_totais_esperados() {
                 lista(&caso["conferir"]),
                 "{nome}: conferir"
             );
+            if let Some(esperados) = caso.get("avisos") {
+                let obtidos: Vec<String> = m
+                    .avisos
+                    .iter()
+                    .map(|a| {
+                        let item = a.item.map_or("-".to_string(), |i| i.to_string());
+                        format!("{}:{item}", a.tipo.codigo())
+                    })
+                    .collect();
+                assert_eq!(obtidos, lista(esperados), "{nome}: avisos");
+            }
             n += 1;
         }
     }
-    assert_eq!(n, 140);
+    assert_eq!(n, 188);
 }
 
 #[test]
@@ -107,7 +118,7 @@ fn cada_erro_aponta_o_campo_e_a_rejeicao_esperados() {
             n += 1;
         }
     }
-    assert_eq!(n, 183);
+    assert_eq!(n, 287);
 }
 
 /// O XML montado volta pela leitura que ja existe: a chave, os itens, os totais e as partes conferem, e a conferencia
@@ -139,7 +150,7 @@ fn o_xml_montado_volta_pela_leitura() {
             n += 1;
         }
     }
-    assert_eq!(n, 140);
+    assert_eq!(n, 188);
 }
 
 fn pedido_basico() -> Value {

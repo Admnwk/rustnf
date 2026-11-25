@@ -8,20 +8,21 @@
 
 use serde_json::Value;
 
+use super::esquema_grupos::{COBR, COMBUSTIVEL, COMPRA, EXPORTA, MED, RASTRO, TRANSP};
 use super::formato::{erro, Res};
 use super::json::nota_de_json;
 use super::modelo::Nota;
 
 /// Um campo do pedido: folha, objeto com filhos ou lista de objetos.
-struct Campo {
-    nome: &'static str,
-    filhos: &'static [Campo],
-    lista: bool,
+pub(super) struct Campo {
+    pub(super) nome: &'static str,
+    pub(super) filhos: &'static [Campo],
+    pub(super) lista: bool,
     /// Objeto de forma livre: nada abaixo dele e' conferido.
-    livre: bool,
+    pub(super) livre: bool,
 }
 
-const fn folha(nome: &'static str) -> Campo {
+pub(super) const fn folha(nome: &'static str) -> Campo {
     Campo {
         nome,
         filhos: &[],
@@ -30,7 +31,7 @@ const fn folha(nome: &'static str) -> Campo {
     }
 }
 
-const fn obj(nome: &'static str, filhos: &'static [Campo]) -> Campo {
+pub(super) const fn obj(nome: &'static str, filhos: &'static [Campo]) -> Campo {
     Campo {
         nome,
         filhos,
@@ -39,7 +40,7 @@ const fn obj(nome: &'static str, filhos: &'static [Campo]) -> Campo {
     }
 }
 
-const fn lista(nome: &'static str, filhos: &'static [Campo]) -> Campo {
+pub(super) const fn lista(nome: &'static str, filhos: &'static [Campo]) -> Campo {
     Campo {
         nome,
         filhos,
@@ -322,6 +323,9 @@ const ITEM: &[Campo] = &[
     obj("icms_uf_dest", ICMS_UF_DEST),
     folha("difal_dispensado"),
     obj("veiculo", VEICULO),
+    obj("combustivel", COMBUSTIVEL),
+    obj("med", MED),
+    lista("rastro", RASTRO),
 ];
 
 const PAGAMENTO: &[Campo] = &[
@@ -399,6 +403,11 @@ const NOTA: &[Campo] = &[
     folha("c_ind_op"),
     obj("retirada", LOCAL),
     obj("entrega", LOCAL),
+    obj("transp", TRANSP),
+    obj("cobr", COBR),
+    obj("exporta", EXPORTA),
+    obj("compra", COMPRA),
+    folha("regime_pis_cofins"),
 ];
 
 fn achar(v: &Value, campos: &[Campo], caminho: &str, saida: &mut Vec<String>) {

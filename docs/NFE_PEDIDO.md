@@ -12,8 +12,22 @@ a nota a SEFAZ.
   sem acento.
 * Campo que o pedido traz e a montagem nao conhece (nome errado, campo que a montagem ainda nao tem) e' ignorado, com
   aviso em `campos_desconhecidos`; `nota_de_json_estrito` recusa. `itens[].ibscbs.publicadas` e' de forma livre.
-* Fora desta entrega (nao ha campo no pedido): cobranca (`cobr`), transportadora, volumes e lacres, exportacao, compra,
-  rastreabilidade, medicamento, combustivel, armamento e o QR Code. O modelo 65 (NFC-e) e' recusado.
+* Ainda sem campo no pedido (a montagem recusa o que pede e nao faz): imposto de importacao (`II`, `DI`, `adi`),
+  imposto seletivo, `detExport`, armamento, `NVE`, `ISSQN`, `retTrib`, `obsCont`, `obsFisco`, `procRef`, `cana`,
+  `agropecuario`, `impostoDevol` e o QR Code. O modelo 65 (NFC-e) e' recusado.
+
+## Avisos da montagem
+
+`montar` devolve, junto do XML, a lista `Montada::avisos` (e `avisos(&Nota)` a calcula sozinha). Aviso **nunca impede a
+montagem e nao muda o XML**; o que o leiaute recusa continua sendo `ErroMontagem`. Cada aviso traz o tipo
+(`TipoAviso::codigo`), o item (ou nenhum, quando e' da nota) e o texto.
+
+| codigo | quando |
+|---|---|
+| `pis_cofins_regime` | Com `regime_pis_cofins` informado e emissao ate 2026: no `cumulativo`, CST 01 com aliquota diferente de 0,65% (PIS) ou 3% (COFINS) e CST de credito (50 a 56 e 60 a 67); no `nao_cumulativo`, CST 01 com aliquota diferente de 1,65% (PIS) ou 7,6% (COFINS), com a ressalva das receitas que a Lei 10.637, art. 8o, e a Lei 10.833, art. 10, mantem no cumulativo; emitente do Simples (CRT diferente de 3) com o campo informado. **Nao avisam**: aliquota zero, monofasico, substituicao, suspensao, isencao, sem incidencia (CST 02 a 09), outras operacoes (49 e 99) e aquisicoes (70 a 75 e 98). |
+| `simples_sem_gibscbs` | CRT 1 sem `tpRegimeIBSCBS` e item com CST que exige o `gIBSCBS`: a montagem omite o grupo pela tabela 2.3 da NT 2026.005 v1.00, mas a regra UB13-30 da NT 2025.002 v1.53 (rejeicao 1022) o exige; as duas NT ainda nao se conciliam e a SEFAZ pode rejeitar. |
+
+O pedido que traz campo que o leiaute nao conhece tem outro canal: `campos_desconhecidos`, antes de a `Nota` existir.
 
 Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endereco.uf`; `itens[]` e' a lista de itens).
 
@@ -62,6 +76,11 @@ Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endere
 | `c_ind_op` | B25d `cIndOp` (NT 2025.002): so' codigo que o Anexo VII admite na NF-e ([`crate::reforma::indop`]). |
 | `retirada` | F01: local de retirada (obrigatorio com `cIndOp` 010104 ou 010105, B25d-30). |
 | `entrega` | G01: local de entrega. |
+| `transp` | X03 a X34: transportadora, retencao do ICMS do transporte, veiculo, reboques, vagao, balsa e volumes. O `modFrete` e' `mod_frete`. |
+| `cobr` | Y01 `cobr`: fatura e duplicatas. |
+| `exporta` | ZA01 `exporta`: obrigatorio na exportacao (`tpNF` 1 e `idDest` 3, rejeicao 355) e proibido fora dela (356). |
+| `compra` | ZB01 `compra`: nota de empenho, pedido e contrato. |
+| `regime_pis_cofins` | `cumulativo` ou `nao_cumulativo`: o regime do PIS e da COFINS do emitente (CRT 3). **Nao vai ao XML**: so' alimenta o aviso de CST ou aliquota que nao combinam com o regime. Sem ele, sem aviso. |
 
 ## emit
 
@@ -137,6 +156,9 @@ Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endere
 | `itens[].icms_uf_dest` | NA01 `ICMSUFDest` (DIFAL), calculado por [`difal::calcular`]. |
 | `itens[].difal_dispensado` | Dispensa do DIFAL pelas excecoes da rejeicao 694: `cfop_retorno` ou `cfop_remessa`. |
 | `itens[].veiculo` | J `veicProd`. |
+| `itens[].combustivel` | LA `comb`: combustivel liquido e lubrificante. Um grupo especifico so' por item (`veicProd`, `med` ou `comb`). |
+| `itens[].med` | K `med`: medicamento. Exige o `rastro` (rejeicao 873), salvo as excecoes da regra K01-20. |
+| `itens[].rastro` | I80 `rastro`: lotes do item, de 0 a 500. |
 
 ## itens[].icms
 
@@ -547,6 +569,170 @@ Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endere
 | `itens[].veiculo.c_cor_denatran` | `cCorDENATRAN`. |
 | `itens[].veiculo.lota` | `lota`. |
 | `itens[].veiculo.tp_rest` | `tpRest`. |
+
+## itens[].combustivel
+
+| campo | o que e' |
+|---|---|
+| `itens[].combustivel.c_prod_anp` | LA02 `cProdANP`: 9 digitos (codificacao do SIMP, da ANP). |
+| `itens[].combustivel.desc_anp` | LA03 `descANP`: de 2 a 95 caracteres. |
+| `itens[].combustivel.uf_cons` | LA06 `UFCons`: sigla da UF de consumo, ou `EX`. |
+| `itens[].combustivel.p_glp` | LA03a `pGLP`: so' no GLP (`cProdANP` 210203001); ausente = 0. Em outro produto e' a rejeicao 461. |
+| `itens[].combustivel.p_gn_n` | LA03b `pGNn`: so' no GLP; ausente = 0. |
+| `itens[].combustivel.p_gn_i` | LA03c `pGNi`: so' no GLP; ausente = 0. `pGLP`, `pGNn` e `pGNi` somam 100 (rejeicao 855). |
+| `itens[].combustivel.v_part` | LA03d `vPart`: so' no GLP, valor por quilograma sem ICMS; obrigatorio nele (rejeicao 856). O GLP exige `uTrib` em `kg` (rejeicao 817). |
+| `itens[].combustivel.codif` | LA04 `CODIF`: de 1 a 21 digitos. |
+| `itens[].combustivel.q_temp` | LA05 `qTemp`: 4 casas; zero ou ausente = a tag nao sai (o XSD nao aceita zero). |
+| `itens[].combustivel.cide` | LA07 `CIDE`. |
+| `itens[].combustivel.encerrante` | LA11 `encerrante`: so' com o CFOP 5656 ou 5667 (rejeicao 379). |
+| `itens[].combustivel.p_bio` | LA17 `pBio`: maior que 0 e ate 100; zero ou ausente = a tag nao sai. |
+| `itens[].combustivel.origens` | LA18 `origComb`, de 0 a 30. Gas natural no GLP (`pGNn` ou `pGNi` diferente de 0) exige ao menos uma, salvo consumidor final, `finNFe` 2 ou 4, CFOP 5922 ou 6922 e `tpImp` 6 (rejeicao 909). |
+
+## itens[].combustivel.cide
+
+| campo | o que e' |
+|---|---|
+| `itens[].combustivel.cide.q_bc_prod` | LA08 `qBCProd`: base em quantidade (ate 12 inteiros e 4 casas). |
+| `itens[].combustivel.cide.v_aliq_prod` | LA09 `vAliqProd`: aliquota em reais por unidade (4 casas). |
+| `itens[].combustivel.cide.v_cide` | LA10 `vCIDE` (2 casas). |
+
+## itens[].combustivel.encerrante
+
+| campo | o que e' |
+|---|---|
+| `itens[].combustivel.encerrante.n_bico` | LA12 `nBico`: de 0 a 999. |
+| `itens[].combustivel.encerrante.n_tanque` | LA14 `nTanque`: de 0 a 999. |
+| `itens[].combustivel.encerrante.v_enc_ini` | LA15 `vEncIni` (3 casas). |
+| `itens[].combustivel.encerrante.v_enc_fin` | LA16 `vEncFin` (3 casas); tem de ser maior que o `vEncIni` (rejeicao 380). |
+| `itens[].combustivel.encerrante.n_bomba` | LA13 `nBomba`: de 0 a 999; ausente = a tag nao sai. |
+
+## itens[].combustivel.origens[]
+
+| campo | o que e' |
+|---|---|
+| `itens[].combustivel.origens[].ind_import` | LA19 `indImport`: 0 nacional, 1 importado. |
+| `itens[].combustivel.origens[].c_uf_orig` | LA20 `cUFOrig`: codigo IBGE da UF (`"35"`) ou a sigla (`"SP"`); sai o codigo. |
+| `itens[].combustivel.origens[].p_orig` | LA21 `pOrig`: maior que 0 e ate 100, ate 4 casas. |
+
+## itens[].med
+
+| campo | o que e' |
+|---|---|
+| `itens[].med.c_prod_anvisa` | K01a `cProdANVISA`: numero do registro (11 ou 13 digitos) ou o literal `ISENTO`. |
+| `itens[].med.x_motivo_isencao` | K01b `xMotivoIsencao`: numero da decisao que isenta o registro (de 1 a 255 caracteres). |
+| `itens[].med.v_pmc` | K06 `vPMC`: preco maximo ao consumidor (2 casas). |
+
+## itens[].rastro[]
+
+| campo | o que e' |
+|---|---|
+| `itens[].rastro[].n_lote` | I81 `nLote`: de 1 a 20 caracteres. |
+| `itens[].rastro[].q_lote` | I82 `qLote`: ate 8 inteiros e 3 casas. |
+| `itens[].rastro[].d_fab` | I83 `dFab`: `AAAA-MM-DD`; nao pode ser depois da emissao (rejeicao 877). |
+| `itens[].rastro[].d_val` | I84 `dVal`: `AAAA-MM-DD`; nao pode ser antes da fabricacao (rejeicao 870). |
+| `itens[].rastro[].c_agreg` | I85 `cAgreg`: de 1 a 20 caracteres. |
+
+## transp
+
+| campo | o que e' |
+|---|---|
+| `transp.transporta` | X03 `transporta`: a transportadora; o grupo nao vai vazio. |
+| `transp.ret_transp` | X11 `retTransp`: retencao do ICMS do transporte; todos os campos sao obrigatorios. |
+| `transp.veic` | X18 `veicTransp`: o veiculo trator. Nao vai na operacao interestadual (`idDest` 2, rejeicao 868). |
+| `transp.reboque` | X22 `reboque`: reboques e dolly, ate 5. Nao vai na operacao interestadual (868). |
+| `transp.vagao` | X25a `vagao`: identificacao do vagao, de 1 a 20 caracteres. O XSD aceita so' o veiculo (com os reboques), o vagao ou a balsa. |
+| `transp.balsa` | X25b `balsa`: identificacao da balsa, de 1 a 20 caracteres. |
+| `transp.vol` | X26 `vol`: volumes, de 0 a 5000; o volume nao vai vazio. |
+
+## transp.transporta
+
+| campo | o que e' |
+|---|---|
+| `transp.transporta.documento` | X04 `CNPJ` ou X05 `CPF`, com digito verificador valido (rejeicoes 542 e 543). |
+| `transp.transporta.nome` | X06 `xNome`: de 2 a 60 caracteres. |
+| `transp.transporta.ie` | X07 `IE`: de 2 a 14 digitos ou `ISENTO`; com ela a UF e' obrigatoria (rejeicao 559). A validade da IE na UF (544) e' do cadastro e nao e' conferida. |
+| `transp.transporta.endereco` | X08 `xEnder`: endereco completo, de 1 a 60 caracteres. |
+| `transp.transporta.municipio` | X09 `xMun`: de 1 a 60 caracteres. |
+| `transp.transporta.uf` | X10 `UF`: sigla, ou `EX` para o exterior. |
+
+## transp.ret_transp
+
+| campo | o que e' |
+|---|---|
+| `transp.ret_transp.v_serv` | X12 `vServ`: valor do servico (2 casas). |
+| `transp.ret_transp.v_bc_ret` | X13 `vBCRet`: base da retencao (2 casas). |
+| `transp.ret_transp.p_icms_ret` | X14 `pICMSRet`: aliquota da retencao, de 0 a 100. |
+| `transp.ret_transp.v_icms_ret` | X15 `vICMSRet`: valor do ICMS retido (2 casas). |
+| `transp.ret_transp.cfop` | X16 `CFOP`: 4 digitos, iniciado por 1, 2, 3, 5, 6 ou 7. Se e' CFOP de transporte (722) e' da tabela do Portal e nao e' conferido. |
+| `transp.ret_transp.c_mun_fg` | X17 `cMunFG`: codigo IBGE, 7 digitos. |
+
+## transp.veic
+
+| campo | o que e' |
+|---|---|
+| `transp.veic.placa` | X19 `placa`: `XXX9999`, `XXX999`, `XX9999`, `XXXX999` ou 7 letras e numeros (placa Mercosul); espaco e hifen sao tirados. |
+| `transp.veic.uf` | `UF`: sigla, ou `EX`. |
+| `transp.veic.rntc` | `RNTC`: registro na ANTT, de 1 a 20 caracteres. |
+
+## transp.reboque[]
+
+| campo | o que e' |
+|---|---|
+| `transp.reboque[].placa` | X23 `placa`: `XXX9999`, `XXX999`, `XX9999`, `XXXX999` ou 7 letras e numeros (placa Mercosul); espaco e hifen sao tirados. |
+| `transp.reboque[].uf` | `UF`: sigla, ou `EX`. |
+| `transp.reboque[].rntc` | `RNTC`: registro na ANTT, de 1 a 20 caracteres. |
+
+## transp.vol[]
+
+| campo | o que e' |
+|---|---|
+| `transp.vol[].q_vol` | X27 `qVol`: de 1 a 15 digitos. |
+| `transp.vol[].esp` | X28 `esp`: especie, de 1 a 60 caracteres. |
+| `transp.vol[].marca` | X29 `marca`: de 1 a 60 caracteres. |
+| `transp.vol[].n_vol` | X30 `nVol`: de 1 a 60 caracteres. |
+| `transp.vol[].peso_l` | X31 `pesoL`: peso liquido em kg (ate 12 inteiros e 3 casas). |
+| `transp.vol[].peso_b` | X32 `pesoB`: peso bruto em kg (ate 12 inteiros e 3 casas). |
+| `transp.vol[].lacres` | X33 `lacres` / X34 `nLacre`: lista com o numero de cada lacre, de 1 a 60 caracteres, ate 5000. |
+
+## cobr
+
+| campo | o que e' |
+|---|---|
+| `cobr.fat` | Y02 `fat`: a fatura. Com `cobr`, `nFat`, `vOrig` e `vLiq` sao obrigatorios (rejeicao 905). |
+| `cobr.dup` | Y07 `dup`, de 0 a 120; a soma bate com o `vLiq` (rejeicao 851). |
+
+## cobr.fat
+
+| campo | o que e' |
+|---|---|
+| `cobr.fat.n_fat` | Y03 `nFat`: de 1 a 60 caracteres. |
+| `cobr.fat.v_orig` | Y04 `vOrig`: valor original (2 casas). |
+| `cobr.fat.v_desc` | Y05 `vDesc`: desconto, nao maior que o original (rejeicao 901); ausente ou zero = a tag nao sai. |
+| `cobr.fat.v_liq` | Y06 `vLiq`: valor liquido; igual ao original menos o desconto (rejeicao 902). |
+
+## cobr.dup[]
+
+| campo | o que e' |
+|---|---|
+| `cobr.dup[].n_dup` | Y08 `nDup`: tres algarismos sequenciais a partir de `001` (rejeicao 852). |
+| `cobr.dup[].d_venc` | Y09 `dVenc`: `AAAA-MM-DD`, em ordem crescente e nao antes da emissao (rejeicoes 900 e 850). |
+| `cobr.dup[].v_dup` | Y10 `vDup`: valor da parcela, maior que zero (2 casas). |
+
+## exporta
+
+| campo | o que e' |
+|---|---|
+| `exporta.uf_saida_pais` | ZA02 `UFSaidaPais`: sigla da UF de embarque (sem `EX`). |
+| `exporta.x_loc_exporta` | ZA03 `xLocExporta`: local de embarque, de 1 a 60 caracteres. |
+| `exporta.x_loc_despacho` | ZA04 `xLocDespacho`: local de despacho, de 1 a 60 caracteres. |
+
+## compra
+
+| campo | o que e' |
+|---|---|
+| `compra.x_n_emp` | ZB02 `xNEmp`: nota de empenho, de 1 a 22 caracteres. |
+| `compra.x_ped` | ZB03 `xPed`: pedido, de 1 a 60 caracteres. |
+| `compra.x_cont` | ZB04 `xCont`: contrato, de 1 a 60 caracteres. |
 
 ## pagamentos[]
 

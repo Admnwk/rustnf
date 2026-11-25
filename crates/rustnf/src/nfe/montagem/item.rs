@@ -5,12 +5,14 @@
 //! O item (`det`): produto, veiculo novo, IPI, PIS e COFINS, e a ordem dos grupos do `imposto` (ICMS, IPI, PIS,
 //! COFINS, ICMSUFDest e IBSCBS). Soma no acumulador os valores que vao para os totais.
 
+use super::comb::{combustivel, repasse_do_cst60};
 use super::formato::*;
 use super::icms::icms;
 use super::icms_regras::cod_benef;
 use super::ide::{classicos, compra_gov_item, tipo_x_ibscbs};
 use super::modelo::*;
 use super::partes::{conferir_sn_item, Regime};
+use super::produto::{medicamento, rastros, um_grupo_so};
 use super::total::{Ac, DESON_DEDUZ};
 use super::uf_dest::icms_uf_dest;
 use super::*;
@@ -52,7 +54,13 @@ fn liquido(n: &Nota, it: &Item, q: Dec, k: &str) -> Res<Option<(Dec, Dec)>> {
 /// `tpRest` do veiculo (XSD): restricao.
 const TP_REST: [u32; 6] = [0, 1, 2, 3, 4, 9];
 
-fn int_faixa(v: &str, campo: &str, lo: u32, hi: u32, permitidos: Option<&[u32]>) -> Res<String> {
+pub(crate) fn int_faixa(
+    v: &str,
+    campo: &str,
+    lo: u32,
+    hi: u32,
+    permitidos: Option<&[u32]>,
+) -> Res<String> {
     let s = v.trim();
     let n: Option<u32> = if !s.is_empty() && s.bytes().all(|b| b.is_ascii_digit()) && s.len() <= 9 {
         s.parse().ok()
@@ -73,7 +81,7 @@ fn int_faixa(v: &str, campo: &str, lo: u32, hi: u32, permitidos: Option<&[u32]>)
     }
 }
 
-fn digitos_ate(v: &str, campo: &str, maximo: usize) -> Res<String> {
+pub(crate) fn digitos_ate(v: &str, campo: &str, maximo: usize) -> Res<String> {
     let s = v.trim();
     if s.is_empty() || s.len() > maximo || !s.bytes().all(|b| b.is_ascii_digit()) {
         return Err(erro(
@@ -398,8 +406,16 @@ pub(crate) fn det(
         "nItemPed",
         &txt_ou_none(&it.n_item_ped, &format!("{k}nItemPed"), 6, 1, true)?,
     );
+    um_grupo_so(it, &k)?;
+    rastros(x, n, it, &k, ra)?;
+    // ultimo filho do prod: o choice veicProd, med, arma, comb ou nRECOPI
+    if let Some(m) = &it.med {
+        medicamento(x, n, it, m, &k, ra)?;
+    }
+    if let Some(c) = &it.combustivel {
+        combustivel(x, c, it, n, &k, ra)?;
+    }
     if let Some(v) = &it.veiculo {
-        // ultimo filho do prod (choice veicProd, med, arma, comb, nRECOPI)
         if v.tp_op.trim() == "2"
             && n.entrega
                 .as_ref()
@@ -424,6 +440,7 @@ pub(crate) fn det(
     let st_antes = ac.get("vST").mais(ac.get("vFCPST"));
     let deduz_antes = ac.get(DESON_DEDUZ);
     classicos(n, it, &k, ano)?;
+    repasse_do_cst60(it, &k)?;
     if let Some(v) = &it.v_icms_previsto {
         // NB01: alternativa do choice do ICMS
         let v = Dec::parse(v, "vICMSPrevisto")?;
