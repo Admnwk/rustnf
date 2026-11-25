@@ -21,8 +21,8 @@ use gpui_kit::component::{
 use gpui_kit::prelude::FluentBuilder as _;
 use gpui_kit::{
     div, px, rgb, AnyElement, App, AppContext as _, Context, Entity, EventEmitter,
-    InteractiveElement as _, IntoElement, ParentElement as _, SharedString, Styled as _,
-    Subscription, Window,
+    InteractiveElement as _, IntoElement, ParentElement as _, SharedString,
+    StatefulInteractiveElement as _, Styled as _, Subscription, Window,
 };
 use rustnf_app::config::Config;
 use rustnf_app::segredo::Segredo;
@@ -748,13 +748,22 @@ impl Cancelamento {
                         cx.notify();
                     });
                 })
-                .child(v_flex().gap_3().child(corpo).children(motivo.map(|m| {
-                    div()
-                        .id("motivo-do-botao-cancelar")
-                        .text_xs()
-                        .text_color(if pode { muted } else { aviso })
-                        .child(m)
-                })))
+                .child(
+                    // o corpo rola quando passa da janela (a lista de motivos da recusa e' longa): o rodape fica sempre a vista
+                    v_flex()
+                        .id("corpo-do-dialogo")
+                        .gap_3()
+                        .max_h(px(520.))
+                        .overflow_y_scroll()
+                        .child(corpo)
+                        .children(motivo.map(|m| {
+                            div()
+                                .id("motivo-do-botao-cancelar")
+                                .text_xs()
+                                .text_color(if pode { muted } else { aviso })
+                                .child(m)
+                        })),
+                )
                 .footer(rodape)
         });
     }
