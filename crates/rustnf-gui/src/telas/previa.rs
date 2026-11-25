@@ -19,8 +19,8 @@ use gpui_kit::component::{
 use gpui_kit::prelude::FluentBuilder as _;
 use gpui_kit::{
     div, px, AnyElement, AppContext as _, Context, Entity, EventEmitter, InteractiveElement as _,
-    IntoElement, ParentElement as _, Render, SharedString, StatefulInteractiveElement as _,
-    Styled as _, Subscription, Window,
+    IntoElement, ParentElement as _, Render, ScrollHandle, SharedString,
+    StatefulInteractiveElement as _, Styled as _, Subscription, Window,
 };
 use rustnf_app::config::Config;
 
@@ -64,6 +64,8 @@ pub(super) struct TelaPrevia {
     /// A pessoa ja mexeu em algum campo: a configuracao que chega depois nao refaz a tela.
     mexeu: bool,
     _subs: Vec<Subscription>,
+    /// A rolagem do formulario (teclado e campo focado).
+    pub(super) rolagem: ScrollHandle,
 }
 
 impl EventEmitter<EventoPrevia> for TelaPrevia {}
@@ -149,6 +151,7 @@ impl TelaPrevia {
             apuracao,
             mexeu: false,
             _subs: subs,
+            rolagem: ScrollHandle::new(),
         }
     }
 
@@ -472,11 +475,13 @@ impl Render for TelaPrevia {
         let campos = self.campos(cx);
         let resultado = self.resultado(cx);
         let borda = cx.theme().border;
+        let rolagem = self.rolagem.clone();
         let coluna = |filho: AnyElement, topo: gpui_kit::Div| {
             div()
                 .id("previa-formulario")
                 .size_full()
                 .overflow_y_scroll()
+                .track_scroll(&rolagem)
                 .child(
                     v_flex()
                         .w_full()

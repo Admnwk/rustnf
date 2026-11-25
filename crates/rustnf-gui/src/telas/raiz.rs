@@ -13,7 +13,9 @@ use gpui_kit::component::input::{InputEvent, InputState};
 use gpui_kit::component::notification::Notification;
 use gpui_kit::component::select::{SearchableVec, SelectEvent, SelectState};
 use gpui_kit::component::{IndexPath, Theme, ThemeMode, WindowExt as _};
-use gpui_kit::{AppContext as _, Context, Entity, PathPromptOptions, Subscription, Window};
+use gpui_kit::{
+    AppContext as _, Context, Entity, PathPromptOptions, ScrollHandle, Subscription, Window,
+};
 use rustnf_app::config::Config;
 use rustnf_app::segredo::Segredo;
 
@@ -180,6 +182,8 @@ pub struct Raiz {
     pub(super) aviso: Option<Aviso>,
     /// O proximo numero de DPS da serie, pela pasta de notas gravada; `None` = sem pasta ou ainda lendo.
     pub(super) proximo_dps: Option<u64>,
+    /// A rolagem das telas da propria janela (Inicio, primeiro uso, Configuracoes, nota sem configuracao).
+    pub(super) rolagem: ScrollHandle,
     fixas: Vec<Subscription>,
     das_aliquotas: Vec<Subscription>,
 }
@@ -273,6 +277,7 @@ impl Raiz {
             erros_externos: BTreeMap::new(),
             aviso: None,
             proximo_dps: None,
+            rolagem: ScrollHandle::new(),
             fixas: Vec::new(),
             das_aliquotas: Vec::new(),
         };
@@ -627,11 +632,48 @@ impl Raiz {
     /// Muda a tela. Notas le a pasta de novo ao abrir, para a lista nao ficar atras do que a Nova nota e os
     /// cancelamentos fizeram.
     pub(super) fn ir_para(&mut self, tela: Tela, cx: &mut Context<Self>) {
+        if self.tela != tela {
+            // cada tela da janela abre no topo
+            self.rolagem.set_offset(gpui_kit::Point::default());
+        }
         self.tela = tela;
         if tela == Tela::Notas {
             self.notas.update(cx, |n, cx| n.recarregar(cx));
         }
         cx.notify();
+    }
+
+    /// A rolagem da tela aberta; `None` nas Notas, onde as setas andam pela lista.
+    pub(super) fn rolagem_da_tela(&self, cx: &gpui_kit::App) -> Option<ScrollHandle> {
+        match self.tela {
+            Tela::Inicio | Tela::Configuracoes => Some(self.rolagem.clone()),
+            Tela::NovaNota => Some(self.nova.read(cx).rolagem.clone()),
+            Tela::Consultar => Some(self.consultar.read(cx).rolagem.clone()),
+            Tela::Previa => Some(self.previa.read(cx).rolagem.clone()),
+            Tela::Notas => None,
+        }
+    }
+
+    /// Rola a tela aberta pelo teclado; diz se rolou (se nao, a tecla segue para quem estiver abaixo).
+    pub(super) fn rolar_tela(
+        &mut self,
+        passo: super::rolagem::Passo,
+        cx: &mut Context<Self>,
+    ) -> bool {
+        let Some(rolagem) = self.rolagem_da_tela(cx) else {
+            return false;
+        };
+        if !super::rolagem::rolar(&rolagem, passo) {
+            return false;
+        }
+        match self.tela {
+            Tela::NovaNota => self.nova.update(cx, |_, cx| cx.notify()),
+            Tela::Consultar => self.consultar.update(cx, |_, cx| cx.notify()),
+            Tela::Previa => self.previa.update(cx, |_, cx| cx.notify()),
+            _ => {}
+        }
+        cx.notify();
+        true
     }
 
     fn ir_para_aliquotas(&mut self) {

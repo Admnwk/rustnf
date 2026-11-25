@@ -194,6 +194,7 @@ impl Raiz {
             .id("inicio")
             .size_full()
             .overflow_y_scroll()
+            .track_scroll(&self.rolagem)
             .child(
                 v_flex()
                     .w_full()

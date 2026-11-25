@@ -19,6 +19,7 @@ mod notas;
 mod pecas;
 mod previa;
 mod raiz;
+mod rolagem;
 mod senha;
 #[cfg(test)]
 mod testes;
@@ -49,7 +50,13 @@ actions!(
         IrParaNotas,
         IrParaConsultar,
         IrParaPrevia,
-        EmitirNota
+        EmitirNota,
+        RolarAcima,
+        RolarAbaixo,
+        PaginaAcima,
+        PaginaAbaixo,
+        IrAoTopo,
+        IrAoFim
     ]
 );
 
@@ -69,7 +76,9 @@ const LARGURA_MINIMA: f32 = 940.0;
 const ALTURA_MINIMA: f32 = 620.0;
 
 /// Registra os atalhos de teclado: Ctrl+S salva e Ctrl+Shift+D descarta nas Configuracoes, Ctrl+N abre a Nova nota,
-/// Ctrl+Enter emite nela, Ctrl+L abre as Notas (a lista), Ctrl+K a Consulta e Ctrl+P a Previa.
+/// Ctrl+Enter emite nela, Ctrl+L abre as Notas (a lista), Ctrl+K a Consulta e Ctrl+P a Previa. As setas,
+/// PageUp/PageDown e Ctrl+Home/Ctrl+End rolam a tela aberta; PageUp/PageDown rolam a tela tambem com o foco num campo
+/// (registrados depois dos do campo, valem por cima deles).
 pub fn registrar_atalhos(cx: &mut App) {
     cx.bind_keys([
         KeyBinding::new("ctrl-s", SalvarConfiguracao, Some("Raiz")),
@@ -79,6 +88,14 @@ pub fn registrar_atalhos(cx: &mut App) {
         KeyBinding::new("ctrl-k", IrParaConsultar, Some("Raiz")),
         KeyBinding::new("ctrl-p", IrParaPrevia, Some("Raiz")),
         KeyBinding::new("ctrl-enter", EmitirNota, Some("NovaNota")),
+        KeyBinding::new("up", RolarAcima, Some("Raiz")),
+        KeyBinding::new("down", RolarAbaixo, Some("Raiz")),
+        KeyBinding::new("pageup", PaginaAcima, Some("Raiz")),
+        KeyBinding::new("pagedown", PaginaAbaixo, Some("Raiz")),
+        KeyBinding::new("ctrl-home", IrAoTopo, Some("Raiz")),
+        KeyBinding::new("ctrl-end", IrAoFim, Some("Raiz")),
+        KeyBinding::new("pageup", PaginaAcima, Some("Input")),
+        KeyBinding::new("pagedown", PaginaAbaixo, Some("Input")),
     ]);
 }
 
