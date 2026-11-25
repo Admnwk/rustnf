@@ -5,6 +5,7 @@ members = ["crates/rustnf", "crates/rustnf-app", "crates/rustnf-cli", "crates/ru
 [workspace.package]
 version = "0.3.0"
 edition = "2021"
+rust-version = "1.92"
 license = "MPL-2.0"
 authors = ["Os autores do rustnf"]
 repository = "https://github.com/Admnwk/rustnf"

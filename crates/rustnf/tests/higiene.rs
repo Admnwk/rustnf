@@ -37,6 +37,8 @@ const URLS_ACEITAS: &[&str] = &[
     r"^https://github\.com/Admnwk/rustnf(/|$)",
     r"^https://github\.com/rust-lang/crates\.io-index$",
     r"^https://(docs\.rs|crates\.io)/",
+    // o binario oficial do gitleaks que o CI baixa (conferido pelo SHA-256 no proprio fluxo)
+    r"^https://github\.com/gitleaks/gitleaks/releases/download/",
     // licenca SIL OFL e a fundicao, como vem no texto da licenca e no metadado das fontes Liberation
     r"^http://scripts\.sil\.org/OFL$",
     r"^http://www\.ascendercorp\.com/",
