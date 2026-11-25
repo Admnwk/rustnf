@@ -39,6 +39,9 @@ const URLS_ACEITAS: &[&str] = &[
     r"^https://(docs\.rs|crates\.io)/",
     // o binario oficial do gitleaks que o CI baixa (conferido pelo SHA-256 no proprio fluxo)
     r"^https://github\.com/gitleaks/gitleaks/releases/download/",
+    // os servicos de CEP do botao "Buscar enderecos pelo CEP" da interface (so' no clique)
+    r"^https://viacep\.com\.br/ws$",
+    r"^https://brasilapi\.com\.br/api/cep/v1$",
     // licenca SIL OFL e a fundicao, como vem no texto da licenca e no metadado das fontes Liberation
     r"^http://scripts\.sil\.org/OFL$",
     r"^http://www\.ascendercorp\.com/",
