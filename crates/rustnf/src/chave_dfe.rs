@@ -165,7 +165,7 @@ pub fn limpar(valor: &str) -> String {
 
 /// DV das 43 (NF-e, NFC-e) ou 49 (NFS-e) primeiras posicoes da chave: modulo 11, pesos 2..9 da direita,
 /// `Ord(ch) - 48`.
-fn dv(base: &str) -> Result<u32, ErroChave> {
+pub(crate) fn dv(base: &str) -> Result<u32, ErroChave> {
     if !matches!(base.len(), 43 | 49) {
         return Err(ErroChave::Tamanho);
     }
