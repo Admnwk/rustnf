@@ -57,7 +57,7 @@ pub struct Registrada {
     pub marcada: Option<bool>,
 }
 
-/// Registra um evento que o contribuinte pode pedir (`tipo` = `tpEvento`; o cancelamento tem [`cancelar_pedido`]).
+/// Registra um evento que o contribuinte pode pedir (`tipo` = `tpEvento`; o cancelamento tem [`crate::pedido::cancelar_pedido`]).
 /// Antes de qualquer envio recusa o cancelamento e os eventos do fisco e do sistema. So' o 101103 registrado muda a
 /// pasta de notas: a nota autorizada que esta nela passa a em analise fiscal.
 ///
