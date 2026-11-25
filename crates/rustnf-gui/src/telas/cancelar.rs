@@ -643,6 +643,8 @@ impl Cancelamento {
                 })
                 .into_any_element(),
             DesfechoDoCancelamento::Rejeitado { mensagens } => {
+                // na recusa por prazo, "corrija e tente de novo" nao serve: a faixa da oferta diz o que fazer
+                let prazo = tipo == TipoDeEvento::Cancelar && d.recusado_por_prazo();
                 let mut c = v_flex()
                     .id("cancelamento-rejeitado")
                     .gap_3()
@@ -653,16 +655,18 @@ impl Cancelamento {
                             .child(Icon::new(IconName::CircleAlert).text_color(cx.theme().danger))
                             .child(div().font_semibold().child(tipo.recusou())),
                     )
-                    .child(
-                        div()
-                            .text_sm()
-                            .text_color(muted)
-                            .child(tipo.depois_de_recusar()),
-                    );
+                    .when(!prazo, |c| {
+                        c.child(
+                            div()
+                                .text_sm()
+                                .text_color(muted)
+                                .child(tipo.depois_de_recusar()),
+                        )
+                    });
                 for m in mensagens {
                     c = c.child(mensagem_da_sefin(m, Gravidade::Erro, cx));
                 }
-                if tipo == TipoDeEvento::Cancelar && d.recusado_por_prazo() {
+                if prazo {
                     let d_analise = dialogo.clone();
                     let analise = nova(
                         TipoDeEvento::AnaliseFiscal.rotulo_da_acao(),
