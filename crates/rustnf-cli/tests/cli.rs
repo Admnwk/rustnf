@@ -250,6 +250,29 @@ fn emitir_recusa_o_campo_desconhecido_antes_de_abrir_o_certificado() {
 }
 
 #[test]
+fn completar_gera_o_script_de_cada_shell() {
+    for (shell, marca) in [
+        ("powershell", "Register-ArgumentCompleter"),
+        ("bash", "complete -F"),
+        ("zsh", "#compdef rustnf"),
+        ("fish", "complete -c rustnf"),
+        ("elvish", "edit:completion:arg-completer[rustnf]"),
+    ] {
+        let s = rodar(&["completar", shell], None, &[]);
+        assert_eq!(s.codigo, 0, "{shell}: {}", s.err);
+        let texto = String::from_utf8(s.out).unwrap();
+        assert!(texto.contains(marca), "{shell}: faltou {marca}");
+        // os subcomandos entram no script
+        assert!(
+            texto.contains("emitir") && texto.contains("notas"),
+            "{shell}"
+        );
+    }
+    let s = rodar(&["completar", "cmd"], None, &[]);
+    assert_eq!(s.codigo, 2, "shell desconhecido e' erro de uso");
+}
+
+#[test]
 fn dps_esquema_imprime_o_schema_do_pedido() {
     let s = rodar(&["dps", "esquema"], None, &[]);
     assert_eq!(s.codigo, 0, "{}", s.err);

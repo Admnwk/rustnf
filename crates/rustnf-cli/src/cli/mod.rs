@@ -92,6 +92,13 @@ pub enum Comando {
         #[command(subcommand)]
         acao: AcaoSefin,
     },
+    /// Imprime o script que completa os comandos com Tab no shell. PowerShell:
+    /// `rustnf completar powershell | Out-String | Invoke-Expression` (ponha no `$PROFILE` para valer sempre);
+    /// bash: `source <(rustnf completar bash)`.
+    Completar {
+        /// O shell: powershell, bash, zsh, fish ou elvish.
+        shell: clap_complete::Shell,
+    },
 }
 
 /// `rustnf certificado ...`.

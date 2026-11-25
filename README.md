@@ -133,6 +133,13 @@ Convenções: dado no stdout, diagnóstico no stderr; `--json` onde a saída pad
 
 Os exemplos abaixo usam os arquivos de `crates/rustnf-cli/exemplos/` (só documentos fictícios).
 
+Para completar comandos e opções com Tab, gere o script do seu shell (powershell, bash, zsh, fish ou elvish):
+
+```sh
+rustnf completar powershell | Out-String | Invoke-Expression   # PowerShell; ponha no $PROFILE para valer sempre
+source <(rustnf completar bash)                                 # bash
+```
+
 ### Montar e conferir a DPS
 
 ```

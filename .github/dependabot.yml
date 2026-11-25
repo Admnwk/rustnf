@@ -1,0 +1,22 @@
+# Atualizacao de dependencias. O Dependabot ja espera 3 dias por versao nova antes de propor (padrao dele); aviso de
+# seguranca nao espera. Cada proposta passa pelo CI inteiro, inclusive o portao de higiene, antes de qualquer merge.
+version: 2
+updates:
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      cargo:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    ignore:
+      # a interface fixa a versao do kit (`=`): a troca e' feita a mao, com as telas conferidas
+      - dependency-name: "gpui-kit"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      actions:
+        patterns: ["*"]
