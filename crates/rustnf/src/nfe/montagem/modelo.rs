@@ -11,6 +11,7 @@ use chrono::{DateTime, FixedOffset};
 
 use crate::reforma::calculo::ItemIbsCbs;
 
+use super::avisos::{Aviso, RegimePisCofins};
 use super::cobr::Cobranca;
 use super::comb::Combustivel;
 use super::difal;
@@ -546,6 +547,9 @@ pub struct Nota {
     pub exporta: Option<Exportacao>,
     /// ZB01 `compra`: nota de empenho, pedido e contrato.
     pub compra: Option<Compra>,
+    /// Regime do PIS e da COFINS do emitente (CRT 3). NAO vai ao XML: so' alimenta o aviso de CST e aliquota que nao
+    /// combinam com o regime ([`super::avisos`]).
+    pub regime_pis_cofins: Option<RegimePisCofins>,
 }
 
 /// A nota montada, ainda sem assinatura.
@@ -557,4 +561,6 @@ pub struct Montada {
     pub chave: String,
     /// Os totais do `ICMSTot` (e `vNFTot`, `vProdLiqTot`) em texto com 2 casas.
     pub totais: BTreeMap<String, String>,
+    /// Os avisos da montagem (nunca impedem a nota nem mudam o XML).
+    pub avisos: Vec<Aviso>,
 }

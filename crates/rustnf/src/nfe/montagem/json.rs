@@ -13,7 +13,8 @@ use crate::reforma::calculo::{ibscbs_do_item, EntradaItem};
 use super::difal;
 use super::formato::*;
 use super::json_grupos::{
-    cobr_de, combustivel_de, compra_de, exporta_de, medicamento_de, rastros_de, transp_de,
+    cobr_de, combustivel_de, compra_de, exporta_de, medicamento_de, rastros_de,
+    regime_pis_cofins_de, transp_de,
 };
 use super::modelo::*;
 use super::VER_PROC;
@@ -454,6 +455,7 @@ pub fn nota_de_json(v: &Value) -> Res<Nota> {
         cobr: cobr_de(v)?,
         exporta: exporta_de(v),
         compra: compra_de(v),
+        regime_pis_cofins: regime_pis_cofins_de(v)?,
     })
 }
 

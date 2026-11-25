@@ -8,10 +8,11 @@
 
 use serde_json::Value;
 
+use super::avisos::RegimePisCofins;
 use super::cobr::{Cobranca, Duplicata, Fatura};
 use super::comb::{Cide, Combustivel, Encerrante, OrigemComb};
 use super::exporta::{Compra, Exportacao};
-use super::formato::Res;
+use super::formato::{corta, erro, Res};
 use super::json::{opt_obj, s_, s_num};
 use super::produto::{Medicamento, Rastro};
 use super::transp::{RetencaoIcms, Transportadora, Transporte, VeiculoTransp, VolumeTransp};
@@ -216,5 +217,21 @@ pub(crate) fn compra_de(pedido: &Value) -> Option<Compra> {
         x_n_emp: s_(c, "x_n_emp"),
         x_ped: s_(c, "x_ped"),
         x_cont: s_(c, "x_cont"),
+    })
+}
+
+/// `regime_pis_cofins` do pedido: `cumulativo` ou `nao_cumulativo`; outro texto e' recusado.
+pub(crate) fn regime_pis_cofins_de(pedido: &Value) -> Res<Option<RegimePisCofins>> {
+    let Some(t) = s_(pedido, "regime_pis_cofins").filter(|t| !t.trim().is_empty()) else {
+        return Ok(None);
+    };
+    RegimePisCofins::de_texto(&t).map(Some).ok_or_else(|| {
+        erro(
+            format!(
+                "regime_pis_cofins: '{}' (use cumulativo ou nao_cumulativo)",
+                corta(&t, 30)
+            ),
+            "regime_pis_cofins",
+        )
     })
 }

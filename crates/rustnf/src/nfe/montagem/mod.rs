@@ -12,12 +12,14 @@
 //! * [`montar`] escreve o `infNFe` na ordem do XSD (pacote PL_010h) e calcula os totais; a mesma entrada da o mesmo
 //!   XML (a data de emissao e o `cNF` vem do pedido);
 //! * [`assinar`] assina o `infNFe` com o certificado A1 (RSA-SHA1 e digest SHA-1, os unicos que o XSD da NF-e
-//!   aceita).
+//!   aceita);
+//! * [`avisos`] (e `Montada::avisos`) lista o que a nota tem de estranho sem ser recusado: PIS/COFINS que nao combinam com
+//!   o regime informado e o Simples sem regime regular com CST que exige o `gIBSCBS`. Aviso nunca impede a montagem.
 //!
 //! Fora desta entrega: NFC-e (modelo 65), o QR Code (`infNFeSupl`: a nota com `tpImp` 6, DANFE simplificado, monta mas
-//! nao assina), cobranca, transportadora
-//! e volumes, exportacao, compra, rastreabilidade, medicamento, combustivel e armamento, e o envio. O que o pedido
-//! pede e a montagem ainda nao faz e' recusado com erro claro; nada sai pela metade.
+//! nao assina), imposto de importacao, imposto seletivo, `detExport`, armamento, `NVE`, `ISSQN`, `retTrib`, `obsCont`,
+//! `obsFisco`, `procRef`, `cana`, `agropecuario` e `impostoDevol`, e o envio. O que o pedido pede e a montagem ainda nao faz
+//! e' recusado com erro claro; nada sai pela metade.
 //!
 //! Fontes: MOC 7.00 (Anexo I), NT 2025.002 (IBS/CBS/IS), NT 2026.005 (Simples Nacional), NT 2026.008 (valor liquido do
 //! produto) e o pacote de esquemas PL_010h v1.03; a lista esta em `docs/FONTES.md`. O formato do pedido esta em
@@ -33,6 +35,7 @@ use crate::reforma::aliquotas::tributos_somam_no_total;
 use crate::reforma::calculo::{totalizar, vnftot, ItemIbsCbs};
 
 mod assinar;
+mod avisos;
 mod cobr;
 mod comb;
 pub mod difal;
@@ -56,6 +59,7 @@ mod transp;
 mod uf_dest;
 
 pub use assinar::assinar;
+pub use avisos::{avisos, Aviso, RegimePisCofins, TipoAviso};
 pub use cobr::{Cobranca, Duplicata, Fatura};
 pub use comb::{Cide, Combustivel, Encerrante, OrigemComb};
 pub use esquema::{campos_conhecidos, campos_desconhecidos, nota_de_json_estrito};
@@ -278,6 +282,7 @@ pub fn montar(n: &Nota) -> Res<Montada> {
         xml: x.0,
         chave,
         totais,
+        avisos: avisos::avisos(n),
     })
 }
 

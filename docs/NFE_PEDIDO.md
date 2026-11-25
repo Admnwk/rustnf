@@ -12,8 +12,22 @@ a nota a SEFAZ.
   sem acento.
 * Campo que o pedido traz e a montagem nao conhece (nome errado, campo que a montagem ainda nao tem) e' ignorado, com
   aviso em `campos_desconhecidos`; `nota_de_json_estrito` recusa. `itens[].ibscbs.publicadas` e' de forma livre.
-* Fora desta entrega (nao ha campo no pedido): cobranca (`cobr`), transportadora, volumes e lacres, exportacao, compra,
-  rastreabilidade, medicamento, combustivel, armamento e o QR Code. O modelo 65 (NFC-e) e' recusado.
+* Ainda sem campo no pedido (a montagem recusa o que pede e nao faz): imposto de importacao (`II`, `DI`, `adi`),
+  imposto seletivo, `detExport`, armamento, `NVE`, `ISSQN`, `retTrib`, `obsCont`, `obsFisco`, `procRef`, `cana`,
+  `agropecuario`, `impostoDevol` e o QR Code. O modelo 65 (NFC-e) e' recusado.
+
+## Avisos da montagem
+
+`montar` devolve, junto do XML, a lista `Montada::avisos` (e `avisos(&Nota)` a calcula sozinha). Aviso **nunca impede a
+montagem e nao muda o XML**; o que o leiaute recusa continua sendo `ErroMontagem`. Cada aviso traz o tipo
+(`TipoAviso::codigo`), o item (ou nenhum, quando e' da nota) e o texto.
+
+| codigo | quando |
+|---|---|
+| `pis_cofins_regime` | Com `regime_pis_cofins` informado e emissao ate 2026: no `cumulativo`, CST 01 com aliquota diferente de 0,65% (PIS) ou 3% (COFINS) e CST de credito (50 a 56 e 60 a 67); no `nao_cumulativo`, CST 01 com aliquota diferente de 1,65% (PIS) ou 7,6% (COFINS), com a ressalva das receitas que a Lei 10.637, art. 8o, e a Lei 10.833, art. 10, mantem no cumulativo; emitente do Simples (CRT diferente de 3) com o campo informado. **Nao avisam**: aliquota zero, monofasico, substituicao, suspensao, isencao, sem incidencia (CST 02 a 09), outras operacoes (49 e 99) e aquisicoes (70 a 75 e 98). |
+| `simples_sem_gibscbs` | CRT 1 sem `tpRegimeIBSCBS` e item com CST que exige o `gIBSCBS`: a montagem omite o grupo pela tabela 2.3 da NT 2026.005 v1.00, mas a regra UB13-30 da NT 2025.002 v1.53 (rejeicao 1022) o exige; as duas NT ainda nao se conciliam e a SEFAZ pode rejeitar. |
+
+O pedido que traz campo que o leiaute nao conhece tem outro canal: `campos_desconhecidos`, antes de a `Nota` existir.
 
 Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endereco.uf`; `itens[]` e' a lista de itens).
 
@@ -66,6 +80,7 @@ Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endere
 | `cobr` | Y01 `cobr`: fatura e duplicatas. |
 | `exporta` | ZA01 `exporta`: obrigatorio na exportacao (`tpNF` 1 e `idDest` 3, rejeicao 355) e proibido fora dela (356). |
 | `compra` | ZB01 `compra`: nota de empenho, pedido e contrato. |
+| `regime_pis_cofins` | `cumulativo` ou `nao_cumulativo`: o regime do PIS e da COFINS do emitente (CRT 3). **Nao vai ao XML**: so' alimenta o aviso de CST ou aliquota que nao combinam com o regime. Sem ele, sem aviso. |
 
 ## emit
 

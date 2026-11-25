@@ -305,3 +305,95 @@ fn os_limites_de_quantidade_do_xsd_valem() {
     });
     assert_eq!(regra(montar_json(&c)), "montou");
 }
+
+// ------------------------------------------------------------------------------------------------------- avisos
+
+/// Simples (CRT 1) sem regime regular do IBS/CBS, com CST que exige o `gIBSCBS` (o item leva o `gTribSN`).
+fn simples_sem_regime() -> Value {
+    let mut p = caso_de("nfe_montar_cobr.json", "cobr_so_a_fatura");
+    p["emissao"] = json!("2026-11-20T10:00:00-03:00");
+    p.as_object_mut().unwrap().remove("cobr");
+    p["itens"][0]["c_ativ_sn"] = json!("01");
+    p["itens"][0]["ibscbs"] = json!({
+        "cst": "000", "cclass_trib": "000001", "vbc": "300.00", "data": "2026-11-20",
+        "trib_sn": {"ibs": {"p": "0.50", "v": "1.50"}, "cbs": {"p": "1.20", "v": "3.60"}}
+    });
+    p
+}
+
+#[test]
+fn simples_sem_regime_regular_avisa_do_gibscbs_e_nao_muda_o_xml() {
+    let m = montar_json(&simples_sem_regime()).unwrap();
+    assert!(!m.xml.contains("<gIBSCBS>"));
+    assert_eq!(m.avisos.len(), 1, "{:?}", m.avisos);
+    let a = &m.avisos[0];
+    assert_eq!(a.tipo.codigo(), "simples_sem_gibscbs");
+    assert_eq!(a.item, Some(1));
+    for trecho in ["UB13-30", "1022", "NT 2026.005", "nao se conciliam"] {
+        assert!(a.mensagem.contains(trecho), "{trecho}: {}", a.mensagem);
+    }
+    // com o regime regular o grupo volta e o aviso some
+    let mut regular = simples_sem_regime();
+    regular["emit"]["tp_regime_ibscbs"] = json!(1);
+    regular["itens"][0]["ibscbs"]
+        .as_object_mut()
+        .unwrap()
+        .remove("trib_sn");
+    let m2 = montar_json(&regular).unwrap();
+    assert!(m2.xml.contains("<gIBSCBS>"));
+    assert!(m2.avisos.is_empty(), "{:?}", m2.avisos);
+}
+
+#[test]
+fn o_aviso_nao_impede_a_montagem_nem_muda_o_xml() {
+    let mut com = caso_de(
+        "nfe_montar_avisos.json",
+        "cumulativo_com_as_aliquotas_do_nao_cumulativo",
+    );
+    let m = montar_json(&com).unwrap();
+    assert_eq!(m.avisos.len(), 2);
+    com.as_object_mut().unwrap().remove("regime_pis_cofins");
+    let sem = montar_json(&com).unwrap();
+    assert!(sem.avisos.is_empty());
+    assert_eq!(m.xml, sem.xml, "o regime nao vai ao XML");
+}
+
+#[test]
+fn o_aviso_de_pis_cofins_cita_o_artigo_da_lei() {
+    let p = caso_de(
+        "nfe_montar_avisos.json",
+        "cumulativo_com_as_aliquotas_do_nao_cumulativo",
+    );
+    let m = montar_json(&p).unwrap();
+    assert!(
+        m.avisos[0].mensagem.contains("Lei 9.715/1998, art. 8o"),
+        "{}",
+        m.avisos[0].mensagem
+    );
+    assert!(
+        m.avisos[1].mensagem.contains("Lei 9.718/1998, art. 8o"),
+        "{}",
+        m.avisos[1].mensagem
+    );
+    let p = caso_de(
+        "nfe_montar_avisos.json",
+        "nao_cumulativo_com_as_aliquotas_do_cumulativo",
+    );
+    let m = montar_json(&p).unwrap();
+    assert!(
+        m.avisos[0].mensagem.contains("art. 8o da Lei 10.637"),
+        "{}",
+        m.avisos[0].mensagem
+    );
+}
+
+#[test]
+fn a_partir_de_2027_o_aviso_de_pis_cofins_nao_vale() {
+    let mut p = caso_de(
+        "nfe_montar_avisos.json",
+        "cumulativo_com_as_aliquotas_do_nao_cumulativo",
+    );
+    assert_eq!(montar_json(&p).unwrap().avisos.len(), 2);
+    p["emissao"] = json!("2027-01-05T10:00:00-03:00");
+    assert!(montar_json(&p).unwrap().avisos.is_empty());
+}

@@ -51,7 +51,7 @@ Os detalhes de cada passo estão em [Interface de desktop](#interface-de-desktop
 | assinatura | conferida pelo próprio verificador e por um XML assinado fora da biblioteca | a Sefin Nacional validar uma assinatura feita aqui, em SHA-256 (o padrão) ou em SHA-1 (`--assinatura sha1`) |
 | cliente da Sefin Nacional | transporte falso (resposta perdida, 5xx, E0014, consulta da nota, da DPS e de evento, cancelamento, pedido de análise fiscal, conferência da situação das notas em lote) | uma chamada real, com TLS mútuo e certificado A1; **nenhuma consulta de DPS, consulta ou registro de evento e nenhuma atualização de situação foi feita contra a Sefin**, e o que ela responde aos eventos de manifestação (202201 e seguintes) e às sequências de um mesmo tipo de evento não foi conferido |
 | prévia do IBS/CBS | casos de teste da calculadora oficial da Receita Federal | comparar com os valores de uma NFS-e autorizada |
-| montagem e assinatura da NF-e (feature `nfe`) | 140 XML de contrato validados no XSD oficial 4.00 (pacote PL_010h v1.03), regras com o código da rejeição, assinatura conferida pelo verificador da própria biblioteca | **nenhum envio a SEFAZ e nenhum XML conferido por uma SEFAZ real**; o XML não foi comparado com uma nota autorizada |
+| montagem e assinatura da NF-e (feature `nfe`) | 188 XML de contrato validados no XSD oficial 4.00 (pacote PL_010h v1.03), regras com o código da rejeição, assinatura conferida pelo verificador da própria biblioteca | **nenhum envio a SEFAZ e nenhum XML conferido por uma SEFAZ real**; o XML não foi comparado com uma nota autorizada |
 | DANFSe | contrato de conteúdo e leiaute | comparar com um DANFSe emitido pelo portal |
 | interface de desktop (`rustnf-gui`, só Windows) | testes do modelo (máscaras, conferência, pedido, prévia, sugestão, rascunho, lista das notas, detalhe, cancelamento, conferência em lote, histórico de eventos, pedido de análise fiscal, confirmação e recusa de nota recebida, consulta pela chave e pela DPS e prévia avulsa), dos fluxos com emissor de demonstração e pasta temporária e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuração e pelo exemplo de demonstração | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, e nenhuma consulta de DPS ou de evento, nenhuma conferência de situação e nenhum evento (análise fiscal, confirmação, recusa) foi feito por ela contra a Sefin; só o emissor de demonstração respondeu**; o DANFSe aberto no leitor de PDF de outra máquina; uma chamada real à Sefin pelo botão "Testar conexão"; exame da janela em outras escalas de tela; o executável de release aberto numa máquina sem as ferramentas de desenvolvimento |
 
@@ -96,7 +96,10 @@ A biblioteca tem também, atrás da feature `nfe`, a base da NF-e (modelo 55): a
 (montar, conferir, decompor e achar em texto), o calendário das Notas Técnicas, a leitura do XML autorizado para uma
 struct e a tabela de códigos de retorno (`cStat`) do MOC. Monta e assina o XML da NF-e 4.00 a partir de um pedido em JSON
 (`rustnf::nfe::montagem`, formato em [docs/NFE_PEDIDO.md](docs/NFE_PEDIDO.md)), com as regras do MOC e das Notas Técnicas
-conferidas antes e o IBS/CBS de mercadoria (inclusive o Simples Nacional da NT 2026.005). **AINDA NÃO ENVIA: não há
+conferidas antes e o IBS/CBS de mercadoria (inclusive o Simples Nacional da NT 2026.005). A montagem cobre também
+o combustível (grupo `comb`), o medicamento e a rastreabilidade do item, a cobrança (`cobr`), o transporte completo
+(transportadora, veículo, reboques, vagão, balsa, volumes e lacres), a exportação e a compra, e devolve avisos (PIS e
+COFINS que não combinam com o regime informado; Simples sem regime regular e `gIBSCBS`) junto do XML. **AINDA NÃO ENVIA: não há
 cliente da SEFAZ, DANFE, linha de comando, API nem interface para a NF-e, e o modelo 65 (NFC-e) é recusado.** A leitura
 não confere a assinatura XML.
 

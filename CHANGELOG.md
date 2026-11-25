@@ -46,6 +46,23 @@ alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o �
     zerada.
   * A montagem, o cálculo e as regras partiram da `gaialib`; aqui foram reescritos e cobertos por casos novos, com
     documentos fictícios e o XML validado no XSD oficial.
+* NF-e (modelo 55), grupos da montagem (feature `nfe`, sem dependência nova). **A NF-e ainda não é enviada.**
+  * Item: `comb` (combustível, com CIDE, encerrante, origem 0 a 30 e GLP), `med` (medicamento) e `rastro` (lotes, até 500);
+    um grupo específico só por item (`veicProd`, `med` ou `comb`). Nota: `cobr` (fatura e duplicatas), `transp` completo
+    (transportadora, `retTransp`, veículo, reboques, vagão, balsa, volumes e lacres), `exporta` e `compra`, na ordem do XSD.
+    Rejeições conferidas: 461, 855, 856, 817, 379, 380, 909 e 858 (combustível), 873, 877 e 870 (medicamento e lote),
+    905, 901, 902, 852, 900, 850 e 851 (cobrança), 542, 543, 559 e 868 (transporte), 355 e 356 (exportação).
+  * **DIFAL**: as regras 694 e 695 passam a ler a UF do local de entrega e o `cProdANP` do combustível, que a montagem nunca
+    repassava a elas. Antes, a entrega na UF do emitente continuava exigindo o `ICMSUFDest`, a entrega em outra UF continuava
+    recusando o grupo e o combustível derivado de petróleo fora da lista da ANP não dispensava nem proibia o grupo.
+    Nenhum XML de caso anterior mudou.
+  * **Canal de avisos**: `Montada` ganha `avisos` e há `montagem::avisos(&Nota)`; aviso nunca impede a montagem nem muda o
+    XML. Campo novo e opcional do pedido, `regime_pis_cofins` (`cumulativo` ou `nao_cumulativo`, não vai ao XML), para o
+    aviso de CST e alíquota de PIS/COFINS que não combinam com o regime (Leis 10.637/2002, 10.833/2003, 9.715/1998 e
+    9.718/1998). Segundo aviso: Simples sem regime regular com CST que exige o `gIBSCBS` (tabela 2.3 da NT 2026.005 contra a
+    regra UB13-30 da NT 2025.002, rejeição 1022).
+  * Quem monta `Nota`, `Item` ou `Montada` por literal de struct precisa dos campos novos (`transp`, `cobr`, `exporta`,
+    `compra`, `regime_pis_cofins`; `combustivel`, `med`, `rastro`; `avisos`). `montar` não mudou de assinatura.
 * Reforma: o aviso ao optante do Simples Nacional passa a explicar a opção pelo regime regular do IBS e da CBS (LC 123/2006,
   art. 13, §§ 9º a 11, incluídos pela LC 214/2025, art. 517, na redação da LC 227/2026, com efeito a partir de 1º/1/2027):
   vale por semestre iniciado em janeiro ou julho, é irretratável no semestre e é feita em setembro ou março, antes dele.

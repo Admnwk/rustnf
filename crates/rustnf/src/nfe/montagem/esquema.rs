@@ -407,6 +407,7 @@ const NOTA: &[Campo] = &[
     obj("cobr", COBR),
     obj("exporta", EXPORTA),
     obj("compra", COMPRA),
+    folha("regime_pis_cofins"),
 ];
 
 fn achar(v: &Value, campos: &[Campo], caminho: &str, saida: &mut Vec<String>) {
