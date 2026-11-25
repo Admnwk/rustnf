@@ -74,7 +74,16 @@ pub async fn executar_com(cli: Cli, cofre: &dyn Cofre) -> Result<(), Erro> {
         Comando::Sefin {
             acao: AcaoSefin::Testar(a),
         } => sefin_testar(&a, config, cofre).await,
+        Comando::Completar { shell } => completar(shell),
     }
+}
+
+/// `rustnf completar <shell>`: o script de completar comandos, gerado da propria definicao da linha de comando.
+fn completar(shell: clap_complete::Shell) -> Result<(), Erro> {
+    use clap::CommandFactory;
+    let mut script = Vec::new();
+    clap_complete::generate(shell, &mut Cli::command(), "rustnf", &mut script);
+    escrever_stdout(&script)
 }
 
 /// `rustnf certificado mostrar`: abre o certificado e diz de quem e', ate quando vale e se assina hoje.
