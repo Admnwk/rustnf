@@ -33,10 +33,12 @@ use crate::reforma::aliquotas::tributos_somam_no_total;
 use crate::reforma::calculo::{totalizar, vnftot, ItemIbsCbs};
 
 mod assinar;
+mod cobr;
 mod comb;
 pub mod difal;
 mod esquema;
 mod esquema_grupos;
+mod exporta;
 mod formato;
 mod gtin;
 mod icms;
@@ -50,11 +52,14 @@ mod partes;
 mod produto;
 mod regras;
 mod total;
+mod transp;
 mod uf_dest;
 
 pub use assinar::assinar;
+pub use cobr::{Cobranca, Duplicata, Fatura};
 pub use comb::{Cide, Combustivel, Encerrante, OrigemComb};
 pub use esquema::{campos_conhecidos, campos_desconhecidos, nota_de_json_estrito};
+pub use exporta::{Compra, Exportacao};
 pub use formato::{ErroMontagem, Res};
 pub use json::nota_de_json;
 pub use modelo::{
@@ -63,12 +68,16 @@ pub use modelo::{
 };
 pub use produto::{Medicamento, Rastro};
 pub use regras::conferir;
+pub use transp::{RetencaoIcms, Transportadora, Transporte, VeiculoTransp, VolumeTransp};
 
+use cobr::cobr;
+use exporta::{compra, exporta};
 use formato::{documento, erro, erro_r, na_uf, uf_codigo};
 use ide::{finalidade, ide};
 use item::det;
 use partes::{dest, emit, local, regime_sn, vigencia_pl010h};
-use total::{inf_adic, pag, resp_tec, total, transp, Ac};
+use total::{inf_adic, pag, resp_tec, total, Ac};
+use transp::transp;
 
 /// Espaco de nomes do XML da NF-e.
 pub const NS: &str = "http://www.portalfiscal.inf.br/nfe";
@@ -258,8 +267,11 @@ pub fn montar(n: &Nota) -> Res<Montada> {
     }
     let totais = total(&mut x, n, &ac, &uf)?;
     transp(&mut x, n)?;
+    cobr(&mut x, n)?;
     pag(&mut x, n)?;
     inf_adic(&mut x, n)?;
+    exporta(&mut x, n)?;
+    compra(&mut x, n)?;
     resp_tec(&mut x, n, &chave)?;
     x.0.push_str("</infNFe></NFe>");
     Ok(Montada {

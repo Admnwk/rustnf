@@ -8,7 +8,7 @@
 
 use serde_json::Value;
 
-use super::esquema_grupos::{COMBUSTIVEL, MED, RASTRO};
+use super::esquema_grupos::{COBR, COMBUSTIVEL, COMPRA, EXPORTA, MED, RASTRO, TRANSP};
 use super::formato::{erro, Res};
 use super::json::nota_de_json;
 use super::modelo::Nota;
@@ -403,6 +403,10 @@ const NOTA: &[Campo] = &[
     folha("c_ind_op"),
     obj("retirada", LOCAL),
     obj("entrega", LOCAL),
+    obj("transp", TRANSP),
+    obj("cobr", COBR),
+    obj("exporta", EXPORTA),
+    obj("compra", COMPRA),
 ];
 
 fn achar(v: &Value, campos: &[Campo], caminho: &str, saida: &mut Vec<String>) {

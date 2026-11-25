@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! Totais da nota (`total`), transporte, pagamento, informacoes adicionais e responsavel tecnico, e o acumulador
+//! Totais da nota (`total`), pagamento, informacoes adicionais e responsavel tecnico, e o acumulador
 //! que os itens alimentam.
 
 use sha1::{Digest, Sha1};
@@ -151,20 +151,6 @@ pub(crate) fn total(x: &mut X, n: &Nota, ac: &Ac, uf: &str) -> Res<BTreeMap<Stri
     }
     x.fecha("total");
     Ok(out)
-}
-
-/// Grupo `transp`: so' o `modFrete`; transportadora, volumes e lacres ficam para uma proxima entrega.
-pub(crate) fn transp(x: &mut X, n: &Nota) -> Res<()> {
-    if ![0, 1, 2, 3, 4, 9].contains(&n.mod_frete) {
-        return Err(erro(
-            format!("modFrete invalido: {}", n.mod_frete),
-            "modFrete",
-        ));
-    }
-    x.abre("transp");
-    x.t("modFrete", &n.mod_frete.to_string());
-    x.fecha("transp");
-    Ok(())
 }
 
 /// Grupo `pag`: de 1 a 100 `detPag`, com o cartao quando informado, e o `vTroco`.

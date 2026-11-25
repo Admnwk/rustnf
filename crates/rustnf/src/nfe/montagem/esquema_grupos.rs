@@ -48,3 +48,62 @@ pub(super) const RASTRO: &[Campo] = &[
     folha("d_val"),
     folha("c_agreg"),
 ];
+
+const FAT: &[Campo] = &[
+    folha("n_fat"),
+    folha("v_orig"),
+    folha("v_desc"),
+    folha("v_liq"),
+];
+
+const DUP: &[Campo] = &[folha("n_dup"), folha("d_venc"), folha("v_dup")];
+
+pub(super) const COBR: &[Campo] = &[obj("fat", FAT), lista("dup", DUP)];
+
+const TRANSPORTA: &[Campo] = &[
+    folha("documento"),
+    folha("nome"),
+    folha("ie"),
+    folha("endereco"),
+    folha("municipio"),
+    folha("uf"),
+];
+
+const RET_TRANSP: &[Campo] = &[
+    folha("v_serv"),
+    folha("v_bc_ret"),
+    folha("p_icms_ret"),
+    folha("v_icms_ret"),
+    folha("cfop"),
+    folha("c_mun_fg"),
+];
+
+const VEICULO_TRANSP: &[Campo] = &[folha("placa"), folha("uf"), folha("rntc")];
+
+const VOL: &[Campo] = &[
+    folha("q_vol"),
+    folha("esp"),
+    folha("marca"),
+    folha("n_vol"),
+    folha("peso_l"),
+    folha("peso_b"),
+    folha("lacres"),
+];
+
+pub(super) const TRANSP: &[Campo] = &[
+    obj("transporta", TRANSPORTA),
+    obj("ret_transp", RET_TRANSP),
+    obj("veic", VEICULO_TRANSP),
+    lista("reboque", VEICULO_TRANSP),
+    folha("vagao"),
+    folha("balsa"),
+    lista("vol", VOL),
+];
+
+pub(super) const EXPORTA: &[Campo] = &[
+    folha("uf_saida_pais"),
+    folha("x_loc_exporta"),
+    folha("x_loc_despacho"),
+];
+
+pub(super) const COMPRA: &[Campo] = &[folha("x_n_emp"), folha("x_ped"), folha("x_cont")];

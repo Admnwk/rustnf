@@ -62,6 +62,10 @@ Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endere
 | `c_ind_op` | B25d `cIndOp` (NT 2025.002): so' codigo que o Anexo VII admite na NF-e ([`crate::reforma::indop`]). |
 | `retirada` | F01: local de retirada (obrigatorio com `cIndOp` 010104 ou 010105, B25d-30). |
 | `entrega` | G01: local de entrega. |
+| `transp` | X03 a X34: transportadora, retencao do ICMS do transporte, veiculo, reboques, vagao, balsa e volumes. O `modFrete` e' `mod_frete`. |
+| `cobr` | Y01 `cobr`: fatura e duplicatas. |
+| `exporta` | ZA01 `exporta`: obrigatorio na exportacao (`tpNF` 1 e `idDest` 3, rejeicao 355) e proibido fora dela (356). |
+| `compra` | ZB01 `compra`: nota de empenho, pedido e contrato. |
 
 ## emit
 
@@ -612,6 +616,108 @@ Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endere
 | `itens[].rastro[].d_fab` | I83 `dFab`: `AAAA-MM-DD`; nao pode ser depois da emissao (rejeicao 877). |
 | `itens[].rastro[].d_val` | I84 `dVal`: `AAAA-MM-DD`; nao pode ser antes da fabricacao (rejeicao 870). |
 | `itens[].rastro[].c_agreg` | I85 `cAgreg`: de 1 a 20 caracteres. |
+
+## transp
+
+| campo | o que e' |
+|---|---|
+| `transp.transporta` | X03 `transporta`: a transportadora; o grupo nao vai vazio. |
+| `transp.ret_transp` | X11 `retTransp`: retencao do ICMS do transporte; todos os campos sao obrigatorios. |
+| `transp.veic` | X18 `veicTransp`: o veiculo trator. Nao vai na operacao interestadual (`idDest` 2, rejeicao 868). |
+| `transp.reboque` | X22 `reboque`: reboques e dolly, ate 5. Nao vai na operacao interestadual (868). |
+| `transp.vagao` | X25a `vagao`: identificacao do vagao, de 1 a 20 caracteres. O XSD aceita so' o veiculo (com os reboques), o vagao ou a balsa. |
+| `transp.balsa` | X25b `balsa`: identificacao da balsa, de 1 a 20 caracteres. |
+| `transp.vol` | X26 `vol`: volumes, de 0 a 5000; o volume nao vai vazio. |
+
+## transp.transporta
+
+| campo | o que e' |
+|---|---|
+| `transp.transporta.documento` | X04 `CNPJ` ou X05 `CPF`, com digito verificador valido (rejeicoes 542 e 543). |
+| `transp.transporta.nome` | X06 `xNome`: de 2 a 60 caracteres. |
+| `transp.transporta.ie` | X07 `IE`: de 2 a 14 digitos ou `ISENTO`; com ela a UF e' obrigatoria (rejeicao 559). A validade da IE na UF (544) e' do cadastro e nao e' conferida. |
+| `transp.transporta.endereco` | X08 `xEnder`: endereco completo, de 1 a 60 caracteres. |
+| `transp.transporta.municipio` | X09 `xMun`: de 1 a 60 caracteres. |
+| `transp.transporta.uf` | X10 `UF`: sigla, ou `EX` para o exterior. |
+
+## transp.ret_transp
+
+| campo | o que e' |
+|---|---|
+| `transp.ret_transp.v_serv` | X12 `vServ`: valor do servico (2 casas). |
+| `transp.ret_transp.v_bc_ret` | X13 `vBCRet`: base da retencao (2 casas). |
+| `transp.ret_transp.p_icms_ret` | X14 `pICMSRet`: aliquota da retencao, de 0 a 100. |
+| `transp.ret_transp.v_icms_ret` | X15 `vICMSRet`: valor do ICMS retido (2 casas). |
+| `transp.ret_transp.cfop` | X16 `CFOP`: 4 digitos, iniciado por 1, 2, 3, 5, 6 ou 7. Se e' CFOP de transporte (722) e' da tabela do Portal e nao e' conferido. |
+| `transp.ret_transp.c_mun_fg` | X17 `cMunFG`: codigo IBGE, 7 digitos. |
+
+## transp.veic
+
+| campo | o que e' |
+|---|---|
+| `transp.veic.placa` | X19 `placa`: `XXX9999`, `XXX999`, `XX9999`, `XXXX999` ou 7 letras e numeros (placa Mercosul); espaco e hifen sao tirados. |
+| `transp.veic.uf` | `UF`: sigla, ou `EX`. |
+| `transp.veic.rntc` | `RNTC`: registro na ANTT, de 1 a 20 caracteres. |
+
+## transp.reboque[]
+
+| campo | o que e' |
+|---|---|
+| `transp.reboque[].placa` | X23 `placa`: `XXX9999`, `XXX999`, `XX9999`, `XXXX999` ou 7 letras e numeros (placa Mercosul); espaco e hifen sao tirados. |
+| `transp.reboque[].uf` | `UF`: sigla, ou `EX`. |
+| `transp.reboque[].rntc` | `RNTC`: registro na ANTT, de 1 a 20 caracteres. |
+
+## transp.vol[]
+
+| campo | o que e' |
+|---|---|
+| `transp.vol[].q_vol` | X27 `qVol`: de 1 a 15 digitos. |
+| `transp.vol[].esp` | X28 `esp`: especie, de 1 a 60 caracteres. |
+| `transp.vol[].marca` | X29 `marca`: de 1 a 60 caracteres. |
+| `transp.vol[].n_vol` | X30 `nVol`: de 1 a 60 caracteres. |
+| `transp.vol[].peso_l` | X31 `pesoL`: peso liquido em kg (ate 12 inteiros e 3 casas). |
+| `transp.vol[].peso_b` | X32 `pesoB`: peso bruto em kg (ate 12 inteiros e 3 casas). |
+| `transp.vol[].lacres` | X33 `lacres` / X34 `nLacre`: lista com o numero de cada lacre, de 1 a 60 caracteres, ate 5000. |
+
+## cobr
+
+| campo | o que e' |
+|---|---|
+| `cobr.fat` | Y02 `fat`: a fatura. Com `cobr`, `nFat`, `vOrig` e `vLiq` sao obrigatorios (rejeicao 905). |
+| `cobr.dup` | Y07 `dup`, de 0 a 120; a soma bate com o `vLiq` (rejeicao 851). |
+
+## cobr.fat
+
+| campo | o que e' |
+|---|---|
+| `cobr.fat.n_fat` | Y03 `nFat`: de 1 a 60 caracteres. |
+| `cobr.fat.v_orig` | Y04 `vOrig`: valor original (2 casas). |
+| `cobr.fat.v_desc` | Y05 `vDesc`: desconto, nao maior que o original (rejeicao 901); ausente ou zero = a tag nao sai. |
+| `cobr.fat.v_liq` | Y06 `vLiq`: valor liquido; igual ao original menos o desconto (rejeicao 902). |
+
+## cobr.dup[]
+
+| campo | o que e' |
+|---|---|
+| `cobr.dup[].n_dup` | Y08 `nDup`: tres algarismos sequenciais a partir de `001` (rejeicao 852). |
+| `cobr.dup[].d_venc` | Y09 `dVenc`: `AAAA-MM-DD`, em ordem crescente e nao antes da emissao (rejeicoes 900 e 850). |
+| `cobr.dup[].v_dup` | Y10 `vDup`: valor da parcela, maior que zero (2 casas). |
+
+## exporta
+
+| campo | o que e' |
+|---|---|
+| `exporta.uf_saida_pais` | ZA02 `UFSaidaPais`: sigla da UF de embarque (sem `EX`). |
+| `exporta.x_loc_exporta` | ZA03 `xLocExporta`: local de embarque, de 1 a 60 caracteres. |
+| `exporta.x_loc_despacho` | ZA04 `xLocDespacho`: local de despacho, de 1 a 60 caracteres. |
+
+## compra
+
+| campo | o que e' |
+|---|---|
+| `compra.x_n_emp` | ZB02 `xNEmp`: nota de empenho, de 1 a 22 caracteres. |
+| `compra.x_ped` | ZB03 `xPed`: pedido, de 1 a 60 caracteres. |
+| `compra.x_cont` | ZB04 `xCont`: contrato, de 1 a 60 caracteres. |
 
 ## pagamentos[]
 

@@ -11,9 +11,12 @@ use chrono::{DateTime, FixedOffset};
 
 use crate::reforma::calculo::ItemIbsCbs;
 
+use super::cobr::Cobranca;
 use super::comb::Combustivel;
 use super::difal;
+use super::exporta::{Compra, Exportacao};
 use super::produto::{Medicamento, Rastro};
+use super::transp::Transporte;
 
 /// Endereco do emitente, do destinatario, da retirada ou da entrega.
 #[derive(Debug, Clone, Default)]
@@ -534,6 +537,15 @@ pub struct Nota {
     pub retirada: Option<Local>,
     /// G01: local de entrega.
     pub entrega: Option<Local>,
+    /// X03 a X34: transportadora, retencao do ICMS do transporte, veiculo, reboques, vagao, balsa e volumes (o
+    /// `modFrete` e' [`Nota::mod_frete`]).
+    pub transp: Option<Transporte>,
+    /// Y01 `cobr`: fatura e duplicatas.
+    pub cobr: Option<Cobranca>,
+    /// ZA01 `exporta`: obrigatorio na exportacao (`tpNF` 1 e `idDest` 3, rejeicao 355) e proibido fora dela (356).
+    pub exporta: Option<Exportacao>,
+    /// ZB01 `compra`: nota de empenho, pedido e contrato.
+    pub compra: Option<Compra>,
 }
 
 /// A nota montada, ainda sem assinatura.
