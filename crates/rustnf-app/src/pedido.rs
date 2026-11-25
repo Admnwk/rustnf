@@ -380,6 +380,24 @@ mod testes {
         async fn cancelada(&self, _chave: &str) -> Resultado {
             unreachable!("os testes nao conferem cancelamento")
         }
+
+        async fn consultar_dps(&self, _id_dps: &str, _com_nota: bool) -> Resultado {
+            unreachable!("os testes nao consultam a DPS")
+        }
+
+        async fn consultar_evento(&self, _chave: &str, _tipo: &str, _sequencia: u32) -> Resultado {
+            unreachable!("os testes nao consultam evento")
+        }
+
+        async fn registrar_evento(
+            &self,
+            _tipo: &str,
+            _chave: &str,
+            _motivo: &str,
+            _justificativa: &str,
+        ) -> Resultado {
+            unreachable!("os testes nao registram evento")
+        }
     }
 
     fn bloquear<T>(futuro: impl Future<Output = T>) -> T {
@@ -612,6 +630,24 @@ mod testes {
 
         async fn cancelada(&self, _chave: &str) -> Resultado {
             resposta(self.cancelada)
+        }
+
+        async fn consultar_dps(&self, _id_dps: &str, _com_nota: bool) -> Resultado {
+            unreachable!("os testes nao consultam a DPS")
+        }
+
+        async fn consultar_evento(&self, _chave: &str, _tipo: &str, _sequencia: u32) -> Resultado {
+            unreachable!("os testes nao consultam evento")
+        }
+
+        async fn registrar_evento(
+            &self,
+            _tipo: &str,
+            _chave: &str,
+            _motivo: &str,
+            _justificativa: &str,
+        ) -> Resultado {
+            unreachable!("os testes nao registram evento")
         }
     }
 

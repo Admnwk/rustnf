@@ -170,6 +170,26 @@ impl Default for DadosEvento<'_> {
     }
 }
 
+/// A descricao (`xDesc`) de um tipo de evento que o contribuinte pode pedir. Recusa o tipo desconhecido, o que o
+/// SEFIN registra sozinho (`sistema`) e o que e' do fisco, dizendo quem registra.
+pub fn tipo_do_contribuinte(tipo: &str) -> R<&'static str> {
+    let (_, desc, quem) = TIPOS.iter().find(|t| t.0 == tipo).ok_or_else(|| {
+        ErroNfse::novo("infPedReg", format!("tipo de evento desconhecido: {tipo}"))
+    })?;
+    match *quem {
+        "sistema" => Err(ErroNfse::novo(
+            "infPedReg",
+            "substituicao nao e' pedido de evento: emita uma DPS nova com o grupo de \
+            substituicao (Substituicao); o SEFIN registra o 105102 sozinho",
+        )),
+        "fisco" => Err(ErroNfse::novo(
+            "infPedReg",
+            format!("o evento {tipo} ({desc}) e' registrado pelo fisco, nao pelo contribuinte"),
+        )),
+        _ => Ok(desc),
+    }
+}
+
 /// Monta o pedRegEvento (NAO assinado).
 pub fn montar(d: &DadosEvento) -> R<Pedido> {
     let DadosEvento {
@@ -182,22 +202,7 @@ pub fn montar(d: &DadosEvento) -> R<Pedido> {
         dh_evento,
         ver_aplic,
     } = *d;
-    let (_, desc, quem) = TIPOS.iter().find(|t| t.0 == tipo).ok_or_else(|| {
-        ErroNfse::novo("infPedReg", format!("tipo de evento desconhecido: {tipo}"))
-    })?;
-    if *quem == "sistema" {
-        return Err(ErroNfse::novo(
-            "infPedReg",
-            "substituicao nao e' pedido de evento: emita uma DPS nova com o grupo de \
-            substituicao (Substituicao); o SEFIN registra o 105102 sozinho",
-        ));
-    }
-    if *quem == "fisco" {
-        return Err(ErroNfse::novo(
-            "infPedReg",
-            format!("o evento {tipo} ({desc}) e' registrado pelo fisco, nao pelo contribuinte"),
-        ));
-    }
+    let desc = tipo_do_contribuinte(tipo)?;
     let ch = chave_do_evento(chave)?;
     let (tp_autor, doc) = documento(autor)
         .map_err(|_| ErroNfse::novo("infPedReg/CNPJAutor", "autor sem CPF/CNPJ valido"))?;
@@ -236,7 +241,7 @@ pub fn montar(d: &DadosEvento) -> R<Pedido> {
     );
     inf.add("chNFSe", ch.clone());
     let ev = inf.grupo(&format!("e{tipo}"));
-    ev.add("xDesc", *desc);
+    ev.add("xDesc", desc);
     if tipo == CANCELAMENTO || tipo == ANALISE_FISCAL {
         if !MOTIVOS_CANCELAMENTO.iter().any(|m| m.0 == mot) {
             return Err(ErroNfse::novo(

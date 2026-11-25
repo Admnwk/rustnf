@@ -169,6 +169,32 @@ impl EmissorDemonstracao {
         notas.ler_xml(chave).ok()
     }
 
+    /// A nota (chave e XML) que a DPS de Id `id_dps` gerou, entre as que este emissor autorizou e as da pasta do
+    /// ensaio.
+    fn nota_da_dps(&self, id_dps: &str) -> Option<(String, String)> {
+        let lembradas: Vec<(String, String)> = self
+            .autorizadas
+            .lock()
+            .map(|a| a.iter().map(|(c, x)| (c.clone(), x.clone())).collect())
+            .unwrap_or_default();
+        let da_pasta = self
+            .pasta
+            .as_ref()
+            .and_then(|p| Notas::abrir(p).ok())
+            .map(|n| {
+                n.listar()
+                    .unwrap_or_default()
+                    .into_iter()
+                    .filter_map(|r| n.ler_xml(&r.chave).ok().map(|x| (r.chave, x)))
+                    .collect::<Vec<_>>()
+            })
+            .unwrap_or_default();
+        lembradas
+            .into_iter()
+            .chain(da_pasta)
+            .find(|(_, xml)| ler_nfse(xml).is_ok_and(|n| n.id_dps == id_dps))
+    }
+
     /// A nota tem cancelamento registrado: nesta execucao, ou na pasta de notas do ensaio.
     fn esta_cancelada(&self, chave: &str) -> bool {
         if self.canceladas.lock().is_ok_and(|c| c.contains(chave)) {
@@ -556,6 +582,89 @@ impl Emissor for EmissorDemonstracao {
         };
         r.chave = chave;
         r.http = if cancelada { 200 } else { 404 };
+        r
+    }
+
+    async fn consultar_dps(&self, id_dps: &str, com_nota: bool) -> Resultado {
+        self.esperar().await;
+        let id = id_dps.trim();
+        let Some((chave, xml)) = self.nota_da_dps(id) else {
+            let mut r = resultado(
+                Status::NaoEncontrada,
+                "A demonstracao nao conhece uma nota gerada por esta DPS.",
+            );
+            r.id_dps = id.to_string();
+            return r;
+        };
+        let mut r = resultado(Status::Autorizada, "Ha NFS-e para esta DPS (demonstracao).");
+        r.chave = chave;
+        r.id_dps = id.to_string();
+        r.http = 200;
+        if com_nota {
+            r.nfse = ler_nfse(&xml).ok();
+            r.xml_retorno = xml;
+        }
+        r
+    }
+
+    /// So' o cancelamento (101101, sequencia 1) de uma nota cancelada existe na demonstracao.
+    async fn consultar_evento(&self, chave: &str, tipo: &str, sequencia: u32) -> Resultado {
+        let chave = so_alnum_maiusculo(chave);
+        self.esperar().await;
+        let existe = tipo == "101101" && sequencia == 1 && self.esta_cancelada(&chave);
+        let mut r = if existe {
+            let mut r = resultado(
+                Status::Ok,
+                "Evento 101101 registrado na nota (demonstracao).",
+            );
+            r.xml_retorno = format!(
+                "<evento xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infEvento Id=\"EVT{chave}{tipo}\">\
+                 <nSeqEvento>{sequencia}</nSeqEvento><pedRegEvento versao=\"1.01\"><infPedReg Id=\"PRE{chave}{tipo}\">\
+                 <chNFSe>{chave}</chNFSe><e{tipo}><xDesc>Cancelamento de NFS-e</xDesc></e{tipo}></infPedReg>\
+                 </pedRegEvento></infEvento></evento>"
+            );
+            r.http = 200;
+            r
+        } else {
+            let mut r = resultado(Status::NaoEncontrada, "A demonstracao nao tem este evento.");
+            r.http = 404;
+            r
+        };
+        r.chave = chave;
+        r
+    }
+
+    /// A demonstracao registra o evento de uma nota que conhece e nao guarda estado: so' o cancelamento tem tela.
+    async fn registrar_evento(
+        &self,
+        tipo: &str,
+        chave: &str,
+        _motivo: &str,
+        _justificativa: &str,
+    ) -> Resultado {
+        let chave = so_alnum_maiusculo(chave);
+        self.esperar().await;
+        let mut r = if self.xml_da_nota(&chave).is_some() {
+            let mut r = resultado(
+                Status::Registrado,
+                &format!("Evento {tipo} registrado (demonstracao)."),
+            );
+            r.http = 201;
+            r
+        } else {
+            let mut r = resultado(
+                Status::Rejeitada,
+                "A Sefin recusou o evento (demonstracao).",
+            );
+            r.http = 400;
+            r.erros = vec![mensagem(
+                "DEMO-C3",
+                "A demonstração não conhece uma nota com esta chave.",
+                "",
+            )];
+            r
+        };
+        r.chave = chave;
         r
     }
 }

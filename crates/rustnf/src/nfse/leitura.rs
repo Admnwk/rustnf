@@ -212,6 +212,8 @@ pub struct Evento {
     pub chave: String,
     pub sequencia: String,
     pub processado_em: String,
+    /// `dhEvento` do pedido: quando o autor pediu o evento.
+    pub data_evento: String,
     pub id: String,
     pub autor: String,
     pub motivo: String,
@@ -242,6 +244,7 @@ pub fn ler_evento(xml: &str) -> Result<Evento, ErroLeitura> {
         chave: t(Some(ped), "chNFSe"),
         sequencia: t(inf, "nSeqEvento"),
         processado_em: t(inf, "dhProc"),
+        data_evento: t(Some(ped), "dhEvento"),
         id: inf
             .or(Some(ped))
             .and_then(|n| n.attribute("Id"))

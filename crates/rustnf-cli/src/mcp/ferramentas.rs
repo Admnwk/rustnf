@@ -15,6 +15,7 @@ use crate::emissao;
 use crate::erro::Erro;
 use crate::http::Estado;
 use crate::nucleo::{self, SituacaoNota};
+use rustnf_app::eventos;
 
 /// Definicao de uma ferramenta.
 pub struct Ferramenta {
@@ -29,7 +30,7 @@ pub struct Ferramenta {
     schema: fn() -> Value,
 }
 
-const FERRAMENTAS: [Ferramenta; 7] = [
+const FERRAMENTAS: [Ferramenta; 11] = [
     Ferramenta {
         nome: "calcular_cbs_ibs",
         titulo: "Previa do IBS e da CBS",
@@ -78,6 +79,34 @@ const FERRAMENTAS: [Ferramenta; 7] = [
         descricao: "Registra o cancelamento (evento 101101) da NFS-e e, com pasta de notas configurada, marca a nota como cancelada nela. Operacao com efeito fiscal.",
         emissao: true,
         schema: schemas::cancelamento,
+    },
+    Ferramenta {
+        nome: "consultar_dps",
+        titulo: "Consultar a DPS",
+        descricao: "Consulta na Sefin Nacional a DPS pelo Id (ou pelo numero e a serie, com o emitente da configuracao do servidor) e devolve a chave da NFS-e que ela gerou; com com_nota, a nota tambem. DPS sem NFS-e volta como nao encontrada. Nao altera nada.",
+        emissao: true,
+        schema: schemas::consulta_dps,
+    },
+    Ferramenta {
+        nome: "consultar_evento",
+        titulo: "Consultar um evento da NFS-e",
+        descricao: "Consulta na Sefin Nacional um evento da NFS-e pela chave, o tipo (tpEvento) e a sequencia. O evento devolvido e' conferido contra a chave e o tipo pedidos. Evento que nao existe volta como nao encontrado. Nao altera nada.",
+        emissao: true,
+        schema: schemas::consulta_evento,
+    },
+    Ferramenta {
+        nome: "registrar_evento",
+        titulo: "Registrar um evento da NFS-e",
+        descricao: "Registra um evento que o contribuinte pede, com o certificado A1 do servidor (por exemplo 101103, pedido de analise fiscal para cancelamento; com pasta de notas configurada, a nota passa a em analise fiscal). Nao serve para o cancelamento (use cancelar_nfse) nem para eventos do fisco. Operacao com efeito fiscal.",
+        emissao: true,
+        schema: schemas::registro_de_evento,
+    },
+    Ferramenta {
+        nome: "atualizar_situacoes",
+        titulo: "Atualizar a situacao das notas",
+        descricao: "Confere na Sefin Nacional a situacao das notas da pasta de notas do servidor (cancelada, substituida, em analise fiscal) e atualiza o indice. Uma consulta por vez, com intervalo entre elas; um filtro (periodo, situacao, busca) limita o lote. Nota que a pasta da como cancelada ou substituida e a Sefin nao mostra assim nunca volta para autorizada: volta nas falhas. Altera so' o indice da pasta de notas.",
+        emissao: true,
+        schema: schemas::atualizacao,
     },
 ];
 
@@ -138,6 +167,45 @@ struct PedidoDanfse {
 #[serde(deny_unknown_fields)]
 struct PedidoConsulta {
     chave: String,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct PedidoConsultaDps {
+    #[serde(default)]
+    id_dps: Option<String>,
+    #[serde(default)]
+    serie: Option<String>,
+    #[serde(default)]
+    numero: Option<Value>,
+    #[serde(default)]
+    com_nota: bool,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct PedidoConsultaEvento {
+    chave: String,
+    tipo: String,
+    #[serde(default = "primeira_sequencia")]
+    sequencia: u32,
+}
+
+fn primeira_sequencia() -> u32 {
+    1
+}
+
+/// O Id da DPS do pedido: o que veio, ou o montado pelo emitente do servidor, a serie e o numero.
+fn id_da_consulta(estado: &Estado, p: &PedidoConsultaDps) -> Result<String, Erro> {
+    if let Some(id) = &p.id_dps {
+        return Ok(id.clone());
+    }
+    let numero = match &p.numero {
+        Some(Value::String(n)) => n.clone(),
+        Some(Value::Number(n)) => n.to_string(),
+        _ => return Err(Erro::Entrada("informe id_dps ou numero".into())),
+    };
+    eventos::id_da_dps(&estado.emitente, p.serie.as_deref(), &numero)
 }
 
 async fn danfse(args: Value) -> Result<Value, Erro> {
@@ -201,6 +269,32 @@ async fn rodar(f: &Ferramenta, estado: &Estado, args: Value) -> Result<Value, Er
             let em = estado.emissao.as_ref().ok_or(Erro::Interno)?;
             let p: PedidoConsulta = argumentos(args)?;
             let v = emissao::consultar(em.emissor.as_ref(), &p.chave).await?;
+            Ok(resultado_estruturado(v, false))
+        }
+        "consultar_dps" => {
+            let em = estado.emissao.as_ref().ok_or(Erro::Interno)?;
+            let p: PedidoConsultaDps = argumentos(args)?;
+            let id = id_da_consulta(estado, &p)?;
+            let v = emissao::consultar_dps(em.emissor.as_ref(), &id, p.com_nota).await?;
+            Ok(resultado_estruturado(v, false))
+        }
+        "consultar_evento" => {
+            let em = estado.emissao.as_ref().ok_or(Erro::Interno)?;
+            let p: PedidoConsultaEvento = argumentos(args)?;
+            let v = emissao::consultar_evento(em.emissor.as_ref(), &p.chave, &p.tipo, p.sequencia)
+                .await?;
+            Ok(resultado_estruturado(v, false))
+        }
+        "registrar_evento" => {
+            let em = estado.emissao.as_ref().ok_or(Erro::Interno)?;
+            let p: nucleo::PedidoEvento = argumentos(args)?;
+            let v = estado.registrar_evento(em, &p).await?;
+            Ok(resultado_estruturado(v, false))
+        }
+        "atualizar_situacoes" => {
+            let em = estado.emissao.as_ref().ok_or(Erro::Interno)?;
+            let p: rustnf_app::atualizacao::Pedido = argumentos(args)?;
+            let v = estado.atualizar(em, &p).await?;
             Ok(resultado_estruturado(v, false))
         }
         "cancelar_nfse" => {

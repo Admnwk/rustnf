@@ -196,8 +196,16 @@ async fn tools_list_com_emissao_so_mostra_as_de_emissao_com_o_bearer() {
     .await;
     assert_eq!(st, StatusCode::OK);
     let n = nomes(&json_do_corpo(&corpo));
-    assert_eq!(n.len(), 7);
-    for nome in ["emitir_nfse", "consultar_nfse", "cancelar_nfse"] {
+    assert_eq!(n.len(), 11);
+    for nome in [
+        "emitir_nfse",
+        "consultar_nfse",
+        "cancelar_nfse",
+        "consultar_dps",
+        "consultar_evento",
+        "registrar_evento",
+        "atualizar_situacoes",
+    ] {
         assert!(n.contains(&nome.to_string()), "faltou {nome}: {n:?}");
     }
     // a emissao nao exige o numero da DPS: a pasta de notas do servidor pode dar o proximo
@@ -786,4 +794,153 @@ async fn id_de_sessao_enviado_e_ignorado() {
     .await;
     assert_eq!(st, StatusCode::OK);
     assert!(!cab.contains_key("mcp-session-id"));
+}
+
+#[tokio::test]
+async fn consultar_dps_pelo_id_ou_pelo_numero() {
+    let ch = chave();
+    let falso = Falso::novo(vec![
+        ("GET", format!("/dps/{ID_DPS}"), dps_achada(ID_DPS, &ch)),
+        ("GET", format!("/dps/{ID_DPS}"), dps_achada(ID_DPS, &ch)),
+        ("GET", format!("/nfse/{ch}"), nota(&ch)),
+    ]);
+    let p = Pasta::nova();
+    let app = app_emissao_com_pasta(falso, &p.caminho("notas"));
+    let r = chamar(&app, "consultar_dps", json!({"id_dps": ID_DPS})).await;
+    assert_eq!(r["isError"], false, "{r}");
+    assert_eq!(r["structuredContent"]["chave"], ch);
+    // pelo numero: o emitente do servidor da municipio, CNPJ e serie
+    let r = chamar(
+        &app,
+        "consultar_dps",
+        json!({"numero": 42, "com_nota": true}),
+    )
+    .await;
+    assert_eq!(r["isError"], false, "{r}");
+    assert_eq!(r["structuredContent"]["id_dps"], ID_DPS);
+    assert_eq!(r["structuredContent"]["nfse"]["numero"], "77");
+    // sem id nem numero, e DPS sem nota
+    let r = chamar(&app, "consultar_dps", json!({})).await;
+    assert_eq!(r["isError"], true);
+    let r = chamar(&app, "consultar_dps", json!({"id_dps": id_dps(9)})).await;
+    assert_eq!(r["isError"], true);
+}
+
+#[tokio::test]
+async fn consultar_evento_confere_o_evento_devolvido() {
+    let ch = chave();
+    let falso = Falso::novo(vec![(
+        "GET",
+        format!("/nfse/{ch}/eventos/101103/1"),
+        evento_consultado(&ch, "101103", 1),
+    )]);
+    let app = app_emissao(falso);
+    let r = chamar(
+        &app,
+        "consultar_evento",
+        json!({"chave": ch, "tipo": "101103"}),
+    )
+    .await;
+    assert_eq!(r["isError"], false, "{r}");
+    assert_eq!(r["structuredContent"]["evento"]["tipo"], "101103");
+    assert_eq!(r["structuredContent"]["evento"]["sequencia"], "1");
+    // nao existe a sequencia 2
+    let r = chamar(
+        &app,
+        "consultar_evento",
+        json!({"chave": ch, "tipo": "101103", "sequencia": 2}),
+    )
+    .await;
+    assert_eq!(r["isError"], true);
+    // argumento que nao existe
+    let r = chamar(
+        &app,
+        "consultar_evento",
+        json!({"chave": ch, "tipo": "101103", "x": 1}),
+    )
+    .await;
+    assert_eq!(r["isError"], true);
+}
+
+#[tokio::test]
+async fn registrar_evento_marca_a_pasta_e_recusa_o_cancelamento() {
+    let p = Pasta::nova();
+    let pasta = p.caminho("notas");
+    let notas = Notas::abrir(&pasta).unwrap();
+    let ch = guardar_nota_do_danfse(&notas);
+    let falso = Falso::novo(vec![(
+        "POST",
+        "/eventos".into(),
+        evento_registrado_de(&ch, "101103"),
+    )]);
+    let app = app_emissao_com_pasta(falso.clone(), &pasta);
+    let r = chamar(
+        &app,
+        "registrar_evento",
+        json!({"chave": ch, "tipo": "101103", "motivo": "1", "justificativa": "Valor digitado errado na nota"}),
+    )
+    .await;
+    assert_eq!(r["isError"], false, "{r}");
+    assert_eq!(r["structuredContent"]["status"], "registrado");
+    assert_eq!(r["structuredContent"]["marcada"], true);
+    assert_eq!(
+        notas.listar().unwrap()[0].situacao.texto(),
+        "em analise fiscal"
+    );
+    let antes = falso.chamadas().len();
+    for tipo in ["101101", "105104"] {
+        let r = chamar(&app, "registrar_evento", json!({"chave": ch, "tipo": tipo})).await;
+        assert_eq!(r["isError"], true, "{tipo}");
+    }
+    assert_eq!(falso.chamadas().len(), antes);
+}
+
+#[tokio::test]
+async fn atualizar_situacoes_pelo_mcp() {
+    let p = Pasta::nova();
+    let pasta = p.caminho("notas");
+    let notas = Notas::abrir(&pasta).unwrap();
+    let ch = guardar_nota_do_danfse(&notas);
+    let falso = Falso::novo(vec![(
+        "GET",
+        format!("/nfse/{ch}/eventos/105102/1"),
+        evento_consultado(&ch, "105102", 1),
+    )]);
+    let app = app_emissao_com_pasta(falso, &pasta);
+    let r = chamar(&app, "atualizar_situacoes", json!({"intervalo_ms": 0})).await;
+    assert_eq!(r["isError"], false, "{r}");
+    assert_eq!(r["structuredContent"]["mudaram"][0]["para"], "substituida");
+    assert_eq!(notas.listar().unwrap()[0].situacao.texto(), "substituida");
+    let r = chamar(&app, "atualizar_situacoes", json!({"situacao": "suspensa"})).await;
+    assert_eq!(r["isError"], true);
+}
+
+#[tokio::test]
+async fn ferramentas_novas_exigem_o_bearer_e_nao_existem_sem_emissao() {
+    let ch = chave();
+    let app = app_emissao(Falso::default());
+    for (nome, args) in [
+        ("consultar_dps", json!({"id_dps": ID_DPS})),
+        ("consultar_evento", json!({"chave": ch, "tipo": "101103"})),
+        ("registrar_evento", json!({"chave": ch, "tipo": "101103"})),
+        ("atualizar_situacoes", json!({})),
+    ] {
+        let (st, _, _) = enviar(
+            &app,
+            moderna("tools/call", json!({"name": nome, "arguments": args}), &[]),
+        )
+        .await;
+        assert_eq!(st, StatusCode::UNAUTHORIZED, "{nome}");
+    }
+    let (st, _, corpo) = enviar(&app_leitura(), moderna("tools/list", json!({}), &[])).await;
+    assert_eq!(st, StatusCode::OK);
+    let n = nomes(&json_do_corpo(&corpo));
+    for nome in [
+        "consultar_dps",
+        "consultar_evento",
+        "registrar_evento",
+        "atualizar_situacoes",
+    ] {
+        assert!(!n.contains(&nome.to_string()), "{nome} sem emissao: {n:?}");
+    }
 }

@@ -36,7 +36,10 @@ use crate::http::auth::bearer;
 use crate::http::{resposta_json, Estado};
 
 pub use ferramentas::{buscar, listar, Ferramenta};
-pub use schemas::{cancelamento, consulta, danfse, dps, dps_de_emissao, operacao};
+pub use schemas::{
+    atualizacao, cancelamento, consulta, consulta_dps, consulta_evento, danfse, dps,
+    dps_de_emissao, operacao, registro_de_evento,
+};
 
 /// Revisao da especificacao implementada por inteiro.
 pub const VERSAO_MODERNA: &str = "2026-07-28";

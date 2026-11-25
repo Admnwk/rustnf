@@ -6,7 +6,8 @@
 //! transporte. A idempotencia (resposta perdida, 5xx, E0014) e' do cliente da biblioteca.
 
 use async_trait::async_trait;
-use rustnf::nfse::leitura::Mensagem;
+use rustnf::nfse::eventos::{self, TIPOS};
+use rustnf::nfse::leitura::{ler_evento, Mensagem};
 use rustnf::nfse::sefin::{ClienteNfse, Resultado, Status, Transporte};
 use rustnf::nfse::Dps;
 use serde_json::{json, Value};
@@ -28,6 +29,20 @@ pub trait Emissor: Send + Sync {
     /// A nota tem o evento de cancelamento registrado? `Ok` = sim, `NaoEncontrada` = nao; outro resultado = nao deu
     /// para saber.
     async fn cancelada(&self, chave: &str) -> Resultado;
+    /// `GET /dps/{id}`: a chave da NFS-e que a DPS gerou e, com `com_nota`, a nota.
+    async fn consultar_dps(&self, id_dps: &str, com_nota: bool) -> Resultado;
+    /// `GET /nfse/{chave}/eventos/{tipo}/{sequencia}`: `Ok` = o evento existe e e' o pedido, `NaoEncontrada` = nao
+    /// existe; outro resultado = nao deu para saber.
+    async fn consultar_evento(&self, chave: &str, tipo: &str, sequencia: u32) -> Resultado;
+    /// Registra um evento que o contribuinte pode pedir (autor = documento do certificado). O cancelamento tem
+    /// [`Emissor::cancelar`].
+    async fn registrar_evento(
+        &self,
+        tipo: &str,
+        chave: &str,
+        motivo: &str,
+        justificativa: &str,
+    ) -> Resultado;
 }
 
 #[async_trait]
@@ -50,6 +65,24 @@ impl<T: Transporte + 'static> Emissor for ClienteNfse<T> {
 
     async fn cancelada(&self, chave: &str) -> Resultado {
         ClienteNfse::cancelada(self, chave).await
+    }
+
+    async fn consultar_dps(&self, id_dps: &str, com_nota: bool) -> Resultado {
+        ClienteNfse::consultar_dps(self, id_dps, com_nota).await
+    }
+
+    async fn consultar_evento(&self, chave: &str, tipo: &str, sequencia: u32) -> Resultado {
+        ClienteNfse::consultar_evento(self, chave, tipo, sequencia).await
+    }
+
+    async fn registrar_evento(
+        &self,
+        tipo: &str,
+        chave: &str,
+        motivo: &str,
+        justificativa: &str,
+    ) -> Resultado {
+        self.registrar(tipo, chave, motivo, justificativa).await
     }
 }
 
@@ -189,4 +222,98 @@ pub async fn cancelar(
     justificativa: &str,
 ) -> Result<Value, Erro> {
     resultado_json(&emissor.cancelar(chave, motivo, justificativa).await)
+}
+
+/// Consulta a DPS pelo Id (45 posicoes): devolve a chave da NFS-e que ela gerou e, com `com_nota`, a nota.
+///
+/// # Errors
+///
+/// Como [`resultado_json`]; a DPS sem NFS-e e' [`Erro::NaoEncontrada`].
+pub async fn consultar_dps(
+    emissor: &dyn Emissor,
+    id_dps: &str,
+    com_nota: bool,
+) -> Result<Value, Erro> {
+    resultado_json(&emissor.consultar_dps(id_dps, com_nota).await)
+}
+
+/// O evento de um resultado de consulta ou de registro, em JSON: tipo, descricao, chave, sequencia, quando foi
+/// processado, autor e motivo. `Null` se o resultado nao carrega um evento legivel.
+fn evento_json(r: &Resultado) -> Value {
+    let Ok(e) = ler_evento(&r.xml_retorno) else {
+        return Value::Null;
+    };
+    let descricao = TIPOS.iter().find(|t| t.0 == e.tipo).map_or("", |t| t.1);
+    json!({
+        "tipo": e.tipo,
+        "descricao": descricao,
+        "chave": e.chave,
+        "sequencia": e.sequencia,
+        "processado_em": e.processado_em,
+        "pedido_em": e.data_evento,
+        "autor": e.autor,
+        "motivo": e.motivo,
+    })
+}
+
+/// O JSON de sucesso de uma consulta ou de um registro de evento: o de [`resultado_json`] mais o `evento`.
+///
+/// # Errors
+///
+/// Como [`resultado_json`].
+pub fn resultado_do_evento(r: &Resultado) -> Result<Value, Erro> {
+    let mut v = resultado_json(r)?;
+    v["evento"] = evento_json(r);
+    Ok(v)
+}
+
+/// Consulta um evento da nota (`tipo` = `tpEvento` de 6 digitos; `sequencia` a partir de 1). Quem responde e' a
+/// Sefin; o evento devolvido e' conferido contra a chave e o tipo pedidos.
+///
+/// # Errors
+///
+/// Como [`resultado_json`]; o evento que nao existe e' [`Erro::NaoEncontrada`].
+pub async fn consultar_evento(
+    emissor: &dyn Emissor,
+    chave: &str,
+    tipo: &str,
+    sequencia: u32,
+) -> Result<Value, Erro> {
+    resultado_do_evento(&emissor.consultar_evento(chave, tipo, sequencia).await)
+}
+
+/// Confere, antes de qualquer envio, que o contribuinte pode pedir este evento por `registrar_evento`: o
+/// cancelamento tem comando proprio (marca a pasta de notas) e os eventos do fisco e do sistema ninguem pede.
+///
+/// # Errors
+///
+/// [`Erro::Recusa`] dizendo o que fazer ou quem registra o evento.
+pub fn conferir_tipo_de_registro(tipo: &str) -> Result<(), Erro> {
+    if tipo == eventos::CANCELAMENTO {
+        return Err(Erro::recusa(
+            "infPedReg",
+            "o cancelamento (101101) tem comando proprio: use cancelar, que tambem marca a nota na pasta de notas",
+        ));
+    }
+    eventos::tipo_do_contribuinte(tipo)?;
+    Ok(())
+}
+
+/// Os tipos de evento que o contribuinte registra: `tipo`, `descricao`, `autor` e o `comando` que o registra. O
+/// cancelamento (101101) tem o comando `cancelar`; os que o fisco e o sistema registram nao constam.
+#[must_use]
+pub fn tipos_de_evento() -> Value {
+    let lista: Vec<Value> = TIPOS
+        .iter()
+        .filter(|t| eventos::tipo_do_contribuinte(t.0).is_ok() || t.0 == eventos::CANCELAMENTO)
+        .map(|t| {
+            json!({
+                "tipo": t.0,
+                "descricao": t.1,
+                "autor": t.2,
+                "comando": if t.0 == eventos::CANCELAMENTO { "cancelar" } else { "evento registrar" },
+            })
+        })
+        .collect();
+    Value::Array(lista)
 }

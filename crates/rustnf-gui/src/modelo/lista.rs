@@ -23,11 +23,21 @@ pub enum FiltroDeSituacao {
     Autorizadas,
     /// So' as canceladas.
     Canceladas,
+    /// So' as substituidas.
+    Substituidas,
+    /// So' as com pedido de analise fiscal em aberto.
+    EmAnaliseFiscal,
 }
 
 impl FiltroDeSituacao {
     /// Os filtros, na ordem em que a tela os mostra.
-    pub const TODOS: [FiltroDeSituacao; 3] = [Self::Todas, Self::Autorizadas, Self::Canceladas];
+    pub const TODOS: [FiltroDeSituacao; 5] = [
+        Self::Todas,
+        Self::Autorizadas,
+        Self::Canceladas,
+        Self::Substituidas,
+        Self::EmAnaliseFiscal,
+    ];
 
     /// O rotulo do filtro.
     #[must_use]
@@ -36,6 +46,8 @@ impl FiltroDeSituacao {
             Self::Todas => "Todas",
             Self::Autorizadas => "Autorizadas",
             Self::Canceladas => "Canceladas",
+            Self::Substituidas => "Substituidas",
+            Self::EmAnaliseFiscal => "Em analise fiscal",
         }
     }
 
@@ -44,6 +56,8 @@ impl FiltroDeSituacao {
             Self::Todas => true,
             Self::Autorizadas => situacao == Situacao::Autorizada,
             Self::Canceladas => situacao == Situacao::Cancelada,
+            Self::Substituidas => situacao == Situacao::Substituida,
+            Self::EmAnaliseFiscal => situacao == Situacao::AnaliseFiscal,
         }
     }
 }
@@ -115,6 +129,8 @@ pub fn rotulo_da_situacao(situacao: Situacao) -> &'static str {
     match situacao {
         Situacao::Autorizada => "Autorizada",
         Situacao::Cancelada => "Cancelada",
+        Situacao::Substituida => "Substituida",
+        Situacao::AnaliseFiscal => "Em analise fiscal",
     }
 }
 
@@ -608,6 +624,37 @@ mod testes {
         assert_eq!(l.contagem(Situacao::Autorizada), 3);
         assert_eq!(FiltroDeSituacao::Canceladas.rotulo(), "Canceladas");
         assert_eq!(rotulo_da_situacao(Situacao::Autorizada), "Autorizada");
+    }
+
+    #[test]
+    fn as_situacoes_novas_tem_rotulo_e_filtro() {
+        let reg = vec![
+            registro(1, "2026-10-01", "Ana", "52998224725", Situacao::Autorizada),
+            registro(2, "2026-10-02", "Bia", "52998224725", Situacao::Substituida),
+            registro(
+                3,
+                "2026-10-03",
+                "Caio",
+                "52998224725",
+                Situacao::AnaliseFiscal,
+            ),
+        ];
+        let mut l = ListaDeNotas::nova(&reg);
+        l.definir_filtro(FiltroDeSituacao::Substituidas);
+        assert_eq!((l.quantas(), l.linha(0).unwrap().numero.as_str()), (1, "2"));
+        l.definir_filtro(FiltroDeSituacao::EmAnaliseFiscal);
+        assert_eq!((l.quantas(), l.linha(0).unwrap().numero.as_str()), (1, "3"));
+        l.definir_filtro(FiltroDeSituacao::Autorizadas);
+        assert_eq!(l.quantas(), 1);
+        assert_eq!(l.contagem(Situacao::Substituida), 1);
+        assert_eq!(l.contagem(Situacao::AnaliseFiscal), 1);
+        assert_eq!(rotulo_da_situacao(Situacao::Substituida), "Substituida");
+        assert_eq!(
+            rotulo_da_situacao(Situacao::AnaliseFiscal),
+            "Em analise fiscal"
+        );
+        // todo filtro da tela tem rotulo e a tela mostra todos
+        assert_eq!(FiltroDeSituacao::TODOS.len(), 5);
     }
 
     #[test]

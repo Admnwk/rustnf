@@ -13,7 +13,7 @@ use std::sync::Arc;
 use rustnf_app::config::Config;
 use rustnf_app::emissao::consultar_completa;
 use rustnf_app::notas::{Exportadas, Notas, Registro, Situacao};
-use rustnf_app::nucleo::{gerar_danfse, SituacaoNota};
+use rustnf_app::nucleo::gerar_danfse;
 use rustnf_app::pedido::cancelar_pedido_completo;
 
 use super::{ErroTela, FabricaDeEmissor, Preparo, Servicos};
@@ -175,11 +175,7 @@ impl Servicos {
         xml: &str,
         situacao: Situacao,
     ) -> Result<Vec<u8>, ErroTela> {
-        let situacao = match situacao {
-            Situacao::Autorizada => SituacaoNota::Valida,
-            Situacao::Cancelada => SituacaoNota::Cancelada,
-        };
-        gerar_danfse(xml, situacao, config.danfse.canhoto)
+        gerar_danfse(xml, situacao.para_danfse(), config.danfse.canhoto)
             .map_err(|e| ErroTela::Danfse(frase(&e.mensagem())))
     }
 

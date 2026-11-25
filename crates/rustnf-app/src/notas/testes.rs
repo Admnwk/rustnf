@@ -334,3 +334,123 @@ fn o_danfse_fica_ao_lado_do_xml_e_nao_aparece_na_lista() {
         ErroNotas::ChaveInvalida
     );
 }
+
+#[test]
+fn definir_situacao_troca_a_linha_e_o_resto_fica() {
+    let p = PastaTemporaria::nova("notas-situacao");
+    let notas = Notas::abrir(p.caminho()).unwrap();
+    notas.guardar(&registro(1), "<NFSe>1</NFSe>").unwrap();
+    notas.guardar(&registro(2), "<NFSe>2</NFSe>").unwrap();
+    notas
+        .definir_situacao(&chave(1), Situacao::AnaliseFiscal)
+        .unwrap();
+    notas
+        .definir_situacao(&chave(2), Situacao::Substituida)
+        .unwrap();
+    let lista = notas.listar().unwrap();
+    let de = |n| lista.iter().find(|r| r.chave == chave(n)).unwrap().situacao;
+    assert_eq!(de(1), Situacao::AnaliseFiscal);
+    assert_eq!(de(2), Situacao::Substituida);
+    assert_eq!(
+        notas
+            .definir_situacao(&chave(99), Situacao::Cancelada)
+            .unwrap_err(),
+        ErroNotas::NaoEncontrada
+    );
+    // marcar_cancelada e' definir_situacao(Cancelada)
+    notas.marcar_cancelada(&chave(1)).unwrap();
+    assert_eq!(
+        notas.registro(&chave(1)).unwrap().situacao,
+        Situacao::Cancelada
+    );
+}
+
+#[test]
+fn guardar_de_novo_nao_devolve_a_autorizada_a_nota_que_ja_saiu_de_la() {
+    let p = PastaTemporaria::nova("notas-guardar-situacao");
+    let notas = Notas::abrir(p.caminho()).unwrap();
+    for situacao in [
+        Situacao::Cancelada,
+        Situacao::Substituida,
+        Situacao::AnaliseFiscal,
+    ] {
+        notas.guardar(&registro(7), "<NFSe>7</NFSe>").unwrap();
+        notas.definir_situacao(&chave(7), situacao).unwrap();
+        notas.guardar(&registro(7), "<NFSe>7b</NFSe>").unwrap();
+        assert_eq!(notas.registro(&chave(7)).unwrap().situacao, situacao);
+        assert_eq!(notas.ler_xml(&chave(7)).unwrap(), "<NFSe>7b</NFSe>");
+    }
+}
+
+#[test]
+fn as_situacoes_novas_vao_e_voltam_do_indice_em_minusculas() {
+    for (situacao, texto) in [
+        (Situacao::Autorizada, "autorizada"),
+        (Situacao::Cancelada, "cancelada"),
+        (Situacao::Substituida, "substituida"),
+        (Situacao::AnaliseFiscal, "analise_fiscal"),
+    ] {
+        let json = serde_json::to_string(&situacao).unwrap();
+        assert_eq!(json, format!("\"{texto}\""));
+        assert_eq!(serde_json::from_str::<Situacao>(&json).unwrap(), situacao);
+    }
+    assert!(serde_json::from_str::<Situacao>("\"suspensa\"").is_err());
+}
+
+/// Um `indice.json` exatamente como a versao 0.4.0 o gravava: so' autorizada e cancelada.
+const INDICE_DA_0_4_0: &str = r#"{
+  "versao": 1,
+  "notas": [
+    {
+      "chave": "CHAVE_1",
+      "numero": "1",
+      "serie": "1",
+      "numero_dps": "1",
+      "emissao": "2026-10-02T10:00:00-03:00",
+      "valor_servico": "150.00",
+      "situacao": "autorizada",
+      "tomador_documento": "52998224725",
+      "tomador_nome": "Cliente"
+    },
+    {
+      "chave": "CHAVE_2",
+      "numero": "2",
+      "serie": "1",
+      "numero_dps": "2",
+      "emissao": "2026-10-03T10:00:00-03:00",
+      "valor_servico": "80.00",
+      "situacao": "cancelada",
+      "tomador_documento": "",
+      "tomador_nome": ""
+    }
+  ]
+}
+"#;
+
+#[test]
+fn o_indice_da_versao_anterior_continua_sendo_lido() {
+    let p = PastaTemporaria::nova("notas-indice-antigo");
+    let texto = INDICE_DA_0_4_0
+        .replace("CHAVE_1", &chave(1))
+        .replace("CHAVE_2", &chave(2));
+    p.escrever("indice.json", &texto);
+    let notas = Notas::abrir(p.caminho()).unwrap();
+    let lista = notas.listar().unwrap();
+    assert_eq!(lista.len(), 2);
+    assert_eq!(
+        notas.registro(&chave(1)).unwrap().situacao,
+        Situacao::Autorizada
+    );
+    assert_eq!(
+        notas.registro(&chave(2)).unwrap().situacao,
+        Situacao::Cancelada
+    );
+    // e se pode mudar uma nota dele para uma situacao nova
+    notas
+        .definir_situacao(&chave(1), Situacao::AnaliseFiscal)
+        .unwrap();
+    assert_eq!(
+        notas.registro(&chave(1)).unwrap().situacao,
+        Situacao::AnaliseFiscal
+    );
+}

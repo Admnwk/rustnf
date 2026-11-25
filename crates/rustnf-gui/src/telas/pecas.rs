@@ -319,12 +319,15 @@ pub(super) fn corpo_da_previa(
     }
 }
 
-/// O selo da situacao de uma nota: autorizada (verde) ou cancelada (vermelho), com as cores do tema.
+/// O selo da situacao de uma nota: autorizada (verde), cancelada (vermelho), substituida (cinza) ou em analise fiscal
+/// (amarelo), com as cores do tema.
 pub(super) fn selo_da_situacao(situacao: Situacao, cx: &App) -> Div {
     let tema = cx.theme();
     let cor = match situacao {
         Situacao::Autorizada => tema.success,
         Situacao::Cancelada => tema.danger,
+        Situacao::Substituida => tema.muted_foreground,
+        Situacao::AnaliseFiscal => tema.warning,
     };
     div()
         .px_2()

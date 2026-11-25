@@ -7,14 +7,21 @@
 use rustnf::nfse::leitura::Nfse;
 use serde::{Deserialize, Serialize};
 
+use crate::nucleo::SituacaoNota;
+
 /// Situacao da nota na pasta.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Situacao {
     /// Autorizada pela Sefin Nacional.
     Autorizada,
-    /// Cancelada (evento 101101 registrado).
+    /// Cancelada (evento 101101 registrado, ou 105104: cancelamento deferido em analise fiscal).
     Cancelada,
+    /// Substituida por outra nota (evento 105102, que a Sefin registra ao autorizar a DPS de substituicao).
+    Substituida,
+    /// Com pedido de analise fiscal para cancelamento (evento 101103) ainda sem decisao do fisco (105104/105105).
+    #[serde(rename = "analise_fiscal")]
+    AnaliseFiscal,
 }
 
 impl Situacao {
@@ -24,6 +31,18 @@ impl Situacao {
         match self {
             Self::Autorizada => "autorizada",
             Self::Cancelada => "cancelada",
+            Self::Substituida => "substituida",
+            Self::AnaliseFiscal => "em analise fiscal",
+        }
+    }
+
+    /// A situacao para a marca d'agua do DANFSe: so' a cancelada e a substituida levam marca.
+    #[must_use]
+    pub fn para_danfse(self) -> SituacaoNota {
+        match self {
+            Self::Autorizada | Self::AnaliseFiscal => SituacaoNota::Valida,
+            Self::Cancelada => SituacaoNota::Cancelada,
+            Self::Substituida => SituacaoNota::Substituida,
         }
     }
 }

@@ -11,6 +11,7 @@ use std::time::Duration;
 
 use axum::http::StatusCode;
 use comum::*;
+use rustnf::chave_dfe;
 use rustnf_app::notas::Notas;
 use rustnf_cli::http::Config;
 use serde_json::{json, Value};
@@ -173,6 +174,10 @@ async fn sem_a_opcao_as_rotas_de_emissao_nem_existem() {
         ("POST", "/emitir".to_string()),
         ("POST", "/cancelar".to_string()),
         ("GET", format!("/nfse/{chave}")),
+        ("GET", format!("/dps/{ID_DPS}")),
+        ("GET", format!("/nfse/{chave}/eventos/101103/1")),
+        ("POST", "/eventos".to_string()),
+        ("POST", "/notas/atualizar".to_string()),
     ] {
         for cab in [vec![], vec![("authorization", auth.as_str())]] {
             let (st, _, corpo) =
@@ -192,6 +197,10 @@ async fn emissao_exige_bearer() {
         ("POST", "/emitir".to_string()),
         ("POST", "/cancelar".to_string()),
         ("GET", format!("/nfse/{chave}")),
+        ("GET", format!("/dps/{ID_DPS}")),
+        ("GET", format!("/nfse/{chave}/eventos/101103/1")),
+        ("POST", "/eventos".to_string()),
+        ("POST", "/notas/atualizar".to_string()),
     ];
     for (metodo, rota) in &rotas {
         let (st, cab, corpo) = enviar(&app, requisicao(metodo, rota, &[], b"{}".to_vec())).await;
@@ -602,4 +611,169 @@ async fn json_invalido_nao_ecoa_caminho_nem_segredo() {
         !texto.contains("\\") && !texto.contains("c:/") && !texto.contains("senha"),
         "{texto}"
     );
+}
+
+fn get_com_token(rota: &str) -> axum::http::Request<axum::body::Body> {
+    let auth = format!("Bearer {TOKEN}");
+    requisicao("GET", rota, &[("authorization", auth.as_str())], vec![])
+}
+
+#[tokio::test]
+async fn consulta_da_dps_pelo_id() {
+    let ch = chave();
+    let falso = Falso::novo(vec![
+        ("GET", format!("/dps/{ID_DPS}"), dps_achada(ID_DPS, &ch)),
+        ("GET", format!("/dps/{ID_DPS}"), dps_achada(ID_DPS, &ch)),
+        ("GET", format!("/nfse/{ch}"), nota(&ch)),
+    ]);
+    let app = app_emissao(falso.clone());
+    let (st, _, corpo) = enviar(&app, get_com_token(&format!("/dps/{ID_DPS}"))).await;
+    assert_eq!(st, StatusCode::OK, "{}", String::from_utf8_lossy(&corpo));
+    let v = json_do_corpo(&corpo);
+    assert_eq!(v["chave"], ch);
+    assert_eq!(v["id_dps"], ID_DPS);
+    assert!(v["nfse"].is_null());
+    // com a nota
+    let (st, _, corpo) = enviar(&app, get_com_token(&format!("/dps/{ID_DPS}?com_nota=true"))).await;
+    assert_eq!(st, StatusCode::OK);
+    assert_eq!(json_do_corpo(&corpo)["nfse"]["numero"], "77");
+    // a DPS que nao gerou nota: 404; Id fora da forma: 422 sem sair
+    let (st, _, corpo) = enviar(&app, get_com_token(&format!("/dps/{}", id_dps(9)))).await;
+    assert_eq!(st, StatusCode::NOT_FOUND);
+    assert_eq!(json_do_corpo(&corpo)["erro"]["codigo"], "nao_encontrada");
+    let antes = falso.chamadas().len();
+    let (st, _, _) = enviar(&app, get_com_token("/dps/DPS123")).await;
+    assert_eq!(st, StatusCode::UNPROCESSABLE_ENTITY);
+    assert_eq!(falso.chamadas().len(), antes);
+}
+
+#[tokio::test]
+async fn consulta_de_evento_pela_chave_o_tipo_e_a_sequencia() {
+    let ch = chave();
+    let outra = chave_dfe::montar_nfse(3550308, "11222333000181", 43, "2610", Some(1), 2).unwrap();
+    let falso = Falso::novo(vec![
+        (
+            "GET",
+            format!("/nfse/{ch}/eventos/101103/1"),
+            evento_consultado(&ch, "101103", 1),
+        ),
+        (
+            "GET",
+            format!("/nfse/{outra}/eventos/101103/1"),
+            evento_consultado(&ch, "101103", 1),
+        ),
+    ]);
+    let app = app_emissao(falso);
+    let (st, _, corpo) = enviar(&app, get_com_token(&format!("/nfse/{ch}/eventos/101103/1"))).await;
+    assert_eq!(st, StatusCode::OK, "{}", String::from_utf8_lossy(&corpo));
+    let v = json_do_corpo(&corpo);
+    assert_eq!(v["status"], "ok");
+    assert_eq!(v["evento"]["tipo"], "101103");
+    assert_eq!(v["evento"]["chave"], ch);
+    // nao existe
+    let (st, _, _) = enviar(&app, get_com_token(&format!("/nfse/{ch}/eventos/101103/2"))).await;
+    assert_eq!(st, StatusCode::NOT_FOUND);
+    // a Sefin respondeu com o evento de outra nota: 502, nunca "ok"
+    let (st, _, corpo) = enviar(
+        &app,
+        get_com_token(&format!("/nfse/{outra}/eventos/101103/1")),
+    )
+    .await;
+    assert_eq!(
+        st,
+        StatusCode::BAD_GATEWAY,
+        "{}",
+        String::from_utf8_lossy(&corpo)
+    );
+    // sequencia que nao e' numero
+    let (st, _, _) = enviar(&app, get_com_token(&format!("/nfse/{ch}/eventos/101103/x"))).await;
+    assert_eq!(st, StatusCode::BAD_REQUEST);
+}
+
+#[tokio::test]
+async fn registro_de_evento_marca_a_pasta_e_recusa_o_que_o_contribuinte_nao_pede() {
+    let p = Pasta::nova();
+    let pasta = p.caminho("notas");
+    let notas = Notas::abrir(&pasta).unwrap();
+    let ch = guardar_nota_do_danfse(&notas);
+    let falso = Falso::novo(vec![(
+        "POST",
+        "/eventos".into(),
+        evento_registrado_de(&ch, "101103"),
+    )]);
+    let app = app_emissao_com_pasta(falso.clone(), &pasta);
+    let corpo = json!({"chave": ch, "tipo": "101103", "motivo": "1", "justificativa": "Valor digitado errado na nota"});
+    let (st, _, resp) = enviar(&app, post_json_token("/eventos", &corpo)).await;
+    assert_eq!(st, StatusCode::OK, "{}", String::from_utf8_lossy(&resp));
+    let v = json_do_corpo(&resp);
+    assert_eq!(v["status"], "registrado");
+    assert_eq!(v["evento"]["tipo"], "101103");
+    assert_eq!(v["marcada"], true);
+    assert_eq!(
+        notas.listar().unwrap()[0].situacao.texto(),
+        "em analise fiscal"
+    );
+    // cancelamento e eventos do fisco: 422 antes de qualquer chamada
+    let antes = falso.chamadas().len();
+    for tipo in ["101101", "105104", "105102"] {
+        let (st, _, resp) = enviar(
+            &app,
+            post_json_token("/eventos", &json!({"chave": ch, "tipo": tipo})),
+        )
+        .await;
+        assert_eq!(st, StatusCode::UNPROCESSABLE_ENTITY, "{tipo}");
+        assert_eq!(json_do_corpo(&resp)["erro"]["codigo"], "recusa");
+    }
+    assert_eq!(falso.chamadas().len(), antes);
+    // campo desconhecido
+    let (st, _, _) = enviar(
+        &app,
+        post_json_token("/eventos", &json!({"chave": ch, "tipo": "101103", "x": 1})),
+    )
+    .await;
+    assert_eq!(st, StatusCode::BAD_REQUEST);
+}
+
+#[tokio::test]
+async fn atualizacao_em_lote_pela_api() {
+    let p = Pasta::nova();
+    let pasta = p.caminho("notas");
+    let notas = Notas::abrir(&pasta).unwrap();
+    let ch = guardar_nota_do_danfse(&notas);
+    let falso = Falso::novo(vec![(
+        "GET",
+        format!("/nfse/{ch}/eventos/101101/1"),
+        evento_consultado(&ch, "101101", 1),
+    )]);
+    let app = app_emissao_com_pasta(falso, &pasta);
+    let (st, _, resp) = enviar(
+        &app,
+        post_json_token("/notas/atualizar", &json!({"intervalo_ms": 0})),
+    )
+    .await;
+    assert_eq!(st, StatusCode::OK, "{}", String::from_utf8_lossy(&resp));
+    let v = json_do_corpo(&resp);
+    assert_eq!(v["conferidas"], 1);
+    assert_eq!(v["mudaram"][0]["chave"], ch);
+    assert_eq!(v["mudaram"][0]["de"], "autorizada");
+    assert_eq!(v["mudaram"][0]["para"], "cancelada");
+    assert_eq!(notas.listar().unwrap()[0].situacao.texto(), "cancelada");
+    // filtro com campo que nao existe
+    let (st, _, _) = enviar(
+        &app,
+        post_json_token("/notas/atualizar", &json!({"mes": "2026-10"})),
+    )
+    .await;
+    assert_eq!(st, StatusCode::BAD_REQUEST);
+}
+
+#[tokio::test]
+async fn atualizacao_sem_pasta_de_notas_e_pedido_invalido() {
+    let app = app_emissao(Falso::default());
+    let (st, _, resp) = enviar(&app, post_json_token("/notas/atualizar", &json!({}))).await;
+    assert_eq!(st, StatusCode::BAD_REQUEST);
+    assert!(json_do_corpo(&resp)["erro"]["mensagem"]
+        .as_str()
+        .unwrap()
+        .contains("pasta de notas"));
 }

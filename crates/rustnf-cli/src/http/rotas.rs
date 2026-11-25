@@ -221,6 +221,68 @@ pub(super) async fn consultar(
     Ok(resposta_json(StatusCode::OK, &r))
 }
 
+/// `?com_nota=true|false`: buscar tambem a nota inteira; sem o parametro, so' a chave.
+fn com_nota(uri: &Uri) -> Result<bool, Erro> {
+    match parametro(uri, "com_nota") {
+        None | Some("false") => Ok(false),
+        Some("true") => Ok(true),
+        Some(_) => Err(Erro::Entrada("com_nota: use true ou false".into())),
+    }
+}
+
+pub(super) async fn consultar_dps(
+    State(estado): State<Arc<Estado>>,
+    uri: Uri,
+    cabecalhos: HeaderMap,
+    Path(id): Path<String>,
+) -> Resposta {
+    let em = exigir_token(&estado, &cabecalhos)?;
+    let r = emissao::consultar_dps(em.emissor.as_ref(), &id, com_nota(&uri)?).await?;
+    Ok(resposta_json(StatusCode::OK, &r))
+}
+
+pub(super) async fn consultar_evento(
+    State(estado): State<Arc<Estado>>,
+    cabecalhos: HeaderMap,
+    Path((chave, tipo, sequencia)): Path<(String, String, String)>,
+) -> Resposta {
+    let em = exigir_token(&estado, &cabecalhos)?;
+    let sequencia: u32 = sequencia
+        .parse()
+        .map_err(|_| Erro::Entrada("sequencia: numero inteiro a partir de 1".into()))?;
+    let r = emissao::consultar_evento(em.emissor.as_ref(), &chave, &tipo, sequencia).await?;
+    Ok(resposta_json(StatusCode::OK, &r))
+}
+
+pub(super) async fn registrar_evento(
+    State(estado): State<Arc<Estado>>,
+    cabecalhos: HeaderMap,
+    corpo: Body,
+) -> Resposta {
+    let em = exigir_token(&estado, &cabecalhos)?;
+    let bytes = ler_corpo(&cabecalhos, corpo, estado.config.limite_corpo).await?;
+    let p: nucleo::PedidoEvento = json_de(&bytes)?;
+    let r = estado.registrar_evento(em, &p).await?;
+    Ok(resposta_json(StatusCode::OK, &r))
+}
+
+pub(super) async fn atualizar(
+    State(estado): State<Arc<Estado>>,
+    cabecalhos: HeaderMap,
+    corpo: Body,
+) -> Resposta {
+    let em = exigir_token(&estado, &cabecalhos)?;
+    let bytes = ler_corpo(&cabecalhos, corpo, estado.config.limite_corpo).await?;
+    // sem corpo = todas as notas
+    let p: rustnf_app::atualizacao::Pedido = if bytes.iter().all(u8::is_ascii_whitespace) {
+        rustnf_app::atualizacao::Pedido::default()
+    } else {
+        json_de(&bytes)?
+    };
+    let r = estado.atualizar(em, &p).await?;
+    Ok(resposta_json(StatusCode::OK, &r))
+}
+
 pub(super) async fn mcp(
     State(estado): State<Arc<Estado>>,
     cabecalhos: HeaderMap,

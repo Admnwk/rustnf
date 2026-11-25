@@ -5,7 +5,7 @@
 //! O que se faz com a pasta de notas alem de guardar e listar: a linha de uma nota, a lista em CSV, a copia dos XML
 //! para outra pasta e o indice refeito a partir dos XML guardados.
 
-use std::collections::BTreeSet;
+use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
 use rustnf::nfse::leitura::ler_nfse;
@@ -170,8 +170,9 @@ impl Notas {
 
     /// Refaz o `indice.json` a partir dos XML guardados em `<AAAA>/<MM>/<chave>.xml`: serve quando o indice se
     /// perdeu ou ficou ilegivel. O indice que havia fica copiado ao lado ([`INDICE_ANTERIOR`]). O XML da nota nao
-    /// diz se ela foi cancelada: a marca de cancelada e' aproveitada do indice anterior, quando ele ainda e'
-    /// legivel; sem ele, toda nota volta como autorizada e o cancelamento se confere na Sefin. A numeracao da DPS
+    /// diz se ela foi cancelada: a situacao que nao e' autorizada (cancelada, substituida, em analise fiscal) e'
+    /// aproveitada do indice anterior, quando ele ainda e' legivel; sem ele, toda nota volta como autorizada e a
+    /// situacao se confere na Sefin (`notas atualizar`). A numeracao da DPS
     /// (`estado.json`) nao muda.
     ///
     /// # Errors
@@ -184,12 +185,12 @@ impl Notas {
             indice_ilegivel: anterior.is_err(),
             ..Reindexado::default()
         };
-        let canceladas: BTreeSet<String> = anterior
+        let marcadas: BTreeMap<String, Situacao> = anterior
             .map(|i| i.notas)
             .unwrap_or_default()
             .into_iter()
-            .filter(|r| r.situacao == Situacao::Cancelada)
-            .map(|r| r.chave)
+            .filter(|r| r.situacao != Situacao::Autorizada)
+            .map(|r| (r.chave, r.situacao))
             .collect();
 
         let mut notas = Vec::new();
@@ -205,9 +206,11 @@ impl Notas {
                     }
                     match self.registro_do_xml(&caminho) {
                         Some(mut registro) => {
-                            if canceladas.contains(&registro.chave) {
-                                registro.situacao = Situacao::Cancelada;
-                                feito.canceladas += 1;
+                            if let Some(situacao) = marcadas.get(&registro.chave) {
+                                registro.situacao = *situacao;
+                                if *situacao == Situacao::Cancelada {
+                                    feito.canceladas += 1;
+                                }
                             }
                             notas.push(registro);
                         }
