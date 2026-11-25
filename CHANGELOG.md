@@ -1,16 +1,17 @@
 # Changelog
 
-## Próxima versão
+## 0.4.0 - 2026-11-25
 
-* Versão mínima do Rust declarada no `Cargo.toml` (`rust-version = "1.92"`) e conferida no CI, que compila o
-  workspace nessa versão além do Rust estável.
-* Exemplo da biblioteca: `cargo run -p rustnf --example montar_e_assinar --features cert_a1_teste` monta uma DPS a
-  partir do pedido em JSON, assina com um certificado A1 de teste e confere a assinatura, sem rede.
-* CI: documentação gerada com aviso virando erro, o exemplo da biblioteca roda, e o histórico inteiro passa pelo
-  gitleaks (binário oficial conferido pelo SHA-256); as ações do GitHub foram para as versões em Node.js 24.
+Ao atualizar: a configuração nova (`aliquota_iss`) é opcional e vazia por padrão, e a prévia do IBS/CBS só muda no
+empate exato de arredondamento (veja abaixo).
+
 * Nova nota: "Buscar endereço pelo CEP" preenche logradouro, bairro e município (código IBGE) do tomador. Só no
   clique: o CEP vai ao ViaCEP e, se ele não responder, à BrasilAPI; sem resposta, o endereço é preenchido à mão. Não
   traz dependência nova (o cliente HTTP já era o da Sefin).
+* Quem já emitia por outro sistema continua a numeração de lá: `rustnf notas numero --proximo <N>` ou, na interface,
+  Configurações > Notas e DANFSe > "Continuar deste número". A série passa a seguir do número informado; a
+  numeração só anda para a frente (um número já usado faria a Sefin devolver a nota antiga). Sem `--proximo`, o
+  comando mostra a próxima DPS da série.
 * ISS: alíquota padrão no `[emitente]` (`aliquota_iss`, vazio = não informar), que completa a DPS só onde ela leva
   a alíquota (ISS tributável, sem regime especial, fora do MEI e, para ME/EPP, com ISS retido). Na interface, o campo
   fica em Configurações > Emitente, aparece como dica na Nova nota, e o resumo de valores mostra o ISS estimado (ou
@@ -18,22 +19,26 @@
 * Interface de desktop pelo teclado: o Tab leva a tela até o campo que ganha o foco (antes ele podia ficar fora de
   vista), PageUp/PageDown rolam a tela mesmo com o foco num campo, e as setas e Ctrl+Home/Ctrl+End rolam quando o
   foco não está num campo. Na lista de notas as setas continuam andando pela lista.
-* Quem já emitia por outro sistema continua a numeração de lá: `rustnf notas numero --proximo <N>` ou, na interface,
-  Configurações > Notas e DANFSe > "Continuar deste número". A série passa a seguir do número informado; a
-  numeração só anda para a frente (um número já usado faria a Sefin devolver a nota antiga). Sem `--proximo`, o
-  comando mostra a próxima DPS da série.
-* `rustnf completar <shell>`: imprime o script que completa comandos e opções com Tab no PowerShell, bash, zsh,
-  fish ou elvish (veja "Linha de comando" no README).
-* Dependências: atualização semanal proposta pelo Dependabot, agrupada, sempre passando pelo CI antes de entrar; o
-  kit da interface de desktop continua sendo trocado à mão.
 * Retorno E0008 da Sefin (hora de emissão depois da hora de processamento) ganha a dica de acertar o relógio ou
   aumentar `folga_relogio_s`.
 * Prévia do IBS/CBS: a leitura de alíquota ou redução com mais de 4 casas passa a arredondar "meio para o par", como
   os valores da prévia e a calculadora oficial; só muda no empate exato (ex.: `0,00005`).
+* `rustnf completar <shell>`: imprime o script que completa comandos e opções com Tab no PowerShell, bash, zsh,
+  fish ou elvish (veja "Linha de comando" no README).
 * Dependência `url` 2.5.8 -> 2.5.9 (RUSTSEC-2026-0592, estouro de pilha em `Url::origin()`; chega pela interface
   de desktop).
+* Dependências: atualização semanal proposta pelo Dependabot, agrupada, sempre passando pelo CI antes de entrar; o
+  kit da interface de desktop continua sendo trocado à mão.
+* Versão mínima do Rust declarada no `Cargo.toml` (`rust-version = "1.92"`) e conferida no CI, que compila o
+  workspace nessa versão além do Rust estável.
+* Exemplo da biblioteca: `cargo run -p rustnf --example montar_e_assinar --features cert_a1_teste` monta uma DPS a
+  partir do pedido em JSON, assina com um certificado A1 de teste e confere a assinatura, sem rede.
+* CI: documentação gerada com aviso virando erro, o exemplo da biblioteca roda, e o histórico inteiro passa pelo
+  gitleaks (binário oficial conferido pelo SHA-256); as ações do GitHub foram para as versões em Node.js 24.
 * Release: cada arquivo publicado ganha um atestado de procedência do GitHub, conferível com
   `gh attestation verify <arquivo> --repo Admnwk/rustnf`.
+* Dependências `roxmltree` 0.21 e `qrcode` 0.15 (os DANFSe do contrato saem byte a byte iguais aos da 0.3.0) e correções
+  de `clap`, `regex`, `toml`, `keyring-core` e `x509-cert`
 
 ## 0.3.0 - 2026-11-21
 
