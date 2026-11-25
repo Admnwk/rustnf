@@ -466,6 +466,34 @@ fn aliquotas_base(
     ))
 }
 
+/// vIBS, vCBS, vIS e vTot*MonoItem entram no `vItem` e no `vNFTot`? Nao em 2025 e 2026 (NT 2025.002, VB01-10, excecao 1).
+#[must_use]
+pub fn tributos_somam_no_total(ano: i32) -> bool {
+    ano >= 2027
+}
+
+/// Modalidade da monofasia do IBS ou da CBS.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Modalidade {
+    /// Percentual sobre a base.
+    AdValorem,
+    /// Valor por unidade (quantidade x aliquota especifica).
+    AdRem,
+}
+
+/// Monofasia: a modalidade do (IBS, CBS) no ano, pela tabela da UB90-10 da NT 2025.002: 2026 ad valorem nos dois;
+/// 2027 e 2028 IBS ad valorem e CBS ad rem; de 2029 em diante ad rem nos dois.
+#[must_use]
+pub fn mono_modalidade(ano: i32) -> (Modalidade, Modalidade) {
+    if ano <= 2026 {
+        (Modalidade::AdValorem, Modalidade::AdValorem)
+    } else if ano <= 2028 {
+        (Modalidade::AdValorem, Modalidade::AdRem)
+    } else {
+        (Modalidade::AdRem, Modalidade::AdRem)
+    }
+}
+
 /// As aliquotas, ou erro com o motivo. Use ANTES de emitir ou fechar apuracao.
 pub fn exigir_aliquotas(
     data: &str,

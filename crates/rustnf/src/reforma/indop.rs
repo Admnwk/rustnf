@@ -80,3 +80,44 @@ pub fn permitido(codigo: &str, documento: &str) -> Result<bool, String> {
         )),
     }
 }
+
+/// `cIndOp` que exigem o grupo `retirada` na NF-e (regra B25d-30).
+pub const EXIGE_RETIRADA_NFE: [&str; 2] = ["010104", "010105"];
+
+/// Regras B25d-10, B25d-20 e B25d-30 da NF-e (NT 2025.002): `Some((cStat, mensagem))` da rejeicao, ou `None` se passa.
+/// Codigo vazio = nota sem `cIndOp`.
+#[must_use]
+pub fn erro_nfe(codigo: &str, modelo: i64, tem_retirada: bool) -> Option<(&'static str, String)> {
+    let c = codigo.trim();
+    if c.is_empty() {
+        return None;
+    }
+    if modelo == 65 {
+        return Some((
+            "1099",
+            "cIndOp nao pode ir na NFC-e (modelo 65) -- B25d-10".into(),
+        ));
+    }
+    if !permitido(c, "nfe").unwrap_or(false) {
+        let na_nfe: Vec<&str> = tabela()
+            .values()
+            .filter(|x| x.ind_nfe)
+            .map(|x| x.codigo.as_str())
+            .collect();
+        return Some((
+            "1102",
+            format!(
+                "cIndOp {c} nao permitido na NF-e (indNFe vazio no Anexo VII v{}; na NF-e so' {}) -- B25d-20",
+                versao(),
+                na_nfe.join(", ")
+            ),
+        ));
+    }
+    if EXIGE_RETIRADA_NFE.contains(&c) && !tem_retirada {
+        return Some((
+            "1110",
+            format!("cIndOp {c} exige o local de retirada (grupo retirada) -- B25d-30"),
+        ));
+    }
+    None
+}

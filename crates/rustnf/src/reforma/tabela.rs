@@ -319,6 +319,37 @@ pub fn validar(
     Ok((c, k))
 }
 
+/// Grupo de valores que o item com este CST leva neste documento (`None` = so' CST e cClassTrib). Excecao das regras
+/// UB13-30 e UB13-40: o `tpNFDebito` 07 (perda em estoque) nao leva `gIBSCBS` nem `gIBSCBSMono`.
+pub fn grupo_exigido(
+    cst_: &str,
+    documento: &str,
+    tp_nf_debito: Option<&str>,
+) -> Resultado<Option<&'static str>> {
+    let c = cst(cst_)?;
+    let g = c.grupo();
+    let d = doc(documento)?;
+    if matches!(g, Some("gIBSCBS") | Some("gIBSCBSMono"))
+        && matches!(tp_nf_debito, Some("07") | Some("7"))
+    {
+        return Ok(None);
+    }
+    if d == "nfce" {
+        if let Some(gr) = g {
+            if gr != "gIBSCBS" && gr != "gIBSCBSMono" {
+                return Err(ErroReforma::novo(
+                    format!(
+                        "CST {} exige o grupo {gr}, que nao existe na NFC-e -- emita em NF-e",
+                        c.cst
+                    ),
+                    "TTribNFCe",
+                ));
+            }
+        }
+    }
+    Ok(g)
+}
+
 /// Credito do adquirente (regime regular) com este cClassTrib: Calculadora RFB, ou art. 49 derivado.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Credito {

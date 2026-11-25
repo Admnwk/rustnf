@@ -45,11 +45,14 @@
 
 ## Próximo
 
-**Em andamento: NF-e (modelo 55)**, em fases, uma por vez. A NF-e ainda não emite; sem data prometida.
+**Em andamento: NF-e (modelo 55)**, em fases, uma por vez. A NF-e ainda não é enviada; sem data prometida.
 
 * Base (feature `nfe`): chave de acesso de 44 posições, calendário das Notas Técnicas, leitura do XML autorizado e
   tabela de `cStat`. Feita nesta frente.
-* Montagem do modelo 55: leiaute 4.00, regras do Anexo I conferidas antes do envio, IBS/CBS de mercadoria.
+* Montagem e assinatura do modelo 55 (feature `nfe`): leiaute 4.00, regras do MOC e das NT conferidas antes do envio,
+  IBS/CBS de mercadoria, Simples Nacional. Feita nesta frente. **Fica para a próxima:** cobrança (`cobr`),
+  transportadora, volumes e lacres, exportação, compra, rastreabilidade, medicamento, combustível e armamento, imposto
+  seletivo, imposto de importação, e o QR Code do DANFE simplificado.
 * Webservices da SEFAZ, com contingência.
 * DANFE.
 * Faces: aplicação, linha de comando, API HTTP e MCP.

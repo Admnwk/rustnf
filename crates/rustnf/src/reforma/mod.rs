@@ -11,7 +11,8 @@
 //! * [`indop`] -- cIndOp (Anexo VII da Reforma Tributaria do Consumo, v1.03.00), embutido de `dados/indop.json`: em que
 //!   documento fiscal cada codigo vale;
 //! * [`aliquotas`] -- calendario 2026-2033 e a aliquota do ANO do fato gerador (LC 214/2025, arts. 343-349);
-//! * [`previa`] -- a base de calculo e o IBS/CBS de um servico, como a Sefin Nacional vai calcular.
+//! * [`previa`] -- a base de calculo e o IBS/CBS de um servico, como a Sefin Nacional vai calcular;
+//! * `calculo` (feature `nfe`) -- o IBS/CBS de uma mercadoria por item e o total da NF-e (`IBSCBSTot`, `vNFTot`).
 //!
 //! A DPS nao leva valor de IBS/CBS calculado (quem calcula e' a Sefin Nacional): este modulo serve para conferir
 //! o que vai na DPS e para consultar as tabelas e as aliquotas. Percentual em x10000 (4 casas, `i64`). Todo
@@ -20,6 +21,8 @@
 //! casas. Os casos em `tests/casos/reforma.json` conferem texto a texto.
 pub mod aliquotas;
 pub mod atividades_sn;
+#[cfg(feature = "nfe")]
+pub mod calculo;
 mod decimal;
 pub mod indop;
 pub mod previa;
@@ -99,6 +102,12 @@ pub(crate) fn escala(s: &str, casas: u32, campo: &str) -> Resultado<i128> {
         div_arred(m, 10i128.pow(fe - casas))
     };
     Ok(if neg { -v } else { v })
+}
+
+/// Centavos -> "123.45".
+#[cfg(feature = "nfe")]
+pub(crate) fn fmt2(v: i64) -> String {
+    fmt_casas(v as i128, 2)
 }
 
 /// x10000 -> "0.9000".
