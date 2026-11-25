@@ -70,6 +70,8 @@ pub enum ErroNotas {
     Corrompido,
     /// Outro processo segura a trava da pasta.
     Bloqueada,
+    /// O proximo numero pedido ja foi usado nesta serie (confirmado ou guardado na pasta).
+    NumeroJaUsado,
 }
 
 impl fmt::Display for ErroNotas {
@@ -87,6 +89,9 @@ impl fmt::Display for ErroNotas {
                 "notas: indice.json ou estado.json ilegivel; confira os arquivos da pasta"
             }
             Self::Bloqueada => "notas: a pasta esta em uso por outro processo; tente de novo",
+            Self::NumeroJaUsado => {
+                "notas: esse numero de DPS ja foi usado nesta serie; o proximo so' pode ir para a frente"
+            }
         })
     }
 }
@@ -363,6 +368,32 @@ impl Notas {
         let atual = estado.series.entry(serie).or_insert(0);
         if numero > *atual {
             *atual = numero;
+            estado.versao = 1;
+            gravar_json(&self.pasta.join(ESTADO), &estado)?;
+        }
+        Ok(())
+    }
+
+    /// Faz a serie continuar em `proximo`: para quem ja emitia por outro sistema, o numero seguinte a ultima DPS de
+    /// la. So' anda para a frente: `proximo` abaixo do [`Notas::proximo_numero`] de agora seria um numero ja usado, e
+    /// a Sefin devolveria a nota antiga em vez de autorizar uma nova.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroNotas::SerieInvalida`], [`ErroNotas::NumeroInvalido`], [`ErroNotas::NumeroJaUsado`] ou erro de pasta.
+    pub fn definir_proximo(&self, serie: &str, proximo: u64) -> Result<(), ErroNotas> {
+        let normal = serie_normal(serie)?;
+        if proximo == 0 || proximo > NUMERO_MAXIMO {
+            return Err(ErroNotas::NumeroInvalido);
+        }
+        let _trava = Trava::obter(&self.pasta)?;
+        if proximo < self.proximo_numero(serie)? {
+            return Err(ErroNotas::NumeroJaUsado);
+        }
+        let mut estado = self.estado()?;
+        let atual = estado.series.entry(normal).or_insert(0);
+        if proximo - 1 > *atual {
+            *atual = proximo - 1;
             estado.versao = 1;
             gravar_json(&self.pasta.join(ESTADO), &estado)?;
         }

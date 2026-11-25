@@ -379,9 +379,11 @@ impl Formulario {
                 .get(i)
                 .map(|l| l.texto(coluna).to_string())
                 .unwrap_or_default(),
-            Campo::OpSimples | Campo::RegimeApuracao | Campo::RegimeEspecial | Campo::Senha => {
-                String::new()
-            }
+            Campo::OpSimples
+            | Campo::RegimeApuracao
+            | Campo::RegimeEspecial
+            | Campo::Senha
+            | Campo::ProximoDps => String::new(),
         }
     }
 
@@ -425,7 +427,11 @@ impl Formulario {
                     linha.texto_mut(coluna).clone_from(&normal);
                 }
             }
-            Campo::OpSimples | Campo::RegimeApuracao | Campo::RegimeEspecial | Campo::Senha => {}
+            Campo::OpSimples
+            | Campo::RegimeApuracao
+            | Campo::RegimeEspecial
+            | Campo::Senha
+            | Campo::ProximoDps => {}
         }
         normal
     }

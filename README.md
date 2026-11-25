@@ -77,6 +77,7 @@ certo. Correção é bem-vinda por pedido de mudança, com a fonte oficial citad
 | `rustnf notas listar` | lista as notas guardadas na pasta de notas, com filtro por período, situação e texto; em texto, JSON ou CSV |
 | `rustnf notas exportar` | copia para uma pasta os XML das notas de um mês e a lista delas em CSV (o que vai para a contabilidade) |
 | `rustnf notas reindexar` | refaz o índice da pasta de notas a partir dos XML guardados |
+| `rustnf notas numero` | mostra a próxima DPS da série; com `--proximo`, continua a numeração de quem já emitia por outro sistema |
 | `rustnf certificado mostrar` | mostra o titular, o documento, a validade e os avisos do certificado A1 |
 | `rustnf sefin testar` | testa a conexão com a Sefin Nacional e a aceitação do certificado |
 
@@ -351,6 +352,7 @@ $ rustnf notas listar --situacao cancelada --busca "padaria"
 $ rustnf notas listar --csv > notas.csv                     # para planilha
 $ rustnf notas exportar --mes 2026-10 --para contador/2026-10
 $ rustnf notas reindexar
+$ rustnf notas numero --proximo 1501                       # ja emitia por outro sistema: a ultima DPS foi a 1500
 ```
 
 * **`listar`** filtra por período (`--de`, `--ate`), por situação (`--situacao autorizada|cancelada`) e por texto
@@ -363,6 +365,10 @@ $ rustnf notas reindexar
   índice que havia fica copiado como `indice.anterior.json`. O XML não diz se a nota foi cancelada: a marca de
   cancelada é aproveitada do índice anterior quando ele ainda é legível; se não for, todas voltam como autorizadas e o
   comando avisa. A numeração da DPS não muda.
+* **`numero`** mostra a próxima DPS da série (a do `[emitente]`, ou `--serie`). Quem já emitia por outro sistema passa
+  `--proximo` com o número seguinte ao da última DPS de lá: a série continua dali. A numeração só anda para a frente,
+  porque um número já usado faria a Sefin devolver a nota antiga em vez de autorizar a nova. Na interface:
+  Configurações > Notas e DANFSe > "Continuar deste número".
 
 ## API HTTP
 
