@@ -20,6 +20,9 @@ alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o �
   * `nfe::vigencias`: calendário das Notas Técnicas por ambiente, com as datas conferidas no cronograma de cada NT.
   * A chave de acesso e a leitura da NF-e partiram da `gaialib`; aqui foram reescritas e cobertas por casos novos, com
     documentos fictícios.
+* Reforma: o aviso ao optante do Simples Nacional passa a explicar a opção pelo regime regular do IBS e da CBS (LC 123/2006,
+  art. 13, §§ 9º a 11, incluídos pela LC 214/2025, art. 517, na redação da LC 227/2026, com efeito a partir de 1º/1/2027):
+  vale por semestre iniciado em janeiro ou julho, é irretratável no semestre e é feita em setembro ou março, antes dele.
 * Consulta da DPS: `rustnf consultar --dps <id>` (ou `--serie` e `--numero`, com o `[emitente]` da configuração),
   `GET /dps/{id}` e a ferramenta MCP `consultar_dps` devolvem a chave da NFS-e que a DPS gerou, e a nota com
   `--com-nota`. O Id fora da forma é recusado antes da rede.
