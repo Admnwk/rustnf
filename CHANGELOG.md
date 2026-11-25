@@ -10,7 +10,10 @@ alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o �
   chave, leitura e tabelas.
   * `chave_dfe`: a chave de acesso de 44 posições (NF-e e NFC-e). `montar` recusa campo que não cabe, UF ou modelo
     desconhecido, CPF ou CNPJ do emitente com dígito verificador inválido e `cNF` que a regra B09-30 recusa; `validar`,
-    `decompor`, `formatar`, `limpar` e `achar` (texto de OCR e URL de QR Code) completam. O que a NFS-e usa não mudou.
+    `decompor`, `formatar`, `limpar` e `achar` (texto de OCR e URL de QR Code) completam. O emitente CPF da chave é o da
+    série 910 a 969 e o da Nota Fiscal Fácil (`tpEmis` 3, 5º dígito do número igual a 2); na série 890 a 899 a chave leva
+    o CNPJ da SEFAZ e `nfe::conferir` não a compara com o emitente do XML (NT 2021.002 v1.12, itens 2.1 e 2.2). O que a
+    NFS-e usa não mudou.
   * `nfe::ler`: lê o `nfeProc` ou a `NFe` solta (leiautes 3.10 e 4.00) para a struct `Nfe`, com decimal exato e data com
     fuso; recusa DTD, XML de outro documento, modelo diferente de 55 e campo fora do formato, com erro tipado.
     **A leitura não confere a assinatura XML nem o `digVal`.** `nfe::conferir` aponta divergência entre a chave e o `ide`,

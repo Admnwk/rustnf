@@ -14,8 +14,10 @@
 //!
 //! A chave da NF-e e da NFC-e tem 44 posicoes: UF (2), AAMM (4), CNPJ ou `000` + CPF do emitente (14), modelo (2),
 //! serie (3), numero (9), forma de emissao `tpEmis` (1), codigo numerico `cNF` (8) e DV (1) -- Anexo I do MOC 7.00,
-//! campos B02 a B25 e regra B09-30 (`cNF`); a serie 910 a 969 e' a do emitente CPF (campo B07, NT 2018.001). O DV e'
-//! o mesmo modulo 11 (MOC, Visao Geral, item 5.4).
+//! campos B02 a B25 e regra B09-30 (`cNF`); a serie 910 a 969 e' a do emitente CPF (campo B07, NT 2018.001). Na serie
+//! 890 a 899 (nota avulsa no site da SEFAZ) a chave leva o CNPJ da SEFAZ, mesmo com emitente CPF; na Nota Fiscal Facil
+//! (`tpEmis` 3) o 5o digito do numero diz se e' CPF (`2`) ou CNPJ (NT 2021.002 v1.12, itens 2.1 e 2.2). O DV e' o
+//! mesmo modulo 11 (MOC, Visao Geral, item 5.4).
 
 use std::fmt;
 
@@ -433,20 +435,15 @@ pub fn montar(p: &Montar) -> Result<String, ErroChave> {
     Ok(format!("{base}{d}"))
 }
 
-/// Emitente da chave de 44 posicoes: (documento, e' CPF). A serie 910 a 969 e' a do emitente CPF; na faixa 890 a 899
-/// (emissao no site do Fisco) o emitente pode ser CNPJ ou CPF, e o CPF vem como `000` + 11 digitos (Anexo I do MOC
-/// 7.00, campo B07).
+/// Emitente da chave de 44 posicoes: (documento, e' CPF). Fora da Nota Fiscal Facil, so' a serie 910 a 969 traz CPF
+/// (`000` + 11 digitos); a 890 a 899 traz o CNPJ da SEFAZ (NT 2021.002 v1.12, item 2.2). Na Nota Fiscal Facil
+/// (`tpEmis` 3) a serie nao diz nada: o 5o digito do numero (posicao 30 da chave) e' `2` para CPF (item 2.1).
 fn emitente_dfe(c: &str) -> (&str, bool) {
     let campo = &c[6..20];
-    let serie = if digitos(&c[22..25]) {
-        n(&c[22..25])
+    let cpf = if &c[34..35] == "3" {
+        &c[29..30] == "2"
     } else {
-        0
-    };
-    let cpf = match serie {
-        910..=969 => true,
-        890..=899 => !cnpj_valido(campo) && campo.starts_with("000") && cpf_valido(&campo[3..]),
-        _ => false,
+        digitos(&c[22..25]) && (910..=969).contains(&n(&c[22..25]))
     };
     if cpf {
         (&campo[3..], true)
@@ -509,7 +506,8 @@ pub struct Chave {
     pub competencia: String,
     /// CNPJ ou CPF do emitente, sem pontuacao.
     pub emitente: String,
-    /// O emitente e' CPF (serie 910 a 969, ou 890 a 899 com `000` + CPF valido).
+    /// O emitente e' CPF (serie 910 a 969; na Nota Fiscal Facil, `tpEmis` 3, o 5o digito do numero igual a `2`). Na
+    /// serie 890 a 899 o documento da chave e' o CNPJ da SEFAZ, nao o do emitente.
     pub emitente_cpf: bool,
     /// Modelo (`55` ou `65`, ou o que a chave trouxer).
     pub modelo: String,
