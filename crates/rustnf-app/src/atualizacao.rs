@@ -248,12 +248,28 @@ pub async fn atualizar_situacoes(
     intervalo: Duration,
 ) -> Result<Relatorio, Erro> {
     let lista = filtro.aplicar(notas.listar()?);
+    Ok(atualizar_lista(emissor, notas, &lista, intervalo, &mut |_, _| true).await)
+}
+
+/// Como [`atualizar_situacoes`], para as notas de `lista` (as que uma interface mostra) e com acompanhamento: antes
+/// de conferir cada nota, `acompanhar(feitas, total)` diz quantas ja foram conferidas e quantas ha; devolvendo `false`
+/// o lote para ali. O que ja foi conferido fica gravado no indice e consta do relatorio.
+pub async fn atualizar_lista(
+    emissor: &dyn Emissor,
+    notas: &Notas,
+    lista: &[Registro],
+    intervalo: Duration,
+    acompanhar: &mut (dyn FnMut(usize, usize) -> bool + Send),
+) -> Relatorio {
     let mut ritmo = Ritmo {
         intervalo,
         ja_consultou: false,
     };
     let mut relatorio = Relatorio::default();
-    for nota in &lista {
+    for (feitas, nota) in lista.iter().enumerate() {
+        if !acompanhar(feitas, lista.len()) {
+            break;
+        }
         relatorio.conferidas += 1;
         match conferir(emissor, notas, &mut ritmo, nota).await {
             Ok(Some(mudanca)) => relatorio.mudaram.push(mudanca),
@@ -264,7 +280,7 @@ pub async fn atualizar_situacoes(
             }),
         }
     }
-    Ok(relatorio)
+    relatorio
 }
 
 /// Como [`atualizar_situacoes`], com o filtro e o intervalo de um [`Pedido`].

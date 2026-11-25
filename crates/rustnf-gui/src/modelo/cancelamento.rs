@@ -2,15 +2,17 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! O cancelamento de uma nota: o formulario (motivo, justificativa e a marcacao de producao), os limites da
-//! biblioteca e o desfecho como tipo da tela. Nenhuma frase aqui leva caminho, senha, XML nem detalhe de rede.
+//! O cancelamento de uma nota e os outros eventos que a pessoa pede pelo mesmo dialogo (analise fiscal, confirmar e
+//! recusar a nota recebida): o formulario (motivo, justificativa e a marcacao de producao), os limites da biblioteca
+//! e o desfecho como tipo da tela. Nenhuma frase aqui leva caminho, senha, XML nem detalhe de rede.
 
 use rustnf::nfse::eventos::{MOTIVO_MAX, MOTIVO_MIN};
-use rustnf::nfse::sefin::Status;
+use rustnf::nfse::sefin::{Resultado, Status};
 use rustnf_app::pedido::Cancelada;
 
 use super::ambiente::Ambiente;
 use super::emissao::MensagemSefin;
+use super::evento::TipoDeEvento;
 use super::mascara::frase;
 
 /// Os motivos que o cancelamento aceita, com o rotulo da tela. Os codigos sao os da biblioteca
@@ -27,9 +29,11 @@ pub fn justificativa_normal(texto: &str) -> String {
     texto.split_whitespace().collect::<Vec<_>>().join(" ")
 }
 
-/// O que a pessoa preencheu para cancelar.
+/// O que a pessoa preencheu para cancelar (ou para o outro evento que o dialogo pede: `tipo`).
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub struct FormularioDeCancelamento {
+    /// O evento que se pede; o cancelamento e' o padrao.
+    pub tipo: TipoDeEvento,
     /// O codigo do motivo escolhido.
     pub motivo: Option<&'static str>,
     /// A justificativa, como digitada.
@@ -39,9 +43,24 @@ pub struct FormularioDeCancelamento {
 }
 
 impl FormularioDeCancelamento {
-    /// Escolhe o motivo pelo codigo (`1`, `2` ou `9`); codigo que nao existe e' ignorado.
+    /// O formulario vazio de um evento.
+    #[must_use]
+    pub fn de(tipo: TipoDeEvento) -> Self {
+        Self {
+            tipo,
+            ..Self::default()
+        }
+    }
+
+    /// Escolhe o motivo pelo codigo (os do evento: `1`, `2` ou `9` no cancelamento); codigo que nao existe e'
+    /// ignorado.
     pub fn escolher_motivo(&mut self, codigo: &str) {
-        self.motivo = MOTIVOS.iter().map(|(c, _)| *c).find(|c| *c == codigo);
+        self.motivo = self
+            .tipo
+            .motivos()
+            .iter()
+            .map(|(c, _)| *c)
+            .find(|c| *c == codigo);
     }
 
     /// Quantos caracteres a justificativa tem, contados como a biblioteca conta.
@@ -63,7 +82,13 @@ impl FormularioDeCancelamento {
     #[must_use]
     pub fn erro_da_justificativa(&self, tocada: bool) -> Option<String> {
         let n = self.contagem();
+        if !self.tipo.tem_justificativa() {
+            return None;
+        }
         if n == 0 {
+            if !self.tipo.exige_justificativa(self.motivo) {
+                return None;
+            }
             return tocada.then(|| {
                 "Escreva a justificativa: ela fica registrada no documento fiscal.".into()
             });
@@ -92,14 +117,21 @@ impl FormularioDeCancelamento {
     /// Por que o botao Cancelar esta desligado, ou `None` se pode enviar. Em producao falta marcar o efeito fiscal.
     #[must_use]
     pub fn motivo_de_nao_enviar(&self, ambiente: Ambiente) -> Option<String> {
-        if self.motivo.is_none() {
-            return Some("Escolha o motivo do cancelamento.".into());
+        if self.motivo.is_none() && !self.tipo.motivos().is_empty() {
+            return Some(
+                match self.tipo {
+                    TipoDeEvento::Cancelar => "Escolha o motivo do cancelamento.",
+                    TipoDeEvento::AnaliseFiscal => "Escolha o motivo do cancelamento pedido.",
+                    _ => "Escolha o motivo da recusa.",
+                }
+                .into(),
+            );
         }
         if let Some(e) = self.erro_da_justificativa(true) {
             return Some(e);
         }
         if ambiente == Ambiente::Producao && !self.efeito_fiscal_entendido {
-            return Some("Marque que você entende que o cancelamento tem efeito fiscal.".into());
+            return Some(self.tipo.falta_marcar().into());
         }
         None
     }
@@ -154,15 +186,35 @@ pub const TEXTO_DA_RECUPERADA: &str = "O cancelamento já estava registrado na S
 /// O aviso quando o cancelamento foi registrado mas a pasta nao foi atualizada.
 pub const AVISO_DA_PASTA: &str = "O cancelamento foi registrado na Sefin, mas a pasta de notas não pôde marcar esta nota como cancelada. Use Atualizar ou consulte a nota pela chave.";
 
+/// A recusa do cancelamento por prazo: "O prazo para o cancelamento da NFS-e expirou, conforme parametrizacao do
+/// municipio emissor da NFS-e" (Anexo II do pedido de registro de evento, v1.01 de 22/01/2026, regra 25). Fora do
+/// prazo, o caminho e' o pedido de analise fiscal do cancelamento.
+pub const RECUSA_POR_PRAZO: &str = "E0822";
+
+/// O que a tela explica quando oferece a analise fiscal depois da recusa por prazo.
+pub const TEXTO_DA_OFERTA_DE_ANALISE: &str = "O prazo que o município dá para cancelar direto já passou. Você ainda pode pedir ao fisco do município que analise o cancelamento: o motivo e a justificativa que você escreveu vão junto, e a nota fica em análise até o fisco decidir.";
+
 impl DesfechoDoCancelamento {
+    /// O cancelamento foi recusado por prazo: a tela oferece pedir a analise fiscal ([`RECUSA_POR_PRAZO`]).
+    #[must_use]
+    pub fn recusado_por_prazo(&self) -> bool {
+        matches!(self, Self::Rejeitado { mensagens } if mensagens.iter().any(|m| m.codigo == RECUSA_POR_PRAZO))
+    }
+
     /// O desfecho do que `cancelar_pedido_completo` devolveu.
     #[must_use]
     pub fn de(c: Cancelada) -> Self {
-        let r = &c.resultado;
+        Self::do_resultado(&c.resultado, c.marcada, TEXTO_SEM_RESPOSTA)
+    }
+
+    /// O desfecho de um resultado do cliente da Sefin para um pedido de evento; `sem_resposta` e' a frase de quando
+    /// nem a consulta do evento o achou.
+    #[must_use]
+    pub fn do_resultado(r: &Resultado, marcada: Option<bool>, sem_resposta: &str) -> Self {
         match r.status {
             Status::Registrado | Status::Ok | Status::Autorizada => Self::Registrado {
                 recuperada: r.recuperada,
-                marcada: c.marcada,
+                marcada,
             },
             Status::Rejeitada => {
                 let mut mensagens: Vec<MensagemSefin> =
@@ -184,7 +236,7 @@ impl DesfechoDoCancelamento {
             },
             Status::Pendente | Status::Indisponivel | Status::Erro | Status::NaoEncontrada => {
                 Self::SemResposta {
-                    texto: TEXTO_SEM_RESPOSTA.into(),
+                    texto: sem_resposta.into(),
                 }
             }
         }
@@ -381,6 +433,27 @@ mod testes {
             panic!("esperava rejeitado");
         };
         assert_eq!(mensagens[0].descricao, "Frase da biblioteca");
+    }
+
+    #[test]
+    fn so_a_recusa_por_prazo_oferece_a_analise_fiscal() {
+        let recusa = |codigos: &[&str]| {
+            let mut r = resultado(Status::Rejeitada);
+            r.erros = codigos
+                .iter()
+                .map(|c| Mensagem {
+                    codigo: format!(" {c} "),
+                    descricao: "recusa".into(),
+                    complemento: String::new(),
+                })
+                .collect();
+            DesfechoDoCancelamento::de(cancelada(r, None))
+        };
+        assert!(recusa(&["E0822"]).recusado_por_prazo());
+        assert!(recusa(&["E0001", "E0822"]).recusado_por_prazo());
+        assert!(!recusa(&["E0001"]).recusado_por_prazo());
+        assert!(!recusa(&[]).recusado_por_prazo());
+        assert!(!DesfechoDoCancelamento::NaoRegistrado.recusado_por_prazo());
     }
 
     #[test]

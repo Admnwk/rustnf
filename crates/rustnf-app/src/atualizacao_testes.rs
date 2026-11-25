@@ -254,3 +254,46 @@ async fn pasta_vazia_nao_consulta_nada() {
     assert_eq!(r, Relatorio::default());
     assert!(falso.urls().is_empty());
 }
+
+#[tokio::test]
+async fn o_acompanhamento_conta_as_notas_e_para_o_lote_onde_pedir() {
+    let (_p, notas) = pasta_com(
+        "atualizacao-parar",
+        &[
+            registro(1, Situacao::Autorizada, "Um"),
+            registro(2, Situacao::Autorizada, "Dois"),
+            registro(3, Situacao::Autorizada, "Tres"),
+        ],
+    );
+    let falso = Falso::novo()
+        .com_evento(1, "101101", 1)
+        .com_evento(2, "101101", 1)
+        .com_evento(3, "101101", 1);
+    let lista = notas.listar().unwrap();
+    let mut vistos = Vec::new();
+    let r = atualizar_lista(
+        &emissor(&falso),
+        &notas,
+        &lista,
+        Duration::ZERO,
+        &mut |feitas, total| {
+            vistos.push((feitas, total));
+            feitas < 2
+        },
+    )
+    .await;
+    // a terceira nota nao foi tocada; as duas conferidas ficaram gravadas
+    assert_eq!(vistos, vec![(0, 3), (1, 3), (2, 3)]);
+    assert_eq!(r.conferidas, 2);
+    assert_eq!(r.mudaram.len(), 2);
+    let canceladas = (1..=3)
+        .filter(|n| situacao_de(&notas, *n) == Situacao::Cancelada)
+        .count();
+    assert_eq!(canceladas, 2);
+    // a lista vem da mais recente para a mais antiga: a que ficou por ultimo nao foi consultada
+    assert!(
+        falso.urls().iter().all(|u| !u.contains(&lista[2].chave)),
+        "{:?}",
+        falso.urls()
+    );
+}

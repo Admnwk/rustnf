@@ -3,39 +3,39 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 //! O detalhe de uma nota, o mesmo nas telas Notas e Consultar: dados lidos do XML, chave de acesso com "Copiar",
-//! DANFSe, "Mostrar na pasta", "Usar como modelo" e Cancelar. A tela dona dele escolhe a nota (da pasta ou da consulta);
-//! tudo o que lê disco ou gera PDF roda fora da linha da tela.
+//! DANFSe, "Mostrar na pasta", "Usar como modelo", Cancelar, o historico de eventos na Sefin e os eventos que a pessoa
+//! pede (analise fiscal do cancelamento; confirmar e recusar a nota recebida). A tela dona dele escolhe a nota (da
+//! pasta ou da consulta); tudo o que lê disco ou gera PDF roda fora da linha da tela.
 
-use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use gpui_kit::component::button::{Button, ButtonVariants as _};
-use gpui_kit::component::{
-    h_flex, v_flex, ActiveTheme as _, Disableable as _, Icon, IconName, Sizable as _,
-};
+use gpui_kit::component::{h_flex, v_flex, ActiveTheme as _, Disableable as _, Icon, IconName};
 use gpui_kit::prelude::FluentBuilder as _;
 use gpui_kit::{
-    div, px, rgb, AnyElement, App, AppContext as _, ClipboardItem, Context, Entity, EventEmitter,
-    InteractiveElement as _, IntoElement, ParentElement as _, Render, Styled as _, Window,
+    div, px, AnyElement, AppContext as _, Context, Entity, EventEmitter, InteractiveElement as _,
+    IntoElement, ParentElement as _, Render, Styled as _, Window,
 };
 use rustnf_app::config::Config;
 use rustnf_app::notas::{Registro, Situacao};
 
 use super::cancelar::{AlvoDoCancelamento, Cancelamento};
+use super::detalhe_blocos::{secoes, selo_do_ambiente};
+use super::historico::Historico;
 use super::pecas::{
-    cartao, faixa, linha_de_numero, linha_de_resumo, selo_da_situacao, titulo_do_bloco,
-    Negrito as _,
+    cartao, faixa, linha_de_resumo, selo_da_situacao, titulo_do_bloco, Negrito as _,
 };
-use crate::modelo::ambiente::Ambiente;
 use crate::modelo::certificado::Gravidade;
-use crate::modelo::chave;
 use crate::modelo::consulta::{guarda, Guarda, NotaConsultada};
 use crate::modelo::detalhe::{DetalheDaNota, LeituraDoXml};
+use crate::modelo::evento::{AcoesDeEvento, TipoDeEvento};
 use crate::modelo::lista::LinhaDeNota;
 use crate::modelo::nota::DadosNota;
 use crate::modelo::pedido::Contexto;
 use crate::modelo::reaproveitar::dados_da_nota;
-use crate::servicos::{Destino, ErroTela, Servicos};
+use crate::servicos::Servicos;
+
+mod arquivos;
 
 /// O que o detalhe pede a quem o mostra.
 #[derive(Debug, Clone, PartialEq)]
@@ -89,12 +89,24 @@ enum Danfse {
     Gravado(String),
 }
 
+/// O que o detalhe oferece fazer com a nota mostrada.
+#[derive(Debug, Clone, Copy)]
+struct Oferta {
+    situacao: Situacao,
+    da_pasta: bool,
+    pode_modelo: bool,
+    pode_cancelar: bool,
+    eventos: AcoesDeEvento,
+    com_xml: bool,
+}
+
 /// O detalhe de uma nota.
 pub(super) struct VisaoDetalhe {
     servicos: Arc<Servicos>,
     config: Config,
     ctx: Contexto,
     cancelamento: Entity<Cancelamento>,
+    historico: Entity<Historico>,
     conteudo: Conteudo,
     danfse: Danfse,
     copiada: bool,
@@ -115,15 +127,20 @@ impl VisaoDetalhe {
         servicos: Arc<Servicos>,
         cancelamento: Entity<Cancelamento>,
         _window: &mut Window,
-        _cx: &mut Context<Self>,
+        cx: &mut Context<Self>,
     ) -> Self {
         let config = Config::default();
         let ctx = servicos.contexto_da_nota(&config);
+        let historico = {
+            let servicos = Arc::clone(&servicos);
+            cx.new(|_| Historico::new(servicos))
+        };
         Self {
             servicos,
             config,
             ctx,
             cancelamento,
+            historico,
             conteudo: Conteudo::Vazio,
             danfse: Danfse::Parado,
             copiada: false,
@@ -137,6 +154,9 @@ impl VisaoDetalhe {
     /// A configuracao que vale (a efetiva) chegou ou mudou.
     pub(super) fn definir_config(&mut self, config: Config, cx: &mut Context<Self>) {
         self.ctx = self.servicos.contexto_da_nota(&config);
+        let para_o_historico = config.clone();
+        self.historico
+            .update(cx, |h, cx| h.definir_config(para_o_historico, cx));
         self.config = config;
         cx.notify();
     }
@@ -150,6 +170,12 @@ impl VisaoDetalhe {
         self.erro = None;
     }
 
+    /// Onde esta a consulta do historico da nota mostrada.
+    #[cfg(test)]
+    pub(super) fn fase_do_historico(&self, cx: &gpui_kit::App) -> super::historico::Fase {
+        self.historico.read(cx).fase.clone()
+    }
+
     /// O XML da nota mostrada foi copiado (o botao "Copiar o XML" mostra isso).
     #[cfg(test)]
     pub(super) fn xml_copiado(&self) -> bool {
@@ -160,6 +186,7 @@ impl VisaoDetalhe {
     pub(super) fn limpar(&mut self, cx: &mut Context<Self>) {
         self.zerar();
         self.conteudo = Conteudo::Vazio;
+        self.historico.update(cx, |h, cx| h.definir_nota(None, cx));
         cx.notify();
     }
 
@@ -181,6 +208,8 @@ impl VisaoDetalhe {
     pub(super) fn mostrar_da_pasta(&mut self, chave: &str, cx: &mut Context<Self>) {
         self.zerar();
         self.conteudo = Conteudo::Carregando;
+        self.historico
+            .update(cx, |h, cx| h.definir_nota(Some(chave), cx));
         cx.notify();
         let versao = self.versao;
         let servicos = Arc::clone(&self.servicos);
@@ -224,6 +253,9 @@ impl VisaoDetalhe {
         let e_do_emitente = nota.detalhe.e_do_emitente(self.ctx.documento_do_emitente());
         let detalhe = Box::new(nota.detalhe.clone());
         let inicial = guarda(e_do_emitente, false);
+        let da_nota = nota.detalhe.chave.clone();
+        self.historico
+            .update(cx, |h, cx| h.definir_nota(Some(&da_nota), cx));
         self.conteudo = Conteudo::Lida {
             detalhe,
             origem: Origem::Consulta {
@@ -261,220 +293,36 @@ impl VisaoDetalhe {
         .detach();
     }
 
-    /// A nota mostrada agora esta cancelada (a pasta e a Sefin dizem): atualiza o selo.
-    pub(super) fn marcar_cancelada(&mut self, chave: &str, cx: &mut Context<Self>) {
+    /// A Sefin registrou um evento para a nota mostrada. `situacao` e' a que a nota passou a ter (cancelada, em
+    /// analise fiscal); `None` nos eventos que nao mudam a situacao (confirmar, recusar). Atualiza o selo e esquece o
+    /// historico ja consultado, que ficou velho.
+    pub(super) fn evento_registrado(
+        &mut self,
+        chave: &str,
+        situacao: Option<Situacao>,
+        cx: &mut Context<Self>,
+    ) {
         let mesma = self.chave().is_some_and(|c| c == chave);
         if !mesma {
             return;
         }
-        match &mut self.conteudo {
-            Conteudo::Lida { detalhe, origem } => {
-                detalhe.situacao = Situacao::Cancelada;
-                if let Origem::Consulta { nota, .. } = origem {
-                    nota.detalhe.situacao = Situacao::Cancelada;
-                    nota.registro.situacao = Situacao::Cancelada;
-                    nota.situacao_conferida = true;
+        if let Some(situacao) = situacao {
+            match &mut self.conteudo {
+                Conteudo::Lida { detalhe, origem } => {
+                    detalhe.situacao = situacao;
+                    if let Origem::Consulta { nota, .. } = origem {
+                        nota.detalhe.situacao = situacao;
+                        nota.registro.situacao = situacao;
+                        nota.situacao_conferida = true;
+                    }
                 }
+                Conteudo::SemXml { registro, .. } => registro.situacao = situacao,
+                _ => {}
             }
-            Conteudo::SemXml { registro, .. } => registro.situacao = Situacao::Cancelada,
-            _ => {}
         }
         self.danfse = Danfse::Parado;
-        cx.notify();
-    }
-
-    // ---------------------------------------------------------------- acoes
-
-    fn copiar_chave(&mut self, cx: &mut Context<Self>) {
-        if let Some(c) = self.chave().map(str::to_string) {
-            cx.write_to_clipboard(ClipboardItem::new_string(c));
-            self.copiada = true;
-            cx.notify();
-        }
-    }
-
-    /// "Copiar o XML": poe na area de transferencia o XML da nota, inteiro. Nota da pasta: le o arquivo guardado, fora
-    /// da linha da tela. Nota que veio da consulta: o XML ja esta na memoria.
-    fn copiar_xml(&mut self, cx: &mut Context<Self>) {
-        let chave = match &self.conteudo {
-            Conteudo::Lida {
-                origem: Origem::Consulta { nota, .. },
-                ..
-            } => {
-                cx.write_to_clipboard(ClipboardItem::new_string(nota.xml.clone()));
-                self.xml_copiado = true;
-                cx.notify();
-                return;
-            }
-            Conteudo::Lida {
-                detalhe,
-                origem: Origem::Pasta,
-            } => detalhe.chave.clone(),
-            _ => return,
-        };
-        self.erro = None;
-        let versao = self.versao;
-        let servicos = Arc::clone(&self.servicos);
-        let config = self.config.clone();
-        cx.spawn(async move |this, cx| {
-            let r = cx
-                .background_spawn(async move { servicos.xml_da_nota(&config, &chave) })
-                .await;
-            this.update(cx, |this, cx| {
-                // a pessoa escolheu outra nota enquanto o arquivo era lido: nao copia o XML da anterior
-                if this.versao != versao {
-                    return;
-                }
-                match r {
-                    Ok(xml) => {
-                        cx.write_to_clipboard(ClipboardItem::new_string(xml));
-                        this.xml_copiado = true;
-                    }
-                    Err(e) => this.erro = Some(e.texto()),
-                }
-                cx.notify();
-            })
-            .ok();
-        })
-        .detach();
-    }
-
-    /// Pede ao sistema que abra (ou mostre) o arquivo, se o servico de abrir arquivos deixar.
-    fn pedir_ao_sistema(&self, destino: Destino, caminho: &Path, cx: &mut App) {
-        if self.servicos.abridor().pedir(destino, caminho) {
-            match destino {
-                Destino::Abrir => cx.open_with_system(caminho),
-                Destino::Mostrar => cx.reveal_path(caminho),
-            }
-        }
-    }
-
-    fn mostrar_na_pasta(&mut self, cx: &mut Context<Self>) {
-        let Some(chave) = self.chave().map(str::to_string) else {
-            return;
-        };
-        self.erro = None;
-        let servicos = Arc::clone(&self.servicos);
-        let config = self.config.clone();
-        cx.spawn(async move |this, cx| {
-            let r = cx
-                .background_spawn(async move { servicos.caminho_do_xml(&config, &chave) })
-                .await;
-            this.update(cx, |this, cx| {
-                match r {
-                    Ok(caminho) => this.pedir_ao_sistema(Destino::Mostrar, &caminho, cx),
-                    Err(e) => this.erro = Some(e.texto()),
-                }
-                cx.notify();
-            })
-            .ok();
-        })
-        .detach();
-    }
-
-    /// "Abrir o DANFSe": gera o PDF fora da tela. Nota da pasta: grava ao lado do XML e abre. Nota que so' veio da
-    /// consulta: pergunta onde salvar.
-    fn abrir_danfse(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        if self.danfse == Danfse::Gerando {
-            return;
-        }
-        let (chave, da_pasta, xml, situacao) = match &self.conteudo {
-            Conteudo::Lida {
-                detalhe,
-                origem: Origem::Pasta,
-            } => (detalhe.chave.clone(), true, None, detalhe.situacao),
-            Conteudo::Lida {
-                detalhe,
-                origem: Origem::Consulta { nota, guarda: g },
-            } => (
-                detalhe.chave.clone(),
-                *g == Guarda::JaEstaNaPasta,
-                Some(nota.xml.clone()),
-                detalhe.situacao,
-            ),
-            _ => return,
-        };
-        self.danfse = Danfse::Gerando;
-        self.erro = None;
-        cx.notify();
-        let servicos = Arc::clone(&self.servicos);
-        let config = self.config.clone();
-        if da_pasta {
-            cx.spawn_in(window, async move |this, cx| {
-                let c2 = config.clone();
-                let r = cx
-                    .background_spawn(async move { servicos.danfse_da_pasta(&c2, &chave) })
-                    .await;
-                this.update(cx, |this, cx| this.danfse_pronto(r, cx)).ok();
-            })
-            .detach();
-            return;
-        }
-        let Some(xml) = xml else {
-            self.danfse = Danfse::Falhou(ErroTela::XmlAusente.texto());
-            return;
-        };
-        cx.spawn_in(window, async move |this, cx| {
-            let (s2, c2) = (Arc::clone(&servicos), config.clone());
-            let pdf = cx
-                .background_spawn(async move { s2.gerar_pdf(&c2, &xml, situacao) })
-                .await;
-            this.update_in(cx, |this, window, cx| match pdf {
-                Ok(bytes) => this.salvar_como(&chave, bytes, &config, window, cx),
-                Err(e) => this.danfse_pronto(Err(e), cx),
-            })
-            .ok();
-        })
-        .detach();
-    }
-
-    /// Pergunta onde salvar o PDF de uma nota que nao esta na pasta e o grava.
-    fn salvar_como(
-        &mut self,
-        chave: &str,
-        bytes: Vec<u8>,
-        config: &Config,
-        window: &mut Window,
-        cx: &mut Context<Self>,
-    ) {
-        let pasta = PathBuf::from(config.notas.pasta.trim());
-        let nome = format!("{chave}.pdf");
-        let recebe = cx.prompt_for_new_path(&pasta, Some(&nome));
-        let servicos = Arc::clone(&self.servicos);
-        cx.spawn_in(window, async move |this, cx| {
-            let escolhido = match recebe.await {
-                Ok(Ok(Some(caminho))) => caminho,
-                _ => {
-                    this.update(cx, |this, cx| {
-                        this.danfse = Danfse::Parado;
-                        cx.notify();
-                    })
-                    .ok();
-                    return;
-                }
-            };
-            let destino = escolhido.clone();
-            let r = cx
-                .background_spawn(async move {
-                    servicos.gravar_arquivo(&destino, &bytes).map(|()| destino)
-                })
-                .await;
-            this.update(cx, |this, cx| this.danfse_pronto(r, cx)).ok();
-        })
-        .detach();
-    }
-
-    fn danfse_pronto(&mut self, r: Result<PathBuf, ErroTela>, cx: &mut Context<Self>) {
-        match r {
-            Ok(caminho) => {
-                let nome = caminho
-                    .file_name()
-                    .map_or_else(String::new, |n| n.to_string_lossy().into_owned());
-                self.pedir_ao_sistema(Destino::Abrir, &caminho, cx);
-                self.danfse = Danfse::Gravado(nome);
-            }
-            Err(e) => self.danfse = Danfse::Falhou(e.texto()),
-        }
+        self.historico
+            .update(cx, |h, cx| h.definir_nota(Some(chave), cx));
         cx.notify();
     }
 
@@ -536,24 +384,29 @@ impl VisaoDetalhe {
         }
     }
 
-    fn cancelar(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let (chave, numero, tomador, valor) = match &self.conteudo {
+    /// Abre o dialogo do evento que a pessoa pediu (cancelar, analise fiscal, confirmar ou recusar) para a nota
+    /// mostrada.
+    fn pedir(&mut self, tipo: TipoDeEvento, window: &mut Window, cx: &mut Context<Self>) {
+        let (chave, numero, tomador, emitente, valor) = match &self.conteudo {
             Conteudo::Lida { detalhe, .. } => (
                 detalhe.chave.clone(),
                 detalhe.numero.clone(),
                 detalhe.tomador.clone(),
+                detalhe.emitente.clone(),
                 detalhe.valor_servico.clone(),
             ),
             Conteudo::SemXml { registro, .. } => {
                 let l = LinhaDeNota::do_registro(registro);
-                (l.chave, l.numero, l.tomador, l.valor)
+                (l.chave, l.numero, l.tomador, String::new(), l.valor)
             }
             _ => return,
         };
         let alvo = AlvoDoCancelamento {
+            tipo,
             chave,
             numero,
             tomador,
+            emitente,
             valor,
         };
         self.cancelamento
@@ -562,83 +415,15 @@ impl VisaoDetalhe {
 
     // ---------------------------------------------------------------- desenho
 
-    fn selo_do_ambiente(ambiente: Option<u8>) -> Option<AnyElement> {
-        let a = match ambiente? {
-            1 => Ambiente::Producao,
-            _ => Ambiente::Restrita,
-        };
-        let c = a.cores();
-        Some(
-            div()
-                .px_2()
-                .py_0p5()
-                .rounded_full()
-                .text_xs()
-                .font_semibold()
-                .bg(rgb(c.fundo))
-                .text_color(rgb(c.texto))
-                .child(a.selo())
-                .into_any_element(),
-        )
-    }
-
-    fn bloco_da_chave(&self, chave_da_nota: &str, cx: &mut Context<Self>) -> AnyElement {
-        let tema = cx.theme();
-        let (borda, fundo, muted) = (tema.border, tema.muted, tema.muted_foreground);
-        let copiada = self.copiada;
-        v_flex()
-            .gap_1p5()
-            .child(titulo_do_bloco("Chave de acesso", cx))
-            .child(
-                div()
-                    .id("chave-de-acesso")
-                    .p_3()
-                    .rounded_md()
-                    .border_1()
-                    .border_color(borda)
-                    .bg(fundo)
-                    .text_sm()
-                    .child(chave::em_grupos(chave_da_nota)),
-            )
-            .child(
-                h_flex()
-                    .gap_2()
-                    .items_center()
-                    .child(
-                        Button::new("copiar-chave-detalhe")
-                            .label(if copiada {
-                                "Chave copiada"
-                            } else {
-                                "Copiar a chave"
-                            })
-                            .icon(if copiada {
-                                IconName::Check
-                            } else {
-                                IconName::Copy
-                            })
-                            .outline()
-                            .small()
-                            .on_click(cx.listener(|this, _, _, cx| this.copiar_chave(cx))),
-                    )
-                    .child(
-                        div()
-                            .text_xs()
-                            .text_color(muted)
-                            .child("50 posições, em grupos de 5 para conferir."),
-                    ),
-            )
-            .into_any_element()
-    }
-
-    fn acoes(
-        &self,
-        situacao: Situacao,
-        da_pasta: bool,
-        pode_modelo: bool,
-        pode_cancelar: bool,
-        com_xml: bool,
-        cx: &mut Context<Self>,
-    ) -> AnyElement {
+    fn acoes(&self, oferta: Oferta, cx: &mut Context<Self>) -> AnyElement {
+        let Oferta {
+            situacao,
+            da_pasta,
+            pode_modelo,
+            pode_cancelar,
+            eventos,
+            com_xml,
+        } = oferta;
         let gerando = self.danfse == Danfse::Gerando;
         let falhou = matches!(self.danfse, Danfse::Falhou(_));
         h_flex()
@@ -703,118 +488,46 @@ impl VisaoDetalhe {
                         .icon(IconName::Ban)
                         .outline()
                         .danger()
-                        .on_click(cx.listener(|this, _, window, cx| this.cancelar(window, cx))),
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            this.pedir(TipoDeEvento::Cancelar, window, cx);
+                        })),
+                )
+            })
+            .when(eventos.analise_fiscal, |d| {
+                d.child(
+                    Button::new("pedir-analise-fiscal")
+                        .label(TipoDeEvento::AnaliseFiscal.rotulo_da_acao())
+                        .icon(IconName::Eye)
+                        .outline()
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            this.pedir(TipoDeEvento::AnaliseFiscal, window, cx);
+                        })),
+                )
+            })
+            .when(eventos.confirmar, |d| {
+                d.child(
+                    Button::new("confirmar-nota-recebida")
+                        .label(TipoDeEvento::Confirmar.rotulo_da_acao())
+                        .icon(IconName::CircleCheck)
+                        .primary()
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            this.pedir(TipoDeEvento::Confirmar, window, cx);
+                        })),
+                )
+            })
+            .when(eventos.recusar, |d| {
+                d.child(
+                    Button::new("recusar-nota-recebida")
+                        .label(TipoDeEvento::Recusar.rotulo_da_acao())
+                        .icon(IconName::Ban)
+                        .outline()
+                        .danger()
+                        .on_click(cx.listener(|this, _, window, cx| {
+                            this.pedir(TipoDeEvento::Recusar, window, cx);
+                        })),
                 )
             })
             .into_any_element()
-    }
-
-    fn aviso_do_danfse(&self, cx: &App) -> Option<AnyElement> {
-        match &self.danfse {
-            Danfse::Parado | Danfse::Gerando => None,
-            Danfse::Falhou(t) => Some(
-                faixa(Gravidade::Erro, t.clone(), cx)
-                    .id("danfse-falhou")
-                    .into_any_element(),
-            ),
-            Danfse::Gravado(nome) => Some(
-                faixa(
-                    Gravidade::Ok,
-                    format!("DANFSe gerado e aberto no leitor de PDF. Arquivo: {nome}."),
-                    cx,
-                )
-                .id("danfse-gravado")
-                .into_any_element(),
-            ),
-        }
-    }
-
-    fn secoes(d: &DetalheDaNota, cx: &App) -> Vec<AnyElement> {
-        let sem = |t: &str| {
-            if t.is_empty() {
-                "-".to_string()
-            } else {
-                t.to_string()
-            }
-        };
-        let tomador = cartao(cx)
-            .id("detalhe-tomador")
-            .child(titulo_do_bloco("Tomador", cx))
-            .child(linha_de_resumo("Nome", sem(&d.tomador), cx))
-            .child(linha_de_resumo("Documento", sem(&d.tomador_documento), cx));
-        let servico = cartao(cx)
-            .id("detalhe-servico")
-            .child(titulo_do_bloco("Serviço", cx))
-            .child(linha_de_resumo(
-                "Código",
-                if d.servico_tributacao.is_empty() {
-                    sem(&d.servico_codigo)
-                } else {
-                    format!("{} - {}", d.servico_codigo, d.servico_tributacao)
-                },
-                cx,
-            ))
-            .child(linha_de_resumo("Descrição", sem(&d.servico_descricao), cx));
-        let valores = cartao(cx)
-            .id("detalhe-valores")
-            .child(titulo_do_bloco("Valores", cx))
-            .child(linha_de_numero(
-                "Valor do serviço",
-                format!("R$ {}", d.valor_servico),
-                false,
-                cx,
-            ))
-            .child(linha_de_numero(
-                "Base de cálculo",
-                format!("R$ {}", d.base_calculo),
-                false,
-                cx,
-            ))
-            .child(linha_de_numero(
-                if d.aliquota_iss.is_empty() {
-                    "ISS".to_string()
-                } else {
-                    format!("ISS ({}%)", d.aliquota_iss)
-                }
-                .as_str(),
-                format!("R$ {}", d.iss),
-                false,
-                cx,
-            ))
-            .child(linha_de_numero(
-                "Total retido",
-                format!("R$ {}", d.retido),
-                false,
-                cx,
-            ))
-            .child(div().h(px(1.)).w_full().bg(cx.theme().border).my_1())
-            .child(linha_de_numero(
-                "Valor líquido",
-                format!("R$ {}", d.liquido),
-                true,
-                cx,
-            ));
-        let emissao = cartao(cx)
-            .id("detalhe-emissao")
-            .child(titulo_do_bloco("Emissão", cx))
-            .child(linha_de_resumo("Emitida em", sem(&d.emissao), cx))
-            .child(linha_de_resumo("Competência", sem(&d.competencia), cx))
-            .child(linha_de_resumo("DPS", sem(&d.dps), cx))
-            .child(linha_de_resumo(
-                "Emitente",
-                if d.emitente_documento.is_empty() {
-                    sem(&d.emitente)
-                } else {
-                    format!("{} ({})", d.emitente, d.emitente_documento)
-                },
-                cx,
-            ));
-        vec![
-            tomador.into_any_element(),
-            servico.into_any_element(),
-            valores.into_any_element(),
-            emissao.into_any_element(),
-        ]
     }
 
     fn corpo_da_nota(
@@ -881,6 +594,12 @@ impl VisaoDetalhe {
         };
         let pode_modelo = da_pasta || e_do_emitente;
         let pode_cancelar = da_pasta || e_do_emitente;
+        // o tomador e' o documento do certificado configurado (o do [emitente]); so' quem recebeu a nota a manifesta
+        let eventos = AcoesDeEvento::da_nota(
+            d.situacao,
+            e_do_emitente,
+            d.e_tomador(self.ctx.documento_do_emitente()),
+        );
         let titulo = if d.numero.is_empty() {
             "NFS-e".to_string()
         } else {
@@ -892,11 +611,21 @@ impl VisaoDetalhe {
             .flex_wrap()
             .child(div().text_xl().font_semibold().child(titulo))
             .child(selo_da_situacao(d.situacao, cx).id("selo-da-situacao"))
-            .children(Self::selo_do_ambiente(d.ambiente));
+            .children(selo_do_ambiente(d.ambiente));
         let mut coluna = v_flex()
             .gap_4()
             .child(cabeca)
-            .child(self.acoes(d.situacao, da_pasta, pode_modelo, pode_cancelar, true, cx))
+            .child(self.acoes(
+                Oferta {
+                    situacao: d.situacao,
+                    da_pasta,
+                    pode_modelo,
+                    pode_cancelar,
+                    eventos,
+                    com_xml: true,
+                },
+                cx,
+            ))
             .children(self.aviso_do_danfse(cx))
             .children(self.erro.clone().map(|e| {
                 faixa(Gravidade::Erro, e, cx)
@@ -905,9 +634,10 @@ impl VisaoDetalhe {
             }))
             .children(avisos)
             .child(self.bloco_da_chave(&d.chave, cx));
-        for s in Self::secoes(d, cx) {
+        for s in secoes(d, cx) {
             coluna = coluna.child(s);
         }
+        coluna = coluna.child(self.historico.clone());
         coluna
             .child(div().text_xs().text_color(muted).child(
                 "Os dados vêm do XML da nota. O DANFSe é gerado por este programa a partir dele.",
@@ -944,8 +674,19 @@ impl VisaoDetalhe {
                     .child(selo_da_situacao(registro.situacao, cx)),
             )
             .child(faixa(Gravidade::Aviso, texto, cx))
-            .child(self.acoes(registro.situacao, true, false, cancelavel, false, cx))
+            .child(self.acoes(
+                Oferta {
+                    situacao: registro.situacao,
+                    da_pasta: true,
+                    pode_modelo: false,
+                    pode_cancelar: cancelavel,
+                    eventos: AcoesDeEvento::da_nota(registro.situacao, true, false),
+                    com_xml: false,
+                },
+                cx,
+            ))
             .child(self.bloco_da_chave(&l.chave, cx))
+            .child(self.historico.clone())
             .child(
                 cartao(cx)
                     .child(titulo_do_bloco("Do índice", cx))

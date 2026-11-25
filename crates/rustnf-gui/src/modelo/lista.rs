@@ -46,8 +46,8 @@ impl FiltroDeSituacao {
             Self::Todas => "Todas",
             Self::Autorizadas => "Autorizadas",
             Self::Canceladas => "Canceladas",
-            Self::Substituidas => "Substituidas",
-            Self::EmAnaliseFiscal => "Em analise fiscal",
+            Self::Substituidas => "Substituídas",
+            Self::EmAnaliseFiscal => "Em análise fiscal",
         }
     }
 
@@ -129,8 +129,8 @@ pub fn rotulo_da_situacao(situacao: Situacao) -> &'static str {
     match situacao {
         Situacao::Autorizada => "Autorizada",
         Situacao::Cancelada => "Cancelada",
-        Situacao::Substituida => "Substituida",
-        Situacao::AnaliseFiscal => "Em analise fiscal",
+        Situacao::Substituida => "Substituída",
+        Situacao::AnaliseFiscal => "Em análise fiscal",
     }
 }
 
@@ -648,10 +648,10 @@ mod testes {
         assert_eq!(l.quantas(), 1);
         assert_eq!(l.contagem(Situacao::Substituida), 1);
         assert_eq!(l.contagem(Situacao::AnaliseFiscal), 1);
-        assert_eq!(rotulo_da_situacao(Situacao::Substituida), "Substituida");
+        assert_eq!(rotulo_da_situacao(Situacao::Substituida), "Substituída");
         assert_eq!(
             rotulo_da_situacao(Situacao::AnaliseFiscal),
-            "Em analise fiscal"
+            "Em análise fiscal"
         );
         // todo filtro da tela tem rotulo e a tela mostra todos
         assert_eq!(FiltroDeSituacao::TODOS.len(), 5);

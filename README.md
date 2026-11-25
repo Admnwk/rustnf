@@ -53,7 +53,7 @@ Os detalhes de cada passo estão em [Interface de desktop](#interface-de-desktop
 | prévia do IBS/CBS | casos de teste da calculadora oficial da Receita Federal | comparar com os valores de uma NFS-e autorizada |
 | montagem e assinatura da NF-e (feature `nfe`) | 140 XML de contrato validados no XSD oficial 4.00 (pacote PL_010h v1.03), regras com o código da rejeição, assinatura conferida pelo verificador da própria biblioteca | **nenhum envio a SEFAZ e nenhum XML conferido por uma SEFAZ real**; o XML não foi comparado com uma nota autorizada |
 | DANFSe | contrato de conteúdo e leiaute | comparar com um DANFSe emitido pelo portal |
-| interface de desktop (`rustnf-gui`, só Windows) | testes do modelo (máscaras, conferência, pedido, prévia, sugestão, rascunho, lista das notas, detalhe, cancelamento, consulta pela chave e prévia avulsa), dos fluxos com emissor de demonstração e pasta temporária e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuração e pelo exemplo de demonstração | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, só o emissor de demonstração respondeu**; o DANFSe aberto no leitor de PDF de outra máquina; uma chamada real à Sefin pelo botão "Testar conexão"; exame da janela em outras escalas de tela; o executável de release aberto numa máquina sem as ferramentas de desenvolvimento |
+| interface de desktop (`rustnf-gui`, só Windows) | testes do modelo (máscaras, conferência, pedido, prévia, sugestão, rascunho, lista das notas, detalhe, cancelamento, conferência em lote, histórico de eventos, pedido de análise fiscal, confirmação e recusa de nota recebida, consulta pela chave e pela DPS e prévia avulsa), dos fluxos com emissor de demonstração e pasta temporária e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuração e pelo exemplo de demonstração | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, e nenhuma consulta de DPS ou de evento, nenhuma conferência de situação e nenhum evento (análise fiscal, confirmação, recusa) foi feito por ela contra a Sefin; só o emissor de demonstração respondeu**; o DANFSe aberto no leitor de PDF de outra máquina; uma chamada real à Sefin pelo botão "Testar conexão"; exame da janela em outras escalas de tela; o executável de release aberto numa máquina sem as ferramentas de desenvolvimento |
 
 Se você testar, conte como foi: abra um relato pelo modelo **"Relato de emissão"** (aba Issues), mesmo quando der
 certo. Correção é bem-vinda por pedido de mudança, com a fonte oficial citada e um caso no contrato (veja
@@ -558,7 +558,7 @@ O que já faz: primeiro uso em três passos (emitente, certificado, pasta das no
 (emitente, Sefin Nacional com ambiente, certificado, senha, assinatura, tempo limite e folga do relógio, notas, canhoto do
 DANFSe, alíquotas por ano e tema); botões "Testar certificado" (abre o `.pfx`, sem rede) e "Testar conexão com a Sefin"
 (chamada real à Sefin Nacional, só quando você clica); selo fixo do ambiente (Produção ou Produção restrita) e estado
-do certificado no rodapé; a **Nova nota**, as **Notas**, a **Consulta** e a **Prévia** (abaixo). O que ainda **não** faz:
+do certificado no rodapé; a **Nova nota**, as **Notas** (com a conferência na Sefin, o histórico e os eventos), a **Consulta** e a **Prévia** (abaixo). O que ainda **não** faz:
 os casos de emissão fora do caso comum (veja o fim da Nova nota), que seguem pela linha de comando. Nas Configurações,
 Ctrl+S salva e Ctrl+Shift+D descarta o que foi alterado e ainda não foi salvo.
 
@@ -614,7 +614,15 @@ lê a pasta de novo e "Abrir a pasta" mostra a pasta de notas no gerenciador de 
 o período ("Todo o período", "Este mês", "Mês passado", "Este ano", contados a partir de hoje) vale junto com a busca
 e o filtro, e "Exportar a lista" pergunta uma pasta e grava nela o XML de cada nota que está na lista e a lista em
 CSV (`notas.csv`, o mesmo formato de `rustnf notas listar --csv`): é o que se manda para a contabilidade no fim do
-mês. Nada sai da pasta de notas. Pasta vazia, leitura com erro ("Tentar de novo") e busca sem resultado tem tela própria. Setas movem
+mês. Nada sai da pasta de notas.
+
+**Conferir situação na Sefin** (botão da primeira linha): confere as notas que a lista mostra agora (a busca, o filtro e o
+período da tela), uma de cada vez e uma consulta por vez, com pausa entre elas (200 ms), fora da linha da tela. Mostra o
+andamento ("Conferindo 12 de 40...") e o botão **Parar**: o que já foi conferido fica gravado na pasta. Com mais de 50
+notas, diz antes quanto tempo leva no mínimo (são pelo menos 5 consultas por nota) e pede confirmação. O resultado vem em
+palavras: quantas notas mudaram de situação (de Autorizada para Cancelada, por exemplo), quantas já estavam iguais e, de
+cada nota que não deu para conferir, o que aconteceu e o que fazer. A pasta nunca volta de cancelada para autorizada por
+aqui: a divergência vai para as falhas, para você abrir a nota e conferir. A lista se atualiza sozinha. Pasta vazia, leitura com erro ("Tentar de novo") e busca sem resultado tem tela própria. Setas movem
 a linha em foco, Enter abre o detalhe e Esc volta da página do detalhe.
 
 O **detalhe** (ao lado da lista em janela larga; página em janela estreita) mostra os dados lidos do XML guardado: número,
@@ -634,13 +642,26 @@ e situação. XML ausente ou ilegível é dito sem derrubar a tela. Dele saem:
   registrado, a Sefin recusa o reenvio por repetição: diante de uma recusa, o programa confere se a nota já tem o
   cancelamento e, tendo, mostra que ela já estava cancelada e marca a pasta. O diálogo oferece "Tentar de novo" (o mesmo
   pedido) e "Conferir na Sefin" (só consulta o evento de cancelamento da nota);
+* **Pedir análise fiscal do cancelamento** (só nota autorizada do emitente): pede ao fisco que analise o cancelamento da
+  nota; **não cancela a nota na hora**. Mesmo diálogo do cancelamento (ambiente em destaque, resumo, motivo, justificativa
+  de 15 a 255 caracteres e, em produção, a marcação "Entendo que este pedido tem efeito fiscal e será analisado pelo
+  fisco"). Registrado, a nota passa a "Em análise fiscal" na pasta e na lista. Sem resposta, o pedido **não** é reenviado
+  às cegas (um segundo pedido poderia valer como outro): o diálogo oferece "Conferir na Sefin" (só consulta) e, se a Sefin
+  disser que não há registro, "Tentar de novo". A ação fica sempre no detalhe e aparece também no desfecho do
+  cancelamento recusado por prazo (E0822, Anexo II), já com o motivo e a justificativa que a pessoa escreveu;
+* **Histórico na Sefin**: botão que consulta os eventos da nota (cancelamento, substituição, pedido de análise fiscal,
+  decisão do fisco, manifestações) e os mostra do mais antigo para o mais novo, com data, quem registrou e o motivo.
+  Só consulta; uma consulta por tipo de evento, com a mesma pausa do lote;
 * **Usar como modelo**: leva tomador, serviço, descrição e valor da nota para a Nova nota (o que o XML permite ler; o resto
   fica vazio e a conferência da Nova nota aponta), com a competência de hoje. Se a Nova nota tiver algo digitado, pergunta
   antes de substituir; com uma tentativa de emissão pendente, não substitui.
 
 ### Consultar
 
-Item "Consultar" (Ctrl+K). O campo da chave aceita a chave colada com espaços e pontuação, mostra-a em grupos de 5 e diz
+Item "Consultar" (Ctrl+K). Dois modos: **pela chave de acesso** e **pela série e número da DPS**. Na DPS, o município e
+o CNPJ (ou CPF) vêm do `[emitente]` da configuração e a série vazia vale a do `[emitente]` (ou 1); a biblioteca monta e
+valida o Id de 45 posições, a Sefin diz que nota a DPS gerou e a tela consulta essa nota. A nota devolvida só vale se for a da
+DPS pedida. O campo da chave aceita a chave colada com espaços e pontuação, mostra-a em grupos de 5 e diz
 embaixo do campo o que falta ou por que não confere (tamanho, formato e dígito verificador, pela biblioteca). Enter no
 campo consulta. A consulta é feita fora da tela, com o certificado, e **não altera nada** na Sefin. O resultado é o mesmo
 detalhe das Notas, mais: se a nota tem cancelamento registrado (o XML da nota não diz; a tela consulta o evento e, se não
@@ -648,6 +669,12 @@ conseguir saber, avisa); se ela já está na pasta de notas, ou o botão "Guarda
 emitente da configuração; nota de outro emitente não é guardada); "Abrir o DANFSe" (nota que não está na pasta pergunta
 onde salvar); e Cancelar. A nota devolvida só vale como resultado se a chave dela for a que se pediu. Não encontrada, sem
 resposta e erro têm cada um o seu texto, com "Tentar de novo" quando faz sentido.
+
+**Nota recebida.** Quando a nota é de outro emitente e o tomador é o documento do emitente da configuração (o do
+certificado a usar), o resultado oferece **Confirmar que o serviço foi prestado** e **Recusar esta nota** (com um dos
+motivos da biblioteca; a justificativa só é obrigatória no motivo "Outros"). O texto do diálogo explica o efeito: a
+manifestação fica registrada na nota e não cancela nada, porque o cancelamento é do emitente. Mesmos desfechos e a mesma
+confirmação em produção do cancelamento. Nota de outro emitente sem ser o tomador não tem nenhuma ação de evento.
 
 ### Prévia
 
@@ -663,8 +690,11 @@ JSON completo).
 Para clicar em tudo sem falar com a Sefin, há o exemplo `demonstracao` (feature `demonstracao`, desligada por padrão; o
 executável normal não tem como entrar nesse modo). Ele abre a mesma janela com um emissor que não usa a rede, com selo e
 título próprios. A nota "autorizada" entra de verdade na pasta de notas do arquivo de configuração: use uma pasta de
-ensaio. A consulta devolve as notas que a demonstração autorizou e as que estão nessa pasta; o cancelamento segue um
-roteiro, como a emissão.
+ensaio. A consulta (pela chave e pela DPS) devolve as notas que a demonstração autorizou e as que estão nessa pasta; o
+cancelamento e os pedidos de evento seguem um roteiro, como a emissão (`--cancelamento`, `--evento`). O cancelamento
+`rejeitado` reproduz a recusa por prazo (o E0822, com o texto do Anexo II). A demonstração também "recebeu" uma nota de
+outra pessoa, com o emitente das Configurações como tomador: ao abrir, o exemplo escreve a chave dela, para você colar em
+Consultar e ver Confirmar e Recusar. Os eventos que a demonstração "registrou" voltam no histórico da nota.
 
 ```
 cargo run -p rustnf-gui                      # modo de depuracao
@@ -672,7 +702,7 @@ cargo run -p rustnf-gui -- --config rustnf.toml
 cargo build --release -p rustnf-gui          # no Windows, precisa do fxc.exe do Windows SDK
 
 # sem falar com a Sefin: --resultado autorizada (padrao), rejeitada ou sem-resposta (emissao);
-# --cancelamento registrado (padrao), rejeitado ou sem-resposta; --atraso-ms 1200 e a demora de cada "envio"
+# --cancelamento e --evento registrado (padrao), rejeitado ou sem-resposta; --atraso-ms 1200 e a demora de cada "envio"
 cargo run -p rustnf-gui --features demonstracao --example demonstracao -- --config ensaio.toml --resultado autorizada --cancelamento registrado
 ```
 

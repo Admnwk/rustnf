@@ -4,18 +4,24 @@
 
 //! A mesma janela do `rustnf-gui`, mas com um emissor de demonstracao: nada e' enviado a Sefin Nacional. Serve para
 //! clicar na interface inteira: emitir (autorizada, rejeitada, sem resposta), ver as notas da pasta, consultar pela
-//! chave e cancelar.
+//! chave ou pela DPS, cancelar, conferir a situacao das notas na Sefin, ver o historico de eventos de uma nota, pedir a
+//! analise fiscal do cancelamento e confirmar ou recusar uma nota recebida.
 //!
 //! ```text
 //! cargo run -p rustnf-gui --features demonstracao --example demonstracao -- \
 //!     --config rustnf.toml [--resultado autorizada|rejeitada|sem-resposta] \
-//!     [--cancelamento registrado|rejeitado|sem-resposta] [--atraso-ms 1200]
+//!     [--cancelamento registrado|rejeitado|sem-resposta] [--evento registrado|rejeitado|sem-resposta] \
+//!     [--atraso-ms 1200]
 //! ```
 //!
 //! `--resultado` e' o roteiro da emissao: `autorizada` (padrao) autoriza a nota; `rejeitada` devolve duas mensagens de
 //! rejeicao; `sem-resposta` deixa a primeira tentativa sem resposta e recupera a nota na segunda ("Tentar de novo").
 //! `--cancelamento` e' o roteiro do cancelamento: `registrado` (padrao); `rejeitado` devolve duas mensagens;
-//! `sem-resposta` deixa o primeiro pedido sem resposta e registra no segundo. A consulta devolve as notas que a
+//! `sem-resposta` deixa o primeiro pedido sem resposta e registra no segundo; `rejeitado` reproduz a recusa do
+//! cancelamento direto (a mensagem diz que o prazo passou). `--evento` e' o mesmo roteiro para os pedidos de analise
+//! fiscal, de confirmacao e de recusa. A demonstracao tambem "recebeu" uma nota de outra pessoa, com o emitente das
+//! Configuracoes como tomador: o programa escreve a chave dela ao abrir; cole-a em Consultar para ver Confirmar e
+//! Recusar. A consulta devolve as notas que a
 //! demonstracao autorizou e as que estao na pasta de notas do ensaio. A nota autorizada entra de verdade na pasta de
 //! notas do arquivo de configuracao indicado: use uma pasta de ensaio.
 
@@ -29,12 +35,14 @@ fn main() -> ExitCode {
     use rustnf_gui::demonstracao::{
         cancelamento_do_nome, roteiro_do_nome, EmissorDemonstracao, Ensaio, FabricaDemonstracao,
     };
+    use rustnf_gui::demonstracao_eventos::evento_do_nome;
     use rustnf_gui::modelo::argumentos::{self, Pedido};
     use rustnf_gui::servicos::Servicos;
 
     let mut resto = Vec::new();
     let mut resultado = "autorizada".to_string();
     let mut cancelamento = "registrado".to_string();
+    let mut evento = "registrado".to_string();
     let mut atraso_ms: u64 = 1200;
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
@@ -51,6 +59,14 @@ fn main() -> ExitCode {
                 Some(v) => cancelamento = v,
                 None => {
                     eprintln!("demonstracao: --cancelamento precisa de um valor");
+                    return ExitCode::from(2);
+                }
+            }
+        } else if a == "--evento" {
+            match args.next() {
+                Some(v) => evento = v,
+                None => {
+                    eprintln!("demonstracao: --evento precisa de um valor");
                     return ExitCode::from(2);
                 }
             }
@@ -74,6 +90,10 @@ fn main() -> ExitCode {
         eprintln!("demonstracao: --cancelamento aceita registrado, rejeitado ou sem-resposta");
         return ExitCode::from(2);
     };
+    let Some(roteiro_do_evento) = evento_do_nome(&evento) else {
+        eprintln!("demonstracao: --evento aceita registrado, rejeitado ou sem-resposta");
+        return ExitCode::from(2);
+    };
     let config = match argumentos::interpretar(resto) {
         Ok(Pedido::Abrir { config }) => config,
         Ok(_) => {
@@ -87,16 +107,26 @@ fn main() -> ExitCode {
     };
     let base = Servicos::do_sistema(config);
     // o emissor de demonstracao fala o mesmo ambiente que a configuracao (o selo mostra "Demonstracao" por cima)
-    let (ambiente, pasta) = base.carregar().map_or((2, None), |carga| {
+    let (ambiente, pasta, documento) = base.carregar().map_or((2, None, None), |carga| {
         let pasta = carga.config.notas.pasta.trim().to_string();
+        let e = &carga.config.emitente;
+        let documento = if e.cnpj.trim().is_empty() {
+            e.cpf.trim()
+        } else {
+            e.cnpj.trim()
+        }
+        .to_string();
         (
             carga.ambiente.codigo(),
             (!pasta.is_empty()).then(|| std::path::PathBuf::from(pasta)),
+            (!documento.is_empty()).then_some(documento),
         )
     });
     let ensaio = Ensaio {
         cancelamento: roteiro_do_cancelamento,
+        evento: roteiro_do_evento,
         pasta,
+        recebida_para: documento,
     };
     let emissor = EmissorDemonstracao::com_ensaio(
         ambiente,
@@ -104,6 +134,11 @@ fn main() -> ExitCode {
         ensaio,
         Duration::from_millis(atraso_ms),
     );
+    if let Some(chave) = emissor.chave_da_nota_recebida() {
+        println!(
+            "demonstracao: nota recebida de outro emitente, para Confirmar e Recusar em Consultar: {chave}"
+        );
+    }
     let servicos = base.com_fabrica(FabricaDemonstracao::nova(emissor));
     rustnf_gui::telas::executar_com(Arc::new(servicos));
     ExitCode::SUCCESS

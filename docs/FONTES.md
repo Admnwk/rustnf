@@ -6,6 +6,7 @@ Tudo que o rustnf implementa vem de documento público. Data de leitura: 2026-11
 |---|---|---|
 | Esquemas XSD da NFS-e Nacional v1.01 (20260209) e da produção restrita (20261020) | <https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica> | `nfse::dps`, `nfse::base` (padrões, ordem das tags) |
 | Anexo I (Sefin ADN, DPS/NFS-e): regras de validação e códigos de rejeição (E0008, E0037, E0312, E0710, E0712, E0713...) | mesma página | `nfse::dps`, `nfse::leitura` |
+| Anexo II (Sefin ADN, pedido de registro de evento) v1.01 de 22/01/2026: eventos, autores, motivos e regras; regra 25, recusa E0822 (cancelamento fora do prazo do município) | <https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica/documentacao-atual/anexo_ii-sefin_adn-pedregevt_evt-snnfse-v1-01-20260122.xlsx> | `nfse::eventos`, interface (oferta da análise fiscal depois da recusa por prazo) |
 | Nota Técnica 008 (DANFSe v2.0): leiaute da página, blocos, fonte (métrica da Arial), logotipo, marca d'água de NFS-e cancelada e substituída, QR de consulta | <https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica> | `danfse` |
 | Anexo B: Lista Nacional de serviços v1.01-20260122 | <https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica/documentacao-atual/anexo_b-nbs2-lista_servico_nacional-snnfse-v1-01-20260122.xlsx> | `dados/ctribnac.json` |
 | Anexo VII (cIndOp) v1.03.00 | <https://www.gov.br/nfse/pt-br/biblioteca/documentacao-tecnica/rtc/anexovii-indop_ibscbs_v1-03-00-nt009.xlsx> | `dados/indop.json` |

@@ -8,9 +8,12 @@
 mod assistente;
 mod campos;
 mod cancelar;
+mod conferir;
 mod configuracoes;
 mod consultar;
 mod detalhe;
+mod detalhe_blocos;
+mod historico;
 mod inicio;
 mod layout;
 mod nota;
@@ -23,6 +26,8 @@ mod rolagem;
 mod senha;
 #[cfg(test)]
 mod testes;
+#[cfg(test)]
+mod testes_eventos;
 #[cfg(test)]
 mod testes_nota;
 #[cfg(test)]

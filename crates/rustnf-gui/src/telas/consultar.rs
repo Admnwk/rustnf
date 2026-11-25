@@ -2,22 +2,24 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! A tela Consultar: a chave de acesso (50 posicoes, colada com espacos e pontuacao, mostrada em grupos), a consulta a
-//! Sefin Nacional fora da linha da tela e o resultado no mesmo detalhe da tela Notas. A nota devolvida so' vale se a chave
-//! dela for a pedida. Consultar nao altera nada na Sefin; "Guardar na pasta de notas" so' aparece para nota do emitente.
+//! A tela Consultar: a chave de acesso (50 posicoes, colada com espacos e pontuacao, mostrada em grupos) ou a serie e o
+//! numero da DPS (com o emitente da configuracao), a consulta a Sefin Nacional fora da linha da tela e o resultado no
+//! mesmo detalhe da tela Notas. A nota devolvida so' vale se for a pedida. Consultar nao altera nada; "Guardar na
+//! pasta de notas" so' aparece para nota do emitente.
 
 use std::sync::Arc;
 
-use gpui_kit::component::button::{Button, ButtonVariants as _};
+use gpui_kit::component::button::{Button, ButtonVariants as _, Toggle, ToggleGroup};
 use gpui_kit::component::form::v_form;
 use gpui_kit::component::input::{Input, InputEvent, InputState};
 use gpui_kit::component::{h_flex, v_flex, ActiveTheme as _, Disableable as _, Icon, IconName};
 use gpui_kit::{
     div, px, AppContext as _, Context, Entity, EventEmitter, InteractiveElement as _, IntoElement,
-    ParentElement as _, Render, ScrollHandle, StatefulInteractiveElement as _, Styled as _,
-    Subscription, Window,
+    ParentElement as _, Render, ScrollHandle, SharedString, StatefulInteractiveElement as _,
+    Styled as _, Subscription, Window,
 };
 use rustnf_app::config::Config;
+use rustnf_app::notas::Situacao;
 use rustnf_app::segredo::Segredo;
 
 use super::cancelar::Cancelamento;
@@ -28,8 +30,12 @@ use crate::fora;
 use crate::modelo::certificado::Gravidade;
 use crate::modelo::chave::{self, EstadoDaChave};
 use crate::modelo::consulta::{DesfechoDaConsulta, TEXTO_NAO_ENCONTRADA};
+use crate::modelo::consulta_dps::{
+    conferir_dps, serie_efetiva, so_digitos, EstadoDaDps, ModoDeConsulta,
+    TEXTO_NAO_ENCONTRADA as TEXTO_DPS_NAO_ENCONTRADA,
+};
 use crate::modelo::nota::DadosNota;
-use crate::servicos::{consultar_nota, Servicos};
+use crate::servicos::{consultar_dps_nota, consultar_nota, Servicos};
 
 /// O que a tela pede a janela.
 #[derive(Debug, Clone, PartialEq)]
@@ -65,6 +71,13 @@ pub(super) struct TelaConsultar {
     servicos: Arc<Servicos>,
     config: Config,
     entrada: Entity<InputState>,
+    /// Como a pessoa acha a nota: pela chave ou pela serie e numero da DPS.
+    pub(super) modo: ModoDeConsulta,
+    /// A serie da DPS e o numero da DPS (so' digitos).
+    serie_dps: Entity<InputState>,
+    numero_dps: Entity<InputState>,
+    pub(super) serie: String,
+    pub(super) numero: String,
     /// A chave como esta no campo (em grupos).
     pub(super) texto: String,
     tocada: bool,
@@ -90,10 +103,34 @@ impl TelaConsultar {
         let entrada = cx.new(|cx| {
             InputState::new(window, cx).placeholder("Cole aqui a chave de acesso (50 posições)")
         });
+        let serie_dps = cx.new(|cx| InputState::new(window, cx).placeholder("a da configuração"));
+        let numero_dps = cx.new(|cx| InputState::new(window, cx).placeholder("Número da DPS"));
         let detalhe = {
             let servicos = Arc::clone(&servicos);
             cx.new(|cx| VisaoDetalhe::new(servicos, cancelamento, window, cx))
         };
+        let s3 = cx.subscribe_in(
+            &serie_dps,
+            window,
+            |this, entrada, evento: &InputEvent, window, cx| match evento {
+                InputEvent::Change => this.ao_digitar_dps(entrada, true, window, cx),
+                InputEvent::PressEnter { .. } => this.consultar(None, window, cx),
+                _ => {}
+            },
+        );
+        let s4 = cx.subscribe_in(
+            &numero_dps,
+            window,
+            |this, entrada, evento: &InputEvent, window, cx| match evento {
+                InputEvent::Change => this.ao_digitar_dps(entrada, false, window, cx),
+                InputEvent::PressEnter { .. } => this.consultar(None, window, cx),
+                InputEvent::Blur => {
+                    this.tocada = true;
+                    cx.notify();
+                }
+                InputEvent::Focus => {}
+            },
+        );
         let s1 = cx.subscribe_in(
             &entrada,
             window,
@@ -122,13 +159,18 @@ impl TelaConsultar {
             servicos,
             config: Config::default(),
             entrada,
+            modo: ModoDeConsulta::Chave,
+            serie_dps,
+            numero_dps,
+            serie: String::new(),
+            numero: String::new(),
             texto: String::new(),
             tocada: false,
             fase: Fase::Parada,
             detalhe,
             senha_pedida: None,
             sub_senha: None,
-            _subs: vec![s1, s2],
+            _subs: vec![s1, s2, s3, s4],
             rolagem: ScrollHandle::new(),
         }
     }
@@ -141,11 +183,16 @@ impl TelaConsultar {
         cx.notify();
     }
 
-    /// Uma nota foi cancelada: atualiza o resultado, se for a mesma.
-    pub(super) fn cancelada(&mut self, chave: &str, cx: &mut Context<Self>) {
+    /// A Sefin registrou um evento para uma nota: atualiza o resultado, se for a mesma.
+    pub(super) fn evento_registrado(
+        &mut self,
+        chave: &str,
+        situacao: Option<Situacao>,
+        cx: &mut Context<Self>,
+    ) {
         let chave = chave.to_string();
         self.detalhe
-            .update(cx, |d, cx| d.marcar_cancelada(&chave, cx));
+            .update(cx, |d, cx| d.evento_registrado(&chave, situacao, cx));
     }
 
     fn ao_digitar(
@@ -170,6 +217,61 @@ impl TelaConsultar {
         cx.notify();
     }
 
+    /// So' os digitos entram na serie e no numero da DPS; o resultado antigo nao e' mais desta consulta.
+    fn ao_digitar_dps(
+        &mut self,
+        entrada: &Entity<InputState>,
+        e_serie: bool,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let digitado = entrada.read(cx).value().to_string();
+        let limpo = so_digitos(&digitado);
+        if limpo != digitado {
+            entrada.update(cx, |e, cx| e.set_value(limpo.clone(), window, cx));
+        }
+        let campo = if e_serie {
+            &mut self.serie
+        } else {
+            &mut self.numero
+        };
+        if *campo != limpo {
+            *campo = limpo;
+            self.esquecer_o_resultado(cx);
+        }
+        cx.notify();
+    }
+
+    fn esquecer_o_resultado(&mut self, cx: &mut Context<Self>) {
+        if matches!(self.fase, Fase::Desfecho(_)) {
+            self.fase = Fase::Parada;
+            self.detalhe.update(cx, |d, cx| d.limpar(cx));
+        }
+    }
+
+    /// Troca o modo: o resultado do outro modo some.
+    pub(super) fn escolher_modo(&mut self, modo: ModoDeConsulta, cx: &mut Context<Self>) {
+        if self.modo != modo && !matches!(self.fase, Fase::Trabalhando(_)) {
+            self.modo = modo;
+            self.tocada = false;
+            self.esquecer_o_resultado(cx);
+            cx.notify();
+        }
+    }
+
+    /// O que a tela diz da serie e do numero da DPS digitados.
+    pub(super) fn estado_da_dps(&self) -> EstadoDaDps {
+        conferir_dps(&self.config.emitente, &self.serie, &self.numero)
+    }
+
+    /// A consulta de agora pode sair.
+    fn pode_consultar(&self) -> bool {
+        match self.modo {
+            ModoDeConsulta::Chave => self.estado_da_chave().valida(),
+            ModoDeConsulta::Dps => self.estado_da_dps().valido(),
+        }
+    }
+
     /// O que a tela diz da chave digitada.
     pub(super) fn estado_da_chave(&self) -> EstadoDaChave {
         chave::conferir(&self.texto)
@@ -186,11 +288,16 @@ impl TelaConsultar {
             return;
         }
         self.tocada = true;
-        if !self.estado_da_chave().valida() {
+        if !self.pode_consultar() {
             cx.notify();
             return;
         }
         let chave = chave::limpar(&self.texto);
+        let (modo, serie, numero) = (
+            self.modo,
+            serie_efetiva(&self.config.emitente, &self.serie),
+            self.numero.clone(),
+        );
         let anterior = self.fase.clone();
         self.fase = Fase::Trabalhando(Etapa::Certificado);
         self.detalhe.update(cx, |d, cx| d.limpar(cx));
@@ -227,7 +334,15 @@ impl TelaConsultar {
                 cx.notify();
             })
             .ok();
-            let desfecho = match fora::rede(consultar_nota(fabrica, preparo, chave)) {
+            let trabalho = async move {
+                match modo {
+                    ModoDeConsulta::Chave => consultar_nota(fabrica, preparo, chave).await,
+                    ModoDeConsulta::Dps => {
+                        consultar_dps_nota(fabrica, preparo, config, serie, numero).await
+                    }
+                }
+            };
+            let desfecho = match fora::rede(trabalho) {
                 Some(tarefa) => tarefa
                     .await
                     .unwrap_or_else(|_| DesfechoDaConsulta::SemResposta {
@@ -321,7 +436,14 @@ impl TelaConsultar {
                 DesfechoDaConsulta::NaoEncontrada => v_flex()
                     .id("consulta-nao-encontrada")
                     .gap_3()
-                    .child(faixa(Gravidade::Aviso, TEXTO_NAO_ENCONTRADA, cx))
+                    .child(faixa(
+                        Gravidade::Aviso,
+                        match self.modo {
+                            ModoDeConsulta::Chave => TEXTO_NAO_ENCONTRADA,
+                            ModoDeConsulta::Dps => TEXTO_DPS_NAO_ENCONTRADA,
+                        },
+                        cx,
+                    ))
                     .into_any_element(),
                 DesfechoDaConsulta::SemResposta { texto } => v_flex()
                     .id("consulta-sem-resposta")
@@ -342,29 +464,93 @@ impl TelaConsultar {
 
 impl Render for TelaConsultar {
     fn render(&mut self, _window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let estado = self.estado_da_chave();
-        // chave inteira que nao confere diz o motivo na hora; o que ainda falta digitar so' aparece depois de passar pelo campo
-        let erro = if self.tocada || matches!(estado, EstadoDaChave::Invalida(_)) {
-            estado.mensagem()
-        } else {
-            None
-        };
         let ocupada = matches!(self.fase, Fase::Trabalhando(_));
-        let pode = estado.valida() && !ocupada;
-        let ajuda = if estado == EstadoDaChave::Valida {
-            Some("Chave conferida: o dígito verificador está certo.".into())
-        } else {
-            Some("Só a chave importa: espaços, pontos e traços são ignorados.".into())
+        let pode = self.pode_consultar() && !ocupada;
+        let modo = self.modo;
+        let escolha = ToggleGroup::new("modo-de-consulta")
+            .segmented()
+            .single()
+            .children(ModoDeConsulta::TODOS.iter().enumerate().map(|(i, m)| {
+                Toggle::new(SharedString::from(format!("modo-consulta-{i}")))
+                    .label(m.rotulo())
+                    .checked(modo == *m)
+            }))
+            .on_click(cx.listener(|this, estados: &Vec<bool>, _, cx| {
+                if let Some(i) = estados.iter().position(|e| *e) {
+                    if let Some(m) = ModoDeConsulta::TODOS.get(i) {
+                        this.escolher_modo(*m, cx);
+                    }
+                }
+            }));
+        let campos = match modo {
+            ModoDeConsulta::Chave => {
+                let estado = self.estado_da_chave();
+                // chave inteira que nao confere diz o motivo na hora; o que ainda falta digitar so' aparece depois
+                // de passar pelo campo
+                let erro = if self.tocada || matches!(estado, EstadoDaChave::Invalida(_)) {
+                    estado.mensagem()
+                } else {
+                    None
+                };
+                let ajuda = if estado == EstadoDaChave::Valida {
+                    Some("Chave conferida: o dígito verificador está certo.".into())
+                } else {
+                    Some("Só a chave importa: espaços, pontos e traços são ignorados.".into())
+                };
+                v_form()
+                    .columns(1)
+                    .child(campo(
+                        "Chave de acesso",
+                        true,
+                        ajuda,
+                        erro,
+                        Input::new(&self.entrada).id("consulta-chave"),
+                    ))
+                    .into_any_element()
+            }
+            ModoDeConsulta::Dps => {
+                let estado = self.estado_da_dps();
+                let erro = estado.mensagem();
+                let serie = serie_efetiva(&self.config.emitente, &self.serie);
+                let ajuda = match &estado {
+                    EstadoDaDps::Valido(_) => Some(
+                        format!(
+                            "Vou procurar a DPS nº {}, série {serie}, do emitente das Configurações.",
+                            self.numero
+                        )
+                        .into(),
+                    ),
+                    _ => Some(
+                        format!(
+                            "A série vazia vale {serie} (a da configuração). Só números."
+                        )
+                        .into(),
+                    ),
+                };
+                v_form()
+                    .columns(1)
+                    .child(campo(
+                        "Série da DPS",
+                        false,
+                        None,
+                        None,
+                        Input::new(&self.serie_dps).id("consulta-serie"),
+                    ))
+                    .child(campo(
+                        "Número da DPS",
+                        true,
+                        ajuda,
+                        erro,
+                        Input::new(&self.numero_dps).id("consulta-numero-dps"),
+                    ))
+                    .into_any_element()
+            }
         };
         let formulario = cartao(cx)
             .id("consulta-formulario")
-            .child(v_form().columns(1).child(campo(
-                "Chave de acesso",
-                true,
-                ajuda,
-                erro,
-                Input::new(&self.entrada).id("consulta-chave"),
-            )));
+            .gap_3()
+            .child(escolha)
+            .child(campos);
         let acoes = h_flex()
             .gap_3()
             .items_center()
@@ -399,7 +585,7 @@ impl Render for TelaConsultar {
                     .py_8()
                     .child(cabecalho(
                         "Consultar",
-                        "Consulte uma NFS-e na Sefin Nacional pela chave de acesso. Consultar não altera nada.",
+                        "Consulte uma NFS-e na Sefin Nacional pela chave de acesso ou pela série e número da DPS. Consultar não altera nada.",
                         cx,
                     ))
                     .child(formulario)

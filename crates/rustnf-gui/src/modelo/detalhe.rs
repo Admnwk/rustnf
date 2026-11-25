@@ -29,7 +29,7 @@ fn data(iso: &str) -> String {
 }
 
 /// A data e a hora do processamento (`DD/MM/AAAA HH:MM`), se o XML as traz.
-fn data_e_hora(iso: &str) -> String {
+pub(super) fn data_e_hora(iso: &str) -> String {
     let t = iso.trim();
     match (t.get(..10), t.get(11..16)) {
         (Some(d), Some(h)) if t.get(10..11) == Some("T") => {
@@ -131,6 +131,13 @@ impl DetalheDaNota {
     #[must_use]
     pub fn chave_em_grupos(&self) -> String {
         chave::em_grupos(&self.chave)
+    }
+
+    /// O tomador da nota e' o documento dado (letras e digitos, sem mascara, sem diferenca de caixa).
+    #[must_use]
+    pub fn e_tomador(&self, documento: &str) -> bool {
+        let meu = limpar_documento(documento);
+        !meu.is_empty() && limpar_documento(&self.tomador_documento) == meu
     }
 
     /// O emitente da nota e' o documento dado (letras e digitos, sem mascara, sem diferenca de caixa).
