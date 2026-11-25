@@ -159,7 +159,9 @@ pub(super) fn cenario_de_cancelamento(
             Arc::new(chrono::Utc::now),
         )
         .com_fabrica(FabricaDemonstracao::nova(emissor.clone()))
-        .com_abridor(abridor.clone()),
+        .com_abridor(abridor.clone())
+        // nenhum teste chama a rede: a busca de CEP responde de uma tabela
+        .com_busca_cep(Arc::new(CepDeTeste)),
     );
     let (janela, raiz) = abrir_janela(cx, servicos, largura, altura);
     cx.run_until_parked();
@@ -997,4 +999,79 @@ fn painel_fixo_ao_lado_nao_rola_junto_e_em_janela_estreita_vai_para_baixo(cx: &m
     let estreita = cenario_com_altura(cx, "restrita", &[Desfecho::Autorizada], true, 940., 900.);
     let b = posicao_do_emitir(cx, &estreita);
     assert!(b.origin.x < px(700.), "{b:?}");
+}
+
+/// Busca de CEP sem rede: 01001000 existe, 99999999 nao existe, o resto "nao responde".
+struct CepDeTeste;
+
+impl crate::servicos::BuscaCep for CepDeTeste {
+    fn buscar(&self, cep: String) -> crate::servicos::FuturoCep {
+        Box::pin(async move {
+            use rustnf_app::cep::{EnderecoDoCep, ErroCep};
+            match cep.as_str() {
+                "01001000" => Ok(EnderecoDoCep {
+                    logradouro: "Praca da Se".into(),
+                    bairro: "Se".into(),
+                    municipio: "3550308".into(),
+                    cidade: "Sao Paulo".into(),
+                    uf: "SP".into(),
+                }),
+                "99999999" => Err(ErroCep::NaoEncontrado),
+                _ => Err(ErroCep::Indisponivel),
+            }
+        })
+    }
+}
+
+#[gpui_kit::test]
+fn buscar_o_cep_preenche_o_endereco_so_no_clique(cx: &mut TestAppContext) {
+    let c = cenario(cx, "restrita", &[Desfecho::Autorizada], true, 1120.);
+    // CEP incompleto: avisa, sem buscar
+    digitar(cx, &c, "nota-end-cep", "0100");
+    clicar(cx, &c, "buscar-cep");
+    cx.update(|cx| {
+        let n = c.nova.read(cx);
+        assert!(n.aviso_cep.as_deref().unwrap_or("").contains("8 dígitos"));
+        assert!(n.dados.end_logradouro.is_empty());
+    });
+    // digitar o CEP inteiro nao busca nada sozinho
+    digitar(cx, &c, "nota-end-cep", "01001000");
+    cx.run_until_parked();
+    cx.update(|cx| assert!(c.nova.read(cx).dados.end_logradouro.is_empty()));
+    // o clique busca e preenche logradouro, bairro e municipio
+    clicar(cx, &c, "buscar-cep");
+    esperar(cx, &c, "a busca do CEP", |n| !n.buscando_cep);
+    cx.update(|cx| {
+        let n = c.nova.read(cx);
+        assert_eq!(n.dados.end_logradouro, "Praca da Se");
+        assert_eq!(n.dados.end_bairro, "Se");
+        assert_eq!(n.dados.end_municipio, "3550308");
+        assert!(n.aviso_cep.is_none());
+    });
+    // CEP que nao existe: aviso, e o endereco ja' preenchido fica
+    digitar(cx, &c, "nota-end-cep", "99999999");
+    clicar(cx, &c, "buscar-cep");
+    esperar(cx, &c, "a busca do CEP", |n| !n.buscando_cep);
+    cx.update(|cx| {
+        let n = c.nova.read(cx);
+        assert!(n
+            .aviso_cep
+            .as_deref()
+            .unwrap_or("")
+            .contains("não encontrado"));
+        assert_eq!(n.dados.end_logradouro, "Praca da Se");
+    });
+    // servico fora: aviso para preencher a mao
+    digitar(cx, &c, "nota-end-cep", "12345678");
+    clicar(cx, &c, "buscar-cep");
+    esperar(cx, &c, "a busca do CEP", |n| !n.buscando_cep);
+    cx.update(|cx| {
+        assert!(c
+            .nova
+            .read(cx)
+            .aviso_cep
+            .as_deref()
+            .unwrap_or("")
+            .contains("à mão"));
+    });
 }

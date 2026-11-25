@@ -144,6 +144,10 @@ pub(super) struct NovaNota {
     pub(super) sub_senha: Option<Subscription>,
     pub(super) rolagem: ScrollHandle,
     pub(super) copiada: bool,
+    /// Buscando o endereco pelo CEP.
+    pub(super) buscando_cep: bool,
+    /// O que a busca do CEP disse (CEP invalido, nao encontrado, servico fora).
+    pub(super) aviso_cep: Option<String>,
     /// O ultimo documento de tomador procurado na pasta de notas (para nao procurar de novo a cada tecla).
     tomador_buscado: Option<String>,
     /// Os dados do tomador vieram de uma nota anterior: a frase diz de qual.
@@ -261,6 +265,8 @@ impl NovaNota {
             sub_senha: None,
             rolagem: ScrollHandle::new(),
             copiada: false,
+            buscando_cep: false,
+            aviso_cep: None,
             tomador_buscado: None,
             tomador_preenchido: None,
             carregada: false,
@@ -547,6 +553,66 @@ impl NovaNota {
         if self.tocados.insert(campo) {
             cx.notify();
         }
+    }
+
+    /// "Buscar endereco pelo CEP": so' no clique (o CEP sai da maquina). Preenche logradouro, bairro e municipio que
+    /// vierem; o que nao vier fica como estava.
+    pub(super) fn buscar_cep(&mut self, window: &mut Window, cx: &mut Context<Self>) {
+        if self.buscando_cep {
+            return;
+        }
+        let cep = match rustnf_app::cep::cep_limpo(&self.dados.end_cep) {
+            Ok(c) => c,
+            Err(_) => {
+                self.aviso_cep = Some("Digite o CEP com 8 dígitos para buscar o endereço.".into());
+                cx.notify();
+                return;
+            }
+        };
+        let busca = self.servicos.busca_cep();
+        self.buscando_cep = true;
+        self.aviso_cep = None;
+        cx.notify();
+        cx.spawn_in(window, async move |this, cx| {
+            let r = match crate::fora::rede(busca.buscar(cep)) {
+                Some(tarefa) => tarefa
+                    .await
+                    .unwrap_or(Err(rustnf_app::cep::ErroCep::Indisponivel)),
+                None => Err(rustnf_app::cep::ErroCep::Indisponivel),
+            };
+            this.update_in(cx, |this, window, cx| {
+                this.buscando_cep = false;
+                match r {
+                    Ok(e) => {
+                        for (campo, valor) in [
+                            (CampoNota::EnderecoLogradouro, e.logradouro.as_str()),
+                            (CampoNota::EnderecoBairro, e.bairro.as_str()),
+                            (CampoNota::EnderecoMunicipio, e.municipio.as_str()),
+                        ] {
+                            if !valor.is_empty() {
+                                let normal = this.dados.definir(campo, valor);
+                                this.por_no_campo(campo, &normal, window, cx);
+                            }
+                        }
+                        this.mudou(cx);
+                    }
+                    Err(rustnf_app::cep::ErroCep::NaoEncontrado) => {
+                        this.aviso_cep = Some(
+                            "CEP não encontrado. Confira os dígitos ou preencha o endereço à mão."
+                                .into(),
+                        );
+                    }
+                    Err(_) => {
+                        this.aviso_cep = Some(
+                            "A busca do CEP não respondeu agora. Preencha o endereço à mão.".into(),
+                        );
+                    }
+                }
+                cx.notify();
+            })
+            .ok();
+        })
+        .detach();
     }
 
     /// Poe o texto no campo da tela (sem disparar `Change`).

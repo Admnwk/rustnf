@@ -510,11 +510,13 @@ Item "Nova nota" da barra lateral (Ctrl+N; o Início tem o botão "Emitir uma no
 explica o que falta. O prestador, a série, o município emissor e o regime vêm do `[emitente]`; o número da DPS vem da pasta
 de notas e a data e hora de emissão são automáticas. O formulário cobre o **caso comum**, em uma página:
 
-* **tomador** (CNPJ ou CPF com conferência dos dígitos, endereço nacional; ou "nota sem tomador identificado");
+* **tomador** (CNPJ ou CPF com conferência dos dígitos, endereço nacional, com "Buscar endereço pelo CEP": só no
+  clique, o CEP vai ao ViaCEP ou à BrasilAPI; ou "nota sem tomador identificado");
 * **serviço**: busca na Lista Nacional por texto ou por código, descrição, município da prestação, NBS e códigos opcionais;
 * **valores**: valor do serviço, descontos e competência (dinheiro no formato `1.234,56`);
-* **ISS**: tributável no município ou não incidência, retenção pelo tomador, alíquota e os tributos aproximados que o
-  regime do emitente pede (percentual do Simples Nacional, ou totais por esfera);
+* **ISS**: tributável no município ou não incidência, retenção pelo tomador, alíquota (a padrão do `[emitente]` aparece
+  como dica; o resumo mostra o ISS estimado) e os tributos aproximados que o regime do emitente pede (percentual do
+  Simples Nacional, ou totais por esfera);
 * **tributos federais** (opcional): IRRF, CSLL, contribuição previdenciária e PIS/COFINS;
 * **IBS/CBS**: `cIndOp`, `cClassTrib` (o CST sai dele) e consumidor final, com a **sugestão da correlação do Anexo VIII**
   (NBS, `cIndOp` e `cClassTrib`): ela só propõe, só preenche campo vazio e não escolhe calada quando há mais de uma

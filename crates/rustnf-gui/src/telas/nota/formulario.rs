@@ -255,6 +255,37 @@ impl NovaNota {
                     .child("ENDEREÇO (OPCIONAL, MAS COMPLETO SE INFORMADO)"),
             )
             .child(
+                h_flex()
+                    .gap_3()
+                    .items_center()
+                    .child(
+                        Button::new("buscar-cep")
+                            .label("Buscar endereço pelo CEP")
+                            .icon(IconName::Search)
+                            .outline()
+                            .small()
+                            .loading(self.buscando_cep)
+                            .disabled(self.travado() || self.buscando_cep)
+                            .on_click(
+                                cx.listener(|this, _, window, cx| this.buscar_cep(window, cx)),
+                            ),
+                    )
+                    .child(
+                        div()
+                            .text_xs()
+                            .text_color(cx.theme().muted_foreground)
+                            .child(match &self
+                            .aviso_cep
+                        {
+                            Some(a) => a.clone(),
+                            None => {
+                                "O CEP é enviado ao ViaCEP (ou à BrasilAPI) só quando você clica."
+                                    .to_string()
+                            }
+                        }),
+                    ),
+            )
+            .child(
                 v_form()
                     .columns(2)
                     .child(
