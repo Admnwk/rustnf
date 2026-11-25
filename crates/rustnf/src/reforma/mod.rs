@@ -14,11 +14,10 @@
 //! * [`previa`] -- a base de calculo e o IBS/CBS de um servico, como a Sefin Nacional vai calcular.
 //!
 //! A DPS nao leva valor de IBS/CBS calculado (quem calcula e' a Sefin Nacional): este modulo serve para conferir
-//! o que vai na DPS e para consultar as tabelas e as aliquotas. Percentual em x10000 (4 casas, `i64`). Dois
-//! arredondamentos convivem, cada um no seu lugar: os VALORES da previa (base, aliquota efetiva, IBS, CBS) usam
-//! "meio para o par", como a calculadora oficial (veja [`previa`]); a LEITURA de um texto de aliquota ou de reducao
-//! com mais de 4 casas usa meio-para-cima, longe do zero. Os casos em `tests/casos/reforma.json` conferem texto a
-//! texto.
+//! o que vai na DPS e para consultar as tabelas e as aliquotas. Percentual em x10000 (4 casas, `i64`). Todo
+//! arredondamento e' "meio para o par", como a calculadora oficial (registro de decisao ADR003): os VALORES da previa
+//! (base, aliquota efetiva, IBS, CBS, veja [`previa`]) e a LEITURA de um texto de aliquota ou de reducao com mais de 4
+//! casas. Os casos em `tests/casos/reforma.json` conferem texto a texto.
 pub mod aliquotas;
 pub mod atividades_sn;
 mod decimal;
@@ -54,19 +53,20 @@ impl std::error::Error for ErroReforma {}
 
 pub type Resultado<T> = Result<T, ErroReforma>;
 
-/// Divisao inteira com arredondamento meio-para-cima, longe do zero.
+/// Divisao inteira com arredondamento meio-para-o-par: no empate exato fica o quociente par; fora dele, o mais
+/// proximo. Negativo espelha.
 pub(crate) fn div_arred(num: i128, den: i128) -> i128 {
     debug_assert!(den > 0);
     let q = num / den;
-    let r = (num % den).abs();
-    if r * 2 >= den {
+    let r2 = (num % den).abs() * 2;
+    if r2 > den || (r2 == den && q % 2 != 0) {
         q + num.signum()
     } else {
         q
     }
 }
 
-/// Texto decimal ('10,5', '-1.25', '') -> inteiro com `casas` casas, meio-para-cima no que sobrar. Vazio = 0.
+/// Texto decimal ('10,5', '-1.25', '') -> inteiro com `casas` casas, meio-para-o-par no que sobrar. Vazio = 0.
 pub(crate) fn escala(s: &str, casas: u32, campo: &str) -> Resultado<i128> {
     let t = s.trim().replace(',', ".");
     if t.is_empty() {
@@ -177,7 +177,17 @@ mod testes {
     #[test]
     fn escala_e_formato() {
         assert_eq!(escala("5.555", 2, "x").unwrap(), 556);
-        assert_eq!(escala("-0.005", 2, "x").unwrap(), -1);
+        assert_eq!(escala("-0.005", 2, "x").unwrap(), 0); // empate: fica o par (0)
+        assert_eq!(escala("-0.015", 2, "x").unwrap(), -2);
+        assert_eq!(escala("0.025", 2, "x").unwrap(), 2);
+        assert_eq!(escala("0.0250001", 2, "x").unwrap(), 3);
+        assert_eq!(div_arred(225, 1000), 0);
+        assert_eq!(div_arred(2250, 1000), 2);
+        assert_eq!(div_arred(3500, 1000), 4);
+        assert_eq!(div_arred(-2500, 1000), -2);
+        assert_eq!(div_arred(-1500, 1000), -2);
+        assert_eq!(div_arred(-1501, 1000), -2);
+        assert_eq!(div_arred(2501, 1000), 3);
         assert_eq!(escala("10,5", 4, "x").unwrap(), 105_000);
         assert_eq!(escala("", 2, "x").unwrap(), 0);
         assert!(escala("1a", 2, "x").is_err());

@@ -8,6 +8,10 @@
   partir do pedido em JSON, assina com um certificado A1 de teste e confere a assinatura, sem rede.
 * CI: documentação gerada com aviso virando erro, o exemplo da biblioteca roda, e o histórico inteiro passa pelo
   gitleaks (binário oficial conferido pelo SHA-256); as ações do GitHub foram para as versões em Node.js 24.
+* Retorno E0008 da Sefin (hora de emissão depois da hora de processamento) ganha a dica de acertar o relógio ou
+  aumentar `folga_relogio_s`.
+* Prévia do IBS/CBS: a leitura de alíquota ou redução com mais de 4 casas passa a arredondar "meio para o par", como
+  os valores da prévia e a calculadora oficial; só muda no empate exato (ex.: `0,00005`).
 * Dependência `url` 2.5.8 -> 2.5.9 (RUSTSEC-2026-0592, estouro de pilha em `Url::origin()`; chega pela interface
   de desktop).
 * Release: cada arquivo publicado ganha um atestado de procedência do GitHub, conferível com
