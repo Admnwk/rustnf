@@ -18,6 +18,8 @@ default = []
 cert_a1_teste = ["dep:x509-cert", "dep:rand"]
 # Cliente HTTP da Sefin Nacional (mTLS, reqwest + rustls).
 sefin = ["dep:reqwest", "dep:tokio", "dep:async-trait"]
+# NF-e modelo 55: leitura do XML, tabela de cStat e calendario das Notas Tecnicas (sem crate nova).
+nfe = []
 # DANFSe em PDF (NT 008): escreve a pagina direto no PDF; as fontes e o logotipo vao dentro do binario.
 danfse = ["dep:krilla", "dep:skrifa", "dep:qrcode"]
 
@@ -49,7 +51,7 @@ qrcode = { version = "0.15", default-features = false, optional = true }
 [dev-dependencies]
 regex = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
-rustnf = { path = ".", features = ["cert_a1_teste", "sefin", "danfse"] }
+rustnf = { path = ".", features = ["cert_a1_teste", "sefin", "danfse", "nfe"] }
 async-trait = "0.1"
 tokio = { version = "1", features = ["rt", "rt-multi-thread", "macros", "time"] }
 
@@ -68,3 +70,19 @@ required-features = ["sefin", "cert_a1_teste"]
 [[test]]
 name = "danfse"
 required-features = ["danfse"]
+
+[[test]]
+name = "nfe_chave"
+required-features = ["nfe"]
+
+[[test]]
+name = "nfe_cstat"
+required-features = ["nfe"]
+
+[[test]]
+name = "nfe_leitura"
+required-features = ["nfe"]
+
+[[test]]
+name = "nfe_vigencias"
+required-features = ["nfe"]

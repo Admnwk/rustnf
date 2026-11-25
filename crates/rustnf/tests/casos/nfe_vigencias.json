@@ -1,0 +1,101 @@
+{
+ "_doc": "Datas lidas no Historico de Alteracoes / Cronograma de cada NT (texto extraido do PDF do Portal Nacional da NF-e). null = a NT nao da data propria de homologacao.",
+ "linhas": [
+  {
+   "chave": "nt2021_003.grupo_i",
+   "nt": "NT 2021.003 v1.50",
+   "producao": "2022-09-12",
+   "homologacao": "2022-07-25"
+  },
+  {
+   "chave": "nt2021_003.etapa_2",
+   "nt": "NT 2021.003 v1.50",
+   "producao": "2023-06-12",
+   "homologacao": "2023-03-06"
+  },
+  {
+   "chave": "nt2021_003.grupo_ii",
+   "nt": "NT 2021.003 v1.50",
+   "producao": "2023-07-03",
+   "homologacao": "2023-04-03"
+  },
+  {
+   "chave": "nt2021_003.grupo_iii",
+   "nt": "NT 2021.003 v1.50",
+   "producao": "2024-09-02",
+   "homologacao": "2024-04-01"
+  },
+  {
+   "chave": "nt2021_003.grupo_iv",
+   "nt": "NT 2021.003 v1.50",
+   "producao": "2025-10-01",
+   "homologacao": "2025-07-01"
+  },
+  {
+   "chave": "nt2021_003.grupo_v",
+   "nt": "NT 2021.003 v1.50",
+   "producao": "2027-09-01",
+   "homologacao": "2027-04-01"
+  },
+  {
+   "chave": "nt2025_002.vc02_40",
+   "nt": "NT 2025.002 v1.40",
+   "producao": "2026-08-03",
+   "homologacao": "2026-07-01"
+  },
+  {
+   "chave": "nt2025_002.vc02_14",
+   "nt": "NT 2025.002 v1.52",
+   "producao": "2026-11-03",
+   "homologacao": "2026-07-01"
+  },
+  {
+   "chave": "nt2025_002.v1_53",
+   "nt": "NT 2025.002 v1.53",
+   "producao": "2026-11-16",
+   "homologacao": "2026-11-09"
+  },
+  {
+   "chave": "nt2026_002.vc02_04_tpimp6",
+   "nt": "NT 2026.002 v1.10",
+   "producao": "2026-10-05",
+   "homologacao": "2026-09-01"
+  },
+  {
+   "chave": "nt2026_002.v1_11_adiadas",
+   "nt": "NT 2026.002 v1.11",
+   "producao": "2026-12-14",
+   "homologacao": "2026-09-01"
+  },
+  {
+   "chave": "pl_010h",
+   "nt": "NT 2026.005 v1.00 e NT 2026.008 v1.01",
+   "producao": "2026-11-16",
+   "homologacao": "2026-10-26"
+  },
+  {
+   "chave": "nt2026_008.nb01_30",
+   "nt": "NT 2026.008 v1.01",
+   "producao": "2027-03-01",
+   "homologacao": "2027-02-01"
+  },
+  {
+   "chave": "nt2023_002.inutilizacao_ac_ba_sp",
+   "nt": "NT 2023.002 v1.02",
+   "producao": "2026-11-11",
+   "homologacao": "2026-11-11"
+  },
+  {
+   "chave": "nt2023_002.assincrono",
+   "nt": "NT 2023.002 v1.02",
+   "producao": "2027-04-05",
+   "homologacao": "2027-02-01"
+  },
+  {
+   "chave": "nt2026_010.danfe_rtc",
+   "nt": "NT 2026.010 v1.00",
+   "producao": "2026-12-01",
+   "homologacao": null
+  }
+ ]
+}

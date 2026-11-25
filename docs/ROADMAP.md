@@ -45,6 +45,20 @@
 
 ## Próximo
 
+**Em andamento: NF-e (modelo 55)**, em fases, uma por vez. A NF-e ainda não emite; sem data prometida.
+
+* Base (feature `nfe`): chave de acesso de 44 posições, calendário das Notas Técnicas, leitura do XML autorizado e
+  tabela de `cStat`. Feita nesta frente.
+* Montagem do modelo 55: leiaute 4.00, regras do Anexo I conferidas antes do envio, IBS/CBS de mercadoria.
+* Webservices da SEFAZ, com contingência.
+* DANFE.
+* Faces: aplicação, linha de comando, API HTTP e MCP.
+* Documentos recebidos e manifestação do destinatário.
+* NFC-e.
+* Interface de desktop.
+
+Itens gerais:
+
 1. Interface de desktop: telas para a consulta da DPS, a consulta e o registro de eventos e a atualização das situações
    (hoje só pela linha de comando, pela API e pelo MCP); e os casos de emissão fora do caso comum (tomador no exterior, intermediário, comércio exterior,
    obra, evento, locação, deduções, reembolsos, substituição, benefício municipal, suspensão, imunidade e destinatário
@@ -63,7 +77,8 @@
 ## Fora da v1
 
 * Rotas do ADN (distribuição de DF-e, parâmetros municipais): o cliente cobre só a Sefin Nacional;
-* NFS-e municipal (ABRASF), NF-e, NFC-e e CT-e, inclusive o cálculo do IBS/CBS de mercadoria;
+* NFS-e municipal (ABRASF) e CT-e; a NFC-e fica fora até a sua fase da frente da NF-e; o cálculo do IBS/CBS de
+  mercadoria entra com a montagem do modelo 55;
 * assinatura ICP de PDF;
 * apuração por período e DARF de CBS/IBS;
 * cofre de certificados de vários clientes, contas, planos e login (o binário é de uso próprio, no servidor do usuário;
