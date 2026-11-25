@@ -91,7 +91,8 @@
     "137",
     "138",
     "139",
-    "140"
+    "140",
+    "155"
    ]
   },
   {
@@ -111,19 +112,18 @@
   {
    "classe": "desconhecida",
    "codigos": [
-    "155",
     "0",
     "9999",
     "abc"
    ]
   }
  ],
- "total": 952,
+ "total": 953,
  "contagem": {
   "autorizada": 2,
   "cancelada": 2,
   "denegada": 4,
-  "processamento": 18,
+  "processamento": 19,
   "rejeitada": 926
  }
 }

@@ -1,5 +1,5 @@
 {
- "fonte": "MOC 7.00 (novembro de 2020), Anexo I, secao 4.4 (tabelas 4.4.1, 4.4.2 e 4.4.3) e codigos que so' aparecem nas regras de validacao das secoes 4.1 a 4.3. Codigo criado depois por Nota Tecnica traz a NT em `origem`; `outras` guarda a segunda mensagem de um codigo que a regra escreve de dois jeitos.",
+ "fonte": "MOC 7.00 (novembro de 2020), Anexo I, secao 4.4 (tabelas 4.4.1, 4.4.2 e 4.4.3) e codigos que so' aparecem nas regras de validacao das secoes 4.1 a 4.3; o 155 (retorno do evento de cancelamento aceito fora de prazo) vem da Visao Geral, item 5.9.4. Codigo criado depois por Nota Tecnica traz a NT em `origem`; `outras` guarda a segunda mensagem de um codigo que a regra escreve de dois jeitos.",
  "efeito": "processamento = resultado de processamento (tabela 4.4.1); rejeicao = tabela 4.4.2 e regras; denegacao = tabela 4.4.3 e o 110 (Uso Denegado, da 4.4.1).",
  "notas_tecnicas": [
   "NT 2023.002 v1.02",
@@ -89,6 +89,11 @@
   "136": {
    "efeito": "processamento",
    "mensagem": "Evento registrado, mas não vinculado a NF-e"
+  },
+  "155": {
+   "efeito": "processamento",
+   "mensagem": "Cancelamento homologado fora de prazo",
+   "origem": "MOC 7.00, Visao Geral, item 5.9.4"
   },
   "137": {
    "efeito": "processamento",

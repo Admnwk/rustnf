@@ -49,7 +49,7 @@ fn classe_de_cada_familia() {
 
 #[test]
 fn codigo_fora_da_tabela_e_desconhecido() {
-    assert!(consultar("155").is_none(), "o 155 nao esta no MOC 7.00");
+    assert!(consultar("1555").is_none());
     assert_eq!(mensagem("0"), None);
     assert_eq!(classe("123456"), Classe::Desconhecida);
     assert_eq!(classe(""), Classe::Desconhecida);
