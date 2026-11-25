@@ -1,0 +1,3003 @@
+{
+ "_nota": "Casos da montagem da NF-e (modelo 55). Pedidos com documentos e nomes ficticios; o XML esperado, a chave, os totais e a lista do `conferir` vieram de uma implementacao independente e o XML foi validado no XSD oficial da NF-e 4.00 (pacote PL_010h v1.03).",
+ "casos": [
+  {
+   "nome": "cst40_deduz",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "180.00",
+       "mot_des_icms": "9",
+       "ind_deduz_deson": 1
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "820.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "chave": "35261111222333000181550010000082011876543215",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000082011876543215\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>87654321</cNF><natOp>VENDA COM ICMS DESONERADO</natOp><mod>55</mod><serie>1</serie><nNF>8201</nNF><dhEmi>2026-11-21T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>2</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>5</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><xFant>TESTE &amp; CIA</xFant><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CNPJ>33444555000182</CNPJ><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Av. Brasil</xLgr><nro>2000</nro><xBairro>Jardim America</xBairro><cMun>3304557</cMun><xMun>Rio de Janeiro</xMun><UF>RJ</UF><CEP>20040002</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>1</indIEDest><IE>12345678</IE><email>compras@cliente.com.br</email></dest><det nItem=\"1\"><prod><cProd>P1</cProd><cEAN>SEM GTIN</cEAN><xProd>Trator agricola</xProd><NCM>87019100</NCM><CFOP>6102</CFOP><uCom>UN</uCom><qCom>1.0000</qCom><vUnCom>1000.0000000000</vUnCom><vProd>1000.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>1.0000</qTrib><vUnTrib>1000.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMS40><orig>0</orig><CST>40</CST><vICMSDeson>180.00</vICMSDeson><motDesICMS>9</motDesICMS><indDeduzDeson>1</indDeduzDeson></ICMS40></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>180.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>1000.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>820.00</vNF></ICMSTot></total><transp><modFrete>0</modFrete></transp><pag><detPag><indPag>1</indPag><tPag>15</tPag><vPag>820.00</vPag></detPag></pag><infAdic><infCpl>Pedido 77; obrigado &amp; volte sempre</infCpl></infAdic><infRespTec><CNPJ>99888777000101</CNPJ><xContato>Suporte Teste</xContato><email>suporte@exemplo.com.br</email><fone>11999998888</fone></infRespTec></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "1000.00",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vICMSDeson": "180.00",
+    "vNF": "820.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "cst40_nao_deduz",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "180.00",
+       "mot_des_icms": "9",
+       "ind_deduz_deson": 0
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1000.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "chave": "35261111222333000181550010000082011876543215",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000082011876543215\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>87654321</cNF><natOp>VENDA COM ICMS DESONERADO</natOp><mod>55</mod><serie>1</serie><nNF>8201</nNF><dhEmi>2026-11-21T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>2</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>5</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><xFant>TESTE &amp; CIA</xFant><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CNPJ>33444555000182</CNPJ><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Av. Brasil</xLgr><nro>2000</nro><xBairro>Jardim America</xBairro><cMun>3304557</cMun><xMun>Rio de Janeiro</xMun><UF>RJ</UF><CEP>20040002</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>1</indIEDest><IE>12345678</IE><email>compras@cliente.com.br</email></dest><det nItem=\"1\"><prod><cProd>P1</cProd><cEAN>SEM GTIN</cEAN><xProd>Trator agricola</xProd><NCM>87019100</NCM><CFOP>6102</CFOP><uCom>UN</uCom><qCom>1.0000</qCom><vUnCom>1000.0000000000</vUnCom><vProd>1000.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>1.0000</qTrib><vUnTrib>1000.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMS40><orig>0</orig><CST>40</CST><vICMSDeson>180.00</vICMSDeson><motDesICMS>9</motDesICMS><indDeduzDeson>0</indDeduzDeson></ICMS40></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>180.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>1000.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>1000.00</vNF></ICMSTot></total><transp><modFrete>0</modFrete></transp><pag><detPag><indPag>1</indPag><tPag>15</tPag><vPag>1000.00</vPag></detPag></pag><infAdic><infCpl>Pedido 77; obrigado &amp; volte sempre</infCpl></infAdic><infRespTec><CNPJ>99888777000101</CNPJ><xContato>Suporte Teste</xContato><email>suporte@exemplo.com.br</email><fone>11999998888</fone></infRespTec></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "1000.00",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vICMSDeson": "180.00",
+    "vNF": "1000.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "cst41_sem_ind",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "41",
+       "v_icms_deson": "90.00",
+       "mot_des_icms": "90"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1000.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "chave": "35261111222333000181550010000082011876543215",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000082011876543215\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>87654321</cNF><natOp>VENDA COM ICMS DESONERADO</natOp><mod>55</mod><serie>1</serie><nNF>8201</nNF><dhEmi>2026-11-21T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>2</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>5</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><xFant>TESTE &amp; CIA</xFant><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CNPJ>33444555000182</CNPJ><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Av. Brasil</xLgr><nro>2000</nro><xBairro>Jardim America</xBairro><cMun>3304557</cMun><xMun>Rio de Janeiro</xMun><UF>RJ</UF><CEP>20040002</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>1</indIEDest><IE>12345678</IE><email>compras@cliente.com.br</email></dest><det nItem=\"1\"><prod><cProd>P1</cProd><cEAN>SEM GTIN</cEAN><xProd>Trator agricola</xProd><NCM>87019100</NCM><CFOP>6102</CFOP><uCom>UN</uCom><qCom>1.0000</qCom><vUnCom>1000.0000000000</vUnCom><vProd>1000.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>1.0000</qTrib><vUnTrib>1000.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMS40><orig>0</orig><CST>41</CST><vICMSDeson>90.00</vICMSDeson><motDesICMS>90</motDesICMS></ICMS40></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>90.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>1000.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>1000.00</vNF></ICMSTot></total><transp><modFrete>0</modFrete></transp><pag><detPag><indPag>1</indPag><tPag>15</tPag><vPag>1000.00</vPag></detPag></pag><infAdic><infCpl>Pedido 77; obrigado &amp; volte sempre</infCpl></infAdic><infRespTec><CNPJ>99888777000101</CNPJ><xContato>Suporte Teste</xContato><email>suporte@exemplo.com.br</email><fone>11999998888</fone></infRespTec></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "1000.00",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vICMSDeson": "90.00",
+    "vNF": "1000.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "cst40_zero_nao_sai",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "0"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1000.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "chave": "35261111222333000181550010000082011876543215",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000082011876543215\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>87654321</cNF><natOp>VENDA COM ICMS DESONERADO</natOp><mod>55</mod><serie>1</serie><nNF>8201</nNF><dhEmi>2026-11-21T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>2</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>5</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><xFant>TESTE &amp; CIA</xFant><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CNPJ>33444555000182</CNPJ><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Av. Brasil</xLgr><nro>2000</nro><xBairro>Jardim America</xBairro><cMun>3304557</cMun><xMun>Rio de Janeiro</xMun><UF>RJ</UF><CEP>20040002</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>1</indIEDest><IE>12345678</IE><email>compras@cliente.com.br</email></dest><det nItem=\"1\"><prod><cProd>P1</cProd><cEAN>SEM GTIN</cEAN><xProd>Trator agricola</xProd><NCM>87019100</NCM><CFOP>6102</CFOP><uCom>UN</uCom><qCom>1.0000</qCom><vUnCom>1000.0000000000</vUnCom><vProd>1000.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>1.0000</qTrib><vUnTrib>1000.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMS40><orig>0</orig><CST>40</CST></ICMS40></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>1000.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>1000.00</vNF></ICMSTot></total><transp><modFrete>0</modFrete></transp><pag><detPag><indPag>1</indPag><tPag>15</tPag><vPag>1000.00</vPag></detPag></pag><infAdic><infCpl>Pedido 77; obrigado &amp; volte sempre</infCpl></infAdic><infRespTec><CNPJ>99888777000101</CNPJ><xContato>Suporte Teste</xContato><email>suporte@exemplo.com.br</email><fone>11999998888</fone></infRespTec></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "1000.00",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vNF": "1000.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "cst20_reducao",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "20",
+       "p_red_bc": "33.3333",
+       "vbc": "666.67",
+       "p_icms": "18",
+       "v_icms": "120.00",
+       "v_icms_deson": "60.00",
+       "mot_des_icms": "3",
+       "ind_deduz_deson": 1
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "940.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "chave": "35261111222333000181550010000082011876543215",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000082011876543215\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>87654321</cNF><natOp>VENDA COM ICMS DESONERADO</natOp><mod>55</mod><serie>1</serie><nNF>8201</nNF><dhEmi>2026-11-21T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>2</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>5</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><xFant>TESTE &amp; CIA</xFant><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CNPJ>33444555000182</CNPJ><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Av. Brasil</xLgr><nro>2000</nro><xBairro>Jardim America</xBairro><cMun>3304557</cMun><xMun>Rio de Janeiro</xMun><UF>RJ</UF><CEP>20040002</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>1</indIEDest><IE>12345678</IE><email>compras@cliente.com.br</email></dest><det nItem=\"1\"><prod><cProd>P1</cProd><cEAN>SEM GTIN</cEAN><xProd>Trator agricola</xProd><NCM>87019100</NCM><CFOP>6102</CFOP><uCom>UN</uCom><qCom>1.0000</qCom><vUnCom>1000.0000000000</vUnCom><vProd>1000.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>1.0000</qTrib><vUnTrib>1000.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMS20><orig>0</orig><CST>20</CST><modBC>3</modBC><pRedBC>33.3333</pRedBC><vBC>666.67</vBC><pICMS>18.0000</pICMS><vICMS>120.00</vICMS><vICMSDeson>60.00</vICMSDeson><motDesICMS>3</motDesICMS><indDeduzDeson>1</indDeduzDeson></ICMS20></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>666.67</vBC><vICMS>120.00</vICMS><vICMSDeson>60.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>1000.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>940.00</vNF></ICMSTot></total><transp><modFrete>0</modFrete></transp><pag><detPag><indPag>1</indPag><tPag>15</tPag><vPag>940.00</vPag></detPag></pag><infAdic><infCpl>Pedido 77; obrigado &amp; volte sempre</infCpl></infAdic><infRespTec><CNPJ>99888777000101</CNPJ><xContato>Suporte Teste</xContato><email>suporte@exemplo.com.br</email><fone>11999998888</fone></infRespTec></infNFe></NFe>",
+   "totais": {
+    "vBC": "666.67",
+    "vICMS": "120.00",
+    "vFCP": "0.00",
+    "vProd": "1000.00",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vICMSDeson": "60.00",
+    "vNF": "940.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "cst30_st",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6401",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "30",
+       "mod_bc_st": 5,
+       "vbc_st": "600.00",
+       "p_icms_st": "20",
+       "v_icms_st": "120.00",
+       "v_icms_deson": "120.00",
+       "mot_des_icms": "9",
+       "ind_deduz_deson": 1
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "cest": "0300700"
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1000.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "chave": "35261111222333000181550010000082011876543215",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000082011876543215\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>87654321</cNF><natOp>VENDA COM ICMS DESONERADO</natOp><mod>55</mod><serie>1</serie><nNF>8201</nNF><dhEmi>2026-11-21T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>2</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>5</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><xFant>TESTE &amp; CIA</xFant><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CNPJ>33444555000182</CNPJ><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Av. Brasil</xLgr><nro>2000</nro><xBairro>Jardim America</xBairro><cMun>3304557</cMun><xMun>Rio de Janeiro</xMun><UF>RJ</UF><CEP>20040002</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>1</indIEDest><IE>12345678</IE><email>compras@cliente.com.br</email></dest><det nItem=\"1\"><prod><cProd>P1</cProd><cEAN>SEM GTIN</cEAN><xProd>Trator agricola</xProd><NCM>87019100</NCM><CEST>0300700</CEST><CFOP>6401</CFOP><uCom>UN</uCom><qCom>1.0000</qCom><vUnCom>1000.0000000000</vUnCom><vProd>1000.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>1.0000</qTrib><vUnTrib>1000.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMS30><orig>0</orig><CST>30</CST><modBCST>5</modBCST><vBCST>600.00</vBCST><pICMSST>20.0000</pICMSST><vICMSST>120.00</vICMSST><vICMSDeson>120.00</vICMSDeson><motDesICMS>9</motDesICMS><indDeduzDeson>1</indDeduzDeson></ICMS30></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>120.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>600.00</vBCST><vST>120.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>1000.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>1000.00</vNF></ICMSTot></total><transp><modFrete>0</modFrete></transp><pag><detPag><indPag>1</indPag><tPag>15</tPag><vPag>1000.00</vPag></detPag></pag><infAdic><infCpl>Pedido 77; obrigado &amp; volte sempre</infCpl></infAdic><infRespTec><CNPJ>99888777000101</CNPJ><xContato>Suporte Teste</xContato><email>suporte@exemplo.com.br</email><fone>11999998888</fone></infRespTec></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "1000.00",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vBCST": "600.00",
+    "vST": "120.00",
+    "vFCPST": "0.00",
+    "vICMSDeson": "120.00",
+    "vNF": "1000.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "cst70_os_dois",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6401",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "70",
+       "p_red_bc": "33.3333",
+       "vbc": "666.67",
+       "p_icms": "12",
+       "v_icms": "80.00",
+       "mod_bc_st": 4,
+       "p_mva_st": "40",
+       "vbc_st": "933.34",
+       "p_icms_st": "20",
+       "v_icms_st": "106.67",
+       "v_icms_deson": "40.00",
+       "mot_des_icms": "3",
+       "ind_deduz_deson": 1,
+       "v_icms_st_deson": "53.33",
+       "mot_des_icms_st": "3"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "cest": "0300700"
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1066.67",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "chave": "35261111222333000181550010000082011876543215",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000082011876543215\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>87654321</cNF><natOp>VENDA COM ICMS DESONERADO</natOp><mod>55</mod><serie>1</serie><nNF>8201</nNF><dhEmi>2026-11-21T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>2</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>5</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><xFant>TESTE &amp; CIA</xFant><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CNPJ>33444555000182</CNPJ><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Av. Brasil</xLgr><nro>2000</nro><xBairro>Jardim America</xBairro><cMun>3304557</cMun><xMun>Rio de Janeiro</xMun><UF>RJ</UF><CEP>20040002</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>1</indIEDest><IE>12345678</IE><email>compras@cliente.com.br</email></dest><det nItem=\"1\"><prod><cProd>P1</cProd><cEAN>SEM GTIN</cEAN><xProd>Trator agricola</xProd><NCM>87019100</NCM><CEST>0300700</CEST><CFOP>6401</CFOP><uCom>UN</uCom><qCom>1.0000</qCom><vUnCom>1000.0000000000</vUnCom><vProd>1000.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>1.0000</qTrib><vUnTrib>1000.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMS70><orig>0</orig><CST>70</CST><modBC>3</modBC><pRedBC>33.3333</pRedBC><vBC>666.67</vBC><pICMS>12.0000</pICMS><vICMS>80.00</vICMS><modBCST>4</modBCST><pMVAST>40.0000</pMVAST><vBCST>933.34</vBCST><pICMSST>20.0000</pICMSST><vICMSST>106.67</vICMSST><vICMSDeson>40.00</vICMSDeson><motDesICMS>3</motDesICMS><indDeduzDeson>1</indDeduzDeson><vICMSSTDeson>53.33</vICMSSTDeson><motDesICMSST>3</motDesICMSST></ICMS70></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>666.67</vBC><vICMS>80.00</vICMS><vICMSDeson>40.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>933.34</vBCST><vST>106.67</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>1000.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>1066.67</vNF></ICMSTot></total><transp><modFrete>0</modFrete></transp><pag><detPag><indPag>1</indPag><tPag>15</tPag><vPag>1066.67</vPag></detPag></pag><infAdic><infCpl>Pedido 77; obrigado &amp; volte sempre</infCpl></infAdic><infRespTec><CNPJ>99888777000101</CNPJ><xContato>Suporte Teste</xContato><email>suporte@exemplo.com.br</email><fone>11999998888</fone></infRespTec></infNFe></NFe>",
+   "totais": {
+    "vBC": "666.67",
+    "vICMS": "80.00",
+    "vFCP": "0.00",
+    "vProd": "1000.00",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vBCST": "933.34",
+    "vST": "106.67",
+    "vFCPST": "0.00",
+    "vICMSDeson": "40.00",
+    "vNF": "1066.67"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "cst90_so_deson",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "90",
+       "v_icms_deson": "50.00",
+       "mot_des_icms": "12",
+       "ind_deduz_deson": 0
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1000.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "chave": "35261111222333000181550010000082011876543215",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000082011876543215\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>87654321</cNF><natOp>VENDA COM ICMS DESONERADO</natOp><mod>55</mod><serie>1</serie><nNF>8201</nNF><dhEmi>2026-11-21T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>2</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>5</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><xFant>TESTE &amp; CIA</xFant><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CNPJ>33444555000182</CNPJ><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Av. Brasil</xLgr><nro>2000</nro><xBairro>Jardim America</xBairro><cMun>3304557</cMun><xMun>Rio de Janeiro</xMun><UF>RJ</UF><CEP>20040002</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>1</indIEDest><IE>12345678</IE><email>compras@cliente.com.br</email></dest><det nItem=\"1\"><prod><cProd>P1</cProd><cEAN>SEM GTIN</cEAN><xProd>Trator agricola</xProd><NCM>87019100</NCM><CFOP>6102</CFOP><uCom>UN</uCom><qCom>1.0000</qCom><vUnCom>1000.0000000000</vUnCom><vProd>1000.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>1.0000</qTrib><vUnTrib>1000.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMS90><orig>0</orig><CST>90</CST><vICMSDeson>50.00</vICMSDeson><motDesICMS>12</motDesICMS><indDeduzDeson>0</indDeduzDeson></ICMS90></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>50.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>1000.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>1000.00</vNF></ICMSTot></total><transp><modFrete>0</modFrete></transp><pag><detPag><indPag>1</indPag><tPag>15</tPag><vPag>1000.00</vPag></detPag></pag><infAdic><infCpl>Pedido 77; obrigado &amp; volte sempre</infCpl></infAdic><infRespTec><CNPJ>99888777000101</CNPJ><xContato>Suporte Teste</xContato><email>suporte@exemplo.com.br</email><fone>11999998888</fone></infRespTec></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "1000.00",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vICMSDeson": "50.00",
+    "vNF": "1000.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "cst10_st_deson",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6401",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "10",
+       "vbc": "1000",
+       "p_icms": "12",
+       "v_icms": "120.00",
+       "mod_bc_st": 4,
+       "p_mva_st": "40",
+       "vbc_st": "1400.00",
+       "p_icms_st": "20",
+       "v_icms_st": "160.00",
+       "vbc_fcp_st": "1400.00",
+       "p_fcp_st": "2",
+       "v_fcp_st": "28.00",
+       "v_icms_st_deson": "20.00",
+       "mot_des_icms_st": "9"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "cest": "0300700"
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1188.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "chave": "35261111222333000181550010000082011876543215",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000082011876543215\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>87654321</cNF><natOp>VENDA COM ICMS DESONERADO</natOp><mod>55</mod><serie>1</serie><nNF>8201</nNF><dhEmi>2026-11-21T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>2</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>5</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><xFant>TESTE &amp; CIA</xFant><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CNPJ>33444555000182</CNPJ><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Av. Brasil</xLgr><nro>2000</nro><xBairro>Jardim America</xBairro><cMun>3304557</cMun><xMun>Rio de Janeiro</xMun><UF>RJ</UF><CEP>20040002</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>1</indIEDest><IE>12345678</IE><email>compras@cliente.com.br</email></dest><det nItem=\"1\"><prod><cProd>P1</cProd><cEAN>SEM GTIN</cEAN><xProd>Trator agricola</xProd><NCM>87019100</NCM><CEST>0300700</CEST><CFOP>6401</CFOP><uCom>UN</uCom><qCom>1.0000</qCom><vUnCom>1000.0000000000</vUnCom><vProd>1000.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>1.0000</qTrib><vUnTrib>1000.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMS10><orig>0</orig><CST>10</CST><modBC>3</modBC><vBC>1000.00</vBC><pICMS>12.0000</pICMS><vICMS>120.00</vICMS><modBCST>4</modBCST><pMVAST>40.0000</pMVAST><vBCST>1400.00</vBCST><pICMSST>20.0000</pICMSST><vICMSST>160.00</vICMSST><vBCFCPST>1400.00</vBCFCPST><pFCPST>2.0000</pFCPST><vFCPST>28.00</vFCPST><vICMSSTDeson>20.00</vICMSSTDeson><motDesICMSST>9</motDesICMSST></ICMS10></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>1000.00</vBC><vICMS>120.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>1400.00</vBCST><vST>160.00</vST><vFCPST>28.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>1000.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>1188.00</vNF></ICMSTot></total><transp><modFrete>0</modFrete></transp><pag><detPag><indPag>1</indPag><tPag>15</tPag><vPag>1188.00</vPag></detPag></pag><infAdic><infCpl>Pedido 77; obrigado &amp; volte sempre</infCpl></infAdic><infRespTec><CNPJ>99888777000101</CNPJ><xContato>Suporte Teste</xContato><email>suporte@exemplo.com.br</email><fone>11999998888</fone></infRespTec></infNFe></NFe>",
+   "totais": {
+    "vBC": "1000.00",
+    "vICMS": "120.00",
+    "vFCP": "0.00",
+    "vProd": "1000.00",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vBCST": "1400.00",
+    "vST": "160.00",
+    "vFCPST": "28.00",
+    "vNF": "1188.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "dois_itens_misto",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "180.00",
+       "mot_des_icms": "9",
+       "ind_deduz_deson": 1
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     },
+     {
+      "codigo": "P2",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "500",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "90.00",
+       "mot_des_icms": "9",
+       "ind_deduz_deson": 0
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1320.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "chave": "35261111222333000181550010000082011876543215",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000082011876543215\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>87654321</cNF><natOp>VENDA COM ICMS DESONERADO</natOp><mod>55</mod><serie>1</serie><nNF>8201</nNF><dhEmi>2026-11-21T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>2</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>5</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><xFant>TESTE &amp; CIA</xFant><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CNPJ>33444555000182</CNPJ><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Av. Brasil</xLgr><nro>2000</nro><xBairro>Jardim America</xBairro><cMun>3304557</cMun><xMun>Rio de Janeiro</xMun><UF>RJ</UF><CEP>20040002</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>1</indIEDest><IE>12345678</IE><email>compras@cliente.com.br</email></dest><det nItem=\"1\"><prod><cProd>P1</cProd><cEAN>SEM GTIN</cEAN><xProd>Trator agricola</xProd><NCM>87019100</NCM><CFOP>6102</CFOP><uCom>UN</uCom><qCom>1.0000</qCom><vUnCom>1000.0000000000</vUnCom><vProd>1000.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>1.0000</qTrib><vUnTrib>1000.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMS40><orig>0</orig><CST>40</CST><vICMSDeson>180.00</vICMSDeson><motDesICMS>9</motDesICMS><indDeduzDeson>1</indDeduzDeson></ICMS40></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><det nItem=\"2\"><prod><cProd>P2</cProd><cEAN>SEM GTIN</cEAN><xProd>Trator agricola</xProd><NCM>87019100</NCM><CFOP>6102</CFOP><uCom>UN</uCom><qCom>1.0000</qCom><vUnCom>500.0000000000</vUnCom><vProd>500.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>1.0000</qTrib><vUnTrib>500.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMS40><orig>0</orig><CST>40</CST><vICMSDeson>90.00</vICMSDeson><motDesICMS>9</motDesICMS><indDeduzDeson>0</indDeduzDeson></ICMS40></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>270.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>1500.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>1320.00</vNF></ICMSTot></total><transp><modFrete>0</modFrete></transp><pag><detPag><indPag>1</indPag><tPag>15</tPag><vPag>1320.00</vPag></detPag></pag><infAdic><infCpl>Pedido 77; obrigado &amp; volte sempre</infCpl></infAdic><infRespTec><CNPJ>99888777000101</CNPJ><xContato>Suporte Teste</xContato><email>suporte@exemplo.com.br</email><fone>11999998888</fone></infRespTec></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "1500.00",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vICMSDeson": "270.00",
+    "vNF": "1320.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "cst40_vitem",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "180.00",
+       "mot_des_icms": "9",
+       "ind_deduz_deson": 1
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "ibscbs": {
+       "cst": "000",
+       "cclass_trib": "000001",
+       "vbc": "1000.00",
+       "data": "2026-11-21"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "820.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "chave": "35261111222333000181550010000082011876543215",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000082011876543215\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>87654321</cNF><natOp>VENDA COM ICMS DESONERADO</natOp><mod>55</mod><serie>1</serie><nNF>8201</nNF><dhEmi>2026-11-21T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>2</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>5</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><xFant>TESTE &amp; CIA</xFant><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CNPJ>33444555000182</CNPJ><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Av. Brasil</xLgr><nro>2000</nro><xBairro>Jardim America</xBairro><cMun>3304557</cMun><xMun>Rio de Janeiro</xMun><UF>RJ</UF><CEP>20040002</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>1</indIEDest><IE>12345678</IE><email>compras@cliente.com.br</email></dest><det nItem=\"1\"><prod><cProd>P1</cProd><cEAN>SEM GTIN</cEAN><xProd>Trator agricola</xProd><NCM>87019100</NCM><CFOP>6102</CFOP><uCom>UN</uCom><qCom>1.0000</qCom><vUnCom>1000.0000000000</vUnCom><vProd>1000.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>1.0000</qTrib><vUnTrib>1000.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMS40><orig>0</orig><CST>40</CST><vICMSDeson>180.00</vICMSDeson><motDesICMS>9</motDesICMS><indDeduzDeson>1</indDeduzDeson></ICMS40></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS><IBSCBS><CST>000</CST><cClassTrib>000001</cClassTrib><gIBSCBS><vBC>1000.00</vBC><gIBSUF><pIBSUF>0.1000</pIBSUF><vIBSUF>1.00</vIBSUF></gIBSUF><gIBSMun><pIBSMun>0.0000</pIBSMun><vIBSMun>0.00</vIBSMun></gIBSMun><vIBS>1.00</vIBS><gCBS><pCBS>0.9000</pCBS><vCBS>9.00</vCBS></gCBS></gIBSCBS></IBSCBS></imposto><vItem>820.00</vItem></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>180.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>1000.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>820.00</vNF></ICMSTot><IBSCBSTot><vBCIBSCBS>1000.00</vBCIBSCBS><gIBS><gIBSUF><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vIBSUF>1.00</vIBSUF></gIBSUF><gIBSMun><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vIBSMun>0.00</vIBSMun></gIBSMun><vIBS>1.00</vIBS><vCredPres>0.00</vCredPres><vCredPresCondSus>0.00</vCredPresCondSus></gIBS><gCBS><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vCBS>9.00</vCBS><vCredPres>0.00</vCredPres><vCredPresCondSus>0.00</vCredPresCondSus></gCBS></IBSCBSTot><vNFTot>820.00</vNFTot></total><transp><modFrete>0</modFrete></transp><pag><detPag><indPag>1</indPag><tPag>15</tPag><vPag>820.00</vPag></detPag></pag><infAdic><infCpl>Pedido 77; obrigado &amp; volte sempre</infCpl></infAdic><infRespTec><CNPJ>99888777000101</CNPJ><xContato>Suporte Teste</xContato><email>suporte@exemplo.com.br</email><fone>11999998888</fone></infRespTec></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "1000.00",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vICMSDeson": "180.00",
+    "vNF": "820.00",
+    "vNFTot": "820.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "cst40_suframa",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "REMESSA ZFM",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Djalma Batista",
+      "numero": "100",
+      "bairro": "Chapada",
+      "cod_municipio": "1302603",
+      "municipio": "Manaus",
+      "uf": "AM",
+      "cep": "69050010",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br",
+     "isuf": "200100018"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6109",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "70.00",
+       "mot_des_icms": "7",
+       "ind_deduz_deson": 1
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "930.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "chave": "35261111222333000181550010000082011876543215",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000082011876543215\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>87654321</cNF><natOp>REMESSA ZFM</natOp><mod>55</mod><serie>1</serie><nNF>8201</nNF><dhEmi>2026-11-21T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>2</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>5</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><xFant>TESTE &amp; CIA</xFant><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CNPJ>33444555000182</CNPJ><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Av. Djalma Batista</xLgr><nro>100</nro><xBairro>Chapada</xBairro><cMun>1302603</cMun><xMun>Manaus</xMun><UF>AM</UF><CEP>69050010</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>1</indIEDest><IE>12345678</IE><ISUF>200100018</ISUF><email>compras@cliente.com.br</email></dest><det nItem=\"1\"><prod><cProd>P1</cProd><cEAN>SEM GTIN</cEAN><xProd>Trator agricola</xProd><NCM>87019100</NCM><CFOP>6109</CFOP><uCom>UN</uCom><qCom>1.0000</qCom><vUnCom>1000.0000000000</vUnCom><vProd>1000.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>1.0000</qTrib><vUnTrib>1000.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMS40><orig>0</orig><CST>40</CST><vICMSDeson>70.00</vICMSDeson><motDesICMS>7</motDesICMS><indDeduzDeson>1</indDeduzDeson></ICMS40></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>70.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>1000.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>930.00</vNF></ICMSTot></total><transp><modFrete>0</modFrete></transp><pag><detPag><indPag>1</indPag><tPag>15</tPag><vPag>930.00</vPag></detPag></pag><infAdic><infCpl>Pedido 77; obrigado &amp; volte sempre</infCpl></infAdic><infRespTec><CNPJ>99888777000101</CNPJ><xContato>Suporte Teste</xContato><email>suporte@exemplo.com.br</email><fone>11999998888</fone></infRespTec></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "1000.00",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vICMSDeson": "70.00",
+    "vNF": "930.00"
+   },
+   "conferir": []
+  }
+ ],
+ "erros": [
+  {
+   "nome": "motivo_sem_valor_627",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "mot_des_icms": "9"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1000.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "vICMSDeson",
+   "regra": "627"
+  },
+  {
+   "nome": "valor_zero_com_motivo_627",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "0",
+       "mot_des_icms": "9"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1000.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "vICMSDeson",
+   "regra": "627"
+  },
+  {
+   "nome": "valor_sem_motivo",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "10.00"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1000.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "motDesICMS"
+  },
+  {
+   "nome": "ind_sem_valor",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "ind_deduz_deson": 1
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1000.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "indDeduzDeson"
+  },
+  {
+   "nome": "ind_invalido",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "180.00",
+       "mot_des_icms": "9",
+       "ind_deduz_deson": 2
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1000.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "indDeduzDeson"
+  },
+  {
+   "nome": "motivo_fora_do_grupo",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "20",
+       "p_red_bc": "33.3333",
+       "vbc": "666.67",
+       "p_icms": "18",
+       "v_icms": "120.00",
+       "v_icms_deson": "60.00",
+       "mot_des_icms": "7",
+       "ind_deduz_deson": 1
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "940.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "motDesICMS"
+  },
+  {
+   "nome": "motivo_12_no_cst40",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "180.00",
+       "mot_des_icms": "12",
+       "ind_deduz_deson": 1
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "820.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "motDesICMS"
+  },
+  {
+   "nome": "motivo_texto",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "180.00",
+       "mot_des_icms": "outros",
+       "ind_deduz_deson": 1
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "820.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "motDesICMS"
+  },
+  {
+   "nome": "motivo_com_sinal",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "180.00",
+       "mot_des_icms": "+9",
+       "ind_deduz_deson": 1
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "820.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "motDesICMS"
+  },
+  {
+   "nome": "negativo",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "-1.00",
+       "mot_des_icms": "9",
+       "ind_deduz_deson": 1
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1000.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "vICMSDeson"
+  },
+  {
+   "nome": "cst00_com_deson",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "00",
+       "vbc": "1000",
+       "p_icms": "12",
+       "v_icms": "120.00",
+       "v_icms_deson": "10.00",
+       "mot_des_icms": "9"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1000.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "vICMSDeson"
+  },
+  {
+   "nome": "suframa_sem_ind_652",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "REMESSA ZFM",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Djalma Batista",
+      "numero": "100",
+      "bairro": "Chapada",
+      "cod_municipio": "1302603",
+      "municipio": "Manaus",
+      "uf": "AM",
+      "cep": "69050010",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br",
+     "isuf": "200100018"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6109",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "70.00",
+       "mot_des_icms": "7",
+       "ind_deduz_deson": 0
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1000.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "indDeduzDeson",
+   "regra": "652"
+  },
+  {
+   "nome": "suframa_sem_isuf_625",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "REMESSA ZFM",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Djalma Batista",
+      "numero": "100",
+      "bairro": "Chapada",
+      "cod_municipio": "1302603",
+      "municipio": "Manaus",
+      "uf": "AM",
+      "cep": "69050010",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6109",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "70.00",
+       "mot_des_icms": "7",
+       "ind_deduz_deson": 1
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "930.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "ISUF",
+   "regra": "625"
+  },
+  {
+   "nome": "suframa_cfop_626",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "REMESSA ZFM",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Djalma Batista",
+      "numero": "100",
+      "bairro": "Chapada",
+      "cod_municipio": "1302603",
+      "municipio": "Manaus",
+      "uf": "AM",
+      "cep": "69050010",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br",
+     "isuf": "200100018"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6102",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "40",
+       "v_icms_deson": "70.00",
+       "mot_des_icms": "7",
+       "ind_deduz_deson": 1
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "930.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "CFOP",
+   "regra": "626"
+  },
+  {
+   "nome": "st_deson_no_cst30",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6401",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "30",
+       "mod_bc_st": 5,
+       "vbc_st": "600.00",
+       "p_icms_st": "20",
+       "v_icms_st": "120.00",
+       "v_icms_deson": "120.00",
+       "mot_des_icms": "9",
+       "ind_deduz_deson": 1,
+       "v_icms_st_deson": "10.00",
+       "mot_des_icms_st": "9"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "cest": "0300700"
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1000.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "vICMSSTDeson"
+  },
+  {
+   "nome": "st_deson_sem_motivo",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6401",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "10",
+       "vbc": "1000",
+       "p_icms": "12",
+       "v_icms": "120.00",
+       "mod_bc_st": 4,
+       "p_mva_st": "40",
+       "vbc_st": "1400.00",
+       "p_icms_st": "20",
+       "v_icms_st": "160.00",
+       "vbc_fcp_st": "1400.00",
+       "p_fcp_st": "2",
+       "v_fcp_st": "28.00",
+       "v_icms_st_deson": "20.00"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "cest": "0300700"
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1188.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "motDesICMSST"
+  },
+  {
+   "nome": "st_motivo_fora",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6401",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "10",
+       "vbc": "1000",
+       "p_icms": "12",
+       "v_icms": "120.00",
+       "mod_bc_st": 4,
+       "p_mva_st": "40",
+       "vbc_st": "1400.00",
+       "p_icms_st": "20",
+       "v_icms_st": "160.00",
+       "vbc_fcp_st": "1400.00",
+       "p_fcp_st": "2",
+       "v_fcp_st": "28.00",
+       "v_icms_st_deson": "20.00",
+       "mot_des_icms_st": "7"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "cest": "0300700"
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1188.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "motDesICMSST"
+  },
+  {
+   "nome": "st_motivo_sem_valor",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 8201,
+    "emissao": "2026-11-21T10:00:00-03:00",
+    "nat_op": "VENDA COM ICMS DESONERADO",
+    "cmun_fg": "3550308",
+    "codigo": 87654321,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "id_dest": 2,
+    "dest": {
+     "documento": "33444555000182",
+     "nome": "CLIENTE ATACADO LTDA",
+     "endereco": {
+      "logradouro": "Av. Brasil",
+      "numero": "2000",
+      "bairro": "Jardim América",
+      "cod_municipio": "3304557",
+      "municipio": "Rio de Janeiro",
+      "uf": "RJ",
+      "cep": "20040002",
+      "cod_pais": "1058",
+      "pais": "BRASIL"
+     },
+     "ind_ie_dest": 1,
+     "ie": "12345678",
+     "email": "compras@cliente.com.br"
+    },
+    "itens": [
+     {
+      "codigo": "P1",
+      "descricao": "Trator agricola",
+      "ncm": "87019100",
+      "cfop": "6401",
+      "unidade": "UN",
+      "quantidade": "1",
+      "valor_unitario": "1000",
+      "icms": {
+       "orig": 0,
+       "codigo": "10",
+       "vbc": "1000",
+       "p_icms": "12",
+       "v_icms": "120.00",
+       "mod_bc_st": 4,
+       "p_mva_st": "40",
+       "vbc_st": "1400.00",
+       "p_icms_st": "20",
+       "v_icms_st": "160.00",
+       "vbc_fcp_st": "1400.00",
+       "p_fcp_st": "2",
+       "v_fcp_st": "28.00",
+       "mot_des_icms_st": "9"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "cest": "0300700"
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "15",
+      "valor": "1188.00",
+      "ind_pag": 1
+     }
+    ],
+    "mod_frete": 0,
+    "inf_cpl": "Pedido 77; obrigado & volte sempre",
+    "resp_tec": {
+     "cnpj": "99888777000101",
+     "contato": "Suporte Teste",
+     "email": "suporte@exemplo.com.br",
+     "fone": "11999998888"
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "vICMSSTDeson"
+  }
+ ]
+}

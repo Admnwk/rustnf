@@ -1,0 +1,1930 @@
+{
+ "_nota": "Casos do Simples Nacional (NT 2026.005) na NF-e: regime regular, opcao pendente e o Simples sem regime regular, em que o item leva so' o gTribSN e NAO leva o gIBSCBS (secao 2.3 da NT).",
+ "casos": [
+  {
+   "nome": "crt2_sem_regime_cbssn",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 102,
+    "emissao": "2026-11-16T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 24681357,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 2,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "itens": [
+     {
+      "codigo": "7891000100103",
+      "descricao": "Pão de queijo  congelado\t1kg",
+      "ncm": "19059090",
+      "cfop": "5102",
+      "unidade": "KG",
+      "quantidade": "1.234",
+      "valor_unitario": "29.9",
+      "valor_produto": "36.90",
+      "gtin": "7891000100103",
+      "desconto": "1.91",
+      "icms": {
+       "codigo": "00",
+       "vbc": "34.99",
+       "p_icms": "18",
+       "v_icms": "6.30"
+      },
+      "pis": {
+       "cst": "01",
+       "vbc": "34.99",
+       "aliquota": "1.65",
+       "valor": "0.58"
+      },
+      "cofins": {
+       "cst": "01",
+       "vbc": "34.99",
+       "aliquota": "7.6",
+       "valor": "2.66"
+      },
+      "ibscbs": {
+       "cst": "000",
+       "cclass_trib": "000001",
+       "vbc": "25.45",
+       "data": "2026-11-16",
+       "aliquotas": {
+        "ibs_uf": "0.1",
+        "ibs_mun": "0",
+        "cbs": "0"
+       },
+       "trib_sn": {
+        "cbs": {
+         "p": "3",
+         "v": "1.11"
+        }
+       }
+      },
+      "v_tot_trib": "9.54",
+      "c_ativ_sn": "01"
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "03",
+      "valor": "34.99",
+      "cartao": {
+       "tp_integra": 2,
+       "t_band": "02",
+       "c_aut": "AUT123"
+      }
+     }
+    ],
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste"
+   },
+   "chave": "35261111222333000181550010000001021246813570",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000001021246813570\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>24681357</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>102</nNF><dhEmi>2026-11-16T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>0</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><xFant>TESTE &amp; CIA</xFant><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>2</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>7891000100103</cProd><cEAN>7891000100103</cEAN><xProd>Pao de queijo congelado 1kg</xProd><NCM>19059090</NCM><CFOP>5102</CFOP><uCom>KG</uCom><qCom>1.2340</qCom><vUnCom>29.9000000000</vUnCom><vProd>36.90</vProd><cEANTrib>7891000100103</cEANTrib><uTrib>KG</uTrib><qTrib>1.2340</qTrib><vUnTrib>29.9000000000</vUnTrib><vDesc>1.91</vDesc><indTot>1</indTot><cAtivSN>01</cAtivSN></prod><imposto><vTotTrib>9.54</vTotTrib><ICMS><ICMS00><orig>0</orig><CST>00</CST><modBC>3</modBC><vBC>34.99</vBC><pICMS>18.0000</pICMS><vICMS>6.30</vICMS></ICMS00></ICMS><PIS><PISAliq><CST>01</CST><vBC>34.99</vBC><pPIS>1.6500</pPIS><vPIS>0.58</vPIS></PISAliq></PIS><COFINS><COFINSAliq><CST>01</CST><vBC>34.99</vBC><pCOFINS>7.6000</pCOFINS><vCOFINS>2.66</vCOFINS></COFINSAliq></COFINS><IBSCBS><CST>000</CST><cClassTrib>000001</cClassTrib><gIBSCBS><vBC>25.45</vBC><gIBSUF><pIBSUF>0.1000</pIBSUF><vIBSUF>0.03</vIBSUF></gIBSUF><gIBSMun><pIBSMun>0.0000</pIBSMun><vIBSMun>0.00</vIBSMun></gIBSMun><vIBS>0.03</vIBS><gCBS><pCBS>0.0000</pCBS><vCBS>0.00</vCBS></gCBS></gIBSCBS><gTribSN><gCBSSN><pCBSSN>3.0000</pCBSSN><vCBSSN>1.11</vCBSSN></gCBSSN></gTribSN></IBSCBS></imposto><vItem>34.99</vItem></det><total><ICMSTot><vBC>34.99</vBC><vICMS>6.30</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>36.90</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>1.91</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.58</vPIS><vCOFINS>2.66</vCOFINS><vOutro>0.00</vOutro><vNF>34.99</vNF><vTotTrib>9.54</vTotTrib></ICMSTot><IBSCBSTot><vBCIBSCBS>25.45</vBCIBSCBS><gIBS><gIBSUF><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vIBSUF>0.03</vIBSUF></gIBSUF><gIBSMun><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vIBSMun>0.00</vIBSMun></gIBSMun><vIBS>0.03</vIBS><vCredPres>0.00</vCredPres><vCredPresCondSus>0.00</vCredPresCondSus></gIBS><gTribSN><vIBSSN>0.00</vIBSSN><vCBSSN>1.11</vCBSSN></gTribSN></IBSCBSTot><vNFTot>34.99</vNFTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>03</tPag><vPag>34.99</vPag><card><tpIntegra>2</tpIntegra><tBand>02</tBand><cAut>AUT123</cAut></card></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "vBC": "34.99",
+    "vICMS": "6.30",
+    "vFCP": "0.00",
+    "vProd": "36.90",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "1.91",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.58",
+    "vCOFINS": "2.66",
+    "vTotTrib": "9.54",
+    "vNF": "34.99",
+    "vNFTot": "34.99"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "valor_liquido_e_troco",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 101,
+    "emissao": "2026-11-16T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 24681357,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 1,
+     "ie": "111111111111"
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "valor_unitario_liquido": "14.00"
+     },
+     {
+      "codigo": "2",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "3",
+      "valor_unitario": "0.40",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "valor_unitario_liquido": "0.3333",
+      "valor_produto_liquido": "0.99"
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "40.00"
+     }
+    ],
+    "ind_final": 1,
+    "ind_pres": 1,
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "chave": "35261111222333000181550010000001011246813572",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000001011246813572\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>24681357</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>101</nNF><dhEmi>2026-11-16T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>2</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>Cafe torrado 500g</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><vUnComLiq>14.0000000000</vUnComLiq><vProdLiq>28.00</vProdLiq><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><det nItem=\"2\"><prod><cProd>2</cProd><cEAN>SEM GTIN</cEAN><xProd>Cafe torrado 500g</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>3.0000</qCom><vUnCom>0.4000000000</vUnCom><vProd>1.20</vProd><vUnComLiq>0.3333000000</vUnComLiq><vProdLiq>0.99</vProdLiq><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>3.0000</qTrib><vUnTrib>0.4000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><vProdLiqTot>28.99</vProdLiqTot><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>33.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>33.00</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>40.00</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "33.00",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vNF": "33.00",
+    "vProdLiqTot": "28.99"
+   },
+   "conferir": [
+    "866-Rejeicao: Ausencia de troco quando o valor dos pagamentos informados for maior que o total da nota"
+   ]
+  },
+  {
+   "nome": "homologacao_em_26_10",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 101,
+    "emissao": "2026-10-26T00:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 24681357,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 1,
+     "ie": "111111111111"
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "valor_unitario_liquido": "14.00"
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "40.00"
+     }
+    ],
+    "ind_final": 1,
+    "ind_pres": 1,
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "chave": "35261011222333000181550010000001011246813579",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000001011246813579\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>24681357</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>101</nNF><dhEmi>2026-10-26T00:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>9</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>Cafe torrado 500g</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><vUnComLiq>14.0000000000</vUnComLiq><vProdLiq>28.00</vProdLiq><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><vProdLiqTot>28.00</vProdLiqTot><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>31.80</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>31.80</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>40.00</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "31.80",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vNF": "31.80",
+    "vProdLiqTot": "28.00"
+   },
+   "conferir": [
+    "866-Rejeicao: Ausencia de troco quando o valor dos pagamentos informados for maior que o total da nota"
+   ]
+  },
+  {
+   "nome": "simples_sem_regime_2026_11",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 301,
+    "emissao": "2026-11-20T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 13572468,
+    "tp_amb": 2,
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 1,
+     "ie": "111111111111"
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "c_ativ_sn": "01",
+      "ibscbs": {
+       "cst": "000",
+       "cclass_trib": "000001",
+       "vbc": "31.80",
+       "data": "2026-11-20",
+       "trib_sn": {
+        "ibs": {
+         "p": "0.50",
+         "v": "0.16"
+        },
+        "cbs": {
+         "p": "1.20",
+         "v": "0.38"
+        }
+       }
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "31.80"
+     }
+    ]
+   },
+   "chave": "35261111222333000181550010000003011135724688",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000003011135724688\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>13572468</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>301</nNF><dhEmi>2026-11-20T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>8</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>Cafe torrado 500g</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot><cAtivSN>01</cAtivSN></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS><IBSCBS><CST>000</CST><cClassTrib>000001</cClassTrib><gTribSN><gIBSSN><pIBSSN>0.5000</pIBSSN><vIBSSN>0.16</vIBSSN></gIBSSN><gCBSSN><pCBSSN>1.2000</pCBSSN><vCBSSN>0.38</vCBSSN></gCBSSN></gTribSN></IBSCBS></imposto><vItem>31.80</vItem></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>31.80</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>31.80</vNF></ICMSTot><IBSCBSTot><vBCIBSCBS>0.00</vBCIBSCBS><gTribSN><vIBSSN>0.16</vIBSSN><vCBSSN>0.38</vCBSSN></gTribSN></IBSCBSTot><vNFTot>31.80</vNFTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>31.80</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "31.80",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vNF": "31.80",
+    "vNFTot": "31.80"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "simples_sem_regime_2027_03",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 301,
+    "emissao": "2027-03-10T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 13572468,
+    "tp_amb": 1,
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 1,
+     "ie": "111111111111"
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "c_ativ_sn": "01",
+      "ibscbs": {
+       "cst": "000",
+       "cclass_trib": "000001",
+       "vbc": "31.80",
+       "data": "2027-03-10",
+       "trib_sn": {
+        "ibs": {
+         "p": "0.50",
+         "v": "0.16"
+        },
+        "cbs": {
+         "p": "1.20",
+         "v": "0.38"
+        }
+       }
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "31.80"
+     }
+    ]
+   },
+   "chave": "35270311222333000181550010000003011135724684",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35270311222333000181550010000003011135724684\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>13572468</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>301</nNF><dhEmi>2027-03-10T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>1</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CPF>52998224725</CPF><xNome>CLIENTE TESTE</xNome><enderDest><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>Cafe torrado 500g</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot><cAtivSN>01</cAtivSN></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS><IBSCBS><CST>000</CST><cClassTrib>000001</cClassTrib><gTribSN><gIBSSN><pIBSSN>0.5000</pIBSSN><vIBSSN>0.16</vIBSSN></gIBSSN><gCBSSN><pCBSSN>1.2000</pCBSSN><vCBSSN>0.38</vCBSSN></gCBSSN></gTribSN></IBSCBS></imposto><vItem>31.80</vItem></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>31.80</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>31.80</vNF></ICMSTot><IBSCBSTot><vBCIBSCBS>0.00</vBCIBSCBS><gTribSN><vIBSSN>0.16</vIBSSN><vCBSSN>0.38</vCBSSN></gTribSN></IBSCBSTot><vNFTot>31.80</vNFTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>31.80</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "31.80",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vNF": "31.80",
+    "vNFTot": "31.80"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "crt1_regime_regular_leva_gibscbs",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 301,
+    "emissao": "2026-11-20T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 13572468,
+    "tp_amb": 2,
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 1,
+     "ie": "111111111111",
+     "tp_regime_ibscbs": 1
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "c_ativ_sn": "01",
+      "ibscbs": {
+       "cst": "000",
+       "cclass_trib": "000001",
+       "vbc": "31.80",
+       "data": "2026-11-20"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "31.80"
+     }
+    ]
+   },
+   "chave": "35261111222333000181550010000003011135724688",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000003011135724688\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>13572468</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>301</nNF><dhEmi>2026-11-20T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>8</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>1</CRT><tpRegimeIBSCBS>1</tpRegimeIBSCBS></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>Cafe torrado 500g</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot><cAtivSN>01</cAtivSN></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS><IBSCBS><CST>000</CST><cClassTrib>000001</cClassTrib><gIBSCBS><vBC>31.80</vBC><gIBSUF><pIBSUF>0.1000</pIBSUF><vIBSUF>0.03</vIBSUF></gIBSUF><gIBSMun><pIBSMun>0.0000</pIBSMun><vIBSMun>0.00</vIBSMun></gIBSMun><vIBS>0.03</vIBS><gCBS><pCBS>0.9000</pCBS><vCBS>0.29</vCBS></gCBS></gIBSCBS></IBSCBS></imposto><vItem>31.80</vItem></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>31.80</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>31.80</vNF></ICMSTot><IBSCBSTot><vBCIBSCBS>31.80</vBCIBSCBS><gIBS><gIBSUF><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vIBSUF>0.03</vIBSUF></gIBSUF><gIBSMun><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vIBSMun>0.00</vIBSMun></gIBSMun><vIBS>0.03</vIBS><vCredPres>0.00</vCredPres><vCredPresCondSus>0.00</vCredPresCondSus></gIBS><gCBS><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vCBS>0.29</vCBS><vCredPres>0.00</vCredPres><vCredPresCondSus>0.00</vCredPresCondSus></gCBS></IBSCBSTot><vNFTot>31.80</vNFTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>31.80</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "vBC": "0.00",
+    "vICMS": "0.00",
+    "vFCP": "0.00",
+    "vProd": "31.80",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.00",
+    "vCOFINS": "0.00",
+    "vTotTrib": "0.00",
+    "vNF": "31.80",
+    "vNFTot": "31.80"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "crt3_opcao_pendente_2_gibscbs_e_gtribsn",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 301,
+    "emissao": "2026-11-20T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 13572468,
+    "tp_amb": 2,
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "tp_regime_ibscbs": 2
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "00",
+       "vbc": "31.80",
+       "p_icms": "18",
+       "v_icms": "5.72"
+      },
+      "pis": {
+       "cst": "01",
+       "vbc": "31.80",
+       "aliquota": "1.65",
+       "valor": "0.52"
+      },
+      "cofins": {
+       "cst": "01",
+       "vbc": "31.80",
+       "aliquota": "7.6",
+       "valor": "2.42"
+      },
+      "c_ativ_sn": "01",
+      "ibscbs": {
+       "cst": "000",
+       "cclass_trib": "000001",
+       "vbc": "31.80",
+       "data": "2026-11-20",
+       "trib_sn": {
+        "ibs": {
+         "p": "0.50",
+         "v": "0.16"
+        },
+        "cbs": {
+         "p": "1.20",
+         "v": "0.38"
+        }
+       }
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "31.80"
+     }
+    ]
+   },
+   "chave": "35261111222333000181550010000003011135724688",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000003011135724688\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>13572468</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>301</nNF><dhEmi>2026-11-20T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>8</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT><tpRegimeIBSCBS>2</tpRegimeIBSCBS></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>Cafe torrado 500g</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot><cAtivSN>01</cAtivSN></prod><imposto><ICMS><ICMS00><orig>0</orig><CST>00</CST><modBC>3</modBC><vBC>31.80</vBC><pICMS>18.0000</pICMS><vICMS>5.72</vICMS></ICMS00></ICMS><PIS><PISAliq><CST>01</CST><vBC>31.80</vBC><pPIS>1.6500</pPIS><vPIS>0.52</vPIS></PISAliq></PIS><COFINS><COFINSAliq><CST>01</CST><vBC>31.80</vBC><pCOFINS>7.6000</pCOFINS><vCOFINS>2.42</vCOFINS></COFINSAliq></COFINS><IBSCBS><CST>000</CST><cClassTrib>000001</cClassTrib><gIBSCBS><vBC>31.80</vBC><gIBSUF><pIBSUF>0.1000</pIBSUF><vIBSUF>0.03</vIBSUF></gIBSUF><gIBSMun><pIBSMun>0.0000</pIBSMun><vIBSMun>0.00</vIBSMun></gIBSMun><vIBS>0.03</vIBS><gCBS><pCBS>0.9000</pCBS><vCBS>0.29</vCBS></gCBS></gIBSCBS><gTribSN><gIBSSN><pIBSSN>0.5000</pIBSSN><vIBSSN>0.16</vIBSSN></gIBSSN><gCBSSN><pCBSSN>1.2000</pCBSSN><vCBSSN>0.38</vCBSSN></gCBSSN></gTribSN></IBSCBS></imposto><vItem>31.80</vItem></det><total><ICMSTot><vBC>31.80</vBC><vICMS>5.72</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>31.80</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.52</vPIS><vCOFINS>2.42</vCOFINS><vOutro>0.00</vOutro><vNF>31.80</vNF></ICMSTot><IBSCBSTot><vBCIBSCBS>31.80</vBCIBSCBS><gIBS><gIBSUF><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vIBSUF>0.03</vIBSUF></gIBSUF><gIBSMun><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vIBSMun>0.00</vIBSMun></gIBSMun><vIBS>0.03</vIBS><vCredPres>0.00</vCredPres><vCredPresCondSus>0.00</vCredPresCondSus></gIBS><gCBS><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vCBS>0.29</vCBS><vCredPres>0.00</vCredPres><vCredPresCondSus>0.00</vCredPresCondSus></gCBS><gTribSN><vIBSSN>0.16</vIBSSN><vCBSSN>0.38</vCBSSN></gTribSN></IBSCBSTot><vNFTot>31.80</vNFTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>31.80</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "vBC": "31.80",
+    "vICMS": "5.72",
+    "vFCP": "0.00",
+    "vProd": "31.80",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.52",
+    "vCOFINS": "2.42",
+    "vTotTrib": "0.00",
+    "vNF": "31.80",
+    "vNFTot": "31.80"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "crt3_opcao_pendente_3_so_cbssn",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 301,
+    "emissao": "2026-11-20T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 13572468,
+    "tp_amb": 2,
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "tp_regime_ibscbs": 3
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "00",
+       "vbc": "31.80",
+       "p_icms": "18",
+       "v_icms": "5.72"
+      },
+      "pis": {
+       "cst": "01",
+       "vbc": "31.80",
+       "aliquota": "1.65",
+       "valor": "0.52"
+      },
+      "cofins": {
+       "cst": "01",
+       "vbc": "31.80",
+       "aliquota": "7.6",
+       "valor": "2.42"
+      },
+      "c_ativ_sn": "01",
+      "ibscbs": {
+       "cst": "000",
+       "cclass_trib": "000001",
+       "vbc": "31.80",
+       "data": "2026-11-20",
+       "trib_sn": {
+        "cbs": {
+         "p": "1.20",
+         "v": "0.38"
+        }
+       }
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "31.80"
+     }
+    ]
+   },
+   "chave": "35261111222333000181550010000003011135724688",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000003011135724688\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>13572468</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>301</nNF><dhEmi>2026-11-20T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>8</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT><tpRegimeIBSCBS>3</tpRegimeIBSCBS></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>Cafe torrado 500g</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot><cAtivSN>01</cAtivSN></prod><imposto><ICMS><ICMS00><orig>0</orig><CST>00</CST><modBC>3</modBC><vBC>31.80</vBC><pICMS>18.0000</pICMS><vICMS>5.72</vICMS></ICMS00></ICMS><PIS><PISAliq><CST>01</CST><vBC>31.80</vBC><pPIS>1.6500</pPIS><vPIS>0.52</vPIS></PISAliq></PIS><COFINS><COFINSAliq><CST>01</CST><vBC>31.80</vBC><pCOFINS>7.6000</pCOFINS><vCOFINS>2.42</vCOFINS></COFINSAliq></COFINS><IBSCBS><CST>000</CST><cClassTrib>000001</cClassTrib><gIBSCBS><vBC>31.80</vBC><gIBSUF><pIBSUF>0.1000</pIBSUF><vIBSUF>0.03</vIBSUF></gIBSUF><gIBSMun><pIBSMun>0.0000</pIBSMun><vIBSMun>0.00</vIBSMun></gIBSMun><vIBS>0.03</vIBS><gCBS><pCBS>0.9000</pCBS><vCBS>0.29</vCBS></gCBS></gIBSCBS><gTribSN><gCBSSN><pCBSSN>1.2000</pCBSSN><vCBSSN>0.38</vCBSSN></gCBSSN></gTribSN></IBSCBS></imposto><vItem>31.80</vItem></det><total><ICMSTot><vBC>31.80</vBC><vICMS>5.72</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>31.80</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.52</vPIS><vCOFINS>2.42</vCOFINS><vOutro>0.00</vOutro><vNF>31.80</vNF></ICMSTot><IBSCBSTot><vBCIBSCBS>31.80</vBCIBSCBS><gIBS><gIBSUF><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vIBSUF>0.03</vIBSUF></gIBSUF><gIBSMun><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vIBSMun>0.00</vIBSMun></gIBSMun><vIBS>0.03</vIBS><vCredPres>0.00</vCredPres><vCredPresCondSus>0.00</vCredPresCondSus></gIBS><gCBS><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vCBS>0.29</vCBS><vCredPres>0.00</vCredPres><vCredPresCondSus>0.00</vCredPresCondSus></gCBS><gTribSN><vIBSSN>0.00</vIBSSN><vCBSSN>0.38</vCBSSN></gTribSN></IBSCBSTot><vNFTot>31.80</vNFTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>31.80</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "vBC": "31.80",
+    "vICMS": "5.72",
+    "vFCP": "0.00",
+    "vProd": "31.80",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.52",
+    "vCOFINS": "2.42",
+    "vTotTrib": "0.00",
+    "vNF": "31.80",
+    "vNFTot": "31.80"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "crt3_opcao_pendente_4_sem_gtribsn",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 301,
+    "emissao": "2026-11-20T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 13572468,
+    "tp_amb": 2,
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 3,
+     "ie": "111111111111",
+     "tp_regime_ibscbs": 4
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "00",
+       "vbc": "31.80",
+       "p_icms": "18",
+       "v_icms": "5.72"
+      },
+      "pis": {
+       "cst": "01",
+       "vbc": "31.80",
+       "aliquota": "1.65",
+       "valor": "0.52"
+      },
+      "cofins": {
+       "cst": "01",
+       "vbc": "31.80",
+       "aliquota": "7.6",
+       "valor": "2.42"
+      },
+      "c_ativ_sn": "01",
+      "ibscbs": {
+       "cst": "000",
+       "cclass_trib": "000001",
+       "vbc": "31.80",
+       "data": "2026-11-20"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "31.80"
+     }
+    ]
+   },
+   "chave": "35261111222333000181550010000003011135724688",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000003011135724688\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>13572468</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>301</nNF><dhEmi>2026-11-20T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>8</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT><tpRegimeIBSCBS>4</tpRegimeIBSCBS></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>Cafe torrado 500g</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot><cAtivSN>01</cAtivSN></prod><imposto><ICMS><ICMS00><orig>0</orig><CST>00</CST><modBC>3</modBC><vBC>31.80</vBC><pICMS>18.0000</pICMS><vICMS>5.72</vICMS></ICMS00></ICMS><PIS><PISAliq><CST>01</CST><vBC>31.80</vBC><pPIS>1.6500</pPIS><vPIS>0.52</vPIS></PISAliq></PIS><COFINS><COFINSAliq><CST>01</CST><vBC>31.80</vBC><pCOFINS>7.6000</pCOFINS><vCOFINS>2.42</vCOFINS></COFINSAliq></COFINS><IBSCBS><CST>000</CST><cClassTrib>000001</cClassTrib><gIBSCBS><vBC>31.80</vBC><gIBSUF><pIBSUF>0.1000</pIBSUF><vIBSUF>0.03</vIBSUF></gIBSUF><gIBSMun><pIBSMun>0.0000</pIBSMun><vIBSMun>0.00</vIBSMun></gIBSMun><vIBS>0.03</vIBS><gCBS><pCBS>0.9000</pCBS><vCBS>0.29</vCBS></gCBS></gIBSCBS></IBSCBS></imposto><vItem>31.80</vItem></det><total><ICMSTot><vBC>31.80</vBC><vICMS>5.72</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>31.80</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.52</vPIS><vCOFINS>2.42</vCOFINS><vOutro>0.00</vOutro><vNF>31.80</vNF></ICMSTot><IBSCBSTot><vBCIBSCBS>31.80</vBCIBSCBS><gIBS><gIBSUF><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vIBSUF>0.03</vIBSUF></gIBSUF><gIBSMun><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vIBSMun>0.00</vIBSMun></gIBSMun><vIBS>0.03</vIBS><vCredPres>0.00</vCredPres><vCredPresCondSus>0.00</vCredPresCondSus></gIBS><gCBS><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vCBS>0.29</vCBS><vCredPres>0.00</vCredPres><vCredPresCondSus>0.00</vCredPresCondSus></gCBS></IBSCBSTot><vNFTot>31.80</vNFTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>31.80</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "vBC": "31.80",
+    "vICMS": "5.72",
+    "vFCP": "0.00",
+    "vProd": "31.80",
+    "vFrete": "0.00",
+    "vSeg": "0.00",
+    "vDesc": "0.00",
+    "vOutro": "0.00",
+    "vIPI": "0.00",
+    "vPIS": "0.52",
+    "vCOFINS": "2.42",
+    "vTotTrib": "0.00",
+    "vNF": "31.80",
+    "vNFTot": "31.80"
+   },
+   "conferir": []
+  }
+ ],
+ "erros": [
+  {
+   "nome": "tp_regime_com_mei",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 101,
+    "emissao": "2026-11-16T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 24681357,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 4,
+     "ie": "111111111111",
+     "tp_regime_ibscbs": 1
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "40.00"
+     }
+    ],
+    "ind_final": 1,
+    "ind_pres": 1,
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "tpRegimeIBSCBS"
+  },
+  {
+   "nome": "cativsn_05",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 101,
+    "emissao": "2026-11-16T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 24681357,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 1,
+     "ie": "111111111111"
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "c_ativ_sn": "05"
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "40.00"
+     }
+    ],
+    "ind_final": 1,
+    "ind_pres": 1,
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "cAtivSN"
+  },
+  {
+   "nome": "ibssn_no_crt2",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 102,
+    "emissao": "2026-11-16T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 24681357,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 2,
+     "ie": "111111111111",
+     "fantasia": "TESTE & CIA"
+    },
+    "itens": [
+     {
+      "codigo": "7891000100103",
+      "descricao": "Pão de queijo  congelado\t1kg",
+      "ncm": "19059090",
+      "cfop": "5102",
+      "unidade": "KG",
+      "quantidade": "1.234",
+      "valor_unitario": "29.9",
+      "valor_produto": "36.90",
+      "gtin": "7891000100103",
+      "desconto": "1.91",
+      "icms": {
+       "codigo": "00",
+       "vbc": "34.99",
+       "p_icms": "18",
+       "v_icms": "6.30"
+      },
+      "pis": {
+       "cst": "01",
+       "vbc": "34.99",
+       "aliquota": "1.65",
+       "valor": "0.58"
+      },
+      "cofins": {
+       "cst": "01",
+       "vbc": "34.99",
+       "aliquota": "7.6",
+       "valor": "2.66"
+      },
+      "ibscbs": {
+       "cst": "000",
+       "cclass_trib": "000001",
+       "vbc": "25.45",
+       "data": "2026-11-16",
+       "trib_sn": {
+        "ibs": {
+         "p": "1.25",
+         "v": "12.50"
+        },
+        "cbs": {
+         "p": "3.1",
+         "v": "31.00"
+        }
+       }
+      },
+      "v_tot_trib": "9.54"
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "03",
+      "valor": "34.99",
+      "cartao": {
+       "tp_integra": 2,
+       "t_band": "02",
+       "c_aut": "AUT123"
+      }
+     }
+    ],
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "gTribSN/gIBSSN"
+  },
+  {
+   "nome": "mei_com_ibscbs",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 101,
+    "emissao": "2026-11-16T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 24681357,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 4,
+     "ie": "111111111111"
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "ibscbs": {
+       "cst": "000",
+       "cclass_trib": "000001",
+       "vbc": "31.80",
+       "data": "2026-11-16"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "40.00"
+     }
+    ],
+    "ind_final": 1,
+    "ind_pres": 1,
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "IBSCBS"
+  },
+  {
+   "nome": "vprodliq_sem_unitario",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 101,
+    "emissao": "2026-11-16T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 24681357,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 1,
+     "ie": "111111111111"
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "valor_produto_liquido": "28.00"
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "40.00"
+     }
+    ],
+    "ind_final": 1,
+    "ind_pres": 1,
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "vUnComLiq"
+  },
+  {
+   "nome": "i11c20_1279",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 101,
+    "emissao": "2026-11-16T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 24681357,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 1,
+     "ie": "111111111111"
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "valor_unitario_liquido": "14.00",
+      "valor_produto_liquido": "28.02"
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "40.00"
+     }
+    ],
+    "ind_final": 1,
+    "ind_pres": 1,
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "vProdLiq",
+   "regra": "1279"
+  },
+  {
+   "nome": "homologacao_antes_de_26_10",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 101,
+    "emissao": "2026-10-25T23:59:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 24681357,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 1,
+     "ie": "111111111111"
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "valor_unitario_liquido": "14.00"
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "40.00"
+     }
+    ],
+    "ind_final": 1,
+    "ind_pres": 1,
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "ver_proc": "rustnf teste"
+   },
+   "campo": "vUnComLiq",
+   "regra": "225"
+  },
+  {
+   "nome": "sn_sem_regime_sem_gtribsn",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 301,
+    "emissao": "2026-11-20T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 13572468,
+    "tp_amb": 2,
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 1,
+     "ie": "111111111111"
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "c_ativ_sn": "01",
+      "ibscbs": {
+       "cst": "000",
+       "cclass_trib": "000001",
+       "vbc": "31.80",
+       "data": "2026-11-20"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "31.80"
+     }
+    ]
+   },
+   "campo": "gTribSN"
+  },
+  {
+   "nome": "sn_sem_regime_com_diferimento",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 301,
+    "emissao": "2026-11-20T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 13572468,
+    "tp_amb": 2,
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 1,
+     "ie": "111111111111"
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "c_ativ_sn": "01",
+      "ibscbs": {
+       "cst": "000",
+       "cclass_trib": "000001",
+       "vbc": "31.80",
+       "data": "2026-11-20",
+       "trib_sn": {
+        "ibs": {
+         "p": "0.50",
+         "v": "0.16"
+        },
+        "cbs": {
+         "p": "1.20",
+         "v": "0.38"
+        }
+       },
+       "p_dif": "10"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "31.80"
+     }
+    ]
+   },
+   "campo": "IBSCBS"
+  },
+  {
+   "nome": "sn_crt2_sem_regime_cbs_nao_zerada",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 301,
+    "emissao": "2026-11-20T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 13572468,
+    "tp_amb": 2,
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "INDUSTRIA TESTE S/A",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 2,
+     "ie": "111111111111"
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "00",
+       "vbc": "31.80",
+       "p_icms": "18",
+       "v_icms": "5.72"
+      },
+      "pis": {
+       "cst": "01",
+       "vbc": "31.80",
+       "aliquota": "1.65",
+       "valor": "0.52"
+      },
+      "cofins": {
+       "cst": "01",
+       "vbc": "31.80",
+       "aliquota": "7.6",
+       "valor": "2.42"
+      },
+      "c_ativ_sn": "01",
+      "ibscbs": {
+       "cst": "000",
+       "cclass_trib": "000001",
+       "vbc": "31.80",
+       "data": "2026-11-20",
+       "trib_sn": {
+        "cbs": {
+         "p": "1.20",
+         "v": "0.38"
+        }
+       },
+       "aliquotas": {
+        "ibs_uf": "0.1",
+        "ibs_mun": "0",
+        "cbs": "0.9"
+       }
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "31.80"
+     }
+    ]
+   },
+   "campo": "gIBSCBS/gCBS"
+  },
+  {
+   "nome": "sn_crt1_com_tp_regime_2",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 301,
+    "emissao": "2026-11-20T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 13572468,
+    "tp_amb": 2,
+    "ind_final": 1,
+    "ind_pres": 1,
+    "ver_proc": "rustnf teste",
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "LOJA DE TESTE LTDA",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "crt": 1,
+     "ie": "111111111111",
+     "tp_regime_ibscbs": 2
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000",
+      "fone": "1133334444"
+     },
+     "ind_ie_dest": 9
+    },
+    "itens": [
+     {
+      "codigo": "1",
+      "descricao": "Cafe torrado 500g",
+      "ncm": "09012100",
+      "cfop": "5102",
+      "unidade": "UN",
+      "quantidade": "2",
+      "valor_unitario": "15.90",
+      "icms": {
+       "codigo": "102"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "c_ativ_sn": "01",
+      "ibscbs": {
+       "cst": "000",
+       "cclass_trib": "000001",
+       "vbc": "31.80",
+       "data": "2026-11-20",
+       "trib_sn": {
+        "ibs": {
+         "p": "0.50",
+         "v": "0.16"
+        },
+        "cbs": {
+         "p": "1.20",
+         "v": "0.38"
+        }
+       }
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "31.80"
+     }
+    ]
+   },
+   "campo": "tpRegimeIBSCBS"
+  }
+ ]
+}

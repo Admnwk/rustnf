@@ -20,6 +20,29 @@ alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o �
   * `nfe::vigencias`: calendário das Notas Técnicas por ambiente, com as datas conferidas no cronograma de cada NT.
   * A chave de acesso e a leitura da NF-e partiram da `gaialib`; aqui foram reescritas e cobertas por casos novos, com
     documentos fictícios.
+* NF-e (modelo 55), montagem e assinatura, atrás da feature `nfe` (sem dependência nova). **A NF-e ainda não é enviada**:
+  não há cliente da SEFAZ, DANFE, linha de comando, API nem interface para ela.
+  * `nfe::montagem`: o pedido em JSON (`nota_de_json`, formato em `docs/NFE_PEDIDO.md`) vira a `Nota` e o XML `NFe` 4.00
+    do modelo 55 (`montar`), na ordem do XSD PL_010h: ide (referenciadas, intermediador, contingência, `cIndOp`), emit,
+    dest, retirada e entrega, det/prod (veículo novo, CEST, benefício fiscal), ICMS completo (CST e CSOSN, ST, diferimento,
+    desoneração, partilha, repasse, FCP, ICMS efetivo), IPI, PIS, COFINS, ICMSUFDest (DIFAL), IBS/CBS, compra
+    governamental, pagamento antecipado, valor líquido do produto, totais (`ICMSTot`, `IBSCBSTot`, `vNFTot`), transporte
+    (`modFrete`), pagamento e cartão, informações adicionais e responsável técnico. A mesma entrada dá o mesmo XML: o
+    `cNF` e a data de emissão vêm do pedido.
+  * `conferir` devolve as rejeições do MOC e das Notas Técnicas (`<cStat>-Rejeicao: ...`) que a nota levaria, antes de
+    gastar o número; `montar` recusa, com o campo e o código da rejeição, o que o leiaute não aceita.
+  * `assinar` assina o `infNFe` com o A1 pelo módulo `assinatura`: RSA-SHA1 e digest SHA-1, os únicos que o
+    `xmldsig-core-schema_v1.01.xsd` da NF-e aceita (a NFS-e usa SHA-256). O DANFE simplificado (`tpImp` 6) monta mas não
+    assina: pede o QR Code, que ainda não existe. O modelo 65 (NFC-e) é recusado.
+  * Campo desconhecido no pedido: aviso (`campos_desconhecidos`) e, no modo estrito (`nota_de_json_estrito`), recusa.
+  * `reforma::calculo` (feature `nfe`): o IBS/CBS de mercadoria por item e o total (`ibscbs_do_item`, `totalizar`,
+    `vnftot`); mais `grupo_exigido`, `tributos_somam_no_total`, `mono_modalidade` e `indop::erro_nfe`.
+  * Simples Nacional (NT 2026.005, tabela da seção 2.3): o Simples sem regime regular do IBS/CBS (CRT 1, sem
+    `tpRegimeIBSCBS`) leva o item SEM o `gIBSCBS`, mesmo quando o CST o exige, e COM o `gTribSN` (`gIBSSN` e
+    `gCBSSN`); a montagem exige o `gTribSN` nesse regime. No CRT 2 sem regime regular o `gCBS` vai com a alíquota
+    zerada.
+  * A montagem, o cálculo e as regras partiram da `gaialib`; aqui foram reescritos e cobertos por casos novos, com
+    documentos fictícios e o XML validado no XSD oficial.
 * Reforma: o aviso ao optante do Simples Nacional passa a explicar a opção pelo regime regular do IBS e da CBS (LC 123/2006,
   art. 13, §§ 9º a 11, incluídos pela LC 214/2025, art. 517, na redação da LC 227/2026, com efeito a partir de 1º/1/2027):
   vale por semestre iniciado em janeiro ou julho, é irretratável no semestre e é feita em setembro ou março, antes dele.
