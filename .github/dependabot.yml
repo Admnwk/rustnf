@@ -13,6 +13,8 @@ updates:
     ignore:
       # a interface fixa a versao do kit (`=`): a troca e' feita a mao, com as telas conferidas
       - dependency-name: "gpui-kit"
+      # o skrifa acompanha a versao que o krilla usa: outra versao duplicaria a arvore de fontes
+      - dependency-name: "skrifa"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -20,3 +22,9 @@ updates:
     groups:
       actions:
         patterns: ["*"]
+    ignore:
+      # a versao minima do Rust fica fixa no job `versao-minima` (e' o `rust-version` do Cargo.toml)
+      - dependency-name: "dtolnay/rust-toolchain"
+      # a v8 muda a conferencia de digest e a descompactacao: troca feita a mao, com uma release de ensaio
+      - dependency-name: "actions/download-artifact"
+        update-types: ["version-update:semver-major"]
