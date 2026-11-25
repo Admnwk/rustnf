@@ -50,6 +50,30 @@ pub struct Emitente {
     pub regime_especial: u8,
     /// Serie da DPS (`serie`), ate 5 digitos; vazio = a do pedido ou 1.
     pub serie: String,
+    /// Aliquota padrao do ISS, em percentual (`valores.municipal.aliquota`, ex. `2.00`); vazio = nao informar. So'
+    /// completa a DPS em que a aliquota precisa ir ([`aliquota_iss_vai_na_dps`]): em municipio conveniado ao sistema
+    /// nacional, a Sefin usa a aliquota do municipio e recusa a informada (Anexo I, E0617 e E0625).
+    pub aliquota_iss: String,
+}
+
+/// A aliquota do ISS vai na DPS? So' com ISS tributavel (`tributacao` 1), sem regime especial, fora do MEI, e, para
+/// ME/EPP, so' com o ISS retido (Anexo I v1.01: E0600 MEI, E0602 tributacao, E0604 regime especial, E0621/E0628
+/// ME/EPP com retencao, E0625 ME/EPP sem retencao com convenio ativo). Para nao optante depende do convenio do
+/// municipio (E0617/E0619), que so' quem configura sabe: vale.
+#[must_use]
+pub fn aliquota_iss_vai_na_dps(
+    op_simples: u8,
+    regime_especial: u8,
+    tributacao: u8,
+    retencao: u8,
+) -> bool {
+    tributacao == 1
+        && regime_especial == 0
+        && match op_simples {
+            2 => false,
+            3 => matches!(retencao, 2 | 3),
+            _ => true,
+        }
 }
 
 impl Default for Emitente {
@@ -64,6 +88,7 @@ impl Default for Emitente {
             regime_apuracao: 0,
             regime_especial: 0,
             serie: String::new(),
+            aliquota_iss: String::new(),
         }
     }
 }

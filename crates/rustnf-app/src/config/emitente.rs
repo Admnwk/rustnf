@@ -6,7 +6,7 @@
 
 use serde_json::{json, Map, Value};
 
-use super::modelo::Emitente;
+use super::modelo::{aliquota_iss_vai_na_dps, Emitente};
 
 /// Campo ausente: nao existe, e' `null` ou e' texto vazio.
 fn ausente(objeto: &Map<String, Value>, chave: &str) -> bool {
@@ -70,6 +70,39 @@ pub fn aplicar_emitente(pedido: &mut Value, emitente: &Emitente) {
     if emitente.regime_especial != 0 {
         completar(p, "regime_especial", json!(emitente.regime_especial));
     }
+    let (op_simples, regime_especial) = (
+        numero(p.get("op_simples"), 1),
+        numero(p.get("regime_especial"), 0),
+    );
+    let aliquota = emitente.aliquota_iss.trim().replace(',', ".");
+    if aliquota.is_empty() {
+        return;
+    }
+    let Some(valores) = raiz.get_mut("valores").and_then(Value::as_object_mut) else {
+        return;
+    };
+    let municipal = valores
+        .entry("municipal")
+        .or_insert_with(|| Value::Object(Map::new()));
+    let Some(m) = municipal.as_object_mut() else {
+        return;
+    };
+    let (tributacao, retencao) = (numero(m.get("tributacao"), 1), numero(m.get("retencao"), 1));
+    if aliquota_iss_vai_na_dps(op_simples, regime_especial, tributacao, retencao) {
+        completar(m, "aliquota", json!(aliquota));
+    }
+}
+
+/// Numero pequeno do pedido (`1`, `"1"`); ausente ou ilegivel = `padrao`.
+fn numero(v: Option<&Value>, padrao: u8) -> u8 {
+    match v {
+        Some(Value::Number(n)) => n
+            .as_u64()
+            .and_then(|n| u8::try_from(n).ok())
+            .unwrap_or(padrao),
+        Some(Value::String(s)) => s.trim().parse().unwrap_or(padrao),
+        _ => padrao,
+    }
 }
 
 #[cfg(test)]
@@ -125,6 +158,37 @@ mod testes {
         let mut p = json!({});
         aplicar_emitente(&mut p, &Emitente::default());
         assert_eq!(p, json!({"prestador": {"op_simples": 1}}));
+    }
+
+    #[test]
+    fn aliquota_do_iss_so_onde_a_dps_a_aceita() {
+        let com = |op: u8, retencao: u8, tributacao: u8| {
+            let mut e = emitente();
+            e.op_simples = op;
+            e.aliquota_iss = "2,5".into();
+            let mut p = json!({"valores": {"servico": "100", "municipal": {"retencao": retencao, "tributacao": tributacao}}});
+            aplicar_emitente(&mut p, &e);
+            p["valores"]["municipal"].get("aliquota").cloned()
+        };
+        // nao optante: vai (quem configura e' de municipio sem convenio)
+        assert_eq!(com(1, 1, 1), Some(json!("2.5")));
+        // ME/EPP: so' com retencao
+        assert_eq!(com(3, 2, 1), Some(json!("2.5")));
+        assert_eq!(com(3, 1, 1), None);
+        // MEI nunca; ISS nao tributavel nunca
+        assert_eq!(com(2, 2, 1), None);
+        assert_eq!(com(1, 1, 2), None);
+        // nunca sobrescreve a do pedido
+        let mut e = emitente();
+        e.op_simples = 1;
+        e.aliquota_iss = "2.5".into();
+        let mut p = json!({"valores": {"servico": "100", "municipal": {"aliquota": "3"}}});
+        aplicar_emitente(&mut p, &e);
+        assert_eq!(p["valores"]["municipal"]["aliquota"], "3");
+        // sem `valores` no pedido nada e' criado
+        let mut p = json!({});
+        aplicar_emitente(&mut p, &e);
+        assert!(p.get("valores").is_none());
     }
 
     #[test]

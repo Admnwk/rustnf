@@ -143,6 +143,7 @@ pub(super) struct Entradas {
     pub(super) inscricao: Entity<InputState>,
     pub(super) municipio: Entity<InputState>,
     pub(super) serie: Entity<InputState>,
+    pub(super) aliquota_iss: Entity<InputState>,
     pub(super) pfx: Entity<InputState>,
     pub(super) senha: Entity<InputState>,
     pub(super) tempo: Entity<InputState>,
@@ -217,6 +218,7 @@ impl Raiz {
             inscricao: entrada(window, cx, "Inscrição municipal"),
             municipio: entrada(window, cx, "Ex.: 3550308"),
             serie: entrada(window, cx, "Ex.: 1"),
+            aliquota_iss: entrada(window, cx, "Vazio: não informar"),
             pfx: entrada(window, cx, "Arquivo .pfx ou .p12"),
             senha: cx.new(|cx| {
                 InputState::new(window, cx)
@@ -293,6 +295,7 @@ impl Raiz {
             (Campo::InscricaoMunicipal, self.entradas.inscricao.clone()),
             (Campo::Municipio, self.entradas.municipio.clone()),
             (Campo::Serie, self.entradas.serie.clone()),
+            (Campo::AliquotaIssPadrao, self.entradas.aliquota_iss.clone()),
             (Campo::Pfx, self.entradas.pfx.clone()),
             (Campo::Senha, self.entradas.senha.clone()),
             (Campo::TempoLimite, self.entradas.tempo.clone()),
@@ -733,6 +736,7 @@ impl Raiz {
             (Campo::InscricaoMunicipal, self.entradas.inscricao.clone()),
             (Campo::Municipio, self.entradas.municipio.clone()),
             (Campo::Serie, self.entradas.serie.clone()),
+            (Campo::AliquotaIssPadrao, self.entradas.aliquota_iss.clone()),
             (Campo::Pfx, self.entradas.pfx.clone()),
             (Campo::TempoLimite, self.entradas.tempo.clone()),
             (Campo::FolgaRelogio, self.entradas.folga.clone()),

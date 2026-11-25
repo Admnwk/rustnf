@@ -150,6 +150,21 @@ impl Raiz {
                 )
                 .col_span(2),
             );
+            if op != 2 {
+                forma = forma.child(
+                    campo(
+                        "Alíquota padrão do ISS (%)",
+                        false,
+                        Some(
+                            "Só se o seu município não for conveniado ao sistema nacional, ou se for ME/EPP com ISS retido: aí a nota leva a alíquota. Em município conveniado a Sefin usa a alíquota do município e recusa a informada; deixe vazio."
+                                .into(),
+                        ),
+                        e(Campo::AliquotaIssPadrao),
+                        Input::new(&self.entradas.aliquota_iss).id("aliquota-iss-padrao"),
+                    )
+                    .col_span(1),
+                );
+            }
         }
         forma
     }

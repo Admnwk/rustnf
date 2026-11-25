@@ -84,6 +84,15 @@ fn emitente(e: &Emitente) -> Resultado {
     if !e.serie.is_empty() && !(e.serie.len() <= 5 && so_digitos(&e.serie)) {
         return Err(ErroConfig::invalido(sec, "serie", "ate 5 digitos"));
     }
+    if !e.aliquota_iss.trim().is_empty()
+        && rustnf::nfse::aliquota_iss(&e.aliquota_iss.trim().replace(',', ".")).is_err()
+    {
+        return Err(ErroConfig::invalido(
+            sec,
+            "aliquota_iss",
+            "percentual de 0 a 5, com ate 2 casas (ex.: 2.00)",
+        ));
+    }
     Ok(())
 }
 

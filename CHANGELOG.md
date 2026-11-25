@@ -8,6 +8,10 @@
   partir do pedido em JSON, assina com um certificado A1 de teste e confere a assinatura, sem rede.
 * CI: documentação gerada com aviso virando erro, o exemplo da biblioteca roda, e o histórico inteiro passa pelo
   gitleaks (binário oficial conferido pelo SHA-256); as ações do GitHub foram para as versões em Node.js 24.
+* ISS: alíquota padrão no `[emitente]` (`aliquota_iss`, vazio = não informar), que completa a DPS só onde ela leva
+  a alíquota (ISS tributável, sem regime especial, fora do MEI e, para ME/EPP, com ISS retido). Na interface, o campo
+  fica em Configurações > Emitente, aparece como dica na Nova nota, e o resumo de valores mostra o ISS estimado (ou
+  "calculado pela Sefin" sem alíquota conhecida); o ISS retido sai do valor líquido.
 * Interface de desktop pelo teclado: o Tab leva a tela até o campo que ganha o foco (antes ele podia ficar fora de
   vista), PageUp/PageDown rolam a tela mesmo com o foco num campo, e as setas e Ctrl+Home/Ctrl+End rolam quando o
   foco não está num campo. Na lista de notas as setas continuam andando pela lista.
