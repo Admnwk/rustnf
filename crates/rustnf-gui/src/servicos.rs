@@ -206,6 +206,31 @@ pub trait Conexao: Send + Sync {
     fn testar(&self, preparo: Preparo) -> FuturoConexao;
 }
 
+/// Futuro da busca de endereco pelo CEP.
+pub type FuturoCep = Pin<
+    Box<
+        dyn Future<Output = Result<rustnf_app::cep::EnderecoDoCep, rustnf_app::cep::ErroCep>>
+            + Send
+            + 'static,
+    >,
+>;
+
+/// Quem busca o endereco pelo CEP. O real chama o ViaCEP (e a BrasilAPI de reserva); os testes trocam por um falso.
+pub trait BuscaCep: Send + Sync {
+    /// Busca o CEP (8 digitos).
+    fn buscar(&self, cep: String) -> FuturoCep;
+}
+
+/// A busca de CEP real, pela rede.
+#[derive(Debug, Clone, Copy, Default)]
+pub struct CepReal;
+
+impl BuscaCep for CepReal {
+    fn buscar(&self, cep: String) -> FuturoCep {
+        Box::pin(async move { rustnf_app::cep::buscar(&cep, Duration::from_secs(8)).await })
+    }
+}
+
 /// O teste de conexao real, com TLS mutuo.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct ConexaoReal;
@@ -266,6 +291,7 @@ pub struct Servicos {
     relogio: Relogio,
     fabrica: Arc<dyn FabricaDeEmissor>,
     abridor: Arc<dyn AbrirArquivos>,
+    cep: Arc<dyn BuscaCep>,
 }
 
 impl Servicos {
@@ -283,7 +309,21 @@ impl Servicos {
             relogio: Arc::new(Utc::now),
             fabrica: Arc::new(FabricaReal),
             abridor: Arc::new(DoSistema),
+            cep: Arc::new(CepReal),
         }
+    }
+
+    /// Troca a busca de CEP (os testes usam uma falsa, sem rede).
+    #[must_use]
+    pub fn com_busca_cep(mut self, cep: Arc<dyn BuscaCep>) -> Self {
+        self.cep = cep;
+        self
+    }
+
+    /// Quem busca o endereco pelo CEP.
+    #[must_use]
+    pub fn busca_cep(&self) -> Arc<dyn BuscaCep> {
+        Arc::clone(&self.cep)
     }
 
     /// Os servicos com tudo trocavel, para os testes.
@@ -305,6 +345,7 @@ impl Servicos {
             relogio,
             fabrica: Arc::new(FabricaSemEmissor),
             abridor: Arc::new(DoSistema),
+            cep: Arc::new(CepReal),
         }
     }
 

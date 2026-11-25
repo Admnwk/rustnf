@@ -20,6 +20,7 @@
 #![cfg_attr(test, allow(clippy::unwrap_used, clippy::expect_used, clippy::panic))]
 
 pub mod atomico;
+pub mod cep;
 pub mod certificado;
 pub mod cofre;
 pub mod config;
