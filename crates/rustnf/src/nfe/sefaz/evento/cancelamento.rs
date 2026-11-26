@@ -20,7 +20,7 @@
 use chrono::{DateTime, FixedOffset};
 
 use super::super::erro::ErroSefaz;
-use super::super::pedidos::chave_valida;
+use super::super::pedidos::{chave_valida, chave_valida_nfce};
 use super::comum::{montar, protocolo, texto_livre, Cabecalho, Montado};
 use crate::nfe::vigencias::Ambiente;
 
@@ -80,7 +80,20 @@ fn autor_da_chave(c: &crate::chave_dfe::Chave) -> &'static str {
 /// [`ErroSefaz`] se a chave nao e' de NF-e valida, o protocolo nao tem 15 ou 17 digitos ou a justificativa esta fora
 /// de 15 a 255 caracteres.
 pub fn cancelamento(p: &Cancelamento<'_>) -> Result<Montado, ErroSefaz> {
-    let c = chave_valida(p.chave)?;
+    cancelamento_de(p, chave_valida(p.chave)?)
+}
+
+/// Monta o cancelamento (110111) da NFC-e (sem assinatura): o mesmo evento, com a chave do modelo 65.
+///
+/// # Errors
+///
+/// [`ErroSefaz`] se a chave nao e' de NFC-e valida, o protocolo nao tem 15 ou 17 digitos ou a justificativa esta fora
+/// de 15 a 255 caracteres.
+pub fn cancelamento_nfce(p: &Cancelamento<'_>) -> Result<Montado, ErroSefaz> {
+    cancelamento_de(p, chave_valida_nfce(p.chave)?)
+}
+
+fn cancelamento_de(p: &Cancelamento<'_>, c: crate::chave_dfe::Chave) -> Result<Montado, ErroSefaz> {
     let n_prot = protocolo(p.protocolo, "nProt")?;
     let det = format!(
         "<descEvento>Cancelamento</descEvento><nProt>{n_prot}</nProt><xJust>{}</xJust>",

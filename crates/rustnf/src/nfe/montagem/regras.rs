@@ -49,8 +49,17 @@ pub fn conferir(n: &Nota) -> Vec<String> {
     out.extend(modelo_referenciado(n));
     out.extend(gtin(n));
     out.extend(icms_item(n));
-    let vnf = match montar(n) {
+    let varejo = super::nfce::regras(n);
+    if !varejo.is_empty() {
+        out.extend(super::nfce::como_lista(&varejo));
+        return out;
+    }
+    let vnf = match super::montar_interno(n, false) {
         Ok(m) => {
+            out.extend(super::nfce::como_lista(&super::nfce::regras_do_total(
+                n,
+                &m.totais["vNF"],
+            )));
             out.extend(grupo_bb(n, &m.chave));
             Dec::parse(&m.totais["vNF"], "vNF").map(c).unwrap_or(0)
         }

@@ -1,7 +1,7 @@
-# Pedido da NF-e em JSON
+# Pedido da NF-e e da NFC-e em JSON
 
-O pedido que `rustnf::nfe::montagem::nota_de_json` le para montar a NF-e (modelo 55, leiaute 4.00). A montagem NAO envia
-a nota a SEFAZ.
+O pedido que `rustnf::nfe::montagem::nota_de_json` le para montar a NF-e (modelo 55) ou a NFC-e (modelo 65), leiaute 4.00.
+A montagem NAO envia a nota a SEFAZ.
 
 * Pela linha de comando (`rustnf nfe`), o que o pedido nao traz vem do arquivo de configuracao: `emit` (documento, nome, `crt`, `ie`,
   fantasia e endereco), `serie`, `numero` (o proximo da pasta de notas), `tp_amb`, `emissao`, `cmun_fg`, `codigo`,
@@ -17,7 +17,37 @@ a nota a SEFAZ.
   aviso em `campos_desconhecidos`; `nota_de_json_estrito` recusa. `itens[].ibscbs.publicadas` e' de forma livre.
 * Ainda sem campo no pedido (a montagem recusa o que pede e nao faz): imposto de importacao (`II`, `DI`, `adi`),
   imposto seletivo, `detExport`, armamento, `NVE`, `ISSQN`, `retTrib`, `obsCont`, `obsFisco`, `procRef`, `cana`,
-  `agropecuario`, `impostoDevol` e o QR Code. O modelo 65 (NFC-e) e' recusado.
+  `agropecuario` e `impostoDevol`.
+* **NFC-e (`modelo` 65).** O mesmo pedido, com os padroes do modelo: `tp_imp` 4, `ind_final` 1 e `ind_pres` 1 quando o
+  pedido nao diz, `mod_frete` 9. O destinatario (`dest`) e' opcional: sem ele a NFC-e sai sem o grupo `dest`; com ele, so'
+  o CPF, o CNPJ ou o `id_estrangeiro` e `ind_ie_dest` 9 sao obrigatorios (nome e endereco sao opcionais, e acima de R$
+  10.000,00 a regra 752 exige o endereco). A montagem recusa, com o codigo da rejeicao, o que o MOC 7.00 e a NT 2026.002
+  v1.11 rejeitam na NFC-e: `dhSaiEnt` (705), entrada (706), operacao fora do estado (707), `tpImp` fora de 4 e 5 (709),
+  finalidade diferente de 1 (715), `ind_final` 0 (716), `ind_pres` fora de 1, 4 e 5 (717), entrega a domicilio sem
+  destinatario (787), destinatario contribuinte (789), referencias (708), IE de substituto (718), local de retirada
+  (669), CFOP fora da lista (725) e a combinacao CFOP x CST ou CSOSN (382 e 386), CST e CSOSN fora da lista (766 e 383),
+  item que nao soma no total (774), veiculo (736), IPI (742), DIFAL (807), partilha e repasse do ICMS (741 e 740), MEI
+  (782 e 337), frete (753), grupos de transporte (758 e 759), compra (762), meio de pagamento 99 (436) e os limites de
+  valor (780, 750 e 752). `conferir` lista todas na frente. **De fora, por depender da SEFAZ ou do relogio:** o atraso
+  da data de emissao (704), a UF que nao aceita a NFC-e (702) ou a entrega a domicilio (785) e o limite de valor por UF
+  (a montagem usa o padrao da NT: R$ 10.000,00 sem destinatario e R$ 200.000,00 no total); **de fora, por nao haver o
+  campo na montagem:** arma (738), RECOPI (348), cana (763), PIS e COFINS ST (746 e 749), II (743) e devolucao de
+  tributos (390). As regras facultativas por UF (751, 391 e 392) e a G01-10 (670, "implementacao futura" na NT) nao
+  sao aplicadas.
+* **Contingencia off-line (`tp_emis` 9).** `tp_emis` 9, `dh_cont` e `x_just` (15 a 256 caracteres) no pedido; `idDest` 1,
+  `finNFe` 1, `indFinal` 1 e `indPres` 1 (o MOC, Anexo IV, item 4, e as regras acima). O prazo para transmitir e' o fim
+  do primeiro dia util depois da emissao: `rustnf::nfe::montagem::prazo_de_transmissao`. A nota segue com a MESMA chave.
+* **QR Code e CSC.** O `infNFeSupl` (`qrCode` e `urlChave`) nao e' campo do pedido: entra na assinatura
+  (`montagem::assinar` e `assinar_com`), que le o QR Code da nota montada. Sem CSC o QR Code e' o da versao 3 (NT
+  2025.001: no off-line leva a assinatura RSA SHA-1 dos parametros, feita com o certificado A1 da nota). A versao 2
+  usa o CSC (de 16 a 36 caracteres alfanumericos) e o `idCSC` que a SEFAZ da UF fornece pelo portal dela: o CSC **nao vai no
+  JSON do pedido** (o pedido pode ser guardado, enviado ou colado num chamado), vai por argumento a
+  `assinar_com(&montada, &certificado, &OpcoesQr { versao, csc })`. `Csc` esconde o valor no `Debug` e nenhuma mensagem de
+  erro o repete; quem guarda o CSC e' a aplicacao, junto do certificado (segredo write-only, como a senha do A1). O
+  emitente pessoa fisica (CPF, produtor rural) so' usa a versao 3 (rejeicao 444), e a NF-e com `tp_imp` 6 tambem (672), com a
+  URL da NFC-e (regra ZX02-20, observacao 3). O endereco do QR Code e o da consulta por chave vem de
+  `dados/nfce_qrcode.json`, com a fonte de cada linha; a UF que a tabela nao cobre (AM, MA e a homologacao de RR) recusa a
+  assinatura com o motivo.
 
 ## Avisos da montagem
 
@@ -39,7 +69,7 @@ Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endere
 
 | campo | o que e' |
 |---|---|
-| `modelo` | Modelo: so' o 55 e' montado. |
+| `modelo` | Modelo: 55 (NF-e) ou 65 (NFC-e). |
 | `serie` | `serie`. |
 | `numero` | `nNF`. |
 | `emissao` | `dhEmi`, com fuso. |
@@ -48,16 +78,16 @@ Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endere
 | `emit` | Emitente. |
 | `itens` | Itens (de 1 a 990). |
 | `pagamentos` | Pagamentos (de 1 a 100). |
-| `dest` | Destinatario. |
+| `dest` | Destinatario. Opcional na NFC-e (consumidor nao identificado); a NF-e exige. |
 | `tp_amb` | `tpAmb`: 1 producao, 2 homologacao. |
 | `tp_emis` | `tpEmis`. |
 | `tp_nf` | `tpNF`: 0 entrada, 1 saida. |
 | `id_dest` | `idDest`. |
 | `fin_nfe` | `finNFe`. |
-| `ind_final` | `indFinal`; vazio = 0. |
-| `ind_pres` | `indPres`; vazio = 9. |
+| `ind_final` | `indFinal`; vazio = 0 na NF-e e 1 na NFC-e. |
+| `ind_pres` | `indPres`; vazio = 9 na NF-e e 1 (presencial) na NFC-e. |
 | `ind_intermed` | `indIntermed`. |
-| `tp_imp` | `tpImp`; vazio = 1. O 6 (DANFE simplificado) pede o QR Code: a nota monta, mas nao e' assinada. |
+| `tp_imp` | `tpImp`; vazio = 1 na NF-e e 4 (DANFE NFC-e) na NFC-e. O 6 (DANFE Simplificado Tipo 2) leva o QR Code, como a NFC-e. |
 | `proc_emi` | `procEmi`. |
 | `ver_proc` | `verProc`; o pedido JSON sem ele leva `rustnf <versao>`. |
 | `codigo` | `cNF` (8 digitos). Obrigatorio na montagem: ela nao sorteia, para a mesma entrada dar o mesmo XML (veja `chave_dfe::gerar_codigo`). |

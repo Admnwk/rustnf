@@ -25,7 +25,7 @@ use super::evento::{
     self, Cancelamento, CartaCorrecao, Epec, EventoRtc, Manifestacao, PedidoEvento,
 };
 use super::inutilizacao::{self, Inutilizacao, PedidoInutilizacao, PedidoInutilizar};
-use super::pedidos::chave_valida;
+use super::pedidos::{chave_valida, chave_valida_qualquer};
 use super::resposta_evento::{
     self as re, ler_evento, ler_inutilizacao, proc_evento, proc_inutilizacao, InfRetEvento,
 };
@@ -108,7 +108,7 @@ fn do_pedido<'a>(eventos: &'a [InfRetEvento], p: &PedidoEvento) -> Option<&'a In
 impl<T: Transporte> ClienteSefaz<T> {
     // ------------------------------------------------------------------------------------------------- eventos
 
-    /// Cancela a NF-e (evento 110111) no autorizador da chave. `protocolo` e' o `nProt` da AUTORIZACAO da nota.
+    /// Cancela a NF-e ou a NFC-e (evento 110111) no autorizador da chave. `protocolo` e' o `nProt` da AUTORIZACAO da nota.
     ///
     /// O prazo nao e' conferido aqui: e' o da legislacao da UF (MOC 7.00, Visao Geral, regra 2P12-14 e item 5.9.4). Fora
     /// dele a SEFAZ responde 501 ([`DesfechoEvento::PrazoVencido`]) ou homologa mesmo assim com 155
@@ -124,14 +124,20 @@ impl<T: Transporte> ClienteSefaz<T> {
         protocolo: &str,
         justificativa: &str,
     ) -> Result<ResultadoEvento, ErroSefaz> {
-        let c = chave_valida(chave)?;
-        let m = evento::cancelamento(&Cancelamento {
+        let c = chave_valida_qualquer(chave)?;
+        let pedido = Cancelamento {
             chave: &c.chave,
             protocolo,
             justificativa,
             ambiente: self.ambiente,
             quando: self.agora(),
-        })?;
+        };
+        // o evento e' o mesmo na NF-e e na NFC-e; muda o modelo da chave e o endereco, que `destino_da_chave` escolhe
+        let m = if c.modelo == "65" {
+            evento::cancelamento_nfce(&pedido)?
+        } else {
+            evento::cancelamento(&pedido)?
+        };
         let destino = self.destino_da_chave(&c.chave, c.uf);
         self.registrar(m.assinar(cert, &self.id_lote())?, &destino, c.uf)
             .await
@@ -252,7 +258,7 @@ impl<T: Transporte> ClienteSefaz<T> {
             chave: p.chave.clone(),
             tp_evento: p.tp_evento.clone(),
             seq: p.seq,
-            autorizador: destino.to_string(),
+            autorizador: destino.trim_start_matches("NFCE:").to_string(),
             xml_enviado: p.env_evento.clone(),
             xml_retorno: String::new(),
             proc_evento: None,

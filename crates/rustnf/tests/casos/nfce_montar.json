@@ -1,0 +1,572 @@
+{
+ "_nota": "Casos da NFC-e (modelo 65) e da NF-e com DANFE Simplificado Tipo 2. Cada `altera` troca campos do `base` (caminho com pontos; numero indexa a lista; objeto e lista entram inteiros). `xml` e `chave` sao o que a montagem entrega e o XSD do pacote PL_010h v1.03 aceita (validado fora do repositorio). Documentos e nomes ficticios.",
+ "base": {
+  "modelo": 65,
+  "serie": 1,
+  "numero": 100,
+  "emissao": "2026-10-03T09:00:00-03:00",
+  "nat_op": "VENDA",
+  "cmun_fg": "3550308",
+  "codigo": 12345670,
+  "emit": {
+   "documento": "11222333000181",
+   "nome": "LOJA DE TESTE LTDA",
+   "crt": 1,
+   "ie": "111111111111",
+   "endereco": {
+    "logradouro": "Rua das Flores",
+    "numero": "100",
+    "bairro": "Centro",
+    "cod_municipio": "3550308",
+    "municipio": "Sao Paulo",
+    "uf": "SP",
+    "cep": "01001000"
+   }
+  },
+  "itens": [
+   {
+    "codigo": "1",
+    "descricao": "Cafe torrado 500g",
+    "ncm": "09012100",
+    "cfop": "5102",
+    "unidade": "UN",
+    "quantidade": "2",
+    "valor_unitario": "15.90",
+    "icms": {
+     "codigo": "102"
+    },
+    "pis": {
+     "cst": "49"
+    },
+    "cofins": {
+     "cst": "49"
+    }
+   }
+  ],
+  "pagamentos": [
+   {
+    "t_pag": "01",
+    "valor": "31.80"
+   }
+  ]
+ },
+ "casos": [
+  {
+   "nome": "nfce_simples",
+   "altera": {},
+   "chave": "35261011222333000181650010000001001123456706",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181650010000001001123456706\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>65</mod><serie>1</serie><nNF>100</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>4</tpImp><tpEmis>1</tpEmis><cDV>6</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf 0.4.0</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>31.80</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>31.80</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>31.80</vPag></detPag></pag></infNFe></NFe>"
+  },
+  {
+   "nome": "nfce_consumidor_cpf",
+   "altera": {
+    "dest": {
+     "documento": "52998224725",
+     "ind_ie_dest": 9
+    }
+   },
+   "chave": "35261011222333000181650010000001001123456706",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181650010000001001123456706\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>65</mod><serie>1</serie><nNF>100</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>4</tpImp><tpEmis>1</tpEmis><cDV>6</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf 0.4.0</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>31.80</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>31.80</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>31.80</vPag></detPag></pag></infNFe></NFe>"
+  },
+  {
+   "nome": "nfce_consumidor_cnpj_com_nome",
+   "altera": {
+    "dest": {
+     "documento": "11222333000181",
+     "nome": "CONSUMIDOR DE TESTE LTDA",
+     "ind_ie_dest": 9
+    }
+   },
+   "chave": "35261011222333000181650010000001001123456706",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181650010000001001123456706\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>65</mod><serie>1</serie><nNF>100</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>4</tpImp><tpEmis>1</tpEmis><cDV>6</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf 0.4.0</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CNPJ>11222333000181</CNPJ><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>31.80</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>31.80</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>31.80</vPag></detPag></pag></infNFe></NFe>"
+  },
+  {
+   "nome": "nfce_producao",
+   "altera": {
+    "tp_amb": 1
+   },
+   "chave": "35261011222333000181650010000001001123456706",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181650010000001001123456706\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>65</mod><serie>1</serie><nNF>100</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>4</tpImp><tpEmis>1</tpEmis><cDV>6</cDV><tpAmb>1</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf 0.4.0</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>Cafe torrado 500g</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>31.80</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>31.80</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>31.80</vPag></detPag></pag></infNFe></NFe>"
+  },
+  {
+   "nome": "nfce_offline",
+   "altera": {
+    "tp_emis": 9,
+    "dh_cont": "2026-10-03T08:40:00-03:00",
+    "x_just": "Falha de comunicacao com a SEFAZ"
+   },
+   "chave": "35261011222333000181650010000001009123456701",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181650010000001009123456701\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>65</mod><serie>1</serie><nNF>100</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>4</tpImp><tpEmis>9</tpEmis><cDV>1</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf 0.4.0</verProc><dhCont>2026-10-03T08:40:00-03:00</dhCont><xJust>Falha de comunicacao com a SEFAZ</xJust></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>31.80</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>31.80</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>31.80</vPag></detPag></pag></infNFe></NFe>"
+  },
+  {
+   "nome": "nfce_entrega_com_destinatario",
+   "altera": {
+    "ind_pres": 4,
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE DE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    }
+   },
+   "chave": "35261011222333000181650010000001001123456706",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181650010000001001123456706\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>65</mod><serie>1</serie><nNF>100</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>4</tpImp><tpEmis>1</tpEmis><cDV>6</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>4</indPres><procEmi>0</procEmi><verProc>rustnf 0.4.0</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>31.80</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>31.80</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>31.80</vPag></detPag></pag></infNFe></NFe>"
+  },
+  {
+   "nome": "nfe55_danfe_simplificado",
+   "altera": {
+    "modelo": 55,
+    "tp_imp": 6,
+    "ind_final": 1,
+    "ind_pres": 1,
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE DE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    }
+   },
+   "chave": "35261011222333000181550010000001001123456703",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000001001123456703\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>100</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>6</tpImp><tpEmis>1</tpEmis><cDV>3</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf 0.4.0</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>31.80</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>31.80</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>31.80</vPag></detPag></pag></infNFe></NFe>"
+  },
+  {
+   "nome": "nfe55_danfe_simplificado_offline",
+   "altera": {
+    "tp_emis": 9,
+    "dh_cont": "2026-10-03T08:40:00-03:00",
+    "x_just": "Falha de comunicacao com a SEFAZ",
+    "modelo": 55,
+    "tp_imp": 6,
+    "ind_final": 1,
+    "ind_pres": 1,
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE DE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    }
+   },
+   "chave": "35261011222333000181550010000001009123456709",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000001009123456709\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>100</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>6</tpImp><tpEmis>9</tpEmis><cDV>9</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf 0.4.0</verProc><dhCont>2026-10-03T08:40:00-03:00</dhCont><xJust>Falha de comunicacao com a SEFAZ</xJust></ide><emit><CNPJ>11222333000181</CNPJ><xNome>LOJA DE TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>1</cProd><cEAN>SEM GTIN</cEAN><xProd>NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xProd><NCM>09012100</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>2.0000</qCom><vUnCom>15.9000000000</vUnCom><vProd>31.80</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>2.0000</qTrib><vUnTrib>15.9000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMSSN102><orig>0</orig><CSOSN>102</CSOSN></ICMSSN102></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>31.80</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>31.80</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>31.80</vPag></detPag></pag></infNFe></NFe>"
+  }
+ ],
+ "regras": [
+  {
+   "nome": "rej_705",
+   "altera": {
+    "saida": "2026-10-03T09:00:00-03:00"
+   },
+   "cstat": "705"
+  },
+  {
+   "nome": "rej_706",
+   "altera": {
+    "tp_nf": 0
+   },
+   "cstat": "706"
+  },
+  {
+   "nome": "rej_707",
+   "altera": {
+    "id_dest": 2
+   },
+   "cstat": "707"
+  },
+  {
+   "nome": "rej_709",
+   "altera": {
+    "tp_imp": 1
+   },
+   "cstat": "709"
+  },
+  {
+   "nome": "rej_714",
+   "altera": {
+    "tp_emis": 2,
+    "dh_cont": "2026-10-03T08:40:00-03:00",
+    "x_just": "Falha de comunicacao com a SEFAZ"
+   },
+   "cstat": "714"
+  },
+  {
+   "nome": "rej_783",
+   "altera": {
+    "tp_emis": 7,
+    "dh_cont": "2026-10-03T08:40:00-03:00",
+    "x_just": "Falha de comunicacao com a SEFAZ"
+   },
+   "cstat": "783"
+  },
+  {
+   "nome": "rej_715",
+   "altera": {
+    "fin_nfe": 2
+   },
+   "cstat": "715"
+  },
+  {
+   "nome": "rej_716",
+   "altera": {
+    "ind_final": 0
+   },
+   "cstat": "716"
+  },
+  {
+   "nome": "rej_717",
+   "altera": {
+    "ind_pres": 2
+   },
+   "cstat": "717"
+  },
+  {
+   "nome": "rej_787",
+   "altera": {
+    "ind_pres": 4
+   },
+   "cstat": "787"
+  },
+  {
+   "nome": "rej_718",
+   "altera": {
+    "emit.iest": "123456789012"
+   },
+   "cstat": "718"
+  },
+  {
+   "nome": "rej_669",
+   "altera": {
+    "retirada": {
+     "documento": "11222333000181",
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    }
+   },
+   "cstat": "669"
+  },
+  {
+   "nome": "rej_789",
+   "altera": {
+    "dest": {
+     "documento": "52998224725",
+     "ind_ie_dest": 1
+    }
+   },
+   "cstat": "789"
+  },
+  {
+   "nome": "rej_725",
+   "altera": {
+    "itens.0.cfop": "6102"
+   },
+   "cstat": "725"
+  },
+  {
+   "nome": "rej_774",
+   "altera": {
+    "itens.0.ind_tot": 0
+   },
+   "cstat": "774"
+  },
+  {
+   "nome": "rej_736",
+   "altera": {
+    "itens.0.veiculo": {
+     "tp_op": "1"
+    }
+   },
+   "cstat": "736"
+  },
+  {
+   "nome": "rej_742",
+   "altera": {
+    "itens.0.ipi": {
+     "cst": "50",
+     "c_enq": "999"
+    }
+   },
+   "cstat": "742"
+  },
+  {
+   "nome": "rej_766",
+   "altera": {
+    "emit.crt": 3,
+    "itens.0.icms": {
+     "codigo": "10",
+     "orig": 0
+    }
+   },
+   "cstat": "766"
+  },
+  {
+   "nome": "rej_383",
+   "altera": {
+    "itens.0.icms": {
+     "codigo": "201"
+    }
+   },
+   "cstat": "383"
+  },
+  {
+   "nome": "rej_382",
+   "altera": {
+    "emit.crt": 3,
+    "itens.0.icms": {
+     "codigo": "00",
+     "orig": 0,
+     "mod_bc": 3,
+     "vbc": "31.80",
+     "p_icms": "18",
+     "v_icms": "5.72"
+    },
+    "itens.0.cfop": "5405"
+   },
+   "cstat": "382"
+  },
+  {
+   "nome": "rej_386",
+   "altera": {
+    "itens.0.icms": {
+     "codigo": "500"
+    }
+   },
+   "cstat": "386"
+  },
+  {
+   "nome": "rej_381",
+   "altera": {
+    "emit.crt": 3,
+    "itens.0.icms": {
+     "codigo": "90",
+     "orig": 0,
+     "mod_bc": 3,
+     "vbc": "31.80",
+     "p_icms": "18",
+     "v_icms": "5.72",
+     "mod_bc_st": 4
+    }
+   },
+   "cstat": "381"
+  },
+  {
+   "nome": "rej_385",
+   "altera": {
+    "itens.0.icms": {
+     "codigo": "900",
+     "mod_bc_st": 4
+    }
+   },
+   "cstat": "385"
+  },
+  {
+   "nome": "rej_741",
+   "altera": {
+    "emit.crt": 3,
+    "itens.0.icms": {
+     "codigo": "90",
+     "orig": 0,
+     "mod_bc": 3,
+     "vbc": "31.80",
+     "p_icms": "18",
+     "v_icms": "5.72",
+     "partilha": true
+    }
+   },
+   "cstat": "741"
+  },
+  {
+   "nome": "rej_740",
+   "altera": {
+    "emit.crt": 3,
+    "itens.0.icms": {
+     "codigo": "60",
+     "orig": 0,
+     "repasse": true
+    },
+    "itens.0.cfop": "5405"
+   },
+   "cstat": "740"
+  },
+  {
+   "nome": "rej_782",
+   "altera": {
+    "emit.crt": 4,
+    "itens.0.icms": {
+     "codigo": "400"
+    }
+   },
+   "cstat": "782"
+  },
+  {
+   "nome": "rej_337",
+   "altera": {
+    "emit.crt": 4,
+    "itens.0.cfop": "5101"
+   },
+   "cstat": "337"
+  },
+  {
+   "nome": "rej_708",
+   "altera": {
+    "refs_nfe": [
+     "35260911222333000181550010000040011876543212"
+    ]
+   },
+   "cstat": "708"
+  },
+  {
+   "nome": "rej_753",
+   "altera": {
+    "mod_frete": 1
+   },
+   "cstat": "753"
+  },
+  {
+   "nome": "rej_758",
+   "altera": {
+    "transp": {
+     "vagao": "ABC123"
+    }
+   },
+   "cstat": "758"
+  },
+  {
+   "nome": "rej_759",
+   "altera": {
+    "transp": {
+     "balsa": "BALSA1"
+    }
+   },
+   "cstat": "759"
+  },
+  {
+   "nome": "rej_762",
+   "altera": {
+    "compra": {
+     "x_n_emp": "EMP1"
+    }
+   },
+   "cstat": "762"
+  },
+  {
+   "nome": "rej_436",
+   "altera": {
+    "pagamentos": [
+     {
+      "t_pag": "99",
+      "x_pag": "Outros",
+      "valor": "31.80"
+     }
+    ]
+   },
+   "cstat": "436"
+  },
+  {
+   "nome": "rej_750",
+   "altera": {
+    "itens.0.quantidade": "1000"
+   },
+   "cstat": "750"
+  },
+  {
+   "nome": "rej_752",
+   "altera": {
+    "itens.0.quantidade": "1000",
+    "dest": {
+     "documento": "52998224725",
+     "ind_ie_dest": 9
+    }
+   },
+   "cstat": "752"
+  },
+  {
+   "nome": "rej_780",
+   "altera": {
+    "itens.0.quantidade": "20000",
+    "dest": {
+     "documento": "52998224725",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    }
+   },
+   "cstat": "780"
+  },
+  {
+   "nome": "rej_710",
+   "altera": {
+    "modelo": 55,
+    "tp_imp": 4,
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    }
+   },
+   "cstat": "710"
+  },
+  {
+   "nome": "rej_711",
+   "altera": {
+    "tp_emis": 9,
+    "dh_cont": "2026-10-03T08:40:00-03:00",
+    "x_just": "Falha de comunicacao com a SEFAZ",
+    "modelo": 55,
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP"
+     }
+    }
+   },
+   "cstat": "711"
+  }
+ ]
+}

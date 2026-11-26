@@ -29,6 +29,8 @@ const AVISO_LICENCA: &str =
 /// Enderecos aceitos: documento oficial, norma tecnica, a licenca, o indice de pacotes e este repositorio.
 const URLS_ACEITAS: &[&str] = &[
     r"^https?://([a-z0-9-]+\.)*gov\.br(/|$)",
+    // Portal Nacional da NFC-e (ENCAT): enderecos do QR Code, da consulta por chave e dos webservices da NFC-e
+    r"^https?://nfce\.encat\.org(/|$)",
     // espaco de nomes do XML da NF-e (targetNamespace do XSD oficial): identificador, nao e' endereco acessado
     r"^http://www\.portalfiscal\.inf\.br/nfe$",
     // espaco de nomes do WSDL de cada servico da NF-e e o envelope SOAP 1.1 (identificadores, nao enderecos acessados)

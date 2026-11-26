@@ -85,6 +85,28 @@ pub fn cons_reci(ambiente: Ambiente, recibo: &str) -> Result<String, ErroSefaz> 
 ///
 /// [`ErroSefaz`] (campo `chNFe`) com o defeito achado.
 pub fn chave_valida(chave: &str) -> Result<Chave, ErroSefaz> {
+    chave_do_modelo(chave, &["55"], "este cliente e' da NF-e (modelo 55)")
+}
+
+/// A chave de uma NFC-e (modelo 65) valida, conferida como a da NF-e.
+///
+/// # Errors
+///
+/// [`ErroSefaz`] (campo `chNFe`) com o defeito achado.
+pub fn chave_valida_nfce(chave: &str) -> Result<Chave, ErroSefaz> {
+    chave_do_modelo(chave, &["65"], "esta e' a chave da NFC-e (modelo 65)")
+}
+
+/// A chave de uma NF-e (55) ou de uma NFC-e (65): o que o envio, a consulta e o cancelamento aceitam.
+pub(crate) fn chave_valida_qualquer(chave: &str) -> Result<Chave, ErroSefaz> {
+    chave_do_modelo(
+        chave,
+        &["55", "65"],
+        "o cliente atende a NF-e (55) e a NFC-e (65)",
+    )
+}
+
+fn chave_do_modelo(chave: &str, aceitos: &[&str], quem: &str) -> Result<Chave, ErroSefaz> {
     let c = chave_dfe::decompor(chave.trim(), true)
         .map_err(|e| ErroSefaz::novo(format!("chave de acesso invalida: {e}"), "chNFe"))?;
     if let Some(e) = &c.erro {
@@ -93,12 +115,9 @@ pub fn chave_valida(chave: &str) -> Result<Chave, ErroSefaz> {
             "chNFe",
         ));
     }
-    if c.modelo != "55" {
+    if !aceitos.contains(&c.modelo.as_str()) {
         return Err(ErroSefaz::novo(
-            format!(
-                "a chave e' do modelo {}: este cliente e' da NF-e (modelo 55)",
-                c.modelo
-            ),
+            format!("a chave e' do modelo {}: {quem}", c.modelo),
             "chNFe",
         ));
     }
@@ -111,7 +130,23 @@ pub fn chave_valida(chave: &str) -> Result<Chave, ErroSefaz> {
 ///
 /// [`ErroSefaz`] se a chave nao e' de uma NF-e valida.
 pub fn cons_sit(ambiente: Ambiente, chave: &str) -> Result<String, ErroSefaz> {
-    let c = chave_valida(chave)?.chave;
+    cons_sit_de(ambiente, chave_valida(chave)?.chave)
+}
+
+/// `consSitNFe` da NFC-e: o mesmo pedido, com a chave do modelo 65.
+///
+/// # Errors
+///
+/// [`ErroSefaz`] se a chave nao e' de uma NFC-e valida.
+pub fn cons_sit_nfce(ambiente: Ambiente, chave: &str) -> Result<String, ErroSefaz> {
+    cons_sit_de(ambiente, chave_valida_nfce(chave)?.chave)
+}
+
+pub(crate) fn cons_sit_qualquer(ambiente: Ambiente, chave: &str) -> Result<String, ErroSefaz> {
+    cons_sit_de(ambiente, chave_valida_qualquer(chave)?.chave)
+}
+
+fn cons_sit_de(ambiente: Ambiente, c: String) -> Result<String, ErroSefaz> {
     Ok(format!(
         "<consSitNFe xmlns=\"{NS}\" versao=\"{VERSAO}\"><tpAmb>{}</tpAmb><xServ>CONSULTAR</xServ>\
          <chNFe>{c}</chNFe></consSitNFe>",
@@ -170,7 +205,7 @@ pub fn conferir_nfe(nfe: &str) -> Result<NfeConferida<'_>, ErroSefaz> {
     let chave = id
         .strip_prefix("NFe")
         .ok_or_else(|| ErroSefaz::novo("infNFe sem o atributo Id (NFe + chave)", "infNFe"))?;
-    let chave = chave_valida(chave)?;
+    let chave = chave_valida_qualquer(chave)?;
     if filho(raiz, "Signature", crate::assinatura::xmldsig::DS).is_none() {
         return Err(ErroSefaz::novo(
             "a NF-e precisa estar assinada",

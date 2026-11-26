@@ -297,7 +297,7 @@ pub(crate) fn det(
     };
     x.t("cEAN", &gtin);
     // homologacao: o primeiro item do DANFE simplificado leva o texto fixo do MOC
-    let xprod = if i == 1 && n.tp_amb == 2 && tp_imp(n) == 6 {
+    let xprod = if i == 1 && n.tp_amb == 2 && super::nfce::varejo(n) {
         HOM_XPROD
     } else {
         &it.descricao

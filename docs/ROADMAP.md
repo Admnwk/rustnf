@@ -83,10 +83,15 @@
   Feito nesta frente. **Fica para depois da próxima versão:** o DANFE paisagem, o DANFE Simplificado, as colunas de ICMS
   ST por item e o quadro do ISSQN com nota de verdade (hoje só testado com o grupo inserido à mão no XML: entra junto
   com o `ISSQN` e o `ISSQNtot` na montagem).
+* NFC-e, base (features `nfe` e `nfe_sefaz`): montagem do modelo 65 com as regras do MOC e da NT 2026.002, QR Code das
+  versões 2 e 3 (tabela de URL por UF com a fonte de cada linha), envio síncrono, consulta e cancelamento, contingência
+  off-line (`tpEmis` 9) e a NF-e com `tpImp` 6 assinada com o QR Code. Feita nesta frente, com transporte falso e um simulador
+  local: **nenhum envio a uma SEFAZ real e nenhum CSC real**.
 * Faces, parte 1: aplicação (`rustnf-app`: configuração `[nfe]`, pasta de notas `nfe/`, numeração, emissão com recuperação, eventos, inutilização, EPEC, retomada dos pendentes e DANFE) e linha de comando (`rustnf nfe`). Feita nesta frente, com transporte falso e um simulador local: **nenhuma NF-e real foi emitida e nenhuma SEFAZ real foi chamada**.
 * Faces, parte 2: API HTTP (`/nfe/`) e MCP da NF-e (11 ferramentas), sobre as mesmas funções da aplicação e no mesmo servidor. Feita nesta frente, com transporte falso e um simulador local: **nenhuma NF-e real foi emitida, consultada nem cancelada pela API ou pelo MCP, nenhum certificado A1 real foi usado e nenhuma SEFAZ real foi chamada.** Falta um cliente MCP de terceiros ler as ferramentas.
 * Faces, parte 3: documentos recebidos e manifestação do destinatário na aplicação (pasta `nfe/recebidas` com o cursor de NSU), na linha de comando (`rustnf nfe recebidas`), na API HTTP e no MCP (4 ferramentas), sobre a distribuição de DF-e da biblioteca. Feita nesta frente, com transporte falso e um simulador local: **nenhuma chamada ao Ambiente Nacional real e nenhum certificado A1 real**. **Fica para depois:** interface de desktop dos recebidos, o DANFE de uma NF-e recebida pela linha de comando (`rustnf nfe danfe` lê o XML, mas não a pasta dos recebidos) e a leitura dos eventos de manifestação que a consulta da NF-e devolve para repor a situação de uma pasta nova.
-* NFC-e.
+* NFC-e: o DANFE NFC-e e as faces (aplicação, linha de comando, API HTTP e MCP); o cancelamento por substituição (110112) e a
+  inutilização da NFC-e.
 * Interface de desktop.
 
 Itens gerais:
@@ -109,7 +114,7 @@ Itens gerais:
 ## Fora da v1
 
 * Rotas do ADN (distribuição de DF-e, parâmetros municipais): o cliente cobre só a Sefin Nacional;
-* NFS-e municipal (ABRASF) e CT-e; a NFC-e fica fora até a sua fase da frente da NF-e; o cálculo do IBS/CBS de
+* NFS-e municipal (ABRASF) e CT-e; o cálculo do IBS/CBS de
   mercadoria entra com a montagem do modelo 55;
 * assinatura ICP de PDF;
 * apuração por período e DARF de CBS/IBS;

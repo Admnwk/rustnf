@@ -8,7 +8,7 @@
 
 use super::formato::*;
 use super::modelo::{Item, Nota};
-use super::{ind_pres, tp_imp, uf_nota, X};
+use super::{ind_pres, uf_nota, X};
 
 /// Detalhamento de produto sujeito a rastreabilidade (I80), de 0 a 500 por item.
 #[derive(Debug, Clone, Default)]
@@ -120,7 +120,7 @@ fn exige_rastro(n: &Nota, it: &Item) -> bool {
         || matches!(ind_pres(n), 2 | 3)
         || CFOP_DISPENSA.contains(&cfop.trim())
         || n.tp_nf == 0
-        || tp_imp(n) == 6)
+        || super::nfce::varejo(n))
 }
 
 /// `med` do item: registro na ANVISA, motivo da isencao e preco maximo ao consumidor.

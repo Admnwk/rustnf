@@ -199,16 +199,15 @@ fn o_ver_proc_padrao_e_o_da_biblioteca() {
 }
 
 #[test]
-fn modelo_65_e_recusado_com_erro_claro() {
+fn modelo_desconhecido_e_recusado_com_erro_claro() {
     let mut p = pedido_basico();
-    p["modelo"] = json!(65);
+    p["modelo"] = json!(59);
     let e = montar(&nota_de_json(&p).unwrap()).unwrap_err();
     assert_eq!(e.campo, "mod");
-    assert!(e.mensagem.contains("NFC-e"), "{e}");
-    // o `conferir` nao inventa regra de NFC-e: devolve so' o defeito de entrada
+    assert!(e.mensagem.contains("55 (NF-e) ou 65 (NFC-e)"), "{e}");
     let lista = conferir(&nota_de_json(&p).unwrap());
     assert_eq!(lista.len(), 1);
-    assert!(lista[0].starts_with("entrada: modelo 65"), "{lista:?}");
+    assert!(lista[0].starts_with("entrada: modelo 59"), "{lista:?}");
 }
 
 #[test]
