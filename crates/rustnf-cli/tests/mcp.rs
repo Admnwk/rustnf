@@ -169,7 +169,8 @@ async fn tools_list_sem_emissao_so_tem_as_de_leitura() {
                 "gerar_danfse",
                 "conferir_nfe",
                 "montar_nfe",
-                "gerar_danfe"
+                "gerar_danfe",
+                "gerar_danfce"
             ]
         );
         for t in v["result"]["tools"].as_array().unwrap() {
