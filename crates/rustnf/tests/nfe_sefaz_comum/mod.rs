@@ -9,12 +9,14 @@
 
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
+use std::time::Duration;
 
 use async_trait::async_trait;
-use chrono::Utc;
+use chrono::{TimeZone, Utc};
 use rustnf::assinatura::cert_a1::{self, Certificado};
 use rustnf::nfe::montagem::{assinar, montar, nota_de_json};
-use rustnf::nfe::sefaz::{FalhaRede, Transporte};
+use rustnf::nfe::sefaz::{ClienteSefaz, Config, FalhaRede, Transporte};
+use rustnf::nfe::vigencias::Ambiente::{self, Homologacao};
 use serde_json::{json, Value};
 
 pub const NS: &str = "http://www.portalfiscal.inf.br/nfe";
@@ -247,4 +249,37 @@ pub fn ret_status(cstat: &str, motivo: &str, extra: &str) -> String {
          <cStat>{cstat}</cStat><xMotivo>{motivo}</xMotivo><cUF>35</cUF>\
          <dhRecbto>2026-10-03T09:00:30-03:00</dhRecbto>{extra}</retConsStatServ>"
     )
+}
+
+// ------------------------------------------------------------------------------------------------ cliente com relogio fixo
+
+pub type Pausas = Arc<Mutex<Vec<Duration>>>;
+
+pub fn cliente_em(
+    uf: &str,
+    amb: Ambiente,
+    dia: (i32, u32, u32),
+    f: Falso,
+) -> (ClienteSefaz<Falso>, Pausas) {
+    let pausas: Pausas = Arc::default();
+    let p2 = pausas.clone();
+    let c = ClienteSefaz::com_transporte(Config::novo(uf, amb), f)
+        .unwrap()
+        .com_relogio(move || Utc.with_ymd_and_hms(dia.0, dia.1, dia.2, 12, 0, 0).unwrap())
+        .com_dormir(move |d| {
+            p2.lock().unwrap().push(d);
+            Box::pin(async {})
+        });
+    (c, pausas)
+}
+
+pub fn cliente(f: Falso) -> (ClienteSefaz<Falso>, Pausas) {
+    cliente_em("SP", Homologacao, (2026, 10, 3), f)
+}
+
+/// A mesma nota com outro `cNF`: mesmo emitente, modelo, serie e numero, outra chave.
+pub fn nfe_outra_chave(numero: i64) -> (String, String) {
+    let mut p = pedido(numero, 2);
+    p["codigo"] = json!(11223344);
+    nfe_de(&p)
 }
