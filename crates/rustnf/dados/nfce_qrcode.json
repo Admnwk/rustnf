@@ -1,0 +1,538 @@
+{
+ "_fonte": {
+  "qrcode": "https://nfce.encat.org/desenvolvedor/qrcode/",
+  "url_chave": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/",
+  "lido_em": "2026-11-26",
+  "observacao": "Portal Nacional da NFC-e (ENCAT), area do desenvolvedor. A pagina da consulta por chave e de marco de 2018: o endereco pode ter mudado depois (a pagina do QR Code traz as mudancas mais novas, como MG e RJ). O endereco do QR Code vai SEM o \"?\" do fim; a montagem acrescenta \"?p=\"."
+ },
+ "fora_da_tabela": {
+  "AM": "a pagina publica o endereco sem o protocolo e cortado (\"...?chNFe=1315....\"): o QR leva o endereco com http ou https (NT 2025.001, item 4), e o protocolo nao esta na fonte",
+  "MA": "a pagina publica o endereco de producao sem o protocolo e o de homologacao com o texto corrompido (\"homolog acao...\"): nao ha endereco completo na fonte"
+ },
+ "qrcode": {
+  "AC": {
+   "producao": {
+    "url": "http://www.sefaznet.ac.gov.br/nfce/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://www.hml.sefaznet.ac.gov.br/nfce/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "AL": {
+   "producao": {
+    "url": "http://nfce.sefaz.al.gov.br/QRCode/consultarNFCe.jsp",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://nfce.sefaz.al.gov.br/QRCode/consultarNFCe.jsp",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "AP": {
+   "producao": {
+    "url": "https://www.sefaz.ap.gov.br/nfce/nfcep.php",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "https://www.sefaz.ap.gov.br/nfcehml/nfce.php",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "BA": {
+   "producao": {
+    "url": "http://nfe.sefaz.ba.gov.br/servicos/nfce/qrcode.aspx",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://hnfe.sefaz.ba.gov.br/servicos/nfce/qrcode.aspx",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "CE": {
+   "producao": {
+    "url": "http://nfce.sefaz.ce.gov.br/pages/ShowNFCe.html",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://nfceh.sefaz.ce.gov.br/pages/ShowNFCe.html",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "DF": {
+   "producao": {
+    "url": "http://www.fazenda.df.gov.br/nfce/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://www.fazenda.df.gov.br/nfce/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "ES": {
+   "producao": {
+    "url": "http://app.sefaz.es.gov.br/ConsultaNFCe/",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://homologacao.sefaz.es.gov.br/ConsultaNFCe/",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "GO": {
+   "producao": {
+    "url": "https://nfeweb.sefaz.go.gov.br/nfeweb/sites/nfce/danfeNFCe",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "https://nfewebhomolog.sefaz.go.gov.br/nfeweb/sites/nfce/danfeNFCe",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "MG": {
+   "producao": {
+    "url": "https://portalsped.fazenda.mg.gov.br/portalnfce/sistema/qrcode.xhtml",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "https://portalsped.fazenda.mg.gov.br/portalnfce/sistema/qrcode.xhtml",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "MS": {
+   "producao": {
+    "url": "http://www.dfe.ms.gov.br/nfce/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://www.dfe.ms.gov.br/nfce/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "MT": {
+   "producao": {
+    "url": "http://www.sefaz.mt.gov.br/nfce/consultanfce",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://homologacao.sefaz.mt.gov.br/nfce/consultanfce",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "PA": {
+   "producao": {
+    "url": "https://appnfc.sefa.pa.gov.br/portal/view/consultas/nfce/nfceForm.seam",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "https://appnfc.sefa.pa.gov.br/portal-homologacao/view/consultas/nfce/nfceForm.seam",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "PB": {
+   "producao": {
+    "url": "http://www.sefaz.pb.gov.br/nfce",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://www.sefaz.pb.gov.br/nfcehom",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "PE": {
+   "producao": {
+    "url": "http://nfce.sefaz.pe.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://nfcehomolog.sefaz.pe.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "PI": {
+   "producao": {
+    "url": "http://www.sefaz.pi.gov.br/nfce/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://www.sefaz.pi.gov.br/nfce/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "PR": {
+   "producao": {
+    "url": "http://www.fazenda.pr.gov.br/nfce/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://www.fazenda.pr.gov.br/nfce/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "RJ": {
+   "producao": {
+    "url": "https://consultadfe.fazenda.rj.gov.br/consultaNFCe/QRCode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "https://consultadfe.fazenda.rj.gov.br/consultaNFCe/QRCode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "RN": {
+   "producao": {
+    "url": "https://nfce.sefaz.rn.gov.br/consultarNFCe.aspx",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "https://hom.nfce.sefaz.rn.gov.br/consultarNFCe.aspx",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "RO": {
+   "producao": {
+    "url": "http://www.nfce.sefin.ro.gov.br/consultanfce/consulta.jsp",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://www.nfce.sefin.ro.gov.br/consultanfce/consulta.jsp",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "RR": {
+   "producao": {
+    "url": "https://www.sefaz.rr.gov.br/nfce/servlet/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://200.174.88.103:8080/nfce/servlet/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "RS": {
+   "producao": {
+    "url": "https://www.sefaz.rs.gov.br/NFCE/NFCE-COM.aspx",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "https://www.sefaz.rs.gov.br/NFCE/NFCE-COM.aspx",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "SC": {
+   "producao": {
+    "url": "https://sat.sef.sc.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "https://hom.sat.sef.sc.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "SE": {
+   "producao": {
+    "url": "http://www.nfce.se.gov.br/nfce/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://www.hom.nfe.se.gov.br/nfce/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  },
+  "SP": {
+   "producao": {
+    "url": "https://www.nfce.fazenda.sp.gov.br/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)",
+    "nota": "a pagina lista dois enderecos por ambiente (ConsultaQRCode.aspx e /qrcode); usa-se o /qrcode, que e o do leiaute p= (o outro e o do QR v1, com ?chNFe=&nVersao=100)"
+   },
+   "homologacao": {
+    "url": "https://www.homologacao.nfce.fazenda.sp.gov.br/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)",
+    "nota": "a pagina lista dois enderecos por ambiente (ConsultaQRCode.aspx e /qrcode); usa-se o /qrcode, que e o do leiaute p= (o outro e o do QR v1, com ?chNFe=&nVersao=100)"
+   }
+  },
+  "TO": {
+   "producao": {
+    "url": "http://www.sefaz.to.gov.br/nfce/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Produção\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://homologacao.sefaz.to.gov.br/nfce/qrcode",
+    "fonte": "https://nfce.encat.org/desenvolvedor/qrcode/ (tabela \"URL por UF utilizada QR code: Ambiente de Homologação\", linha da UF)"
+   }
+  }
+ },
+ "url_chave": {
+  "AC": {
+   "producao": {
+    "url": "www.sefaznet.ac.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.sefaznet.ac.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "AL": {
+   "producao": {
+    "url": "www.sefaz.al.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.sefaz.al.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "AM": {
+   "producao": {
+    "url": "www.sefaz.am.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.sefaz.am.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "AP": {
+   "producao": {
+    "url": "www.sefaz.ap.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.sefaz.ap.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "BA": {
+   "producao": {
+    "url": "www.sefaz.ba.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://hinternet.sefaz.ba.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO\", linha da UF)"
+   }
+  },
+  "CE": {
+   "producao": {
+    "url": "www.sefaz.ce.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.sefaz.ce.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "DF": {
+   "producao": {
+    "url": "www.fazenda.df.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.fazenda.df.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "ES": {
+   "producao": {
+    "url": "www.sefaz.es.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.sefaz.es.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "GO": {
+   "producao": {
+    "url": "www.sefaz.go.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.sefaz.go.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "MA": {
+   "producao": {
+    "url": "www.sefaz.ma.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.sefaz.ma.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "MG": {
+   "producao": {
+    "url": "http://nfce.fazenda.mg.gov.br/portalnfce",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://hnfce.fazenda.mg.gov.br/portalnfce/",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO\", linha da UF)"
+   }
+  },
+  "MS": {
+   "producao": {
+    "url": "www.dfe.ms.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.dfe.ms.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "MT": {
+   "producao": {
+    "url": "http://www.sefaz.mt.gov.br/nfce/consultanfce",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://homologacao.sefaz.mt.gov.br/nfce/consultanfce",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO\", linha da UF)"
+   }
+  },
+  "PA": {
+   "producao": {
+    "url": "www.sefa.pa.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.sefa.pa.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "PB": {
+   "producao": {
+    "url": "www.sefaz.pb.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.sefaz.pb.gov.br/nfcehom",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO\", linha da UF)"
+   }
+  },
+  "PE": {
+   "producao": {
+    "url": "nfce.sefaz.pe.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "nfce.sefaz.pe.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "PI": {
+   "producao": {
+    "url": "www.sefaz.pi.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.sefaz.pi.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "PR": {
+   "producao": {
+    "url": "http://www.fazenda.pr.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://www.fazenda.pr.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "RJ": {
+   "producao": {
+    "url": "www.fazenda.rj.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.fazenda.rj.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "RN": {
+   "producao": {
+    "url": "www.set.rn.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.set.rn.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "RO": {
+   "producao": {
+    "url": "www.sefin.ro.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.sefin.ro.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "RR": {
+   "producao": {
+    "url": "www.sefaz.rr.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.sefaz.rr.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "RS": {
+   "producao": {
+    "url": "www.sefaz.rs.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "www.sefaz.rs.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO e PRODUÇÃO\", linha da UF)"
+   }
+  },
+  "SC": {
+   "producao": {
+    "url": "https://sat.sef.sc.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "https://hom.sat.sef.sc.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO\", linha da UF)"
+   }
+  },
+  "SE": {
+   "producao": {
+    "url": "http://www.nfce.se.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://www.hom.nfe.se.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO\", linha da UF)"
+   }
+  },
+  "SP": {
+   "producao": {
+    "url": "https://www.nfce.fazenda.sp.gov.br/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "https://www.homologacao.nfce.fazenda.sp.gov.br/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO\", linha da UF)"
+   }
+  },
+  "TO": {
+   "producao": {
+    "url": "www.sefaz.to.gov.br/nfce/consulta",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – PRODUÇÃO\", linha da UF)"
+   },
+   "homologacao": {
+    "url": "http://homologacao.sefaz.to.gov.br/nfce/consulta.jsf",
+    "fonte": "https://nfce.encat.org/consulte-sua-nota-qr-code-versao-2-0/ (tabela \"Endereço da Consulta – HOMOLOGAÇÃO\", linha da UF)"
+   }
+  }
+ }
+}

@@ -425,6 +425,10 @@ pub(crate) fn conferir_sn_item(n: &Nota, it: &Item, k: &str, regime: Regime) -> 
 pub(crate) fn dest(x: &mut X, n: &Nota) -> Res<()> {
     let ra = n.remover_acento;
     let Some(d) = &n.dest else {
+        // a NFC-e e' emitida sem destinatario (o XSD o deixa opcional); a NF-e exige
+        if n.modelo == 65 {
+            return Ok(());
+        }
         return Err(erro("NF-e (55) exige destinatario", "dest"));
     };
     x.abre("dest");
@@ -449,9 +453,13 @@ pub(crate) fn dest(x: &mut X, n: &Nota) -> Res<()> {
     } else {
         d.nome.clone().unwrap_or_default()
     };
-    x.t("xNome", &txt(&nome, "dest/xNome", 60, 2, ra)?);
+    // na NFC-e o nome e o endereco do consumidor sao opcionais (XSD)
+    if n.modelo != 65 || !nome.trim().is_empty() {
+        x.t("xNome", &txt(&nome, "dest/xNome", 60, 2, ra)?);
+    }
     match &d.endereco {
         Some(e) => endereco(x, "enderDest", e, ra, false)?,
+        None if n.modelo == 65 => {}
         None => return Err(erro("NF-e (55): enderDest obrigatorio", "enderDest")),
     }
     if ![1, 2, 9].contains(&d.ind_ie_dest) {

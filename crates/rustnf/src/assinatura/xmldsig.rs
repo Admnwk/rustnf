@@ -282,6 +282,16 @@ fn resumo(alg: &str, dados: &[u8]) -> Option<Vec<u8>> {
     })
 }
 
+/// Assina um texto qualquer com RSA PKCS#1 v1.5 e SHA-1 (o `rsa-sha1` do XSD da NF-e) e devolve os octetos da
+/// assinatura. Serve ao parametro de assinatura do QR Code da NFC-e emitida em contingencia off-line.
+#[must_use]
+pub fn assinar_sha1(chave: &RsaPrivateKey, dados: &[u8]) -> Vec<u8> {
+    // com rng pelo mesmo motivo do `assinar`: o blinding e' a mitigacao do RUSTSEC-2023-0071
+    SigningKey::<Sha1>::new(chave.clone())
+        .sign_with_rng(&mut crate::aleatorio::sistema(), dados)
+        .to_vec()
+}
+
 // -- assinar ------------------------------------------------------------------------------------------------------
 /// Assina o elemento `tag` (infDPS, infPedReg, infNFe...). A `Signature` vai como ULTIMO filho de `pai` (default: o
 /// pai do elemento assinado). O texto de entrada e' preservado; so' a assinatura e' inserida.

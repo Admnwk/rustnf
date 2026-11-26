@@ -52,14 +52,16 @@ mod item;
 mod json;
 mod json_grupos;
 mod modelo;
+mod nfce;
 mod partes;
 mod produto;
+mod qrcode;
 mod regras;
 mod total;
 mod transp;
 mod uf_dest;
 
-pub use assinar::assinar;
+pub use assinar::{assinar, assinar_com};
 pub use avisos::{avisos, Aviso, RegimePisCofins, TipoAviso};
 pub use cobr::{Cobranca, Duplicata, Fatura};
 pub use comb::{Cide, Combustivel, Encerrante, OrigemComb};
@@ -72,6 +74,7 @@ pub use modelo::{
     Pagamento, PisCofins, RespTec, Veiculo,
 };
 pub use produto::{Medicamento, Rastro};
+pub use qrcode::{hash_v2, ufs_com_qrcode, url_chave, url_qrcode, Csc, OpcoesQr};
 pub use regras::conferir;
 pub use transp::{RetencaoIcms, Transportadora, Transporte, VeiculoTransp, VolumeTransp};
 
@@ -125,19 +128,19 @@ impl X {
     }
 }
 
-/// `tpImp` da nota: o do pedido ou 1 (DANFE retrato).
+/// `tpImp` da nota: o do pedido ou o padrao do modelo (1, DANFE retrato, na NF-e; 4, DANFE NFC-e, na NFC-e).
 pub(crate) fn tp_imp(n: &Nota) -> i64 {
-    n.tp_imp.unwrap_or(1)
+    n.tp_imp.unwrap_or(if n.modelo == 65 { 4 } else { 1 })
 }
 
-/// `indFinal` da nota: o do pedido ou 0 (normal).
+/// `indFinal` da nota: o do pedido ou o padrao do modelo (0, normal, na NF-e; 1, consumidor final, na NFC-e).
 pub(crate) fn ind_final(n: &Nota) -> i64 {
-    n.ind_final.unwrap_or(0)
+    n.ind_final.unwrap_or(i64::from(n.modelo == 65))
 }
 
-/// `indPres` da nota: o do pedido ou 9 (outros).
+/// `indPres` da nota: o do pedido ou o padrao do modelo (9, outros, na NF-e; 1, presencial, na NFC-e).
 pub(crate) fn ind_pres(n: &Nota) -> i64 {
-    n.ind_pres.unwrap_or(9)
+    n.ind_pres.unwrap_or(if n.modelo == 65 { 1 } else { 9 })
 }
 
 /// Sigla da UF do emitente, conferida.
@@ -199,15 +202,18 @@ pub(crate) fn erro_chave(c: &str) -> Option<String> {
 /// [`ErroMontagem`] com o campo do defeito: modelo diferente de 55, `cNF` ausente, campo fora do leiaute,
 /// regra do MOC ou da NT conferida antes do envio.
 pub fn montar(n: &Nota) -> Res<Montada> {
-    if n.modelo == 65 {
+    montar_interno(n, true)
+}
+
+/// A montagem; `com_total` liga as rejeicoes do valor total da NFC-e (o `conferir` as lista a parte).
+pub(crate) fn montar_interno(n: &Nota, com_total: bool) -> Res<Montada> {
+    if n.modelo != 55 && n.modelo != 65 {
         return Err(erro(
-            "modelo 65 (NFC-e) ainda nao e' montado: so' a NF-e modelo 55",
+            format!("modelo {}: use 55 (NF-e) ou 65 (NFC-e)", n.modelo),
             "mod",
         ));
     }
-    if n.modelo != 55 {
-        return Err(erro(format!("modelo {}: use 55 (NF-e)", n.modelo), "mod"));
-    }
+    nfce::primeira(nfce::regras(n))?;
     if n.itens.is_empty() {
         return Err(erro("nota sem itens", "det"));
     }
@@ -236,7 +242,7 @@ pub fn montar(n: &Nota) -> Res<Montada> {
         cuf: uf_codigo(&uf).unwrap_or(0),
         aamm: &aamm,
         emitente: &doc,
-        modelo: 55,
+        modelo: n.modelo as u32,
         serie: n.serie.max(0) as u64,
         numero: n.numero.max(0) as u64,
         tp_emis: n.tp_emis.max(0) as u32,
@@ -285,6 +291,12 @@ pub fn montar(n: &Nota) -> Res<Montada> {
     compra(&mut x, n)?;
     resp_tec(&mut x, n, &chave)?;
     x.0.push_str("</infNFe></NFe>");
+    if com_total {
+        nfce::primeira(nfce::regras_do_total(
+            n,
+            totais.get("vNF").map_or("", String::as_str),
+        ))?;
+    }
     Ok(Montada {
         xml: x.0,
         chave,

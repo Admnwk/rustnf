@@ -10,7 +10,7 @@
 use super::formato::*;
 use super::item::{digitos_ate, int_faixa};
 use super::modelo::{Item, Nota};
-use super::{ind_final, tp_imp, X};
+use super::{ind_final, X};
 
 /// `cProdANP` do GLP: so' ele leva os percentuais `pGLP`, `pGNn` e `pGNi` e o valor de partida.
 pub(crate) const GLP: &str = "210203001";
@@ -331,7 +331,7 @@ fn exige_origem(c: &Combustivel, it: &Item, n: &Nota, k: &str) -> Res<()> {
         || n.fin_nfe == 2
         || n.fin_nfe == 4
         || CFOP_SEM_ORIGEM.contains(&cfop.trim())
-        || tp_imp(n) == 6;
+        || super::nfce::varejo(n);
     if tem_gn && c.origens.is_empty() && !dispensa {
         return Err(erro_r(
             format!(
