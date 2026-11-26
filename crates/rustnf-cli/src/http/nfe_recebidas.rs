@@ -188,7 +188,7 @@ impl ServidorNfe {
                     .into(),
             )
         })?;
-        Ok(nfe::cursor(notas, &self.config)?)
+        nfe::cursor(notas, &self.config)
     }
 }
 

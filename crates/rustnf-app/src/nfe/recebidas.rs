@@ -9,7 +9,7 @@
 //! O que sai da maquina: [`sincronizar`], [`baixar`] e [`manifestar`] falam com o Ambiente Nacional; [`listar`] e
 //! [`cursor`] so' leem a pasta.
 //!
-//! A regra do Ambiente Nacional (NT 2014.002 v1.02d, item 3.1): o destinatario so' recebe a NF-e COMPLETA depois de
+//! A regra do Ambiente Nacional (NT 2014.002 v1.02d, item 3, texto do servico e nota 1 da tabela de documentos): o destinatario so' recebe a NF-e COMPLETA depois de
 //! manifestar (ciencia, confirmacao ou operacao nao realizada); antes disso recebe o resumo. O desconhecimento nao libera
 //! a nota. Por isso [`baixar`] tem a opcao de dar a ciencia antes.
 

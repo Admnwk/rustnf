@@ -6,8 +6,7 @@ Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` 
 alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
 `cancelada`, continua sendo lido por esta versão.
 
-* NF-e (modelo 55), distribuição de DF-e e manifestação do destinatário, na biblioteca (feature `nfe_sefaz`; a linha de
-  comando, a API HTTP e o MCP ainda não as têm). **Nenhuma chamada ao Ambiente Nacional real e nenhum certificado A1
+* NF-e (modelo 55), distribuição de DF-e e manifestação do destinatário, na biblioteca (feature `nfe_sefaz`; as faces estão no item seguinte). **Nenhuma chamada ao Ambiente Nacional real e nenhum certificado A1
   real**; sem dependência nova.
   * `rustnf::nfe::sefaz::dfe`: o pedido `distDFeInt` 1.01 (`distNSU`, `consNSU`, `consChNFe`; CNPJ, inclusive o
     alfanumérico, ou CPF), o cliente `ClienteSefaz::distribuir`, `distribuir_nsu`, `distribuir_chave` e `sincronizar`
@@ -27,6 +26,27 @@ alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o �
   * **Muda o que se aceita:** `155` ("cancelamento homologado fora de prazo") só vale como registro no cancelamento; num
     evento de outro tipo passa a ser rejeição. `pedidos::envelope` embrulha o `nfeDadosMsg` na operação
     `nfeDistDFeInteresse` quando o serviço é a distribuição (os outros serviços não mudam).
+* NF-e: documentos RECEBIDOS e manifestação do destinatário na aplicação (`rustnf-app`), na linha de comando (`rustnf nfe
+  recebidas sincronizar|listar|baixar|manifestar|cursor`), na API HTTP (`/nfe/recebidas/...`) e no MCP (`sincronizar_recebidas`,
+  `listar_recebidas`, `baixar_recebida` e `manifestar_recebida`). **Nenhuma chamada ao Ambiente Nacional real e nenhum
+  certificado A1 real**; sem dependência nova nas crates publicadas (`flate2` e `base64`, que a biblioteca já usa, entram só
+  como dependência de teste de `rustnf-app` e `rustnf-cli`).
+  * Pasta `nfe/recebidas/` dentro da `[notas].pasta`, separada das notas emitidas: `<AAAA>/<MM>/<chave>-resNFe.xml`,
+    `-procNFe.xml`, `-<tipo>-<seq>-procEventoNFe.xml` e `-resEvento.xml`, `outros/` (o que não tem chave de NF-e ou não abriu),
+    `indice.json` (chave, emitente, valor, data e situação: `resumo`, `completa`, `ciencia`, `confirmada`, `desconhecida`,
+    `nao_realizada`, `cancelada`, `denegada`) e `cursor-<ambiente>-<documento>.json`, um por ambiente e interessado. A pasta e
+    a configuração da 0.4.0 continuam lidas; `nfe notas reindexar` não enxerga os recebidos.
+  * O cursor só anda DEPOIS de os documentos do lote e o índice estarem gravados: queda no meio de um lote refaz o mesmo lote
+    e nunca pula NSU. O documento que não abriu é guardado e relido por `consNSU` na sincronização seguinte. O 137 e o 656
+    ficam gravados no cursor: antes da hora a chamada responde quando tentar, sem ir à rede, e sai com 0 (esperar não é
+    falha); o 656 sai com 3.
+  * Manifestação (210200, 210210, 210220, 210240) com o que a pasta sabe conferindo o pedido antes da rede (ciência depois de
+    conclusiva, repetição, cancelada ou denegada); o evento registrado vai para a pasta ao lado da nota. `baixar --ciencia`
+    registra a ciência antes de consultar a chave, porque o Ambiente Nacional só entrega a NF-e completa a quem manifestou
+    (NT 2014.002 v1.02d, item 3, texto do serviço e nota 1 da tabela de documentos; o desconhecimento não a libera).
+  * `[nfe.urls]` aceita `distribuicao` (endereço do simulador). Na API e no MCP, tudo o que fala com o Ambiente Nacional exige
+    `--permitir-emissao` e o Bearer; `listar_recebidas` não usa a rede, mas lê os documentos da empresa e exige o mesmo.
+    `tools/list` autenticado passa de 22 para 26 ferramentas; sem o Bearer continua com 7.
 * NF-e: o código do crédito presumido (`cCredPres`) passa a ser conferido pela tabela oficial (IT 2025.002 v1.70, 13
   códigos), não só pelo formato de 2 dígitos, no grupo `gCredPresOper` do item (`reforma::calculo`) e no evento
   211110. Cada regra da NT 2025.002 v1.53 aparece com a sua rejeição: código inexistente (1055; `UB122-10`,

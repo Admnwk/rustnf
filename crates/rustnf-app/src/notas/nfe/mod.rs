@@ -11,6 +11,7 @@
 //! <pasta>/nfe/inutilizacao/<AAAA>/<serie>-<inicio>-<fim>-procInutNFe.xml   cada faixa inutilizada
 //! <pasta>/nfe/indice.json                                      uma linha por nota e por faixa inutilizada
 //! <pasta>/nfe/estado.json                                      o ultimo numero consumido em cada serie
+//! <pasta>/nfe/recebidas/...                                    os documentos RECEBIDOS (distribuicao de DF-e), em [`recebidas`]
 //! ```
 //!
 //! Toda gravacao e' atomica (arquivo temporario na mesma pasta e `rename`) e protegida por uma trava de arquivo. O nome
