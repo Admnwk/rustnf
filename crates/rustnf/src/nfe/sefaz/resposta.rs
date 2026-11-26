@@ -60,7 +60,7 @@ impl fmt::Display for ErroResposta {
 
 impl std::error::Error for ErroResposta {}
 
-fn corta(s: &str, n: usize) -> String {
+pub(super) fn corta(s: &str, n: usize) -> String {
     s.chars().take(n).collect()
 }
 
@@ -103,23 +103,51 @@ pub fn desembrulhar(corpo: &[u8]) -> Result<Retorno, ErroResposta> {
         .descendants()
         .find(|n| e_soap(n, "Body"))
         .ok_or(ErroResposta::SemRetorno)?;
-    let alvo = body
+    let alvo = body.descendants().skip(1).find(|n| {
+        n.is_element()
+            && n.tag_name().name().starts_with("ret")
+            && n.tag_name().namespace() == Some(NS)
+    });
+    match alvo {
+        Some(a) => Ok(Retorno {
+            raiz: a.tag_name().name().to_string(),
+            texto: recortar(a, xml)?,
+        }),
+        None => retorno_escapado(body),
+    }
+}
+
+/// Algumas SEFAZ devolvem o retorno como TEXTO dentro do `nfeResultMsg` (o XML escapado, `&lt;retConsSitNFe ...`) e nao
+/// como elemento. O texto, ja desescapado pelo analisador, e' o retorno: tem de ser um XML cuja raiz e' um `ret*` do
+/// espaco de nomes da NF-e, e e' devolvido como veio.
+fn retorno_escapado(body: No<'_, '_>) -> Result<Retorno, ErroResposta> {
+    let msg = body
         .descendants()
-        .skip(1)
-        .find(|n| {
-            n.is_element()
-                && n.tag_name().name().starts_with("ret")
-                && n.tag_name().namespace() == Some(NS)
-        })
+        .find(|n| n.is_element() && n.tag_name().name() == "nfeResultMsg")
         .ok_or(ErroResposta::SemRetorno)?;
+    let texto: String = msg
+        .children()
+        .filter(|c| c.is_text())
+        .filter_map(|c| c.text())
+        .collect();
+    let interno = sem_declaracao(&texto);
+    if interno.is_empty() {
+        return Err(ErroResposta::SemRetorno);
+    }
+    let doc = roxmltree::Document::parse(interno)
+        .map_err(|_| ErroResposta::NaoEXml(corta(interno, 120)))?;
+    let raiz = doc.root_element();
+    if !raiz.tag_name().name().starts_with("ret") || raiz.tag_name().namespace() != Some(NS) {
+        return Err(ErroResposta::SemRetorno);
+    }
     Ok(Retorno {
-        raiz: alvo.tag_name().name().to_string(),
-        texto: recortar(alvo, xml)?,
+        raiz: raiz.tag_name().name().to_string(),
+        texto: interno.to_string(),
     })
 }
 
 /// O fim da abertura do elemento (o `>` que fecha a tag, fora de aspas).
-fn fim_da_abertura(texto: &str, inicio: usize) -> Option<usize> {
+pub(super) fn fim_da_abertura(texto: &str, inicio: usize) -> Option<usize> {
     let mut aspas: Option<u8> = None;
     for (i, b) in texto.as_bytes()[inicio..].iter().enumerate() {
         match (aspas, *b) {
@@ -242,7 +270,7 @@ pub(crate) fn recortar(no: No<'_, '_>, texto: &str) -> Result<String, ErroRespos
 
 // ------------------------------------------------------------------------------------------------ leitura tipada
 
-fn texto_filho(pai: No<'_, '_>, nome: &str) -> String {
+pub(super) fn texto_filho(pai: No<'_, '_>, nome: &str) -> String {
     pai.children()
         .find(|c| {
             c.is_element() && c.tag_name().name() == nome && c.tag_name().namespace() == Some(NS)
@@ -253,7 +281,7 @@ fn texto_filho(pai: No<'_, '_>, nome: &str) -> String {
         .to_string()
 }
 
-fn filhos<'a, 'i>(pai: No<'a, 'i>, nome: &'a str) -> impl Iterator<Item = No<'a, 'i>> {
+pub(super) fn filhos<'a, 'i>(pai: No<'a, 'i>, nome: &'a str) -> impl Iterator<Item = No<'a, 'i>> {
     pai.children().filter(move |c| {
         c.is_element() && c.tag_name().name() == nome && c.tag_name().namespace() == Some(NS)
     })
@@ -266,7 +294,7 @@ fn segundos(s: &str) -> Option<u32> {
     s.parse().ok()
 }
 
-fn abrir<'t>(
+pub(super) fn abrir<'t>(
     texto: &'t str,
     esperado: &'static str,
 ) -> Result<roxmltree::Document<'t>, ErroResposta> {
