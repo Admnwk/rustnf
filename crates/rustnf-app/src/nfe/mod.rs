@@ -15,7 +15,7 @@
 //! * [`preparar`] -- o pedido completado, lido e conferido, sem rede e sem gastar numero;
 //! * [`config_sefaz`] e [`cliente_real`] -- o cliente da SEFAZ a partir da configuracao.
 //!
-//! A pasta e' a [`NotasNfe`](crate::notas::nfe::NotasNfe), `nfe/` dentro da `[notas].pasta`.
+//! A pasta e' a [`NotasNfe`], `nfe/` dentro da `[notas].pasta`.
 
 mod cliente;
 mod consulta;
