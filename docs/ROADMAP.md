@@ -51,7 +51,7 @@
 
 ## Próximo
 
-**Em andamento: NF-e (modelo 55)**, em fases, uma por vez. A NF-e ainda não é enviada; sem data prometida.
+**Em andamento: NF-e (modelo 55)**, em fases, uma por vez. A NF-e já é enviada pela biblioteca (feature `nfe_sefaz`), sem face ainda e sem nenhuma chamada a SEFAZ real conferida; sem data prometida.
 
 * Base (feature `nfe`): chave de acesso de 44 posições, calendário das Notas Técnicas, leitura do XML autorizado e
   tabela de `cStat`. Feita nesta frente.
@@ -65,7 +65,10 @@
   `agropecuario`, `impostoDevol` e o QR Code do DANFE simplificado. Sem tabela publicada à parte não há conferência do
   código do produto da ANP (761), do combustível da tabela monofásica (908 e 909 pela tabela), do CFOP de combustível
   (660), do CFOP e do município da retenção do transporte (722 e 288) nem da inscrição estadual da transportadora (544).
-* Webservices da SEFAZ, com contingência.
+* Webservices da SEFAZ, parte 1 (feature `nfe_sefaz`): tabela oficial de endereços, SOAP 1.2 com certificado A1, status do
+  serviço, autorização síncrona (e assíncrona até o corte da NT 2023.002 v1.02), retorno do recibo, consulta pela chave e
+  recuperação da nota enviada sem resposta. Feita nesta frente. **Fica para a parte 2:** eventos (cancelamento, CC-e,
+  EPEC), inutilização e contingência SVC.
 * DANFE.
 * Faces: aplicação, linha de comando, API HTTP e MCP.
 * Documentos recebidos e manifestação do destinatário.
