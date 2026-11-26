@@ -311,6 +311,20 @@ mod testes {
     }
 
     #[test]
+    fn rotulo_que_nao_cabe_a_6_pt_quebra_em_duas_linhas_sem_cortar() {
+        // Quadro de 33 mm do calculo do imposto (item 3.8.1): a 6 pt o rotulo inteiro passa da largura util.
+        let l = rotulo_em_linhas("Outras despesas acessórias", 33.0);
+        assert_eq!(l.len(), 2, "{l:?}");
+        assert_eq!(l.join(" "), "OUTRAS DESPESAS ACESSÓRIAS");
+        assert!(l.iter().all(|x| !x.ends_with("...")), "{l:?}");
+        let h = altura_campo(33.0, "Outras despesas acessórias", "0,00", false, 10.0);
+        assert!(
+            h > altura_campo(33.0, "Desconto", "0,00", false, 10.0),
+            "{h}"
+        );
+    }
+
+    #[test]
     fn barras_deixam_a_margem_clara_de_dez_modulos() {
         let mut c = Caneta::default();
         let padrao = crate::danfe::barras::padrao(&"1".repeat(44)).unwrap();
