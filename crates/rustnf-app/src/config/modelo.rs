@@ -19,6 +19,9 @@ pub struct Config {
     pub notas: Notas,
     /// NF-e (modelo 55): o que ela precisa alem do `[emitente]` e do `[sefin]`.
     pub nfe: super::Nfe,
+    /// NFC-e (modelo 65): serie, ambiente, QR Code e cupom proprios; o resto vem de `[nfe]` e `[emitente]`.
+    #[serde(skip_serializing_if = "super::Nfce::e_padrao")]
+    pub nfce: super::Nfce,
     /// Opcoes do DANFSe.
     pub danfse: Danfse,
     /// API HTTP e MCP.

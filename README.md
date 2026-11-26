@@ -75,6 +75,7 @@ Os detalhes de cada passo estão em [Interface de desktop](#interface-de-desktop
 | DANFC-e (feature `danfce`) | 12 casos de conteúdo por divisão do Manual (consumidor identificado e não identificado, vários itens, pagamentos com troco, acréscimo e desconto, homologação, contingência off-line pendente nas duas vias, cancelada, resumido, 58 mm) e 10 recusas com o motivo; PDF com bytes estáveis, uma página, texto extraível e QR decodificado de volta no `qrCode` do XML (leitor independente); ESC/POS com bytes estáveis, colunas 48, 42 e 32, páginas de código e o comando do QR (nível M) com o texto exato | **nenhuma impressão em impressora real, nenhum DANFC-e conferido por fiscal ou SEFAZ e nenhum QR lido por aplicativo de consulta de SEFAZ** |
 | NFC-e (modelo 65, features `nfe` e `nfe_sefaz`) | 8 XML de contrato (a NFC-e simples, com consumidor, off-line, de entrega e a NF-e com `tpImp` 6) e os 202 da NF-e, 210 ao todo, validados no esquema oficial 4.00 (pacote PL_010h v1.03); 38 regras do MOC e da NT 2026.002 com o código da rejeição; o QR Code (versões 2 e 3, on-line e off-line) com o hash SHA-1 e a assinatura RSA conferidos por um cálculo independente (Python, fora do repositório) e o `infNFeSupl` aceito pelo esquema; transporte falso (autorização síncrona no endereço da NFC-e, consulta, cancelamento, status, lote assíncrono recusado, contingência off-line) e um simulador local (fora do repositório), que aceitou a NFC-e on-line (QR versões 2 e 3), a off-line, a consulta e o cancelamento | **nenhum envio a uma SEFAZ real, nenhum certificado A1 real e nenhum CSC real; nenhum QR Code lido por um aplicativo de consulta de SEFAZ**; os endereços do QR Code e da consulta por chave vêm das páginas do Portal Nacional da NFC-e (AM, MA e a homologação de RR ficam fora da tabela), a da consulta por chave é de 2018; os endereços dos webservices da NFC-e e o mapa UF-autorizador não foram conferidos num WSDL nem numa chamada; o cancelamento por substituição (110112) e a inutilização da NFC-e não foram feitos |
 | faces da NF-e (camada `rustnf-app`, `rustnf nfe`, API HTTP `/nfe/` e MCP) | transporte falso (autorizada, denegada, rejeitada que não gasta número, número já autorizado com outra chave, resposta perdida com a nota pendente e retomada sem nota gêmea, reenvio da mesma NF-e, cancelamento, carta de correção numerada pela pasta, inutilização, EPEC e sua transmissão, status), pasta de notas e configuração; DANFE gerado da nota guardada; um simulador local, fora do repositório, pela linha de comando, pela API (curl) e por um cliente MCP mínimo escrito para o teste; rotas e ferramentas por requisição em memória, com transporte falso | **nenhuma NF-e real foi emitida, consultada nem cancelada por estas faces, nenhum certificado A1 real foi usado e nenhuma SEFAZ real foi chamada** (nem a de homologação); nenhum cliente MCP de terceiros leu as ferramentas |
+| faces da NFC-e (camada `rustnf-app` e `rustnf nfce`: CSC no cofre, pasta `nfce/` de numeração própria, emissão, off-line, retomada, pendentes e fechamento do caixa, cancelamento com aviso de prazo, DANFC-e como arquivo) | transporte falso (autorizada, rejeitada que não gasta número, denegada, resposta perdida com a nota pendente e retomada da mesma chave, off-line com o prazo, transmissão da off-line e a recusa dela anotada, decisão automática antes do envio, cancelamento, pendentes e `--fechar-caixa` com o código de saída, CSC que não vaza para JSON, `Debug` nem arquivo da pasta, numeração do 65 separada do 55 e pasta antiga do 55 lida igual), cofre em memória, DANFC-e gerado da pasta e do XML (PDF e ESC/POS com bytes estáveis) e um simulador local, fora do repositório, pela linha de comando | **nenhuma NFC-e real, nenhuma SEFAZ real (nem a de homologação), nenhum certificado A1 real, nenhum CSC real e nenhuma impressão em impressora real**; o prazo de cancelamento de cada UF (só o nacional de 24 horas tem fonte), o cancelamento por substituição (110112) e a inutilização da NFC-e não foram feitos; não há API HTTP, MCP nem interface de desktop da NFC-e |
 | faces dos documentos recebidos e da manifestação (`rustnf nfe recebidas`, `/nfe/recebidas/` e 4 ferramentas do MCP) | transporte falso (vários lotes até o 137, queda no meio de um lote sem pular NSU, 656 gravado e a chamada seguinte que diz a hora sem ir à rede, documento que não abre e é relido, ciência, confirmação e as recusas antes da rede, baixa por chave com e sem ciência, pasta e configuração da 0.4.0) e um simulador local (fora do repositório) pela linha de comando, pela API e por um cliente MCP mínimo | **nenhuma chamada ao Ambiente Nacional real e nenhum certificado A1 real**; não há interface de desktop para os recebidos |
 | interface de desktop (`rustnf-gui`, só Windows) | testes do modelo (máscaras, conferência, pedido, prévia, sugestão, rascunho, lista das notas, detalhe, cancelamento, conferência em lote, histórico de eventos, pedido de análise fiscal, confirmação e recusa de nota recebida, consulta pela chave e pela DPS e prévia avulsa), dos fluxos com emissor de demonstração e pasta temporária e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuração e pelo exemplo de demonstração | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, e nenhuma consulta de DPS ou de evento, nenhuma conferência de situação e nenhum evento (análise fiscal, confirmação, recusa) foi feito por ela contra a Sefin; só o emissor de demonstração respondeu**; o DANFSe aberto no leitor de PDF de outra máquina; uma chamada real à Sefin pelo botão "Testar conexão"; exame da janela em outras escalas de tela; o executável de release aberto numa máquina sem as ferramentas de desenvolvimento |
 
@@ -477,7 +478,7 @@ pasta, guarda o que a SEFAZ devolve e diz o resultado em palavras.
 
 **Nenhuma NF-e real foi emitida com este código**, nem em homologação, e nenhuma chamada a uma SEFAZ real nem nenhum
 certificado A1 real foram usados: o que existe foi conferido com transporte falso e com um simulador local, fora do
-repositório. A NF-e também tem API HTTP e MCP no mesmo servidor (veja [NF-e pela API](#nf-e-pela-api) e o [MCP](#mcp)); **ainda não há interface de desktop para a NF-e**, e o modelo 65 (NFC-e) é recusado.
+repositório. A NF-e também tem API HTTP e MCP no mesmo servidor (veja [NF-e pela API](#nf-e-pela-api) e o [MCP](#mcp)); **ainda não há interface de desktop para a NF-e**. A NFC-e (modelo 65) tem a sua seção, [NFC-e (modelo 65)](#nfc-e-modelo-65): o `rustnf nfe` recusa o pedido do modelo 65 e diz que ele se emite por `rustnf nfce`.
 
 ### Passo a passo
 
@@ -675,6 +676,129 @@ pela biblioteca (`consNSU`), e o documento que não abriu fica guardado e é rel
 Códigos de saída: 0 ok (inclusive "ainda não é hora de consultar"), 2 uso ou entrada, 3 recusa (bloqueio 656, rejeição, nota
 não localizada ou só o resumo, manifestação recusada), 4 sem resposta ou serviço parado do Ambiente Nacional. O endereço do
 simulador vai em `[nfe.urls].distribuicao` (e `eventos`, para a manifestação).
+
+## NFC-e (modelo 65)
+
+A NFC-e é a nota do cupom de varejo: a venda ao consumidor no balcão, com o DANFC-e (o cupom) e um QR Code. Ela usa a mesma
+camada de aplicação, o mesmo arquivo de configuração, o mesmo certificado A1 e a mesma senha no cofre da NF-e, mas tem
+**numeração própria**, prazos próprios e o CSC. A biblioteca monta, assina, envia e desenha o cupom; a linha de comando
+`rustnf nfce` completa o pedido com a configuração, numera pela pasta, guarda o que a SEFAZ devolve, diz o resultado em
+palavras e avisa o que falta enviar ao fechar o caixa.
+
+**Nenhuma NFC-e real foi emitida com este código**, nem em homologação: nenhuma SEFAZ real foi chamada, nenhum certificado A1
+real nem nenhum CSC real foi usado, e nenhum cupom foi impresso em impressora real. O que existe foi conferido com transporte
+falso e com um simulador local, fora do repositório. **A NFC-e ainda não tem API HTTP nem MCP, e ainda não tem tela na
+interface de desktop** (o servidor e o MCP seguem como estavam).
+
+| | NFS-e | NF-e (55) | NFC-e (65) |
+|---|---|---|---|
+| para que serve | serviço | venda de mercadoria entre empresas ou a consumidor | venda de varejo presencial ao consumidor |
+| comando | `rustnf emitir` | `rustnf nfe ...` | `rustnf nfce ...` |
+| pasta de notas | `<pasta>/` | `<pasta>/nfe/` | `<pasta>/nfce/` |
+| numeração | a da DPS | por série, própria | por série, **própria** (a série 1 do 65 não é a série 1 do 55) |
+| envio | Sefin Nacional | SEFAZ da UF (lote síncrono) | SEFAZ da UF, **sempre síncrono** |
+| QR Code | não | não (só com `tpImp` 6) | **sim**: versão 3 (padrão, sem CSC) ou versão 2 (com CSC) |
+| sem internet | — | SVC ou EPEC | **contingência off-line** (`tpEmis` 9): a nota vai depois, com prazo |
+| impressão | DANFSe | DANFE | **DANFC-e** (PDF de bobina de 80 ou 58 mm, ou bytes ESC/POS) |
+
+### Passo a passo (do CSC ao fechamento do caixa)
+
+Tudo em homologação primeiro: a nota de homologação não vale. Os mesmos `[emitente]`, `[nfe]` (UF, IE, CRT, endereço) e
+`[sefin].pfx` da NF-e servem; o que é só da NFC-e fica em `[nfce]` (exemplo em `crates/rustnf-cli/exemplos/rustnf.toml`).
+
+1. **Escolha o QR Code.** O padrão é a versão 3, que não pede CSC: não precisa fazer nada. Se a SEFAZ da sua UF ainda exige a
+   versão 2, ela lhe dá um **CSC** (um código de 16 a 36 letras e números) e um **idCSC** (um número). Ponha o idCSC no
+   arquivo e use `qr_versao = 2`:
+
+   ```toml
+   [nfce]
+   qr_versao = 2
+   id_csc = "1"
+   ```
+
+2. **Guarde o CSC no cofre do sistema** (nunca no arquivo, nunca na linha de comando): o CSC vem de uma linha do stdin ou de
+   uma variável de ambiente que você apaga depois.
+
+   ```
+   echo CODIGO-QUE-A-SEFAZ-DEU | rustnf nfce csc guardar            # ou: --csc-env MINHA_VARIAVEL
+   rustnf nfce csc testar                                             # diz se há CSC guardado para o ambiente e o idCSC; nunca o mostra
+   rustnf nfce csc apagar
+   ```
+
+   O item do cofre é próprio do emitente, do ambiente e do idCSC: trocar de ambiente ou de idCSC não enxerga o CSC do outro.
+   Com `qr_versao = 2` e sem CSC guardado, `rustnf nfce emitir` recusa **antes de numerar** qualquer nota.
+
+3. **Emita.** O pedido é o da NF-e (`docs/NFE_PEDIDO.md`), sem destinatário e sem `modelo` (o 65 vem sozinho):
+
+   ```
+   rustnf nfce emitir pedido.json --danfce       # grava a nota e o cupom em PDF na pasta de notas
+   ```
+
+   Se a resposta da SEFAZ se perder, a nota fica **pendente** com a mesma chave: nunca emita outra no lugar.
+   `rustnf nfce pendentes --retomar` a consulta e, se a SEFAZ diz que não a recebeu, reenvia a MESMA nota.
+
+4. **Sem internet: emita off-line.** `rustnf nfce emitir pedido.json --offline --danfce` assina e guarda a nota como pendente
+   (`tpEmis` 9), **sem falar com a SEFAZ**, e diz até quando você tem para transmiti-la. Entregue o cupom ao consumidor (o
+   DANFC-e da off-line sai com as mensagens do Manual; a via do estabelecimento sai com `rustnf nfce danfce <chave>
+   --via-estabelecimento --pdf via.pdf`). Quando a internet voltar: `rustnf nfce pendentes --retomar`.
+   `--offline-se-necessario` pergunta antes ao serviço de status da NFC-e: se ele não responde, emite off-line; se responde,
+   envia. Depois de **enviar** sem resposta a nota nunca vira off-line (seria uma segunda nota para o mesmo cupom): fica
+   pendente e se retoma.
+
+5. **Ao fechar o caixa**, rode `rustnf nfce pendentes --fechar-caixa`. Ele lista, em palavras, cada NFC-e que ainda depende da
+   SEFAZ e sai com **código 4** se houver alguma (para um script de fechamento detectar). Ele diz a ação e o prazo ("rode
+   `rustnf nfce pendentes --retomar` com internet antes de 05/10/2026 23:59"); prazo vencido ou a menos de uma hora aparece
+   em destaque (`!!`). Com `--retomar` na mesma chamada, ele transmite e só então confere o que sobrou.
+
+6. **Cancele** com `rustnf nfce cancelar --chave ... --justificativa "..."`. Antes de enviar, o programa avisa se o prazo
+   nacional de 24 horas depois da autorização já acabou (o aviso nunca bloqueia: a SEFAZ da UF é quem decide e responde 501
+   se recusar).
+
+### Comandos
+
+| comando | o que faz |
+|---|---|
+| `rustnf nfce csc guardar` / `testar` / `apagar` | o CSC no cofre do sistema; nunca por argumento, nunca mostrado |
+| `rustnf nfce emitir` | completa, confere, monta, assina (com o QR Code da configuração), grava como pendente, envia e grava o resultado; `--offline`, `--offline-se-necessario`, `--danfce` |
+| `rustnf nfce consultar` | consulta a NFC-e pela chave e põe a nota da pasta em dia |
+| `rustnf nfce cancelar` | cancela (evento 110111), com o aviso do prazo antes de enviar |
+| `rustnf nfce pendentes` | lista o que falta enviar, com o prazo; `--retomar` consulta, reenvia ou transmite a off-line; `--fechar-caixa` sai com 4 se sobrar pendente |
+| `rustnf nfce status` | o estado do serviço de autorização da NFC-e da UF |
+| `rustnf nfce danfce <chave \| arquivo.xml>` | grava o DANFC-e como arquivo: `--pdf arq.pdf` ou `--escpos arq.bin`, `--largura 80\|58`, `--colunas 48\|42\|32`, `--resumido`, `--via-estabelecimento`; **nunca fala com impressora** |
+
+Os códigos de saída são os de `rustnf nfe` (0, 2, 3 e 4) e, com `--fechar-caixa`, o 4 também significa "ainda há nota
+pendente". Opções das ações que falam com a SEFAZ: `--pfx`, `--senha-env` ou `--senha-stdin` (ou a senha do cofre),
+`--ambiente homologacao|producao` (o de `[nfce].ambiente`), `--json`.
+
+### Tabela da `[nfce]`
+
+| campo | padrão | o que é |
+|---|---|---|
+| `ambiente` | `homologacao` | `homologacao` ou `producao`: o `tpAmb` e a SEFAZ da NFC-e |
+| `serie` | `1` | série do 65, de 0 a 999 (sequência própria) |
+| `qr_versao` | `3` | 3 (sem CSC) ou 2 (com CSC) |
+| `id_csc` | vazio | idCSC, de 1 a 6 dígitos; obrigatório com `qr_versao = 2` |
+| `largura_danfce` | `80` | bobina do cupom: 80 ou 58 mm |
+| `colunas_escpos` | `0` | 0 = pela largura (48 ou 32), ou 48, 42, 32 |
+| `motivo_offline` | vazio | `xJust` da off-line (15 a 255 caracteres); vazio = texto padrão |
+
+### Pasta de notas da NFC-e
+
+`<pasta>/nfce/` tem o mesmo desenho de `<pasta>/nfe/` (um XML por nota em `AAAA/MM/`, `indice.json`, `estado.json`), com
+**índice e numeração só do modelo 65**: nada do que a NF-e guardou é lido nem mudado. As regras de gasto do número são as da
+NF-e: autorizada, denegada e cancelada **gastam** o número; a rejeitada **não gasta** (é a inferência já documentada para a
+NF-e). Uma exceção da off-line: a NFC-e emitida off-line que a SEFAZ **rejeita** na transmissão **não sai da pasta** nem
+libera o número (o cupom já está com o consumidor): ela fica pendente, com a recusa (`cStat` e motivo) anotada no índice e
+mostrada por `pendentes`, e a MOC manda corrigir e transmitir de novo com a mesma chave. **O `rustnf` ainda não refaz essa
+retransmissão corrigida sozinho.**
+
+### O que a NFC-e do `rustnf` ainda não faz
+
+* cancelamento por substituição (110112): a biblioteca não o tem;
+* inutilização da NFC-e: o `inutNFe` da biblioteca é só do modelo 55;
+* prazo de cancelamento de cada UF: o aviso usa o prazo nacional (MOC 7.00, Visao Geral, regra 2P12-14); a lista por UF não
+  está nas fontes oficiais que o projeto usa;
+* API HTTP, MCP e interface de desktop da NFC-e.
 
 ## API HTTP
 

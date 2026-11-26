@@ -93,6 +93,20 @@ pub struct Registro {
     pub ultima: Option<i64>,
     /// Os eventos registrados.
     pub eventos: Vec<EventoGuardado>,
+    /// NFC-e emitida em contingencia off-line (`tpEmis` 9): ainda precisa ser TRANSMITIDA a SEFAZ, com a mesma chave.
+    #[serde(skip_serializing_if = "is_false")]
+    pub offline: bool,
+    /// Fim do prazo para transmitir a off-line (segundos Unix); `None` fora da off-line.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub prazo: Option<i64>,
+    /// O que a SEFAZ recusou na ultima transmissao da off-line (`cStat` e motivo): a nota segue pendente ate ser
+    /// corrigida; vazio = nada recusado.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub recusa: String,
+}
+
+fn is_false(b: &bool) -> bool {
+    !*b
 }
 
 impl Default for Registro {
@@ -114,6 +128,9 @@ impl Default for Registro {
             tentativas: 0,
             ultima: None,
             eventos: Vec::new(),
+            offline: false,
+            prazo: None,
+            recusa: String::new(),
         }
     }
 }
@@ -144,6 +161,7 @@ impl Registro {
                 "homologacao".into()
             },
             situacao,
+            offline: n.ide.tipo_emissao == "9",
             destinatario_documento: documento,
             destinatario_nome: nome,
             ..Self::default()

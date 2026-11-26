@@ -15,6 +15,8 @@
 mod certificado;
 mod comandos;
 mod configuracao;
+mod nfce;
+mod nfce_args;
 mod nfe;
 mod nfe_args;
 mod nfe_recebidas;
@@ -31,6 +33,11 @@ use rustnf::assinatura::xmldsig::Algoritmo;
 pub use comandos::{
     atualizar_com, consultar_com, emitir_valor, evento_consultar_com, evento_registrar_com,
     executar, executar_com, testar_conexao, VARIAVEL_COFRE,
+};
+pub use nfce::nfce_com;
+pub use nfce_args::{
+    AcaoCsc, AcaoNfce, ArgCancelarNfce, ArgConsultarNfce, ArgCscGuardar, ArgCscSo, ArgDanfce,
+    ArgEmitirNfce, ArgPendentesNfce, ArgStatusNfce,
 };
 pub use nfe::nfe_com;
 pub use nfe_args::{
@@ -104,6 +111,14 @@ pub enum Comando {
         /// O que fazer.
         #[command(subcommand)]
         acao: AcaoNfe,
+    },
+    /// NFC-e (modelo 65): o CSC no cofre, emitir (inclusive em contingencia off-line), consultar, cancelar, status, os
+    /// pendentes e o aviso "ao fechar o caixa", e o DANFC-e como arquivo (PDF ou ESC/POS). Nao e' software oficial; nenhuma
+    /// NFC-e real foi emitida por esta ferramenta e ela nao fala com impressora.
+    Nfce {
+        /// O que fazer.
+        #[command(subcommand)]
+        acao: AcaoNfce,
     },
     /// Notas autorizadas guardadas na pasta de notas.
     Notas {

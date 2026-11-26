@@ -68,6 +68,7 @@ pub async fn executar_com(cli: Cli, cofre: &dyn Cofre) -> Result<(), Erro> {
         Comando::Cancelar(a) => cancelar(a, config, cofre).await,
         Comando::Evento { acao } => evento(acao, config, cofre).await,
         Comando::Nfe { acao } => super::nfe::executar(acao, config, cofre).await,
+        Comando::Nfce { acao } => super::nfce::executar(acao, config, cofre).await,
         Comando::Serve(a) => servir(a, config, cofre).await,
         Comando::Config { acao } => configuracao::config(acao, config),
         Comando::Senha { acao } => configuracao::senha(acao, config, cofre),

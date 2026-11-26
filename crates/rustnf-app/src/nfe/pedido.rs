@@ -358,3 +358,8 @@ pub fn conferencia_json(r: &Result<Montado, Erro>) -> Value {
         }
     }
 }
+
+/// O `dhEmi` que a emissao usa quando o pedido nao traz o seu (agora, menos a folga do relogio), em Brasilia.
+pub(crate) fn emissao_agora(config: &Config, agora: DateTime<Utc>) -> String {
+    iso(agora - Duration::seconds(i64::from(config.sefin.folga_relogio_s)))
+}

@@ -17,6 +17,7 @@ mod efetiva;
 mod emitente;
 mod erro;
 mod modelo;
+mod nfce;
 mod nfe;
 mod validar;
 
@@ -33,6 +34,7 @@ pub use modelo::{
     aliquota_iss_vai_na_dps, Aliquota, Config, Danfse, Emitente, Interface, Notas, Sefin, Servidor,
     TEMAS,
 };
+pub use nfce::{Nfce, MOTIVO_OFFLINE_PADRAO};
 pub use nfe::{EnderecoNfe, Nfe, SERVICOS};
 
 fn opcional(s: &str) -> Option<String> {

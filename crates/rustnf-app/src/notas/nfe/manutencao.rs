@@ -16,8 +16,8 @@ use super::super::filtro::{dia, dia_valido, sem_acento};
 use super::super::manutencao::{campo, subpastas};
 use super::super::{ErroNotas, Reindexado};
 use super::{
-    chave_estrita, gravar_json, EventoGuardado, Indice, Inutilizacao, NotasNfe, Registro, Situacao,
-    INUTILIZACAO,
+    chave_do_modelo, gravar_json, EventoGuardado, Indice, Inutilizacao, NotasNfe, Registro,
+    Situacao, INUTILIZACAO,
 };
 use crate::atomico;
 
@@ -287,7 +287,8 @@ impl NotasNfe {
                         continue;
                     }
                     if let Some(c) = nome.strip_suffix("-procNFe.xml") {
-                        match chave_estrita(c)
+                        match self
+                            .chave(c)
                             .ok()
                             .and_then(|c| self.registro_do_proc(&caminho, c))
                         {
@@ -298,7 +299,7 @@ impl NotasNfe {
                         }
                     } else if let Some(c) = nome.strip_suffix("-NFe.xml") {
                         assinadas.push((c.to_string(), caminho));
-                    } else if let Some(e) = evento_do_arquivo(&nome, &caminho) {
+                    } else if let Some(e) = evento_do_arquivo(&nome, &caminho, self.modelo) {
                         eventos.push(e);
                     } else {
                         feito.ignorados += 1;
@@ -307,7 +308,8 @@ impl NotasNfe {
             }
         }
         for (c, caminho) in assinadas {
-            let achada = chave_estrita(&c)
+            let achada = self
+                .chave(&c)
                 .ok()
                 .and_then(|c| self.registro_da_assinada(&caminho, c));
             match achada {
@@ -397,11 +399,15 @@ impl NotasNfe {
 }
 
 /// `<chave>-<tipo>-<seq>-procEventoNFe.xml` -> a chave, o evento lido do arquivo e o texto dele.
-fn evento_do_arquivo(nome: &str, caminho: &Path) -> Option<(String, EventoGuardado, String)> {
+fn evento_do_arquivo(
+    nome: &str,
+    caminho: &Path,
+    modelo: &str,
+) -> Option<(String, EventoGuardado, String)> {
     let base = nome.strip_suffix("-procEventoNFe.xml")?;
     let mut partes = base.split('-');
     let (chave, tipo, seq) = (partes.next()?, partes.next()?, partes.next()?);
-    chave_estrita(chave).ok()?;
+    chave_do_modelo(chave, modelo).ok()?;
     let sequencia: u32 = seq.parse().ok()?;
     let texto = NotasNfe::ler_arquivo(caminho)?;
     let lido = ler_proc_evento(&texto).ok()?;

@@ -30,6 +30,7 @@ impl Config {
         servidor(&self.servidor)?;
         interface(&self.interface)?;
         super::nfe::validar(&self.nfe)?;
+        super::nfce::validar(&self.nfce)?;
         aliquotas(&self.aliquotas)
     }
 }
