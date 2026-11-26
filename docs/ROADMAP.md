@@ -77,7 +77,9 @@
   pagamento (110300, NT 2026.006), a distribuição de DF-e e a manifestação do destinatário, a consulta de cadastro e o
   cancelamento por substituição (110112, só da NFC-e).
 * DANFE (feature `danfe`): A4 retrato em PDF, várias folhas, situações e contingências, leiaute da Reforma Tributária.
-  Feito nesta frente. **Fica para depois:** o DANFE paisagem, as colunas de ICMS ST por item e o DANFE Simplificado.
+  Feito nesta frente. **Fica para depois da próxima versão:** o DANFE paisagem, o DANFE Simplificado, as colunas de ICMS
+  ST por item e o quadro do ISSQN com nota de verdade (hoje só testado com o grupo inserido à mão no XML: entra junto
+  com o `ISSQN` e o `ISSQNtot` na montagem).
 * Faces, parte 1: aplicação (`rustnf-app`: configuração `[nfe]`, pasta de notas `nfe/`, numeração, emissão com recuperação, eventos, inutilização, EPEC, retomada dos pendentes e DANFE) e linha de comando (`rustnf nfe`). Feita nesta frente, com transporte falso e um simulador local: **nenhuma NF-e real foi emitida e nenhuma SEFAZ real foi chamada**.
 * Faces, parte 2: API HTTP e MCP da NF-e, sobre as mesmas funções da aplicação.
 * Documentos recebidos e manifestação do destinatário.
