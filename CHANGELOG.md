@@ -6,6 +6,9 @@ Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` 
 alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
 `cancelada`, continua sendo lido por esta versão.
 
+* Correção no DANFSe: a NFS-e sem incidência do ISSQN (`tribISSQN` 4) passa a trazer no bloco "Tributação Municipal
+  (ISSQN)" só a frase "OPERAÇÃO NÃO SUJEITA AO ISSQN", como manda a nota 4 do item 2.4.5 da Nota Técnica 008 v1.02 (antes
+  o bloco saía inteiro). Imunidade e exportação continuam com o bloco inteiro.
 * NFC-e (modelo 65) na biblioteca (features `nfe` e `nfe_sefaz`): montagem, QR Code, envio e contingência off-line. A
   partida da leitura e da montagem da NF-e e do cálculo do QR Code veio da `gaialib`; o resto, das fontes oficiais de
   `docs/FONTES.md`. **Nenhum envio a uma SEFAZ real, nenhum certificado A1 real, nenhum CSC real e nenhum QR Code lido por
