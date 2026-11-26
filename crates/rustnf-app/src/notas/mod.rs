@@ -75,6 +75,8 @@ pub enum ErroNotas {
     NumeroJaUsado,
     /// O numero da NF-e ja esta com outra nota ou faixa inutilizada (ou a nota nao esta pendente).
     NumeroNfeOcupado,
+    /// O arquivo do cursor da distribuicao de DF-e nao e' um cursor.
+    CursorIlegivel,
 }
 
 impl fmt::Display for ErroNotas {
@@ -97,6 +99,9 @@ impl fmt::Display for ErroNotas {
             }
             Self::NumeroNfeOcupado => {
                 "notas: esse numero de NF-e ja esta com uma nota (autorizada, denegada, cancelada, pendente ou em EPEC) ou inutilizado nesta serie"
+            }
+            Self::CursorIlegivel => {
+                "notas: o cursor dos documentos recebidos (nfe/recebidas/cursor-*.json) esta ilegivel; nao o apague (recomecar do NSU zero pode bloquear o CNPJ por uma hora, cStat 656): restaure a copia ou peca ajuda"
             }
         })
     }

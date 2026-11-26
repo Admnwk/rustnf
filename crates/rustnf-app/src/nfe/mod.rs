@@ -13,6 +13,8 @@
 //! * [`consultar`], [`status`] e [`danfe_da_pasta`] -- consulta pela chave, estado do servico e o PDF;
 //! * [`cancelar`], [`corrigir`] e [`inutilizar`] -- os eventos e a inutilizacao;
 //! * [`preparar`] -- o pedido completado, lido e conferido, sem rede e sem gastar numero;
+//! * [`sincronizar`], [`baixar`], [`manifestar`], [`listar`] e [`cursor`] -- os documentos RECEBIDOS (distribuicao de DF-e
+//!   do Ambiente Nacional) e a manifestacao do destinatario, na pasta `nfe/recebidas`;
 //! * [`config_sefaz`] e [`cliente_real`] -- o cliente da SEFAZ a partir da configuracao.
 //!
 //! A pasta e' a [`NotasNfe`], `nfe/` dentro da `[notas].pasta`.
@@ -22,6 +24,7 @@ mod consulta;
 mod emissao;
 mod eventos;
 mod pedido;
+mod recebidas;
 mod resposta;
 mod retomada;
 #[cfg(test)]
@@ -29,7 +32,11 @@ mod testes;
 #[cfg(test)]
 pub(crate) mod testes_comuns;
 #[cfg(test)]
+pub(crate) mod testes_dfe;
+#[cfg(test)]
 mod testes_eventos;
+#[cfg(test)]
+mod testes_recebidas;
 #[cfg(test)]
 mod testes_retomada;
 
@@ -45,6 +52,10 @@ pub use emissao::{emitir, Emitida};
 pub use eventos::{cancelar, corrigir, epec, inutilizar, Inutilizada, Registrado};
 pub use pedido::{
     avisos_json, completar_pedido, conferencia_json, montar_pedido, preparar, Montado, Preparada,
+};
+pub use recebidas::{
+    baixar, cursor, listar, manifestar, sincronizar, Baixada, Contagem, FiltroRecebidas,
+    Manifestada, Sincronizada, LOTES_MAXIMO, LOTES_PADRAO,
 };
 pub use resposta::{erro_do_evento, erro_do_resultado, json_do_resultado};
 pub use retomada::{erro_da_retomada, retomar, Retomada};

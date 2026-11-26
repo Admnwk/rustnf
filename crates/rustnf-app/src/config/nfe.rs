@@ -15,13 +15,14 @@ use serde::{Deserialize, Serialize};
 use super::ErroConfig;
 
 /// Os nomes aceitos em `[nfe.urls]`, com o servico de cada um.
-pub const SERVICOS: [(&str, &str); 6] = [
+pub const SERVICOS: [(&str, &str); 7] = [
     ("status", "NfeStatusServico"),
     ("autorizacao", "NFeAutorizacao"),
     ("retorno", "NFeRetAutorizacao"),
     ("consulta", "NfeConsultaProtocolo"),
     ("eventos", "RecepcaoEvento"),
     ("inutilizacao", "NfeInutilizacao"),
+    ("distribuicao", "NFeDistribuicaoDFe"),
 ];
 
 /// `[nfe.endereco]`: o endereco do emitente na NF-e (`enderEmit`). O codigo do municipio, se vazio, e' o de
@@ -86,7 +87,7 @@ pub struct Nfe {
     /// raizes publicas e as da ICP-Brasil que a biblioteca ja traz.
     pub ca_pem: String,
     /// Enderecos que trocam os da tabela oficial, por servico (`status`, `autorizacao`, `retorno`, `consulta`,
-    /// `eventos`, `inutilizacao`): para um simulador. `https`, ou `http` so' no proprio computador.
+    /// `eventos`, `inutilizacao`, `distribuicao`): para um simulador. `https`, ou `http` so' no proprio computador.
     #[serde(skip_serializing_if = "BTreeMap::is_empty")]
     pub urls: BTreeMap<String, String>,
 }
@@ -208,7 +209,7 @@ pub(super) fn validar(n: &Nfe) -> Result<(), ErroConfig> {
             return Err(ErroConfig::invalido(
                 "nfe.urls",
                 nome.as_str(),
-                "servico desconhecido: use status, autorizacao, retorno, consulta, eventos ou inutilizacao",
+                "servico desconhecido: use status, autorizacao, retorno, consulta, eventos, inutilizacao ou distribuicao",
             ));
         }
         let local = ["http://127.0.0.1", "http://localhost", "http://[::1]"]
