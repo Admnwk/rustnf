@@ -7,7 +7,7 @@
 //!
 //! Os dados (`dados/nfe_ws.json`) saem das paginas "Relacao de Servicos Web" do Portal Nacional da NF-e (producao e
 //! homologacao); a data da leitura e as duas paginas estao em [`fonte`] e em `docs/FONTES.md`. Servico que a pagina
-//! lista e o cliente ainda nao usa (consulta de cadastro, distribuicao) fica na tabela para a parte seguinte.
+//! lista e o cliente ainda nao usa (consulta de cadastro) fica na tabela para a parte seguinte.
 //!
 //! A pagina publica alguns enderecos com `?wsdl` no fim (GO, MT, PR e um de PE). O `?wsdl` e' o pedido da descricao do
 //! servico, nao o endereco da chamada: [`Endereco::url_da_chamada`] o tira, e [`Endereco::url`] guarda o texto como a
@@ -44,6 +44,8 @@ pub enum Servico {
     RecepcaoEvento,
     /// `NfeInutilizacao`: inutilizacao de faixa de numeracao.
     Inutilizacao,
+    /// `NFeDistribuicaoDFe`: distribuicao de DF-e de interesse, do Ambiente Nacional (NT 2014.002).
+    DistribuicaoDfe,
 }
 
 impl Servico {
@@ -68,6 +70,7 @@ impl Servico {
             Servico::ConsultaProtocolo => "NfeConsultaProtocolo",
             Servico::RecepcaoEvento => "RecepcaoEvento",
             Servico::Inutilizacao => "NfeInutilizacao",
+            Servico::DistribuicaoDfe => "NFeDistribuicaoDFe",
         }
     }
 
@@ -87,6 +90,7 @@ impl Servico {
             Servico::ConsultaProtocolo => "nfeConsultaNF",
             Servico::RecepcaoEvento => "nfeRecepcaoEvento",
             Servico::Inutilizacao => "nfeInutilizacaoNF",
+            Servico::DistribuicaoDfe => "nfeDistDFeInteresse",
         };
         format!("{}/{metodo}", self.namespace())
     }
@@ -99,6 +103,7 @@ impl Servico {
             Servico::ConsultaProtocolo => "NFeConsultaProtocolo4",
             Servico::RecepcaoEvento => "NFeRecepcaoEvento4",
             Servico::Inutilizacao => "NFeInutilizacao4",
+            Servico::DistribuicaoDfe => "NFeDistribuicaoDFe",
         }
     }
 }

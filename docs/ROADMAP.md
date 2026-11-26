@@ -74,15 +74,19 @@
 * Webservices da SEFAZ, parte 2 (feature `nfe_sefaz`): cancelamento, carta de correção, EPEC, eventos da apuração do
   IBS/CBS da NT 2025.002 v1.53 (13 tipos mais o cancelamento de evento), inutilização (com o fim do serviço em AC, BA e
   SP) e contingência SVC (`tpEmis` 6 e 7). Feita nesta frente. **Fica para depois:** o evento de vinculação de
-  pagamento (110300, NT 2026.006), a distribuição de DF-e e a manifestação do destinatário, a consulta de cadastro e o
-  cancelamento por substituição (110112, só da NFC-e).
+  pagamento (110300, NT 2026.006), a consulta de cadastro e o cancelamento por substituição (110112, só da NFC-e).
+* Webservices da SEFAZ, parte 3 (feature `nfe_sefaz`): distribuição de DF-e (`NFeDistribuicaoDFe`, cursor de NSU sem pular nem
+  repetir, lacunas por `consNSU`, espera de uma hora e 656) e manifestação do destinatário (210200, 210210, 210220 e
+  210240), na biblioteca. Feita nesta frente. **Fica para depois:** as faces desta parte (camada de aplicação com a
+  persistência do cursor e dos documentos, linha de comando, API HTTP e MCP) e a conferência do WSDL e do prazo da manifestação
+  numa chamada real em homologação.
 * DANFE (feature `danfe`): A4 retrato em PDF, várias folhas, situações e contingências, leiaute da Reforma Tributária.
   Feito nesta frente. **Fica para depois da próxima versão:** o DANFE paisagem, o DANFE Simplificado, as colunas de ICMS
   ST por item e o quadro do ISSQN com nota de verdade (hoje só testado com o grupo inserido à mão no XML: entra junto
   com o `ISSQN` e o `ISSQNtot` na montagem).
 * Faces, parte 1: aplicação (`rustnf-app`: configuração `[nfe]`, pasta de notas `nfe/`, numeração, emissão com recuperação, eventos, inutilização, EPEC, retomada dos pendentes e DANFE) e linha de comando (`rustnf nfe`). Feita nesta frente, com transporte falso e um simulador local: **nenhuma NF-e real foi emitida e nenhuma SEFAZ real foi chamada**.
 * Faces, parte 2: API HTTP (`/nfe/`) e MCP da NF-e (11 ferramentas), sobre as mesmas funções da aplicação e no mesmo servidor. Feita nesta frente, com transporte falso e um simulador local: **nenhuma NF-e real foi emitida, consultada nem cancelada pela API ou pelo MCP, nenhum certificado A1 real foi usado e nenhuma SEFAZ real foi chamada.** Falta um cliente MCP de terceiros ler as ferramentas.
-* Documentos recebidos e manifestação do destinatário.
+* Faces dos documentos recebidos e da manifestação do destinatário (a biblioteca já os tem).
 * NFC-e.
 * Interface de desktop.
 

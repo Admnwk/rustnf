@@ -6,6 +6,27 @@ Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` 
 alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
 `cancelada`, continua sendo lido por esta versão.
 
+* NF-e (modelo 55), distribuição de DF-e e manifestação do destinatário, na biblioteca (feature `nfe_sefaz`; a linha de
+  comando, a API HTTP e o MCP ainda não as têm). **Nenhuma chamada ao Ambiente Nacional real e nenhum certificado A1
+  real**; sem dependência nova.
+  * `rustnf::nfe::sefaz::dfe`: o pedido `distDFeInt` 1.01 (`distNSU`, `consNSU`, `consChNFe`; CNPJ, inclusive o
+    alfanumérico, ou CPF), o cliente `ClienteSefaz::distribuir`, `distribuir_nsu`, `distribuir_chave` e `sincronizar`
+    (endereço do Ambiente Nacional pela tabela oficial; `Servico::DistribuicaoDfe` é novo) e o `Cursor` que a aplicação
+    persiste (`para_json` e `de_json`). O cursor só anda para o `ultNSU` devolvido, nunca pula nem repete um NSU nem
+    volta; o NSU que falta no meio do lote vira lacuna e `sincronizar` o busca por `consNSU` (faixa maior que 500 NSU
+    não se persegue: o Ambiente Nacional só guarda 90 dias); depois do 137 e do `ultNSU` igual ao `maxNSU` a
+    distribuição espera uma hora (a consulta de um NSU ou de uma chave segue livre), e o 656 bloqueia toda consulta por
+    uma hora, também na consulta por chave. Cada `docZip` vem aberto, com limite de 20 MB na descompressão, e lido
+    (`resNFe`, `resEvento`, `procNFe`, `procEventoNFe`); esquema desconhecido, XML que não lê e `docZip` que não abre
+    voltam no mesmo `Doc`, com o texto cru e o motivo, nunca descartados.
+  * `ClienteSefaz::manifestar` e `evento::manifestacao`: os eventos 210200, 210210, 210220 e 210240 no Ambiente Nacional
+    (`cOrgao` 91, autor o destinatário, `nSeqEvento` 1), com a justificativa por tipo (obrigatória na operação não
+    realizada, opcional no desconhecimento, proibida nos outros dois), a conferência das combinações que o MOC recusa (650,
+    651, 655 e 573) e do CNPJ-base ou CPF do certificado; o prazo (596) não é conferido. A resposta perdida se resolve como nos outros eventos: a
+    consulta da NF-e antes de qualquer reenvio.
+  * **Muda o que se aceita:** `155` ("cancelamento homologado fora de prazo") só vale como registro no cancelamento; num
+    evento de outro tipo passa a ser rejeição. `pedidos::envelope` embrulha o `nfeDadosMsg` na operação
+    `nfeDistDFeInteresse` quando o serviço é a distribuição (os outros serviços não mudam).
 * NF-e: o código do crédito presumido (`cCredPres`) passa a ser conferido pela tabela oficial (IT 2025.002 v1.70, 13
   códigos), não só pelo formato de 2 dígitos, no grupo `gCredPresOper` do item (`reforma::calculo`) e no evento
   211110. Cada regra da NT 2025.002 v1.53 aparece com a sua rejeição: código inexistente (1055; `UB122-10`,

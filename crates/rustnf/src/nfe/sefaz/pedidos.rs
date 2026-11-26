@@ -241,14 +241,24 @@ pub struct Envelope {
 
 /// O envelope SOAP 1.2 do servico: `<nfeDadosMsg xmlns="<WSDL do servico>">` com o pedido dentro, sem cabecalho.
 /// O pedido entra como esta (sem a declaracao `<?xml ...?>`).
+///
+/// A distribuicao de DF-e e' a excecao: o WSDL dela declara a operacao `nfeDistDFeInteresse` e o `nfeDadosMsg` vai
+/// DENTRO dela (NT 2014.002, item 3), entao o pedido sai embrulhado nessa operacao.
 #[must_use]
 pub fn envelope(dados: &str, servico: Servico) -> Envelope {
     let ns = servico.namespace();
+    let pedido = sem_declaracao(dados);
+    let miolo = if servico == Servico::DistribuicaoDfe {
+        format!(
+            "<nfeDistDFeInteresse xmlns=\"{ns}\"><nfeDadosMsg>{pedido}</nfeDadosMsg></nfeDistDFeInteresse>"
+        )
+    } else {
+        format!("<nfeDadosMsg xmlns=\"{ns}\">{pedido}</nfeDadosMsg>")
+    };
     let corpo = format!(
         "<soap12:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \
          xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap12=\"{SOAP12}\"><soap12:Body>\
-         <nfeDadosMsg xmlns=\"{ns}\">{}</nfeDadosMsg></soap12:Body></soap12:Envelope>",
-        sem_declaracao(dados)
+         {miolo}</soap12:Body></soap12:Envelope>"
     );
     Envelope {
         corpo: corpo.into_bytes(),

@@ -1,0 +1,194 @@
+{
+ "_doc": "Contrato do pedido distDFeInt 1.01 (NT 2014.002 v1.02d, item 3.1; distDFeInt_v1.01.xsd) e do evento da manifestacao do destinatario (MOC 7.00, Visao Geral, 5.11; e2102xx_v1.00.xsd). O XML esperado foi escrito a parte, nao pela biblioteca, e validado no XSD oficial fora do repositorio. Documentos e nomes ficticios.",
+ "chave": "35261011222333000181550010000000421387654326",
+ "pedidos": [
+  {
+   "nome": "distNSU do zero, CNPJ, SP, homologacao",
+   "ambiente": 2,
+   "uf": "SP",
+   "documento": "11222333000181",
+   "consulta": "distNSU",
+   "valor": "0",
+   "xml": "<distDFeInt xmlns=\"http://www.portalfiscal.inf.br/nfe\" versao=\"1.01\"><tpAmb>2</tpAmb><cUFAutor>35</cUFAutor><CNPJ>11222333000181</CNPJ><distNSU><ultNSU>000000000000000</ultNSU></distNSU></distDFeInt>"
+  },
+  {
+   "nome": "distNSU, CNPJ, MG, producao",
+   "ambiente": 1,
+   "uf": "MG",
+   "documento": "11222333000181",
+   "consulta": "distNSU",
+   "valor": "12345",
+   "xml": "<distDFeInt xmlns=\"http://www.portalfiscal.inf.br/nfe\" versao=\"1.01\"><tpAmb>1</tpAmb><cUFAutor>31</cUFAutor><CNPJ>11222333000181</CNPJ><distNSU><ultNSU>000000000012345</ultNSU></distNSU></distDFeInt>"
+  },
+  {
+   "nome": "distNSU no maior NSU possivel, CPF, RJ",
+   "ambiente": 2,
+   "uf": "RJ",
+   "documento": "52998224725",
+   "consulta": "distNSU",
+   "valor": "999999999999999",
+   "xml": "<distDFeInt xmlns=\"http://www.portalfiscal.inf.br/nfe\" versao=\"1.01\"><tpAmb>2</tpAmb><cUFAutor>33</cUFAutor><CPF>52998224725</CPF><distNSU><ultNSU>999999999999999</ultNSU></distNSU></distDFeInt>"
+  },
+  {
+   "nome": "distNSU, CNPJ alfanumerico",
+   "ambiente": 2,
+   "uf": "SP",
+   "documento": "12ABC34501DE35",
+   "consulta": "distNSU",
+   "valor": "41",
+   "xml": "<distDFeInt xmlns=\"http://www.portalfiscal.inf.br/nfe\" versao=\"1.01\"><tpAmb>2</tpAmb><cUFAutor>35</cUFAutor><CNPJ>12ABC34501DE35</CNPJ><distNSU><ultNSU>000000000000041</ultNSU></distNSU></distDFeInt>"
+  },
+  {
+   "nome": "consNSU, CNPJ",
+   "ambiente": 2,
+   "uf": "SP",
+   "documento": "11222333000181",
+   "consulta": "consNSU",
+   "valor": "7",
+   "xml": "<distDFeInt xmlns=\"http://www.portalfiscal.inf.br/nfe\" versao=\"1.01\"><tpAmb>2</tpAmb><cUFAutor>35</cUFAutor><CNPJ>11222333000181</CNPJ><consNSU><NSU>000000000000007</NSU></consNSU></distDFeInt>"
+  },
+  {
+   "nome": "consNSU, CPF, DF",
+   "ambiente": 1,
+   "uf": "DF",
+   "documento": "52998224725",
+   "consulta": "consNSU",
+   "valor": "1",
+   "xml": "<distDFeInt xmlns=\"http://www.portalfiscal.inf.br/nfe\" versao=\"1.01\"><tpAmb>1</tpAmb><cUFAutor>53</cUFAutor><CPF>52998224725</CPF><consNSU><NSU>000000000000001</NSU></consNSU></distDFeInt>"
+  },
+  {
+   "nome": "consChNFe, CPF",
+   "ambiente": 2,
+   "uf": "SP",
+   "documento": "52998224725",
+   "consulta": "consChNFe",
+   "valor": "35261011222333000181550010000000421387654326",
+   "xml": "<distDFeInt xmlns=\"http://www.portalfiscal.inf.br/nfe\" versao=\"1.01\"><tpAmb>2</tpAmb><cUFAutor>35</cUFAutor><CPF>52998224725</CPF><consChNFe><chNFe>35261011222333000181550010000000421387654326</chNFe></consChNFe></distDFeInt>"
+  },
+  {
+   "nome": "consChNFe, CNPJ, AM, producao",
+   "ambiente": 1,
+   "uf": "AM",
+   "documento": "11222333000181",
+   "consulta": "consChNFe",
+   "valor": "35261011222333000181550010000000421387654326",
+   "xml": "<distDFeInt xmlns=\"http://www.portalfiscal.inf.br/nfe\" versao=\"1.01\"><tpAmb>1</tpAmb><cUFAutor>13</cUFAutor><CNPJ>11222333000181</CNPJ><consChNFe><chNFe>35261011222333000181550010000000421387654326</chNFe></consChNFe></distDFeInt>"
+  }
+ ],
+ "manifestacoes": [
+  {
+   "nome": "confirmacao, CNPJ, SP",
+   "ambiente": 2,
+   "uf_autor": "SP",
+   "documento": "11222333000181",
+   "chave": "35261011222333000181550010000000421387654326",
+   "tp_evento": "210200",
+   "justificativa": null,
+   "quando": "2026-11-26T09:00:00-03:00",
+   "xml": "<evento xmlns=\"http://www.portalfiscal.inf.br/nfe\" versao=\"1.00\"><infEvento Id=\"ID2102003526101122233300018155001000000042138765432601\"><cOrgao>91</cOrgao><tpAmb>2</tpAmb><CNPJ>11222333000181</CNPJ><chNFe>35261011222333000181550010000000421387654326</chNFe><dhEvento>2026-11-26T09:00:00-03:00</dhEvento><tpEvento>210200</tpEvento><nSeqEvento>1</nSeqEvento><verEvento>1.00</verEvento><detEvento versao=\"1.00\"><descEvento>Confirmacao da Operacao</descEvento></detEvento></infEvento></evento>"
+  },
+  {
+   "nome": "ciencia, CNPJ, SP",
+   "ambiente": 2,
+   "uf_autor": "SP",
+   "documento": "11222333000181",
+   "chave": "35261011222333000181550010000000421387654326",
+   "tp_evento": "210210",
+   "justificativa": null,
+   "quando": "2026-11-26T09:00:00-03:00",
+   "xml": "<evento xmlns=\"http://www.portalfiscal.inf.br/nfe\" versao=\"1.00\"><infEvento Id=\"ID2102103526101122233300018155001000000042138765432601\"><cOrgao>91</cOrgao><tpAmb>2</tpAmb><CNPJ>11222333000181</CNPJ><chNFe>35261011222333000181550010000000421387654326</chNFe><dhEvento>2026-11-26T09:00:00-03:00</dhEvento><tpEvento>210210</tpEvento><nSeqEvento>1</nSeqEvento><verEvento>1.00</verEvento><detEvento versao=\"1.00\"><descEvento>Ciencia da Operacao</descEvento></detEvento></infEvento></evento>"
+  },
+  {
+   "nome": "desconhecimento sem justificativa",
+   "ambiente": 2,
+   "uf_autor": "SP",
+   "documento": "11222333000181",
+   "chave": "35261011222333000181550010000000421387654326",
+   "tp_evento": "210220",
+   "justificativa": null,
+   "quando": "2026-11-26T09:00:00-03:00",
+   "xml": "<evento xmlns=\"http://www.portalfiscal.inf.br/nfe\" versao=\"1.00\"><infEvento Id=\"ID2102203526101122233300018155001000000042138765432601\"><cOrgao>91</cOrgao><tpAmb>2</tpAmb><CNPJ>11222333000181</CNPJ><chNFe>35261011222333000181550010000000421387654326</chNFe><dhEvento>2026-11-26T09:00:00-03:00</dhEvento><tpEvento>210220</tpEvento><nSeqEvento>1</nSeqEvento><verEvento>1.00</verEvento><detEvento versao=\"1.00\"><descEvento>Desconhecimento da Operacao</descEvento></detEvento></infEvento></evento>"
+  },
+  {
+   "nome": "desconhecimento com justificativa",
+   "ambiente": 2,
+   "uf_autor": "SP",
+   "documento": "11222333000181",
+   "chave": "35261011222333000181550010000000421387654326",
+   "tp_evento": "210220",
+   "justificativa": "Mercadoria nao foi entregue no endereco",
+   "quando": "2026-11-26T09:00:00-03:00",
+   "xml": "<evento xmlns=\"http://www.portalfiscal.inf.br/nfe\" versao=\"1.00\"><infEvento Id=\"ID2102203526101122233300018155001000000042138765432601\"><cOrgao>91</cOrgao><tpAmb>2</tpAmb><CNPJ>11222333000181</CNPJ><chNFe>35261011222333000181550010000000421387654326</chNFe><dhEvento>2026-11-26T09:00:00-03:00</dhEvento><tpEvento>210220</tpEvento><nSeqEvento>1</nSeqEvento><verEvento>1.00</verEvento><detEvento versao=\"1.00\"><descEvento>Desconhecimento da Operacao</descEvento><xJust>Mercadoria nao foi entregue no endereco</xJust></detEvento></infEvento></evento>"
+  },
+  {
+   "nome": "operacao nao realizada com justificativa",
+   "ambiente": 2,
+   "uf_autor": "SP",
+   "documento": "11222333000181",
+   "chave": "35261011222333000181550010000000421387654326",
+   "tp_evento": "210240",
+   "justificativa": "Mercadoria nao foi entregue no endereco",
+   "quando": "2026-11-26T09:00:00-03:00",
+   "xml": "<evento xmlns=\"http://www.portalfiscal.inf.br/nfe\" versao=\"1.00\"><infEvento Id=\"ID2102403526101122233300018155001000000042138765432601\"><cOrgao>91</cOrgao><tpAmb>2</tpAmb><CNPJ>11222333000181</CNPJ><chNFe>35261011222333000181550010000000421387654326</chNFe><dhEvento>2026-11-26T09:00:00-03:00</dhEvento><tpEvento>210240</tpEvento><nSeqEvento>1</nSeqEvento><verEvento>1.00</verEvento><detEvento versao=\"1.00\"><descEvento>Operacao nao Realizada</descEvento><xJust>Mercadoria nao foi entregue no endereco</xJust></detEvento></infEvento></evento>"
+  },
+  {
+   "nome": "ciencia, CPF, Manaus, producao",
+   "ambiente": 1,
+   "uf_autor": "AM",
+   "documento": "52998224725",
+   "chave": "35261011222333000181550010000000421387654326",
+   "tp_evento": "210210",
+   "justificativa": null,
+   "quando": "2026-11-26T09:00:00-03:00",
+   "xml": "<evento xmlns=\"http://www.portalfiscal.inf.br/nfe\" versao=\"1.00\"><infEvento Id=\"ID2102103526101122233300018155001000000042138765432601\"><cOrgao>91</cOrgao><tpAmb>1</tpAmb><CPF>52998224725</CPF><chNFe>35261011222333000181550010000000421387654326</chNFe><dhEvento>2026-11-26T08:00:00-04:00</dhEvento><tpEvento>210210</tpEvento><nSeqEvento>1</nSeqEvento><verEvento>1.00</verEvento><detEvento versao=\"1.00\"><descEvento>Ciencia da Operacao</descEvento></detEvento></infEvento></evento>"
+  },
+  {
+   "nome": "confirmacao, CNPJ alfanumerico",
+   "ambiente": 2,
+   "uf_autor": "SP",
+   "documento": "12ABC34501DE35",
+   "chave": "35261011222333000181550010000000421387654326",
+   "tp_evento": "210200",
+   "justificativa": null,
+   "quando": "2026-11-26T09:00:00-03:00",
+   "xml": "<evento xmlns=\"http://www.portalfiscal.inf.br/nfe\" versao=\"1.00\"><infEvento Id=\"ID2102003526101122233300018155001000000042138765432601\"><cOrgao>91</cOrgao><tpAmb>2</tpAmb><CNPJ>12ABC34501DE35</CNPJ><chNFe>35261011222333000181550010000000421387654326</chNFe><dhEvento>2026-11-26T09:00:00-03:00</dhEvento><tpEvento>210200</tpEvento><nSeqEvento>1</nSeqEvento><verEvento>1.00</verEvento><detEvento versao=\"1.00\"><descEvento>Confirmacao da Operacao</descEvento></detEvento></infEvento></evento>"
+  }
+ ],
+ "recusas": [
+  {
+   "nome": "nao realizada sem justificativa (595)",
+   "tp_evento": "210240",
+   "justificativa": null,
+   "campo": "xJust",
+   "contem": "595"
+  },
+  {
+   "nome": "nao realizada com 14 caracteres",
+   "tp_evento": "210240",
+   "justificativa": "xxxxxxxxxxxxxx",
+   "campo": "xJust",
+   "contem": "minimo de 15"
+  },
+  {
+   "nome": "desconhecimento com 256 caracteres",
+   "tp_evento": "210220",
+   "justificativa": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "campo": "xJust",
+   "contem": "maximo 255"
+  },
+  {
+   "nome": "confirmacao com justificativa",
+   "tp_evento": "210200",
+   "justificativa": "Mercadoria nao foi entregue no endereco",
+   "campo": "xJust",
+   "contem": "nao leva justificativa"
+  },
+  {
+   "nome": "ciencia com justificativa",
+   "tp_evento": "210210",
+   "justificativa": "Mercadoria nao foi entregue no endereco",
+   "campo": "xJust",
+   "contem": "nao leva justificativa"
+  }
+ ]
+}

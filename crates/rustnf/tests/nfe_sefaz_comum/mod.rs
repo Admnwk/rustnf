@@ -7,6 +7,7 @@
 
 #![allow(dead_code, unreachable_pub)]
 
+pub mod dfe;
 pub mod eventos;
 
 use std::collections::VecDeque;
