@@ -199,7 +199,7 @@ async fn tools_list_com_emissao_so_mostra_as_de_emissao_com_o_bearer() {
     .await;
     assert_eq!(st, StatusCode::OK);
     let n = nomes(&json_do_corpo(&corpo));
-    assert_eq!(n.len(), 22);
+    assert_eq!(n.len(), 26);
     for nome in [
         "emitir_nfse",
         "consultar_nfse",

@@ -175,3 +175,65 @@ pub fn status() -> Value {
 pub fn sem_argumentos() -> Value {
     json!({"type": "object", "properties": {}, "additionalProperties": false})
 }
+
+/// Schema de `sincronizar_recebidas`.
+#[must_use]
+pub fn sincronizacao() -> Value {
+    json!({
+        "type": "object",
+        "properties": {
+            "lotes": {"type": "integer", "minimum": 1, "maximum": 200, "description": "No maximo quantos lotes (de ate 50 documentos) ler; padrao 20."}
+        },
+        "additionalProperties": false
+    })
+}
+
+/// Schema de `listar_recebidas`.
+#[must_use]
+pub fn lista_recebidas() -> Value {
+    json!({
+        "type": "object",
+        "properties": {
+            "situacao": {
+                "type": "string",
+                "enum": ["resumo", "completa", "ciencia", "confirmada", "desconhecida", "nao_realizada", "cancelada", "denegada"],
+                "description": "So' as notas nesta situacao."
+            },
+            "busca": texto("So' as que casam com o texto: nome do emitente (sem acento), CNPJ/CPF dele ou chave.")
+        },
+        "additionalProperties": false
+    })
+}
+
+/// Schema de `baixar_recebida`.
+#[must_use]
+pub fn baixa() -> Value {
+    json!({
+        "type": "object",
+        "properties": {
+            "chave": texto("Chave de acesso da NF-e (44 digitos)."),
+            "ciencia": {"type": "boolean", "description": "Registra a ciencia da operacao (evento fiscal 210210) antes, se a nota ainda nao tem manifestacao; sem ela o Ambiente Nacional entrega so' o resumo. Padrao false."}
+        },
+        "required": ["chave"],
+        "additionalProperties": false
+    })
+}
+
+/// Schema de `manifestar_recebida`.
+#[must_use]
+pub fn manifestacao() -> Value {
+    json!({
+        "type": "object",
+        "properties": {
+            "chave": texto("Chave de acesso da NF-e (44 digitos)."),
+            "tipo": {
+                "type": "string",
+                "enum": ["ciencia", "confirmacao", "desconhecimento", "nao_realizada"],
+                "description": "ciencia (210210), confirmacao (210200), desconhecimento (210220) ou nao_realizada (210240)."
+            },
+            "justificativa": texto("De 15 a 255 caracteres: obrigatoria na nao_realizada, opcional no desconhecimento, proibida nas outras; fica no documento fiscal.")
+        },
+        "required": ["chave", "tipo"],
+        "additionalProperties": false
+    })
+}

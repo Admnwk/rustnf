@@ -37,3 +37,5 @@ clap_complete = "4"
 rustnf = { path = "../rustnf", features = ["sefin", "danfse", "nfe_sefaz", "danfe", "cert_a1_teste"] }
 tower = { version = "0.5", features = ["util"] }
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
+# so' os testes: o gzip do docZip dos documentos ficticios (a mesma crate que a biblioteca ja usa)
+flate2 = "1"

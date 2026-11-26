@@ -7,6 +7,7 @@
 
 pub mod auth;
 pub mod nfe;
+pub mod nfe_recebidas;
 mod rotas;
 mod rotas_nfe;
 
@@ -263,6 +264,17 @@ pub fn roteador(estado: Estado) -> Router {
             .route("/nfe/status", get(rotas_nfe::status))
             .route("/nfe/pendentes", get(rotas_nfe::pendentes))
             .route("/nfe/pendentes/retomar", post(rotas_nfe::retomar))
+            .route("/nfe/recebidas", get(rotas_nfe::recebidas_listar))
+            .route("/nfe/recebidas/cursor", get(rotas_nfe::recebidas_cursor))
+            .route(
+                "/nfe/recebidas/sincronizar",
+                post(rotas_nfe::recebidas_sincronizar),
+            )
+            .route("/nfe/recebidas/baixar", post(rotas_nfe::recebidas_baixar))
+            .route(
+                "/nfe/recebidas/manifestar",
+                post(rotas_nfe::recebidas_manifestar),
+            )
             .route("/nfe/{chave}", get(rotas_nfe::consultar))
             .route("/emitir", post(rotas::emitir))
             .route("/cancelar", post(rotas::cancelar))

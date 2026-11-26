@@ -17,6 +17,8 @@ mod comandos;
 mod configuracao;
 mod nfe;
 mod nfe_args;
+mod nfe_recebidas;
+mod nfe_recebidas_args;
 mod resolver;
 mod servir;
 
@@ -35,6 +37,10 @@ pub use nfe_args::{
     AcaoNfe, AcaoNotasNfe, AmbienteNfe, ArgCancelarNfe, ArgCertNfe, ArgConferirNfe,
     ArgConsultarNfe, ArgCorrigirNfe, ArgDanfeNfe, ArgEmitirNfe, ArgInutilizarNfe, ArgPedidoNfe,
     ArgPendentesNfe, ArgStatusNfe, SituacaoNfe,
+};
+pub use nfe_recebidas_args::{
+    AcaoRecebidas, ArgBaixarNfe, ArgListarRecebidas, ArgManifestarNfe, ArgSincronizarNfe,
+    SituacaoRecebidaArg, TipoManifestacaoArg,
 };
 pub use servir::{servir, servir_ate};
 

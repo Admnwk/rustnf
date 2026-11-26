@@ -58,12 +58,12 @@ struct Motor {
 /// A NF-e do servidor: a configuracao (`[emitente]`, `[nfe]`, `[notas]`), a pasta de notas e, quando ha emissao, o cliente
 /// da SEFAZ com o certificado A1.
 pub struct ServidorNfe {
-    config: Config,
-    notas: Option<NotasNfe>,
+    pub(super) config: Config,
+    pub(super) notas: Option<NotasNfe>,
     motor: Result<Motor, String>,
     /// Quem numera ou reserva numero entra um de cada vez: duas emissoes simultaneas nao gastam o mesmo numero (a pasta
     /// de notas tambem trava, mas entre ler o proximo numero e grava-lo ha um intervalo).
-    fila: tokio::sync::Mutex<()>,
+    pub(super) fila: tokio::sync::Mutex<()>,
 }
 
 impl ServidorNfe {
@@ -132,7 +132,7 @@ impl ServidorNfe {
             .map_err(|motivo| Erro::Uso(format!("a NF-e nao esta pronta neste servidor: {motivo}")))
     }
 
-    fn contexto(&self) -> Result<Contexto<'_, TransporteDin>, Erro> {
+    pub(super) fn contexto(&self) -> Result<Contexto<'_, TransporteDin>, Erro> {
         let m = self.motor()?;
         Ok(Contexto::novo(
             &m.cliente,

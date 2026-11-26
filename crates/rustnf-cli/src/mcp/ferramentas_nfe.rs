@@ -13,9 +13,12 @@ use super::ferramentas::{argumentos, resultado_estruturado, Ferramenta};
 use super::schemas_nfe as schemas;
 use crate::erro::Erro;
 use crate::http::nfe::{PedidoCancelar, PedidoCorrigir, PedidoInutilizar, Saida};
+use crate::http::nfe_recebidas::{
+    situacao_do_filtro, PedidoBaixar, PedidoManifestar, PedidoSincronizar,
+};
 use crate::http::Estado;
 
-pub(super) const FERRAMENTAS: [Ferramenta; 11] = [
+pub(super) const FERRAMENTAS: [Ferramenta; 15] = [
     Ferramenta {
         nome: "conferir_nfe",
         titulo: "Conferir a NF-e",
@@ -93,6 +96,34 @@ pub(super) const FERRAMENTAS: [Ferramenta; 11] = [
         emissao: true,
         schema: schemas::sem_argumentos,
     },
+    Ferramenta {
+        nome: "sincronizar_recebidas",
+        titulo: "Baixar os documentos recebidos",
+        descricao: "Baixa do Ambiente Nacional (distribuicao de DF-e) as NF-e em que a empresa e destinataria e os eventos delas, do ultimo NSU ate o fim da fila, e grava na pasta de notas (nfe/recebidas) antes de andar o cursor. Respeita a espera de uma hora e o bloqueio 656: antes da hora responde quando tentar, sem chamar a rede. Antes de manifestar chega so o resumo de cada NF-e.",
+        emissao: true,
+        schema: schemas::sincronizacao,
+    },
+    Ferramenta {
+        nome: "listar_recebidas",
+        titulo: "Listar as NF-e recebidas",
+        descricao: "Lista as NF-e recebidas que estao na pasta de notas (chave, emitente, valor, data e situacao: resumo, completa, ciencia, confirmada, desconhecida, nao_realizada, cancelada, denegada). So le a pasta: nao usa a rede.",
+        emissao: true,
+        schema: schemas::lista_recebidas,
+    },
+    Ferramenta {
+        nome: "baixar_recebida",
+        titulo: "Baixar uma NF-e recebida",
+        descricao: "Baixa a NF-e de uma chave no Ambiente Nacional. So a nota completa vem para quem ja manifestou; com ciencia=true a ciencia da operacao (evento fiscal 210210) e registrada antes, se a nota ainda nao tem manifestacao. Operacao com efeito fiscal quando ciencia=true.",
+        emissao: true,
+        schema: schemas::baixa,
+    },
+    Ferramenta {
+        nome: "manifestar_recebida",
+        titulo: "Manifestar o destinatario",
+        descricao: "Registra a manifestacao do destinatario no Ambiente Nacional: ciencia, confirmacao, desconhecimento ou nao_realizada (esta com justificativa). E um EVENTO FISCAL assinado com o certificado da empresa; vale a ultima manifestacao conclusiva e nao ha desfazer. Operacao com efeito fiscal.",
+        emissao: true,
+        schema: schemas::manifestacao,
+    },
 ];
 
 fn resultado(s: &Saida) -> Value {
@@ -125,6 +156,15 @@ struct PedidoStatus {
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct SemArgumentos {}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct PedidoLista {
+    #[serde(default)]
+    situacao: Option<String>,
+    #[serde(default)]
+    busca: String,
+}
 
 async fn danfe(estado: &Estado, args: Value) -> Result<Value, Erro> {
     let p: PedidoDanfe = argumentos(args)?;
@@ -174,6 +214,26 @@ pub(super) async fn rodar(nome: &str, estado: &Estado, args: Value) -> Result<Va
         "retomar_pendentes_nfe" => {
             let SemArgumentos {} = argumentos(args)?;
             Ok(resultado(&nfe.retomar().await?))
+        }
+        "sincronizar_recebidas" => {
+            let p: PedidoSincronizar = argumentos(args)?;
+            Ok(resultado(&nfe.sincronizar_recebidas(&p).await?))
+        }
+        "listar_recebidas" => {
+            let p: PedidoLista = argumentos(args)?;
+            let situacao = situacao_do_filtro(p.situacao.as_deref())?;
+            Ok(resultado_estruturado(
+                nfe.listar_recebidas(situacao, &p.busca)?,
+                false,
+            ))
+        }
+        "baixar_recebida" => {
+            let p: PedidoBaixar = argumentos(args)?;
+            Ok(resultado(&nfe.baixar_recebida(&p).await?))
+        }
+        "manifestar_recebida" => {
+            let p: PedidoManifestar = argumentos(args)?;
+            Ok(resultado(&nfe.manifestar_recebida(&p).await?))
         }
         _ => Err(Erro::Interno),
     }

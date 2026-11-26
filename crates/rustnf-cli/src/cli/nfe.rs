@@ -45,7 +45,7 @@ pub(super) fn notas_da(e: &Efetiva) -> Result<Option<NotasNfe>, Erro> {
     Ok(Some(NotasNfe::abrir(&e.config.notas.pasta)?))
 }
 
-fn notas_exigida(e: &Efetiva) -> Result<NotasNfe, Erro> {
+pub(super) fn notas_exigida(e: &Efetiva) -> Result<NotasNfe, Erro> {
     notas_da(e)?.ok_or_else(|| {
         Erro::Uso(
             "sem pasta de notas: configure [notas].pasta no arquivo ou RUSTNF_NOTAS_PASTA".into(),
@@ -94,6 +94,7 @@ fn localmente(acao: AcaoNfe, config: Option<&Path>) -> Result<(), Erro> {
         AcaoNfe::Danfe(a) => danfe(&a, config),
         AcaoNfe::Notas { acao } => notas(acao, config),
         AcaoNfe::Pendentes(a) => listar_pendentes(a.json, config),
+        AcaoNfe::Recebidas { acao } => super::nfe_recebidas::localmente(acao, config),
         _ => Err(Erro::Interno),
     }
 }
@@ -142,6 +143,7 @@ pub async fn nfe_com<T: Transporte>(ctx: &Contexto<'_, T>, acao: AcaoNfe) -> Res
             )
         }
         AcaoNfe::Pendentes(a) => retomar(ctx, a.json).await,
+        AcaoNfe::Recebidas { acao } => super::nfe_recebidas::com(ctx, acao).await,
         _ => Err(Erro::Interno),
     }
 }
@@ -174,7 +176,7 @@ fn avisar(v: &Value) {
 
 /// Imprime o resultado (texto ou JSON) e devolve o erro do resultado, se houver: o resultado completo sai no stdout mesmo
 /// quando a saida e' 3 ou 4.
-fn concluir(v: &Value, json: bool, erro: Option<Erro>) -> Result<(), Erro> {
+pub(super) fn concluir(v: &Value, json: bool, erro: Option<Erro>) -> Result<(), Erro> {
     avisar(v);
     if json {
         escrever_json(v)?;

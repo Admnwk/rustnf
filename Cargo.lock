@@ -6884,6 +6884,7 @@ dependencies = [
  "chrono",
  "clap",
  "clap_complete",
+ "flate2",
  "rustnf",
  "rustnf-app",
  "serde",
