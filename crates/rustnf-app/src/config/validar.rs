@@ -29,6 +29,7 @@ impl Config {
         sefin(&self.sefin)?;
         servidor(&self.servidor)?;
         interface(&self.interface)?;
+        super::nfe::validar(&self.nfe)?;
         aliquotas(&self.aliquotas)
     }
 }

@@ -36,6 +36,39 @@ pasta = "notas"                  # vazio = nao guardar; guarda o XML, o indice e
 [danfse]
 canhoto = true                   # canhoto de cientificacao no rodape
 
+# NF-e (modelo 55). O que ja esta acima vale tambem para ela: o CNPJ ou CPF e o nome do [emitente], o municipio
+# ([emitente].municipio), o certificado ([sefin].pfx, com a senha no mesmo cofre), a folga do relogio
+# ([sefin].folga_relogio_s) e a pasta de notas ([notas].pasta, onde a NF-e usa a subpasta nfe/). So' o que a NFS-e
+# nao tem fica aqui. Variaveis de ambiente: RUSTNF_NFE_AMBIENTE, RUSTNF_NFE_SERIE, RUSTNF_NFE_CONTINGENCIA e
+# RUSTNF_NFE_TEMPO_LIMITE.
+[nfe]
+ambiente = "homologacao"         # homologacao (padrao) | producao: a NF-e de homologacao nao vale
+uf = "SP"                        # UF do emitente: escolhe o autorizador da SEFAZ
+ie = "111111111111"              # inscricao estadual, so' digitos
+crt = 1                          # 1 Simples Nacional, 2 Simples com excesso de sublimite, 3 regime normal, 4 MEI
+regime_pis_cofins = ""           # cumulativo | nao_cumulativo (CRT 3); vazio = sem o aviso de CST que nao combina
+serie = "1"                      # serie da NF-e, de 0 a 999
+contingencia = "normal"          # normal | svc (SEFAZ Virtual de Contingencia; exige o motivo abaixo)
+motivo_contingencia = ""         # de 15 a 255 caracteres, so' com contingencia = "svc"
+fantasia = "OFICINA TESTE"
+tempo_limite_s = 60              # tempo limite de cada chamada a SEFAZ
+tentativas_retorno = 5           # consultas do recibo de um lote que segue em processamento
+intervalo_retorno_s = 3          # espera entre elas (a SEFAZ rejeita consulta em rajada)
+canhoto = true                   # canhoto de recebimento no DANFE
+ca_pem = ""                      # raiz de confianca a mais (arquivo PEM): so' para simulador ou homologacao propria
+# [nfe.urls]                     # enderecos que trocam os da tabela oficial (simulador local): status, autorizacao,
+# autorizacao = "http://127.0.0.1:4050/NFeAutorizacao4/NFeAutorizacao4.asmx"   # retorno, consulta, eventos, inutilizacao
+
+[nfe.endereco]                   # o endereco do emitente na NF-e (o municipio vem de [emitente].municipio)
+logradouro = "Rua das Flores"
+numero = "100"
+complemento = ""
+bairro = "Centro"
+cod_municipio = ""               # vazio = [emitente].municipio
+municipio = "Sao Paulo"
+cep = "01001000"
+fone = "1133334444"
+
 [servidor]
 endereco = "127.0.0.1"
 porta = 8080

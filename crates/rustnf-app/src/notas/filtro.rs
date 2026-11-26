@@ -48,7 +48,7 @@ fn so_digitos(texto: &str) -> String {
 }
 
 /// `AAAA-MM-DD` com mes de 1 a 12 e dia de 1 a 31.
-fn dia_valido(data: &str) -> bool {
+pub(super) fn dia_valido(data: &str) -> bool {
     let b = data.as_bytes();
     let numero = |de: usize, ate: usize| {
         data.get(de..ate)
@@ -63,7 +63,7 @@ fn dia_valido(data: &str) -> bool {
         && numero(8, 10).is_some_and(|d| (1..=31).contains(&d))
 }
 
-fn dia(data: Option<&str>) -> Result<Option<String>, ErroNotas> {
+pub(super) fn dia(data: Option<&str>) -> Result<Option<String>, ErroNotas> {
     match data.map(str::trim).filter(|d| !d.is_empty()) {
         None => Ok(None),
         Some(d) if dia_valido(d) => Ok(Some(d.to_string())),

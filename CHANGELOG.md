@@ -6,6 +6,33 @@ Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` 
 alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
 `cancelada`, continua sendo lido por esta versão.
 
+* NF-e (modelo 55), faces, parte 1: a camada de aplicação (`rustnf-app`) e a linha de comando `rustnf nfe` (a API HTTP e o
+  MCP vêm na parte 2, e a interface de desktop depois). Nenhuma crate nova. **Nenhuma NF-e real foi emitida, nenhum
+  certificado A1 real foi usado e nenhuma SEFAZ real foi chamada.**
+  * Configuração: seção `[nfe]` (`ambiente`, `uf`, `ie`, `crt`, `regime_pis_cofins`, `serie`, `contingencia` e
+    `motivo_contingencia`, `fantasia`, `tempo_limite_s`, `tentativas_retorno`, `intervalo_retorno_s`, `canhoto`, `ca_pem`),
+    `[nfe.endereco]` e `[nfe.urls]` (endereços de um simulador local), e as variáveis `RUSTNF_NFE_AMBIENTE`,
+    `RUSTNF_NFE_SERIE`, `RUSTNF_NFE_CONTINGENCIA` e `RUSTNF_NFE_TEMPO_LIMITE`. O CNPJ ou CPF, o nome e o município do
+    `[emitente]`, o certificado e o cofre do `[sefin]`, a folga do relógio e a pasta de `[notas]` valem também para a NF-e.
+    O ambiente da NF-e (`homologacao` por padrão) é independente do `[sefin].ambiente` da NFS-e. O arquivo da versão 0.4.0
+    continua sendo lido sem mudança.
+  * Pasta de notas da NF-e em `<pasta>/nfe/`, separada da NFS-e: `nfeProc`, NF-e assinada pendente, eventos, faixas
+    inutilizadas, `indice.json` e `estado.json` por série, com a mesma gravação atômica e a mesma trava. A NF-e assinada é
+    gravada como `pendente` **antes** de ir à rede. Numeração: autorizada e denegada gastam o número, rejeitada não,
+    número pulado se inutiliza (MOC 7.00, Anexo I, regras 2B08-10, 2B08-20, 2B08-40 e 3B08-100, e Visão Geral, 5.3).
+    Situações: `autorizada`, `denegada`, `cancelada`, `pendente`, `inutilizada` e `epec`. A pasta e a numeração da NFS-e
+    não mudam.
+  * Aplicação (`rustnf_app::nfe`), uma função por ação: emitir (completa o pedido com a configuração, confere, monta,
+    assina, grava pendente, envia e grava o resultado), consultar, cancelar, corrigir (a sequência da carta sai da pasta),
+    inutilizar, status, EPEC, retomar os pendentes (a varredura do limbo da biblioteca sobre a pasta: consulta a mesma
+    chave e reenvia a mesma NF-e, sem nota gêmea) e DANFE. As mensagens dizem em palavras o que houve e o que fazer, com
+    o `cStat`.
+  * Linha de comando: `rustnf nfe montar`, `conferir`, `emitir`, `consultar`, `cancelar`, `corrigir`, `inutilizar`,
+    `status`, `epec`, `pendentes [--retomar]`, `danfe` e `notas listar|exportar|reindexar|numero`, com as mesmas opções
+    globais, `--json` e códigos de saída (0 ok, 2 uso, 3 recusa de regra, 4 sem resposta ou serviço parado). `completar`
+    cobre os comandos novos.
+  * **Fica de fora:** API HTTP e MCP da NF-e (parte 2), interface de desktop, NFC-e, manifestação do destinatário e
+    documentos recebidos.
 * NF-e (modelo 55), DANFE em PDF (feature `danfe` = `nfe` + `danfse`, nenhuma crate nova): `rustnf::danfe::{dados, pdf}`
   desenham o DANFE A4 retrato direto no PDF, com o escritor do DANFSe (que segue com os mesmos bytes), em Liberation
   Serif (a métrica da Times New Roman que o item 3.7 do Anexo II manda usar; mesma licença SIL OFL 1.1). Blocos e

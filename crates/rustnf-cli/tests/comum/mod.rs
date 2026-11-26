@@ -358,7 +358,7 @@ pub fn json_do_corpo(corpo: &[u8]) -> Value {
 }
 
 /// Variaveis que mudam o comportamento do binario: o teste as tira do ambiente para nao depender da maquina.
-const VARIAVEIS_DO_RUSTNF: [&str; 14] = [
+const VARIAVEIS_DO_RUSTNF: [&str; 18] = [
     "RUSTNF_CONFIG",
     "RUSTNF_AMBIENTE",
     "RUSTNF_PFX",
@@ -372,6 +372,10 @@ const VARIAVEIS_DO_RUSTNF: [&str; 14] = [
     "RUSTNF_TEMPO_LIMITE",
     "RUSTNF_ORIGENS_PERMITIDAS",
     "RUSTNF_SERIE",
+    "RUSTNF_NFE_AMBIENTE",
+    "RUSTNF_NFE_SERIE",
+    "RUSTNF_NFE_CONTINGENCIA",
+    "RUSTNF_NFE_TEMPO_LIMITE",
     "RUSTNF_COFRE",
 ];
 

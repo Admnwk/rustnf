@@ -17,6 +17,8 @@ pub struct Config {
     pub sefin: Sefin,
     /// Pasta das notas autorizadas.
     pub notas: Notas,
+    /// NF-e (modelo 55): o que ela precisa alem do `[emitente]` e do `[sefin]`.
+    pub nfe: super::Nfe,
     /// Opcoes do DANFSe.
     pub danfse: Danfse,
     /// API HTTP e MCP.

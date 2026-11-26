@@ -51,7 +51,7 @@
 
 ## Próximo
 
-**Em andamento: NF-e (modelo 55)**, em fases, uma por vez. A NF-e já é enviada pela biblioteca (feature `nfe_sefaz`), sem face ainda e sem nenhuma chamada a SEFAZ real conferida; sem data prometida.
+**Em andamento: NF-e (modelo 55)**, em fases, uma por vez. A NF-e já é enviada pela biblioteca (feature `nfe_sefaz`) e tem aplicação e linha de comando; sem nenhuma chamada a SEFAZ real conferida; sem data prometida.
 
 * Base (feature `nfe`): chave de acesso de 44 posições, calendário das Notas Técnicas, leitura do XML autorizado e
   tabela de `cStat`. Feita nesta frente.
@@ -78,7 +78,8 @@
   cancelamento por substituição (110112, só da NFC-e).
 * DANFE (feature `danfe`): A4 retrato em PDF, várias folhas, situações e contingências, leiaute da Reforma Tributária.
   Feito nesta frente. **Fica para depois:** o DANFE paisagem, as colunas de ICMS ST por item e o DANFE Simplificado.
-* Faces: aplicação, linha de comando, API HTTP e MCP.
+* Faces, parte 1: aplicação (`rustnf-app`: configuração `[nfe]`, pasta de notas `nfe/`, numeração, emissão com recuperação, eventos, inutilização, EPEC, retomada dos pendentes e DANFE) e linha de comando (`rustnf nfe`). Feita nesta frente, com transporte falso e um simulador local: **nenhuma NF-e real foi emitida e nenhuma SEFAZ real foi chamada**.
+* Faces, parte 2: API HTTP e MCP da NF-e, sobre as mesmas funções da aplicação.
 * Documentos recebidos e manifestação do destinatário.
 * NFC-e.
 * Interface de desktop.

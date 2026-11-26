@@ -15,6 +15,8 @@
 mod certificado;
 mod comandos;
 mod configuracao;
+mod nfe;
+mod nfe_args;
 mod resolver;
 mod servir;
 
@@ -27,6 +29,12 @@ use rustnf::assinatura::xmldsig::Algoritmo;
 pub use comandos::{
     atualizar_com, consultar_com, emitir_valor, evento_consultar_com, evento_registrar_com,
     executar, executar_com, testar_conexao, VARIAVEL_COFRE,
+};
+pub use nfe::nfe_com;
+pub use nfe_args::{
+    AcaoNfe, AcaoNotasNfe, AmbienteNfe, ArgCancelarNfe, ArgCertNfe, ArgConferirNfe,
+    ArgConsultarNfe, ArgCorrigirNfe, ArgDanfeNfe, ArgEmitirNfe, ArgInutilizarNfe, ArgPedidoNfe,
+    ArgPendentesNfe, ArgStatusNfe, SituacaoNfe,
 };
 pub use servir::{servir, servir_ate};
 
@@ -82,6 +90,14 @@ pub enum Comando {
         /// Guardar ou apagar.
         #[command(subcommand)]
         acao: AcaoSenha,
+    },
+    /// NF-e (modelo 55): montar, conferir, emitir, consultar, cancelar, corrigir, inutilizar, status, EPEC, retomar
+    /// pendentes, DANFE e a pasta de notas da NF-e. Nao e' software oficial; a NF-e ainda nao teve nenhuma nota real
+    /// emitida por esta ferramenta.
+    Nfe {
+        /// O que fazer.
+        #[command(subcommand)]
+        acao: AcaoNfe,
     },
     /// Notas autorizadas guardadas na pasta de notas.
     Notas {

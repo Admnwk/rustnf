@@ -26,7 +26,7 @@ const TITULOS: &str =
 
 /// Um campo do CSV. Texto que comeca por `=`, `+`, `-` ou `@` ganha um apostrofo na frente, para a planilha nao o
 /// ler como formula; campo com `;`, aspas ou quebra de linha vai entre aspas.
-fn campo(texto: &str) -> String {
+pub(super) fn campo(texto: &str) -> String {
     let texto = if texto.starts_with(['=', '+', '-', '@', '\t', '\r']) {
         format!("'{texto}")
     } else {
@@ -87,7 +87,7 @@ pub struct Reindexado {
 }
 
 /// As subpastas de `pasta` cujo nome tem exatamente `digitos` digitos (`AAAA` ou `MM`).
-fn subpastas(pasta: &Path, digitos: usize) -> Result<Vec<PathBuf>, ErroNotas> {
+pub(super) fn subpastas(pasta: &Path, digitos: usize) -> Result<Vec<PathBuf>, ErroNotas> {
     let mut saida = Vec::new();
     for entrada in std::fs::read_dir(pasta).map_err(|_| ErroNotas::Leitura)? {
         let entrada = entrada.map_err(|_| ErroNotas::Leitura)?;

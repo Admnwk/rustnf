@@ -7,7 +7,10 @@
 
 use std::fmt;
 
+use rustnf::danfe::ErroDanfe;
 use rustnf::danfse::ErroDanfse;
+use rustnf::nfe::montagem::ErroMontagem;
+use rustnf::nfe::sefaz::ErroSefaz;
 use rustnf::nfse::leitura::ErroLeitura;
 use rustnf::nfse::ErroNfse;
 use rustnf::reforma::previa::ErroPrevia;
@@ -137,6 +140,32 @@ impl From<ErroDanfse> for Erro {
     fn from(e: ErroDanfse) -> Self {
         match e {
             ErroDanfse::Pdf(_) => Self::Interno,
+            outro => Self::Entrada(outro.to_string()),
+        }
+    }
+}
+
+impl From<ErroMontagem> for Erro {
+    fn from(e: ErroMontagem) -> Self {
+        let mensagem = if e.regra.is_empty() {
+            e.mensagem
+        } else {
+            format!("{} (rejeicao {})", e.mensagem, e.regra)
+        };
+        Self::recusa(e.campo, mensagem)
+    }
+}
+
+impl From<ErroSefaz> for Erro {
+    fn from(e: ErroSefaz) -> Self {
+        Self::recusa(e.campo, e.mensagem)
+    }
+}
+
+impl From<ErroDanfe> for Erro {
+    fn from(e: ErroDanfe) -> Self {
+        match e {
+            ErroDanfe::Pdf(_) => Self::Interno,
             outro => Self::Entrada(outro.to_string()),
         }
     }

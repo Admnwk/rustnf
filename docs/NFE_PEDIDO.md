@@ -3,6 +3,9 @@
 O pedido que `rustnf::nfe::montagem::nota_de_json` le para montar a NF-e (modelo 55, leiaute 4.00). A montagem NAO envia
 a nota a SEFAZ.
 
+* Pela linha de comando (`rustnf nfe`), o que o pedido nao traz vem do arquivo de configuracao: `emit` (documento, nome, `crt`, `ie`,
+  fantasia e endereco), `serie`, `numero` (o proximo da pasta de notas), `tp_amb`, `emissao`, `cmun_fg`, `codigo`,
+  `regime_pis_cofins` e, na contingencia, `tp_emis`, `dh_cont` e `x_just`. O que o pedido traz vale sempre.
 * Valor monetario e percentual vao em texto (`"10.50"`) ou inteiro; numero com ponto flutuante e' recusado. Os campos que
   a tabela diz "em centavos" sao inteiros.
 * Data e hora em ISO 8601 COM fuso (`2026-10-03T09:00:00-03:00`); sem fuso e' erro (nao se chuta o horario de Brasilia).

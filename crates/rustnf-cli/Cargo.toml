@@ -21,7 +21,7 @@ name = "rustnf"
 path = "src/main.rs"
 
 [dependencies]
-rustnf = { path = "../rustnf", features = ["sefin", "danfse"] }
+rustnf = { path = "../rustnf", features = ["sefin", "danfse", "nfe_sefaz", "danfe"] }
 rustnf-app = { path = "../rustnf-app" }
 axum = { version = "0.8", default-features = false, features = ["http1", "tokio", "matched-path"] }
 base64 = "0.22"
@@ -34,6 +34,6 @@ clap_complete = "4"
 
 [dev-dependencies]
 async-trait = "0.1"
-rustnf = { path = "../rustnf", features = ["sefin", "danfse", "cert_a1_teste"] }
+rustnf = { path = "../rustnf", features = ["sefin", "danfse", "nfe_sefaz", "danfe", "cert_a1_teste"] }
 tower = { version = "0.5", features = ["util"] }
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
