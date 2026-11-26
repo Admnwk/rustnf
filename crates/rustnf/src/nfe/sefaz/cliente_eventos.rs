@@ -258,7 +258,7 @@ impl<T: Transporte> ClienteSefaz<T> {
             chave: p.chave.clone(),
             tp_evento: p.tp_evento.clone(),
             seq: p.seq,
-            autorizador: destino.to_string(),
+            autorizador: destino.trim_start_matches("NFCE:").to_string(),
             xml_enviado: p.env_evento.clone(),
             xml_retorno: String::new(),
             proc_evento: None,

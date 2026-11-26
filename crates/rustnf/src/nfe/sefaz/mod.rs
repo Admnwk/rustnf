@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! Cliente dos webservices da SEFAZ para a NF-e modelo 55, leiaute 4.00: tabela oficial de enderecos, pedidos e
+//! Cliente dos webservices da SEFAZ para a NF-e modelo 55 e a NFC-e modelo 65, leiaute 4.00: tabela oficial de enderecos, pedidos e
 //! envelope SOAP 1.2, leitura das respostas e o cliente que envia a nota, consulta o recibo e a chave, recupera a
 //! nota cuja resposta se perdeu, registra eventos (cancelamento, carta de correcao, EPEC, manifestacao do destinatario e
 //! eventos da apuracao do IBS/CBS), inutiliza numeracao, envia a SEFAZ Virtual de Contingencia (SVC) e baixa os documentos
@@ -21,6 +21,9 @@
 //! * [`ClienteSefaz`]: `status`, `autorizar`, `retorno`, `consultar`, `cancelar`, `corrigir`, `registrar_epec`,
 //!   `registrar_evento_rtc`, `manifestar` e `inutilizar`, sobre o trait [`Transporte`] (falso nos testes, `reqwest` com
 //!   mTLS no real);
+//! * a NFC-e: a chave do modelo 65 vai ao autorizador da tabela propria da NFC-e (`tabela::url_nfce`, `dados/nfce_ws.json`);
+//!   o envio e' sempre sincrono, a consulta e o cancelamento (110111) valem como na NF-e, `ClienteSefaz::status_nfce` pergunta
+//!   ao servico dela e [`contingencia`] diz o passo seguinte da nota emitida off-line (`tpEmis` 9). A NFC-e nao tem SVC;
 //! * [`limbo`]: a varredura das notas enviadas sem resultado (quem guarda a lista e' a aplicacao).
 //!
 //! # A regra que o cliente nao quebra

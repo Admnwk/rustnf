@@ -6,6 +6,25 @@ Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` 
 alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
 `cancelada`, continua sendo lido por esta versão.
 
+* NFC-e (modelo 65) na biblioteca (features `nfe` e `nfe_sefaz`): montagem, QR Code, envio e contingência off-line. A
+  partida da leitura e da montagem da NF-e e do cálculo do QR Code veio da `gaialib`; o resto, das fontes oficiais de
+  `docs/FONTES.md`. **Nenhum envio a uma SEFAZ real, nenhum certificado A1 real, nenhum CSC real e nenhum QR Code lido por
+  um aplicativo de consulta de SEFAZ**; sem dependência nova.
+  * `montagem::montar` e `conferir` montam o modelo 65 com as regras do MOC 7.00 e da NT 2026.002 v1.11 e o código da
+    rejeição (38 casos); as mesmas regras valem para a NF-e com `tpImp` 6. O destinatário é opcional na NFC-e. A NF-e com
+    `tpImp` 4 ou 5 (710) e com `tpEmis` 9 sem `tpImp` 6 (711) passa a ser recusada (antes não havia a regra).
+  * `montagem::assinar` e a nova `assinar_com` (`OpcoesQr`, `Csc`): a NFC-e e a NF-e com `tpImp` 6 saem com o `infNFeSupl` entre o
+    `infNFe` e a `Signature`; QR Code versão 3 (sem CSC, o padrão) e versão 2 (com CSC), on-line e off-line, com a tabela
+    de endereços por UF e ambiente (`dados/nfce_qrcode.json`, com a fonte de cada linha; AM, MA e a homologação de RR
+    ficam de fora e recusam com o motivo). O `assinar` deixa de recusar a nota com `tpImp` 6. O CSC não vai no pedido
+    JSON (`docs/NFE_PEDIDO.md`).
+  * `sefaz::tabela::url_nfce` e `dados/nfce_ws.json`: os endereços da NFC-e (8 autorizadores, 27 UF); `ClienteSefaz`
+    autoriza (sempre em lote síncrono), consulta e cancela (110111) pela chave do modelo 65, e `status_nfce`;
+    `autorizar_assincrono` recusa a NFC-e. `sefaz::contingencia::passo_offline` e `montagem::prazo_de_transmissao` dizem o
+    que fazer com a NFC-e emitida em contingência off-line e até quando. `pedidos::chave_valida_nfce`, `cons_sit_nfce` e
+    `evento::cancelamento_nfce` são novos; os pedidos que eram da NF-e continuam recusando a chave do modelo 65.
+  * **Fica para depois:** o DANFE NFC-e, as faces (aplicação, linha de comando, API HTTP e MCP), o cancelamento por
+    substituição (110112) e a inutilização da NFC-e.
 * NF-e (modelo 55), distribuição de DF-e e manifestação do destinatário, na biblioteca (feature `nfe_sefaz`; as faces estão no item seguinte). **Nenhuma chamada ao Ambiente Nacional real e nenhum certificado A1
   real**; sem dependência nova.
   * `rustnf::nfe::sefaz::dfe`: o pedido `distDFeInt` 1.01 (`distNSU`, `consNSU`, `consChNFe`; CNPJ, inclusive o

@@ -4,7 +4,7 @@
 
 //! Apoio dos testes da NFC-e: os casos de `casos/nfce_montar.json` e o certificado de teste.
 
-#![allow(dead_code)]
+#![allow(dead_code, unreachable_pub)]
 
 use chrono::Utc;
 use rustnf::assinatura::cert_a1::{self, Certificado};

@@ -485,10 +485,10 @@ pub struct CompraGov {
     pub refs: Vec<String>,
 }
 
-/// A NF-e (modelo 55) pedida.
+/// A NF-e (modelo 55) ou a NFC-e (modelo 65) pedida.
 #[derive(Debug, Clone)]
 pub struct Nota {
-    /// Modelo: so' o 55 e' montado.
+    /// Modelo: 55 (NF-e) ou 65 (NFC-e).
     pub modelo: i64,
     /// `serie`.
     pub serie: i64,
@@ -506,7 +506,7 @@ pub struct Nota {
     pub itens: Vec<Item>,
     /// Pagamentos (de 1 a 100).
     pub pagamentos: Vec<Pagamento>,
-    /// Destinatario.
+    /// Destinatario. Opcional na NFC-e (consumidor nao identificado); a NF-e exige.
     pub dest: Option<Destinatario>,
     /// `tpAmb`: 1 producao, 2 homologacao.
     pub tp_amb: i64,
@@ -518,13 +518,13 @@ pub struct Nota {
     pub id_dest: i64,
     /// `finNFe`.
     pub fin_nfe: i64,
-    /// `indFinal`; vazio = 0.
+    /// `indFinal`; vazio = 0 na NF-e e 1 na NFC-e.
     pub ind_final: Option<i64>,
-    /// `indPres`; vazio = 9.
+    /// `indPres`; vazio = 9 na NF-e e 1 (presencial) na NFC-e.
     pub ind_pres: Option<i64>,
     /// `indIntermed`.
     pub ind_intermed: Option<i64>,
-    /// `tpImp`; vazio = 1. O 6 (DANFE simplificado) pede o QR Code: a nota monta, mas nao e' assinada.
+    /// `tpImp`; vazio = 1 na NF-e e 4 (DANFE NFC-e) na NFC-e. O 6 (DANFE Simplificado Tipo 2) leva o QR Code, como a NFC-e.
     pub tp_imp: Option<i64>,
     /// `procEmi`.
     pub proc_emi: i64,

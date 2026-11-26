@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! Montagem e assinatura da NF-e (modelo 55), leiaute 4.00 com o IBS/CBS: do pedido em JSON ate o XML assinado,
+//! Montagem e assinatura da NF-e (modelo 55) e da NFC-e (modelo 65), leiaute 4.00 com o IBS/CBS: do pedido em JSON ate o XML assinado,
 //! sem rede. **Nao envia** a nota: o envio e' do `nfe::sefaz` (feature `nfe_sefaz`).
 //!
 //! * [`nota_de_json`] le o pedido ([`Nota`]); [`campos_desconhecidos`] e [`nota_de_json_estrito`] tratam o campo
@@ -16,10 +16,14 @@
 //! * [`avisos`] (e `Montada::avisos`) lista o que a nota tem de estranho sem ser recusado: PIS/COFINS que nao combinam com
 //!   o regime informado e o Simples sem regime regular com CST que exige o `gIBSCBS`. Aviso nunca impede a montagem.
 //!
-//! Fora desta entrega: NFC-e (modelo 65), o QR Code (`infNFeSupl`: a nota com `tpImp` 6, DANFE simplificado, monta mas
-//! nao assina), imposto de importacao, imposto seletivo, `detExport`, armamento, `NVE`, `ISSQN`, `retTrib`, `obsCont`,
-//! `obsFisco`, `procRef`, `cana`, `agropecuario` e `impostoDevol`, e o envio. O que o pedido pede e a montagem ainda nao faz
-//! e' recusado com erro claro; nada sai pela metade.
+//! * a NFC-e (modelo 65) e a NF-e com `tpImp` 6 (DANFE Simplificado Tipo 2) seguem as regras da NT 2026.002 (modulo
+//!   `nfce`, cada uma com o codigo da rejeicao), saem de [`assinar`] com o QR Code (`infNFeSupl`, versao 3 sem CSC) e
+//!   de [`assinar_com`] com a versao 2 e o [`Csc`]; [`prazo_de_transmissao`] da o fim do prazo da contingencia off-line
+//!   (`tpEmis` 9).
+//!
+//! Fora desta entrega: imposto de importacao, imposto seletivo, `detExport`, armamento, `NVE`, `ISSQN`, `retTrib`,
+//! `obsCont`, `obsFisco`, `procRef`, `cana`, `agropecuario` e `impostoDevol`, e o envio. O que o pedido pede e a
+//! montagem ainda nao faz e' recusado com erro claro; nada sai pela metade.
 //!
 //! Fontes: MOC 7.00 (Anexo I), NT 2025.002 (IBS/CBS/IS), NT 2026.005 (Simples Nacional), NT 2026.008 (valor liquido do
 //! produto) e o pacote de esquemas PL_010h v1.03; a lista esta em `docs/FONTES.md`. O formato do pedido esta em
