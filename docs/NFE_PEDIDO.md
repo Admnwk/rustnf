@@ -329,10 +329,10 @@ a tabela e' publicada a parte.
 
 | campo | o que e' |
 |---|---|
-| `itens[].ibscbs.cred_pres.c_cred_pres` | Codigo do credito presumido (`cCredPres`, 2 digitos). |
+| `itens[].ibscbs.cred_pres.c_cred_pres` | Codigo do credito presumido (`cCredPres`, 2 digitos; tem de existir na tabela cCredPres v1.70, rejeicao 1055). |
 | `itens[].ibscbs.cred_pres.vbc` | Base do credito presumido (vazio = a base do item). |
-| `itens[].ibscbs.cred_pres.ibs` | Credito presumido do IBS. |
-| `itens[].ibscbs.cred_pres.cbs` | Credito presumido da CBS. |
+| `itens[].ibscbs.cred_pres.ibs` | Credito presumido do IBS (so' nos codigos que o exigem; informado onde nao cabe = 1053, ausente onde e' exigido = 1054). |
+| `itens[].ibscbs.cred_pres.cbs` | Credito presumido da CBS (so' nos codigos que a exigem; informado onde nao cabe = 1050, ausente onde e' exigida = 1058). |
 
 ## itens[].ibscbs.cred_pres.ibs
 
