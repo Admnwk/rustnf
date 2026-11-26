@@ -49,6 +49,29 @@ fn datas_do_cronograma_de_cada_nt() {
     }
 }
 
+/// Aviso do Portal Nacional da NF-e de 13/11/2026: a producao da NT 2026.005 v1.00 e da NT 2026.008 v1.00/v1.01 passou
+/// de 16/11 para 14/12/2026; a NT 2025.002 v1.53 nao foi adiada (Obs.4 do mesmo aviso).
+#[test]
+fn pl_010h_em_producao_so_em_14_12_2026() {
+    let d = |s: &str| NaiveDate::parse_from_str(s, "%Y-%m-%d").unwrap();
+    assert_eq!(
+        vigente("pl_010h", d("2026-12-13"), Ambiente::Producao),
+        Some(false)
+    );
+    assert_eq!(
+        vigente("pl_010h", d("2026-12-14"), Ambiente::Producao),
+        Some(true)
+    );
+    assert_eq!(
+        vigente("pl_010h", d("2026-11-26"), Ambiente::Homologacao),
+        Some(true)
+    );
+    assert_eq!(
+        vigente("nt2025_002.v1_53", d("2026-11-16"), Ambiente::Producao),
+        Some(true)
+    );
+}
+
 #[test]
 fn vigente_inclui_o_primeiro_dia() {
     let d = |s: &str| NaiveDate::parse_from_str(s, "%Y-%m-%d").unwrap();

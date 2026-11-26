@@ -151,8 +151,8 @@ const TABELA: [Vigencia; 16] = [
     v(
         "pl_010h",
         "NT 2026.005 v1.00 e NT 2026.008 v1.01",
-        "pacote de esquemas PL_010h (campos do Simples Nacional na NF-e e valor liquido do produto)",
-        d(2026, 11, 16),
+        "pacote de esquemas PL_010h (campos do Simples Nacional na NF-e e valor liquido do produto); producao adiada de          16/11 para 14/12/2026 pelo aviso do Portal Nacional da NF-e de 13/11/2026",
+        d(2026, 12, 14),
         Some(d(2026, 10, 26)),
     ),
     v(
