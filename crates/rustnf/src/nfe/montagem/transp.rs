@@ -4,9 +4,10 @@
 
 //! Grupo X `transp` (modalidade do frete, transportadora, retencao do ICMS do transporte, veiculo, reboques, vagao,
 //! balsa e volumes com lacres, X01 a X34), na ordem do XSD PL_010h. Fontes: MOC 7.00, Anexo I, grupo X: rejeicoes 542 e
-//! 543 (documento da transportadora), 559 (UF da transportadora com IE) e 868 (veiculo e reboque na operacao
-//! interestadual). A inscricao estadual da transportadora (544) e o CFOP e o municipio da retencao (722 e 288) dependem
-//! de cadastro ou de tabela publicada a parte: aqui so' se confere o formato do XSD.
+//! 543 (documento da transportadora), 559 (UF da transportadora com IE), 868 (veiculo e reboque na operacao
+//! interestadual) e 722 (CFOP da retencao do ICMS do transporte: tem de ser da Tabela CFOP com `indTransp` 1). A
+//! inscricao estadual da transportadora (544) e o municipio do fato gerador da retencao (288) dependem de cadastro ou
+//! de tabela publicada a parte: aqui so' se confere o formato do XSD.
 
 use super::formato::*;
 use super::item::digitos_ate;
@@ -200,6 +201,14 @@ fn retencao(x: &mut X, r: &RetencaoIcms) -> Res<()> {
         return Err(erro(
             format!("retTransp/CFOP '{cfop}': o primeiro digito e' 1, 2, 3, 5, 6 ou 7"),
             "retTransp/CFOP",
+        ));
+    }
+    // 722 (MOC 7.00, Anexo I, grupo X): o CFOP tem de existir na Tabela CFOP com indTransp=1
+    if !crate::cfop::info(&cfop).is_some_and(|c| c.ind_transp == 1) {
+        return Err(erro_r(
+            format!("retTransp/CFOP '{cfop}': CFOP de Transporte inexistente ou que nao pode ser usado na retencao do ICMS do transporte"),
+            "retTransp/CFOP",
+            "722",
         ));
     }
     let mun = digitos(&r.c_mun_fg, "retTransp/cMunFG", &[7])?;

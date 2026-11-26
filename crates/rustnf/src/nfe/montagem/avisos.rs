@@ -3,7 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 //! Canal de avisos da montagem: o que a nota tem de estranho sem ser recusado. Aviso nunca impede a montagem (a recusa
-//! continua sendo [`super::ErroMontagem`]) e nao muda o XML. Dois avisos:
+//! continua sendo [`super::ErroMontagem`]) e nao muda o XML. Quatro avisos:
 //!
 //! * **PIS/COFINS por regime** (`regime_pis_cofins` do pedido, que nao vai ao XML): o CST ou a aliquota do item nao
 //!   combina com o regime informado. Fontes: Lei 10.637/2002, art. 2o (1,65%), art. 3o (credito) e art. 8o (quem fica
@@ -12,6 +12,12 @@
 //!   aliquota zero, substituicao, suspensao, isencao e sem incidencia (CST 02 a 09, 49, 70 a 75, 98 e 99) nao geram aviso.
 //! * **Simples sem regime regular e `gIBSCBS`**: a tabela 2.3 da NT 2026.005 v1.00 manda nao informar o grupo; a regra
 //!   UB13-30 da NT 2025.002 v1.53 (rejeicao 1022) o exige quando o CST o pede.
+
+//! * **CFOP fora da Tabela de CFOP** (MOC 7.00, I08-04, rejeicao 770 "CFOP Inexistente", com a observacao "implementacao
+//!   a criterio da UF"): o CFOP nao esta na tabela, nao vale na NF-e (`indNFe` 0) ou esta fora da vigencia na data de
+//!   emissao. A montagem nao recusa o que a UF pode aceitar.
+//! * **CFOP de combustivel sem o grupo `comb`** (LA01-20, rejeicao 660, facultativa): CFOP com `indComb` 1 ou 2 e o item
+//!   sem o grupo de combustivel.
 
 use chrono::Datelike;
 
@@ -60,6 +66,10 @@ pub enum TipoAviso {
     PisCofinsRegime,
     /// Simples sem regime regular do IBS/CBS, com CST que exige o `gIBSCBS`: as duas NT nao se conciliam.
     SimplesSemGIbscbs,
+    /// O CFOP nao esta na Tabela de CFOP, nao vale na NF-e ou esta fora da vigencia (I08-04, 770, a criterio da UF).
+    CfopForaDaTabela,
+    /// CFOP de combustivel (`indComb` 1 ou 2) sem o grupo `comb` no item (LA01-20, 660, facultativa).
+    CfopCombustivelSemGrupo,
 }
 
 impl TipoAviso {
@@ -69,6 +79,8 @@ impl TipoAviso {
         match self {
             Self::PisCofinsRegime => "pis_cofins_regime",
             Self::SimplesSemGIbscbs => "simples_sem_gibscbs",
+            Self::CfopForaDaTabela => "cfop_fora_da_tabela",
+            Self::CfopCombustivelSemGrupo => "cfop_combustivel_sem_grupo",
         }
     }
 }
@@ -98,7 +110,45 @@ pub fn avisos(n: &Nota) -> Vec<Aviso> {
     let mut v = Vec::new();
     pis_cofins(n, &mut v);
     simples(n, &mut v);
+    cfop(n, &mut v);
     v
+}
+
+fn cfop(n: &Nota, v: &mut Vec<Aviso>) {
+    let Ok(uf) = uf_nota(n) else { return };
+    let dia = na_uf(&n.emissao, &uf).date_naive();
+    for (i, it) in n.itens.iter().enumerate() {
+        let k = i + 1;
+        let c: String = it.cfop.chars().filter(char::is_ascii_digit).collect();
+        let Some(r) = crate::cfop::info(&c) else {
+            v.push(aviso(
+                TipoAviso::CfopForaDaTabela,
+                Some(k),
+                format!("item {k}: o CFOP {c} nao esta na Tabela de CFOP do Portal da NF-e (I08-04, rejeicao 770, a criterio da UF)"),
+            ));
+            continue;
+        };
+        if n.modelo == 55 && r.ind_nfe == 0 {
+            v.push(aviso(
+                TipoAviso::CfopForaDaTabela,
+                Some(k),
+                format!("item {k}: o CFOP {c} nao pode ser usado na NF-e (Tabela de CFOP, indNFe 0; I08-04, rejeicao 770, a criterio da UF)"),
+            ));
+        } else if !crate::cfop::vigente(&c, dia) {
+            v.push(aviso(
+                TipoAviso::CfopForaDaTabela,
+                Some(k),
+                format!("item {k}: o CFOP {c} nao esta vigente em {dia} (I08-04, rejeicao 770, a criterio da UF)"),
+            ));
+        }
+        if r.ind_comb != 0 && it.combustivel.is_none() {
+            v.push(aviso(
+                TipoAviso::CfopCombustivelSemGrupo,
+                Some(k),
+                format!("item {k}: o CFOP {c} e' de combustivel (Tabela de CFOP, indComb {}) e o item nao tem o grupo comb (LA01-20, rejeicao 660, facultativa)", r.ind_comb),
+            ));
+        }
+    }
 }
 
 fn dec(s: &str) -> Dec {

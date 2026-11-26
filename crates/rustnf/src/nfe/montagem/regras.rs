@@ -49,6 +49,7 @@ pub fn conferir(n: &Nota) -> Vec<String> {
     out.extend(modelo_referenciado(n));
     out.extend(gtin(n));
     out.extend(icms_item(n));
+    out.extend(super::nfce::como_lista(&super::cfop_devolucao::regras(n)));
     let varejo = super::nfce::regras(n);
     if !varejo.is_empty() {
         out.extend(super::nfce::como_lista(&varejo));

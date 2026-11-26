@@ -4,8 +4,10 @@
 
 //! Grupo LA `comb` (combustivel liquido e lubrificante, LA01 a LA21) na ordem do XSD PL_010h, conferido campo a campo.
 //! Fontes: MOC 7.00, Anexo I, grupo LA (regras 461, 855, 856, 379 e 380), regra I14-10 (817) e N12-20 (858); NT 2026.002
-//! v1.11 (regra LA18-20, rejeicao 909). O codigo do produto na tabela da ANP (761), o combustivel da tabela monofasica
-//! (908 e LA18-10) e o CFOP de combustivel (660) dependem de tabelas publicadas a parte e nao sao conferidos aqui.
+//! v1.11 (regra LA18-20, rejeicao 909). O codigo do produto na tabela da ANP (761) e o combustivel da tabela monofasica
+//! (908 e LA18-10) dependem de tabelas publicadas a parte e nao sao conferidos aqui. O CFOP de combustivel (660,
+//! LA01-20, facultativa) usa o `indComb` da Tabela de CFOP e sai como aviso da montagem (`TipoAviso::CfopCombustivelSemGrupo`),
+//! nao como recusa.
 
 use super::formato::*;
 use super::item::{digitos_ate, int_faixa};
