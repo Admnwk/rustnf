@@ -6,6 +6,7 @@
 
 use clap::{Args, Subcommand, ValueEnum};
 
+use super::nfe_recebidas_args::AcaoRecebidas;
 use super::ArgSenha;
 
 /// `rustnf nfe ...`. Codigos de saida: 0 ok (nota autorizada, evento registrado, faixa inutilizada), 2 uso ou entrada,
@@ -46,6 +47,13 @@ pub enum AcaoNfe {
         /// O que fazer.
         #[command(subcommand)]
         acao: AcaoNotasNfe,
+    },
+    /// Documentos RECEBIDOS: baixa as NF-e em que a empresa e destinataria (distribuicao de DF-e do Ambiente Nacional) e
+    /// registra a manifestacao do destinatario (ciencia, confirmacao, desconhecimento, operacao nao realizada).
+    Recebidas {
+        /// O que fazer.
+        #[command(subcommand)]
+        acao: AcaoRecebidas,
     },
 }
 
@@ -333,6 +341,7 @@ impl AcaoNfe {
             Self::Inutilizar(a) => Some(&a.cert),
             Self::Status(a) => Some(&a.cert),
             Self::Pendentes(a) if a.retomar => Some(&a.cert),
+            Self::Recebidas { acao } => acao.cert(),
             _ => None,
         }
     }

@@ -15,6 +15,9 @@ use axum::response::{IntoResponse, Response};
 use serde_json::Value;
 
 use super::nfe::{PedidoCancelar, PedidoCorrigir, PedidoInutilizar, Saida};
+use super::nfe_recebidas::{
+    sem_codificacao, situacao_do_filtro, PedidoBaixar, PedidoManifestar, PedidoSincronizar,
+};
 use super::rotas::{estrito, exigir_token, json_de, ler_corpo, parametro};
 use super::{resposta_json, Estado};
 use crate::erro::{Erro, ErroHttp, StatusHttp};
@@ -22,7 +25,7 @@ use crate::erro::{Erro, ErroHttp, StatusHttp};
 type Resposta = Result<Response, ErroHttp>;
 
 /// As rotas fixas de `/nfe/`: tudo o mais abaixo de `/nfe/` e' a chave de uma nota.
-const FIXAS: [&str; 10] = [
+const FIXAS: [&str; 11] = [
     "conferir",
     "montar",
     "danfe",
@@ -33,6 +36,7 @@ const FIXAS: [&str; 10] = [
     "inutilizar",
     "status",
     "pendentes",
+    "recebidas",
 ];
 
 /// O caminho e' a consulta de uma nota (`/nfe/{chave}`)? A chave nao vai para o registro do servidor.
@@ -211,4 +215,67 @@ pub(super) async fn pendentes(
 pub(super) async fn retomar(State(estado): State<Arc<Estado>>, cabecalhos: HeaderMap) -> Resposta {
     exigir_token(&estado, &cabecalhos)?;
     Ok(saida(&estado.nfe.retomar().await?))
+}
+
+// ---------------------------------------------------------------------------------------- documentos recebidos
+
+pub(super) async fn recebidas_sincronizar(
+    State(estado): State<Arc<Estado>>,
+    cabecalhos: HeaderMap,
+    corpo: Body,
+) -> Resposta {
+    exigir_token(&estado, &cabecalhos)?;
+    // o corpo e' opcional: sem ele vale o padrao
+    let bytes = ler_corpo(&cabecalhos, corpo, estado.config.limite_corpo).await?;
+    let p: PedidoSincronizar = if bytes.iter().all(u8::is_ascii_whitespace) {
+        PedidoSincronizar::default()
+    } else {
+        json_de(&bytes)?
+    };
+    Ok(saida(&estado.nfe.sincronizar_recebidas(&p).await?))
+}
+
+pub(super) async fn recebidas_baixar(
+    State(estado): State<Arc<Estado>>,
+    cabecalhos: HeaderMap,
+    corpo: Body,
+) -> Resposta {
+    exigir_token(&estado, &cabecalhos)?;
+    let p: PedidoBaixar = corpo_json(&estado, &cabecalhos, corpo).await?;
+    Ok(saida(&estado.nfe.baixar_recebida(&p).await?))
+}
+
+pub(super) async fn recebidas_manifestar(
+    State(estado): State<Arc<Estado>>,
+    cabecalhos: HeaderMap,
+    corpo: Body,
+) -> Resposta {
+    exigir_token(&estado, &cabecalhos)?;
+    let p: PedidoManifestar = corpo_json(&estado, &cabecalhos, corpo).await?;
+    Ok(saida(&estado.nfe.manifestar_recebida(&p).await?))
+}
+
+pub(super) async fn recebidas_listar(
+    State(estado): State<Arc<Estado>>,
+    uri: Uri,
+    cabecalhos: HeaderMap,
+) -> Resposta {
+    exigir_token(&estado, &cabecalhos)?;
+    let situacao = situacao_do_filtro(parametro(&uri, "situacao"))?;
+    let v = estado.nfe.listar_recebidas(
+        situacao,
+        &sem_codificacao(parametro(&uri, "busca").unwrap_or("")),
+    )?;
+    Ok(resposta_json(StatusCode::OK, &v))
+}
+
+pub(super) async fn recebidas_cursor(
+    State(estado): State<Arc<Estado>>,
+    cabecalhos: HeaderMap,
+) -> Resposta {
+    exigir_token(&estado, &cabecalhos)?;
+    Ok(resposta_json(
+        StatusCode::OK,
+        &estado.nfe.cursor_recebidas()?,
+    ))
 }

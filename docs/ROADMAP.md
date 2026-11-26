@@ -77,8 +77,7 @@
   pagamento (110300, NT 2026.006), a consulta de cadastro e o cancelamento por substituição (110112, só da NFC-e).
 * Webservices da SEFAZ, parte 3 (feature `nfe_sefaz`): distribuição de DF-e (`NFeDistribuicaoDFe`, cursor de NSU sem pular nem
   repetir, lacunas por `consNSU`, espera de uma hora e 656) e manifestação do destinatário (210200, 210210, 210220 e
-  210240), na biblioteca. Feita nesta frente. **Fica para depois:** as faces desta parte (camada de aplicação com a
-  persistência do cursor e dos documentos, linha de comando, API HTTP e MCP) e a conferência do WSDL e do prazo da manifestação
+  210240), na biblioteca. Feita nesta frente. **Fica para depois:** a conferência do WSDL e do prazo da manifestação
   numa chamada real em homologação.
 * DANFE (feature `danfe`): A4 retrato em PDF, várias folhas, situações e contingências, leiaute da Reforma Tributária.
   Feito nesta frente. **Fica para depois da próxima versão:** o DANFE paisagem, o DANFE Simplificado, as colunas de ICMS
@@ -86,7 +85,7 @@
   com o `ISSQN` e o `ISSQNtot` na montagem).
 * Faces, parte 1: aplicação (`rustnf-app`: configuração `[nfe]`, pasta de notas `nfe/`, numeração, emissão com recuperação, eventos, inutilização, EPEC, retomada dos pendentes e DANFE) e linha de comando (`rustnf nfe`). Feita nesta frente, com transporte falso e um simulador local: **nenhuma NF-e real foi emitida e nenhuma SEFAZ real foi chamada**.
 * Faces, parte 2: API HTTP (`/nfe/`) e MCP da NF-e (11 ferramentas), sobre as mesmas funções da aplicação e no mesmo servidor. Feita nesta frente, com transporte falso e um simulador local: **nenhuma NF-e real foi emitida, consultada nem cancelada pela API ou pelo MCP, nenhum certificado A1 real foi usado e nenhuma SEFAZ real foi chamada.** Falta um cliente MCP de terceiros ler as ferramentas.
-* Faces dos documentos recebidos e da manifestação do destinatário (a biblioteca já os tem).
+* Faces, parte 3: documentos recebidos e manifestação do destinatário na aplicação (pasta `nfe/recebidas` com o cursor de NSU), na linha de comando (`rustnf nfe recebidas`), na API HTTP e no MCP (4 ferramentas), sobre a distribuição de DF-e da biblioteca. Feita nesta frente, com transporte falso e um simulador local: **nenhuma chamada ao Ambiente Nacional real e nenhum certificado A1 real**. **Fica para depois:** interface de desktop dos recebidos, o DANFE de uma NF-e recebida pela linha de comando (`rustnf nfe danfe` lê o XML, mas não a pasta dos recebidos) e a leitura dos eventos de manifestação que a consulta da NF-e devolve para repor a situação de uma pasta nova.
 * NFC-e.
 * Interface de desktop.
 

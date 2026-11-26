@@ -11,6 +11,7 @@
 //! <pasta>/nfe/inutilizacao/<AAAA>/<serie>-<inicio>-<fim>-procInutNFe.xml   cada faixa inutilizada
 //! <pasta>/nfe/indice.json                                      uma linha por nota e por faixa inutilizada
 //! <pasta>/nfe/estado.json                                      o ultimo numero consumido em cada serie
+//! <pasta>/nfe/recebidas/...                                    os documentos RECEBIDOS (distribuicao de DF-e), em [`recebidas`]
 //! ```
 //!
 //! Toda gravacao e' atomica (arquivo temporario na mesma pasta e `rename`) e protegida por uma trava de arquivo. O nome
@@ -29,6 +30,7 @@
 //! * Nota PENDENTE (enviada sem resultado) conta como gasta ate se saber: ela pode ter sido autorizada.
 
 mod manutencao;
+pub mod recebidas;
 mod registro;
 #[cfg(test)]
 mod testes;
@@ -43,6 +45,7 @@ use serde::{Deserialize, Serialize};
 
 pub(crate) use manutencao::protocolo_epec;
 pub use manutencao::{csv, Exportadas, Filtro, INDICE_ANTERIOR, LISTA_CSV};
+pub use recebidas::{NotasRecebidas, Recebida, SituacaoRecebida};
 pub use registro::{EventoGuardado, Inutilizacao, Registro, Situacao};
 
 use super::trava::Trava;
@@ -142,6 +145,15 @@ impl NotasNfe {
     #[must_use]
     pub fn pasta(&self) -> &Path {
         &self.pasta
+    }
+
+    /// A pasta dos documentos RECEBIDOS (`nfe/recebidas`), separada das notas emitidas.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroNotas::Pasta`] se ela nao puder ser criada.
+    pub fn recebidas(&self) -> Result<NotasRecebidas, ErroNotas> {
+        NotasRecebidas::abrir(&self.pasta)
     }
 
     fn indice(&self) -> Result<Indice, ErroNotas> {

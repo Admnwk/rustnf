@@ -5,6 +5,7 @@
 //! Ajudantes dos testes de integracao: contratos da biblioteca, transporte falso da Sefin e roteador em memoria.
 #![allow(dead_code, unreachable_pub)]
 
+pub mod dfe_falso;
 pub mod nfe_falso;
 
 use std::path::{Path, PathBuf};

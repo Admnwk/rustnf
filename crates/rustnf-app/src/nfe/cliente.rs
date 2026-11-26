@@ -24,6 +24,7 @@ fn servico(nome: &str) -> Option<Servico> {
         "consulta" => Servico::ConsultaProtocolo,
         "eventos" => Servico::RecepcaoEvento,
         "inutilizacao" => Servico::Inutilizacao,
+        "distribuicao" => Servico::DistribuicaoDfe,
         _ => return None,
     })
 }

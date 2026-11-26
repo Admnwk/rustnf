@@ -58,6 +58,7 @@ Os detalhes de cada passo estão em [Interface de desktop](#interface-de-desktop
 | DANFSe | contrato de conteúdo e leiaute | comparar com um DANFSe emitido pelo portal |
 | DANFE da NF-e (feature `danfe`) | contrato de conteúdo, plano das folhas e desenho; medidas, código de barras (decodificado de volta na chave) e corpos de fonte conferidos nas operações; fotos das folhas conferidas contra o Anexo II | **nenhum DANFE conferido por fiscal ou SEFAZ e nenhum impresso em papel**; a leitura do código de barras por um leitor óptico |
 | faces da NF-e (camada `rustnf-app`, `rustnf nfe`, API HTTP `/nfe/` e MCP) | transporte falso (autorizada, denegada, rejeitada que não gasta número, número já autorizado com outra chave, resposta perdida com a nota pendente e retomada sem nota gêmea, reenvio da mesma NF-e, cancelamento, carta de correção numerada pela pasta, inutilização, EPEC e sua transmissão, status), pasta de notas e configuração; DANFE gerado da nota guardada; um simulador local, fora do repositório, pela linha de comando, pela API (curl) e por um cliente MCP mínimo escrito para o teste; rotas e ferramentas por requisição em memória, com transporte falso | **nenhuma NF-e real foi emitida, consultada nem cancelada por estas faces, nenhum certificado A1 real foi usado e nenhuma SEFAZ real foi chamada** (nem a de homologação); nenhum cliente MCP de terceiros leu as ferramentas |
+| faces dos documentos recebidos e da manifestação (`rustnf nfe recebidas`, `/nfe/recebidas/` e 4 ferramentas do MCP) | transporte falso (vários lotes até o 137, queda no meio de um lote sem pular NSU, 656 gravado e a chamada seguinte que diz a hora sem ir à rede, documento que não abre e é relido, ciência, confirmação e as recusas antes da rede, baixa por chave com e sem ciência, pasta e configuração da 0.4.0) e um simulador local (fora do repositório) pela linha de comando, pela API e por um cliente MCP mínimo | **nenhuma chamada ao Ambiente Nacional real e nenhum certificado A1 real**; não há interface de desktop para os recebidos |
 | interface de desktop (`rustnf-gui`, só Windows) | testes do modelo (máscaras, conferência, pedido, prévia, sugestão, rascunho, lista das notas, detalhe, cancelamento, conferência em lote, histórico de eventos, pedido de análise fiscal, confirmação e recusa de nota recebida, consulta pela chave e pela DPS e prévia avulsa), dos fluxos com emissor de demonstração e pasta temporária e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuração e pelo exemplo de demonstração | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, e nenhuma consulta de DPS ou de evento, nenhuma conferência de situação e nenhum evento (análise fiscal, confirmação, recusa) foi feito por ela contra a Sefin; só o emissor de demonstração respondeu**; o DANFSe aberto no leitor de PDF de outra máquina; uma chamada real à Sefin pelo botão "Testar conexão"; exame da janela em outras escalas de tela; o executável de release aberto numa máquina sem as ferramentas de desenvolvimento |
 
 Se você testar a NFS-e, conte como foi: abra um relato pelo modelo **"Relato de emissão"** (aba Issues), mesmo quando der
@@ -124,7 +125,7 @@ correção nem inutiliza: MOC 7.00, Anexo III). Com a feature `danfe`, **gera o 
 `crates/rustnf/examples/danfe.rs`). A NF-e tem a camada de aplicação (`rustnf-app`), a linha de comando (`rustnf nfe`, veja [NF-e](#nf-e-modelo-55)), a API HTTP (`/nfe/`) e o MCP; **ainda não há
 interface de desktop para a NF-e, e o modelo 65 (NFC-e) é recusado.** A leitura não confere a assinatura XML.
 
-Com a mesma feature, a biblioteca **baixa os documentos de que um CNPJ ou CPF é interessado** (`rustnf::nfe::sefaz::dfe`, `NFeDistribuicaoDFe` do Ambiente Nacional) e **registra a manifestação do destinatário** (210200 confirmação, 210210 ciência, 210220 desconhecimento e 210240 operação não realizada, `ClienteSefaz::manifestar`). A distribuição devolve cada documento aberto (gzip com limite de tamanho) e lido: resumo da NF-e (`resNFe`), NF-e completa (lida pelo mesmo leitor da NF-e), resumo de evento e evento; o que não é reconhecido ou não abre volta cru, nunca é descartado. O `Cursor` guarda o último NSU, a espera de uma hora (depois do 137, do `ultNSU` igual ao `maxNSU` e do 656) e as lacunas: a biblioteca decide o próximo NSU e quando esperar, nunca pula nem repete um NSU e fecha a lacuna por `consNSU`; a aplicação só persiste o cursor, a cada lote, junto dos documentos (veja `crates/rustnf/examples/nfe_dfe.rs`). **Ainda não há linha de comando, API HTTP nem MCP para a distribuição e a manifestação.**
+Com a mesma feature, a biblioteca **baixa os documentos de que um CNPJ ou CPF é interessado** (`rustnf::nfe::sefaz::dfe`, `NFeDistribuicaoDFe` do Ambiente Nacional) e **registra a manifestação do destinatário** (210200 confirmação, 210210 ciência, 210220 desconhecimento e 210240 operação não realizada, `ClienteSefaz::manifestar`). A distribuição devolve cada documento aberto (gzip com limite de tamanho) e lido: resumo da NF-e (`resNFe`), NF-e completa (lida pelo mesmo leitor da NF-e), resumo de evento e evento; o que não é reconhecido ou não abre volta cru, nunca é descartado. O `Cursor` guarda o último NSU, a espera de uma hora (depois do 137, do `ultNSU` igual ao `maxNSU` e do 656) e as lacunas: a biblioteca decide o próximo NSU e quando esperar, nunca pula nem repete um NSU e fecha a lacuna por `consNSU`; a aplicação só persiste o cursor, a cada lote, junto dos documentos (veja `crates/rustnf/examples/nfe_dfe.rs`). A aplicação, a linha de comando (`rustnf nfe recebidas`), a API HTTP e o MCP também as têm: veja [Documentos recebidos](#documentos-recebidos).
 
 ## Instalação
 
@@ -520,6 +521,7 @@ Só depois de tudo certo em homologação troque o ambiente (`--ambiente produca
 | `rustnf nfe epec` | emite em contingência EPEC: registra o evento no Ambiente Nacional; a mesma NF-e é transmitida depois |
 | `rustnf nfe pendentes` | lista as notas pendentes e em EPEC; com `--retomar`, consulta, reenvia a mesma NF-e ou transmite a do EPEC |
 | `rustnf nfe danfe` | gera o DANFE em PDF do XML ou de uma nota da pasta (`--chave`) |
+| `rustnf nfe recebidas sincronizar` / `listar` / `baixar` / `manifestar` / `cursor` | as NF-e recebidas (distribuição de DF-e) e a manifestação do destinatário; veja [Documentos recebidos](#documentos-recebidos) |
 | `rustnf nfe notas listar` / `exportar` / `reindexar` / `numero` | a pasta de notas da NF-e, como `rustnf notas` na NFS-e; `listar --situacao inutilizada` lista as faixas |
 
 Opções das ações que falam com a SEFAZ: `--pfx`, `--senha-env` ou `--senha-stdin` (ou a senha do cofre), `--ambiente
@@ -560,7 +562,7 @@ usa outro serviço, outra numeração e outro documento.
 | `intervalo_retorno_s` | espera entre elas (a SEFAZ rejeita consulta em rajada) | 3 |
 | `canhoto` | canhoto de recebimento no DANFE | `true` |
 | `ca_pem` | arquivo PEM com uma raiz de confiança a mais (simulador ou homologação própria) | vazio |
-| `[nfe.urls]` | endereços que trocam os da tabela oficial, por serviço: `status`, `autorizacao`, `retorno`, `consulta`, `eventos`, `inutilizacao` (`https`, ou `http` só no próprio computador) | vazio |
+| `[nfe.urls]` | endereços que trocam os da tabela oficial, por serviço: `status`, `autorizacao`, `retorno`, `consulta`, `eventos`, `inutilizacao`, `distribuicao` (`https`, ou `http` só no próprio computador) | vazio |
 | `[nfe.endereco]` | `logradouro`, `numero`, `complemento`, `bairro`, `cod_municipio`, `municipio`, `cep`, `fone` | vazio |
 
 ### Pasta de notas da NF-e
@@ -596,6 +598,66 @@ chave de acesso conferida.
   NF-e assinada é gravada antes do envio.
 * Quando a SEFAZ responde 539 (o número já foi autorizado com outra chave), o número é consumido sem nota na pasta: a nota
   que vale é a outra.
+
+### Documentos recebidos
+
+As NF-e que OUTRAS empresas emitiram contra o CNPJ do `[emitente]` (a empresa é a destinatária) se baixam do Ambiente
+Nacional pela distribuição de DF-e (`NFeDistribuicaoDFe`, NT 2014.002). A mesma camada de aplicação, a mesma pasta de notas
+e o mesmo certificado A1 servem: `rustnf nfe recebidas ...`. **Nenhuma chamada ao Ambiente Nacional real e nenhum
+certificado A1 real foram usados**: o que existe foi conferido com transporte falso e com um simulador local, fora do
+repositório. Não há interface de desktop para os documentos recebidos.
+
+Passo a passo:
+
+1. **Configure** o mesmo `rustnf.toml` da emissão (`[emitente].cnpj`, `[nfe].uf` e `[nfe].ambiente`; o certificado é o do
+   `[sefin].pfx`). Comece em `homologacao`: cada ambiente tem o seu cursor e os seus NSU.
+2. **Baixe o que há:** `rustnf nfe recebidas sincronizar`. Ele lê a fila do último NSU até o fim, de 50 em 50 documentos, e
+   diz quantos documentos vieram e de que tipo. **Antes de a empresa manifestar, o Ambiente Nacional entrega só o resumo
+   (`resNFe`) de cada nota**, o suficiente para saber quem emitiu, quanto vale e decidir.
+3. **Veja a lista:** `rustnf nfe recebidas listar` (só lê a pasta; `--situacao`, `--busca`, `--json`).
+4. **Manifeste:** `rustnf nfe recebidas manifestar --chave <chave> --tipo ciencia`. **A manifestação é um evento fiscal:**
+   ela é assinada com o certificado da empresa e registrada no Ambiente Nacional; vale a última manifestação conclusiva e
+   não há como desfazer. Os tipos são `ciencia` (210210, ainda não conclusiva), `confirmacao` (210200), `desconhecimento`
+   (210220) e `nao-realizada` (210240, com `--justificativa` de 15 a 255 caracteres).
+5. **Baixe a nota completa.** Depois de uma manifestação de ciência, confirmação ou operação não realizada, a próxima
+   `sincronizar` traz o `procNFe`; `rustnf nfe recebidas baixar --chave <chave>` busca uma só, e com `--ciencia` dá a
+   ciência antes se a nota ainda não tem manifestação. O desconhecimento da operação NÃO libera a nota completa (NT
+   2014.002 v1.02d, item 3, texto do serviço e nota 1 da tabela de documentos).
+6. **Respeite a espera.** Quando a fila acaba, o Ambiente Nacional manda esperar uma hora; consulta antes disso, ou repetida,
+   leva o bloqueio 656 (também por uma hora). O programa grava a hora no cursor e, antes dela, responde quando tentar
+   **sem chamar a rede** (saída 0: esperar não é falha). Não apague o cursor para "recomeçar": é o caminho do 656.
+
+```
+<pasta>/nfe/recebidas/<AAAA>/<MM>/<chave>-resNFe.xml                       o resumo (só ele, até a empresa manifestar)
+<pasta>/nfe/recebidas/<AAAA>/<MM>/<chave>-procNFe.xml                      a NF-e completa
+<pasta>/nfe/recebidas/<AAAA>/<MM>/<chave>-<tipo>-<seq>-procEventoNFe.xml   evento completo (de terceiros ou a sua manifestação)
+<pasta>/nfe/recebidas/<AAAA>/<MM>/<chave>-<tipo>-<seq>-resEvento.xml       resumo de evento
+<pasta>/nfe/recebidas/outros/<NSU>-...                                     o que não tem chave de NF-e ou não abriu
+<pasta>/nfe/recebidas/indice.json                                          uma linha por NF-e recebida
+<pasta>/nfe/recebidas/cursor-<ambiente>-<documento>.json                   o cursor de NSU de cada ambiente e interessado
+```
+
+`<AAAA>/<MM>` são o ano e o mês da chave (o da emissão). Fica separada das notas emitidas: a pasta e a configuração da
+versão 0.4.0 continuam sendo lidas como estavam, e `rustnf nfe notas reindexar` não enxerga os recebidos. A situação no
+índice é `resumo`, `completa`, `ciencia`, `confirmada`, `desconhecida`, `nao_realizada`, `cancelada` (o emitente cancelou) ou
+`denegada`; a manifestação que o índice guarda é a que passou por este programa ou voltou na distribuição.
+
+**Quando o cursor anda.** A cada lote, o programa grava os documentos e o índice e SÓ ENTÃO o cursor (cada gravação é atômica
+e protegida por trava). Uma queda no meio deixa o cursor no lote anterior: a próxima `sincronizar` pede o mesmo lote e regrava
+os mesmos arquivos (o nome vem da chave, então repetir não duplica nada). O NSU que falta no meio do lote é buscado um a um
+pela biblioteca (`consNSU`), e o documento que não abriu fica guardado e é relido na vez seguinte.
+
+| comando | o que faz | usa a rede |
+|---|---|---|
+| `rustnf nfe recebidas sincronizar` | baixa do último NSU ao fim da fila (`--lotes N`, padrão 20), respeitando a espera e o bloqueio | sim |
+| `rustnf nfe recebidas listar` | lista as NF-e recebidas da pasta (`--situacao`, `--busca`, `--json`) | não |
+| `rustnf nfe recebidas baixar` | baixa a NF-e de uma `--chave`; `--ciencia` registra a ciência antes, se preciso | sim (a ciência é evento fiscal) |
+| `rustnf nfe recebidas manifestar` | `--chave`, `--tipo ciencia\|confirmacao\|desconhecimento\|nao-realizada`, `--justificativa` | sim (**evento fiscal**) |
+| `rustnf nfe recebidas cursor` | o último NSU, quando se pode consultar de novo e o que não abriu | não |
+
+Códigos de saída: 0 ok (inclusive "ainda não é hora de consultar"), 2 uso ou entrada, 3 recusa (bloqueio 656, rejeição, nota
+não localizada ou só o resumo, manifestação recusada), 4 sem resposta ou serviço parado do Ambiente Nacional. O endereço do
+simulador vai em `[nfe.urls].distribuicao` (e `eventos`, para a manifestação).
 
 ## API HTTP
 
@@ -703,8 +765,13 @@ NFS-e**. O certificado é o mesmo do `--pfx`.
 | `GET /nfe/status` | (`?svc=true` pergunta a SVC) | estado do serviço (só com emissão) | `status` |
 | `GET /nfe/pendentes` | | `{"notas":[...]}` sem rede (só com emissão) | `NotasNfe::a_resolver` |
 | `POST /nfe/pendentes/retomar` | | `{"notas":[...]}`: consulta a MESMA chave de cada pendente (só com emissão) | `retomar` |
+| `POST /nfe/recebidas/sincronizar` | `{"lotes"?}` (o corpo é opcional) | JSON da sincronização: `status`, `frase`, `documentos`, `tipos`, `cursor` (só com emissão; **rede**) | `sincronizar` |
+| `GET /nfe/recebidas` | (`?situacao=`, `?busca=`) | `{"notas":[...]}` das NF-e recebidas, sem rede (só com emissão) | `listar` |
+| `GET /nfe/recebidas/cursor` | | o cursor da distribuição, sem rede (só com emissão) | `cursor` |
+| `POST /nfe/recebidas/baixar` | `{"chave","ciencia"?}` | JSON da baixa; com `ciencia` registra a ciência da operação, **evento fiscal** (só com emissão; **rede**) | `baixar` |
+| `POST /nfe/recebidas/manifestar` | `{"chave","tipo","justificativa"?}` com `tipo` `ciencia`, `confirmacao`, `desconhecimento` ou `nao_realizada` | JSON do evento: a manifestação é **evento fiscal** (só com emissão; **rede**) | `manifestar` |
 
-`conferir`, `montar` e `danfe` ficam sempre no ar e não usam a rede. As demais **nem existem** (404) sem
+`conferir`, `montar` e `danfe` ficam sempre no ar e não usam a rede. As demais (inclusive `/nfe/recebidas`, que também lê a pasta dos documentos recebidos) **nem existem** (404) sem
 `--permitir-emissao`, e com ela pedem o `Authorization: Bearer` (401 sem ele). O envelope de erro e os códigos HTTP são os
 da NFS-e. O que a SEFAZ não autoriza (rejeição, denegação, sem resposta, serviço parado) volta com o JSON COMPLETO do
 resultado (`chave`, `cstat`, `situacao` na pasta) mais o envelope `erro` com a frase e o `cStat`, no status do erro:
@@ -761,6 +828,10 @@ a versão e as capacidades em `_meta` e os cabeçalhos `MCP-Protocol-Version`, `
 | `status_sefaz` | estado do serviço da SEFAZ da UF (ou da SVC); só com `--permitir-emissao` e o Bearer |
 | `registrar_epec` | emite em contingência EPEC (**efeito fiscal**); só com `--permitir-emissao` e o Bearer |
 | `retomar_pendentes_nfe` | consulta a MESMA chave de cada NF-e pendente (**efeito fiscal**); só com `--permitir-emissao` e o Bearer |
+| `sincronizar_recebidas` | baixa os documentos recebidos (distribuição de DF-e) e grava na pasta; respeita a espera de uma hora e o bloqueio 656; só com `--permitir-emissao` e o Bearer |
+| `listar_recebidas` | lista as NF-e recebidas da pasta (`situacao`, `busca`); **não usa a rede**, mas lê os documentos da empresa e por isso também exige `--permitir-emissao` e o Bearer |
+| `baixar_recebida` | baixa a NF-e de uma chave; com `ciencia: true` registra a ciência da operação (**efeito fiscal**); só com `--permitir-emissao` e o Bearer |
+| `manifestar_recebida` | manifestação do destinatário: ciência, confirmação, desconhecimento ou operação não realizada (**efeito fiscal**, assinado com o certificado; não há como desfazer); só com `--permitir-emissao` e o Bearer |
 
 Recusa de regra fiscal volta como resultado da ferramenta com `isError: true`, não como erro de protocolo. Campo que
 a DPS não conhece volta listado em `campos_desconhecidos` no `conferir_dps`, e no `emitir_nfse` recusa o pedido
