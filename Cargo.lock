@@ -6827,7 +6827,7 @@ dependencies = [
 
 [[package]]
 name = "rustnf"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -6857,7 +6857,7 @@ dependencies = [
 
 [[package]]
 name = "rustnf-app"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "async-trait",
  "base64 0.22.1",
@@ -6876,7 +6876,7 @@ dependencies = [
 
 [[package]]
 name = "rustnf-cli"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "async-trait",
  "axum",
@@ -6896,7 +6896,7 @@ dependencies = [
 
 [[package]]
 name = "rustnf-gui"
-version = "0.4.0"
+version = "0.5.0"
 dependencies = [
  "async-trait",
  "chrono",

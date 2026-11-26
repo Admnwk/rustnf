@@ -1,6 +1,6 @@
 # Changelog
 
-## Próxima versão
+## 0.5.0 - 2026-11-26
 
 Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` e `analise_fiscal`). **Um índice que tenha
 alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
