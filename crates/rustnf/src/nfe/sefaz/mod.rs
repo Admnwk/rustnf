@@ -4,20 +4,23 @@
 
 //! Cliente dos webservices da SEFAZ para a NF-e modelo 55, leiaute 4.00: tabela oficial de enderecos, pedidos e
 //! envelope SOAP 1.2, leitura das respostas e o cliente que envia a nota, consulta o recibo e a chave, recupera a
-//! nota cuja resposta se perdeu, registra eventos (cancelamento, carta de correcao, EPEC e eventos da apuracao do
-//! IBS/CBS), inutiliza numeracao e envia a SEFAZ Virtual de Contingencia (SVC).
+//! nota cuja resposta se perdeu, registra eventos (cancelamento, carta de correcao, EPEC, manifestacao do destinatario e
+//! eventos da apuracao do IBS/CBS), inutiliza numeracao, envia a SEFAZ Virtual de Contingencia (SVC) e baixa os documentos
+//! de interesse de um CNPJ ou CPF (distribuicao de DF-e do Ambiente Nacional).
 //!
 //! * [`tabela`]: os enderecos por autorizador e ambiente, lidos das paginas "Relacao de Servicos Web" do Portal
 //!   Nacional da NF-e, e a UF -> autorizador;
 //! * [`pedidos`]: `consStatServ`, `enviNFe`, `consReciNFe`, `consSitNFe` e o envelope SOAP 1.2 (puro, sem rede);
 //! * [`evento`]: o `envEvento` de cada evento, assinado com o A1 (puro);
+//! * [`dfe`]: a distribuicao de DF-e (`NFeDistribuicaoDFe`): o pedido, o cursor de NSU, os documentos abertos e lidos e
+//!   o cliente (`distribuir`, `sincronizar`);
 //! * [`inutilizacao`]: o `inutNFe`, assinado, e a data em que AC, BA e SP perderam o servico (puro);
 //! * [`svc`]: qual SVC atende cada UF (Ato COTEPE/ICMS 39/12) e o `tpEmis` de cada uma;
 //! * [`resposta`] e [`resposta_evento`]: o SOAP de volta, o retorno recortado do jeito que a SEFAZ mandou, a leitura
 //!   dos retornos, o `nfeProc`, o `procEventoNFe` e o `ProcInutNFe` (puro);
 //! * [`ClienteSefaz`]: `status`, `autorizar`, `retorno`, `consultar`, `cancelar`, `corrigir`, `registrar_epec`,
-//!   `registrar_evento_rtc` e `inutilizar`, sobre o trait [`Transporte`] (falso nos testes, `reqwest` com mTLS no
-//!   real);
+//!   `registrar_evento_rtc`, `manifestar` e `inutilizar`, sobre o trait [`Transporte`] (falso nos testes, `reqwest` com
+//!   mTLS no real);
 //! * [`limbo`]: a varredura das notas enviadas sem resultado (quem guarda a lista e' a aplicacao).
 //!
 //! # A regra que o cliente nao quebra

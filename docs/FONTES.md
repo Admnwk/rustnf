@@ -46,6 +46,10 @@ Tudo que o rustnf implementa vem de documento público. Data de leitura: 2026-11
 | MOC 7.00, Anexo III (Manual de Contingência da NF-e), de novembro de 2020, lido em 2026-11-26: 2.1.3 (ambiente de autorização da SVC), 2.1.3.4 (serviços da SVC: itens a a h) e 2.1.3.5 (`tpEmis` 6 e 7, `xJust` e `dhCont` na NF-e, tabela de `tpEmis` por ambiente) | <https://www.confaz.fazenda.gov.br/legislacao/arquivo-manuais/moc7-anexo-iii-manual-contingencia-nf-e.pdf> | `nfe::sefaz::svc`, `nfe::montagem` (`dhCont` e `xJust` nos `tpEmis` 6 e 7) |
 | MOC 7.00, Anexo I, regras de banco de dados 2B08-10, 2B08-20, 2B08-30 e 2B08-40 (rejeições 539, 204, 218 e 205: o número da NF-e autorizada, cancelada ou denegada fica na base) e 3B08-100 (rejeição 206, número inutilizado), e Visão Geral, 4.2 (consumo indevido: a rejeitada se corrige e se reenvia) e 5.3 (inutilização de numeração), lidos em 2026-11-26: as regras de numeração da pasta de notas da NF-e. O MOC não diz numa frase só que a rejeitada não gasta o número; é o que a regra de duplicidade (só olha a NF-e "já cadastrada") e a orientação de reenvio mostram juntas | <https://www.confaz.fazenda.gov.br/legislacao/arquivo-manuais/moc7-anexo-i-leiaute-e-rv.pdf> e <https://www.confaz.fazenda.gov.br/legislacao/arquivo-manuais/moc7-visao-geral.pdf> | `rustnf-app` (`notas::nfe`, `nfe`) |
 | SOAP 1.2 (W3C), parte 2, ligação HTTP: o parâmetro `action` do tipo `application/soap+xml` no lugar do cabeçalho `SOAPAction` | <https://www.w3.org/TR/soap12-part2/> | `nfe::sefaz::pedidos::envelope` |
+| Nota Técnica 2014.002 v1.02d (março de 2021), `NFeDistribuicaoDFe`, lida em 2026-11-26: itens 3.1 e 3.2 (leiautes do pedido e do retorno), 3.3 (gzip), 3.4 a 3.7 (as três consultas, lote de 50, `consNSU` para a lacuna, 90 dias), 3.10.2 (regras de negócio, rejeições 489, 490, 589, 593, 632, 640 e 656), 3.11.1 e 3.11.2 (`resNFe` e `resEvento`), 3.11.4 (uso indevido: espera de uma hora no 137 e no `ultNSU` igual ao `maxNSU`, bloqueio de uma hora no 656) e 4 (códigos de resultado) | <https://www.nfe.fazenda.gov.br/portal> (Notas Técnicas) | `nfe::sefaz::dfe` |
+| Esquemas XML da distribuição de DF-e: "Pacote de Liberação Distribuição de DF-e v.1.04" (publicado em 03/07/2026): `distDFeInt`, `retDistDFeInt`, `resNFe`, `resEvento` e `tiposDistDFe`, versão 1.01 (o CNPJ alfanumérico entra na v1.04). O pacote não traz o `xmldsig-core-schema_v1.01.xsd` que o `resNFe` importa; usou-se o do pacote de manifestação. Lidos em 2026-11-26 | <https://www.nfe.fazenda.gov.br/portal/listaConteudo.aspx?tipoConteudo=BMPFMBoln3w=> (página "Esquemas XML") | `nfe::sefaz::dfe::pedido`, contratos de `tests/casos/nfe_dfe.json` (XML validado no XSD fora do repositório) |
+| MOC 7.00, Visão Geral, lido em 2026-11-26: 3.1.2 (eventos registrados pelo destinatário), 3.2 (manifestação: 3.2.1.1 a 3.2.1.5, mudança de manifestação, e 3.2.3, obrigatoriedade), 5.7.6 e 5.7.7 (resumos e modelo de distribuição), 5.8.1 (parte geral do evento, `cOrgao` 91 = Ambiente Nacional), 5.8.4 (regras gerais, tabela 5-35) e 5.11 (manifestação do destinatário: tabela 5-41 e as regras H01 a H07 da tabela 5-42, rejeições 594, 595, 596, 650, 651, 655 e 658) | <https://www.nfe.fazenda.gov.br/portal> | `nfe::sefaz::evento::manifestacao` |
+| Esquemas XML dos eventos da manifestação: "Evento Manifesta Destinatário v1.01" (30/05/2014: `e210200`, `e210210`, `e210220`, `e210240`, `leiauteConfRecebto`, `envConfRecebto`, `procConfRecebtoNFe` e `retEnvConfRecebto`, versão 1.00), "Evento Genérico v1.01" e o pacote 010d v1.03 (CNPJ alfanumérico, NT 2026.004; só este aceita o CNPJ alfanumérico no autor do evento). Lidos em 2026-11-26 | <https://www.nfe.fazenda.gov.br/portal/listaConteudo.aspx?tipoConteudo=BMPFMBoln3w=> (página "Esquemas XML") | `nfe::sefaz::evento::manifestacao`, contratos de `tests/casos/nfe_dfe.json` |
 
 ## Regras do Anexo I conferidas
 
@@ -81,3 +85,26 @@ Tudo que o rustnf implementa vem de documento público. Data de leitura: 2026-11
   usa: nenhuma SEFAZ confirmou qual a SVRS espera.
 * **Prazo de cancelamento.** O MOC (regra 2P12-14) fixa 24 horas e ressalva a exceção da legislação estadual; o cliente
   não confere o prazo, envia, e a SEFAZ responde 135, 155 (fora do prazo, homologado) ou 501 (recusado).
+* **Distribuição de DF-e: espaço de nomes e operação.** A NT 2014.002 (item 3) nomeia o serviço `NFeDistribuicaoDFe` e o
+  método `nfeDistDFeInteresse`. A mensagem vai com o `nfeDadosMsg` DENTRO da operação (`nfeDistDFeInteresse` no espaço de
+  nomes `http://www.portalfiscal.inf.br/nfe/wsdl/NFeDistribuicaoDFe`) e a resposta volta em `nfeDistDFeInteresseResult`:
+  o formato foi conferido numa biblioteca pública gerada do WSDL e no simulador local, **não no WSDL do Ambiente Nacional**
+  (lê-lo é chamar o servidor); a ação SOAP é o espaço de nomes mais o método.
+* **Distribuição: a espera.** A NT manda esperar uma hora depois do 137 e do `ultNSU` igual ao `maxNSU` para uma nova
+  DISTRIBUIÇÃO (`distNSU`); o bloqueio do 656 vale para qualquer consulta do CNPJ. O cliente espera só a distribuição no
+  primeiro caso (o `consNSU` e o `consChNFe` seguem liberados) e todas as consultas no segundo.
+* **Distribuição: lacuna e 90 dias.** A NT diz que o Ambiente Nacional numera sem lacunas e manda buscar o NSU que falta
+  por `consNSU`; diz também que os documentos só ficam 90 dias e que, com um NSU antigo demais, a distribuição recomeça
+  do mais antigo disponível. Por isso o NSU que falta antes do primeiro documento só conta quando o cursor já tinha
+  andado, e uma faixa acima de 500 NSU não é perseguida (vai em `irrecuperaveis`). **O limite de 500 e o tratamento do
+  salto são decisão desta biblioteca, não texto da NT.**
+* **Manifestação: justificativa do desconhecimento.** O MOC (5.11.1, HP20) diz que o `xJust` só vai na operação não
+  realizada; o esquema `e210220` (que o Ambiente Nacional aplica) o aceita como opcional no desconhecimento. Segue-se o
+  esquema; a confirmação e a ciência não têm `xJust` em nenhum dos dois.
+* **Manifestação: o prazo e o 155.** O prazo da manifestação (regra H03, rejeição 596, "prazo vigente") é o do Ajuste
+  SINIEF 7/05, que não está nos documentos lidos: o cliente não o confere e devolve a rejeição em palavras. O 155 é
+  "cancelamento homologado fora de prazo" (MOC 5.9.4) e só é registro no cancelamento; o 136 é "registrado, mas não
+  vinculado à NF-e".
+* **Manifestação: o CNPJ alfanumérico.** Os esquemas de 2014 do evento da manifestação e o genérico v1.01 só aceitam CNPJ
+  numérico no autor; o pacote 010d v1.03 aceita o alfanumérico. A biblioteca monta o evento com o CNPJ alfanumérico
+  (contrato validado no 010d).
