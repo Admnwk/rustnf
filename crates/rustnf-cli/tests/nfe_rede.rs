@@ -177,20 +177,16 @@ async fn sem_resposta_sai_4_a_nota_fica_pendente_e_o_retomar_a_fecha() {
     assert_eq!(c.notas.listar().unwrap()[0].situacao, Situacao::Pendente);
 
     // retomar sem resposta de novo: continua pendente, saida 4
-    c.falso
-        .0
-        .lock()
-        .unwrap()
-        .push_back(("NFeConsultaProtocolo4", perdida()));
+    c.falso.empilhar("NFeConsultaProtocolo4", perdida());
     let erro = c.rodar(&["pendentes", "--retomar"], 10).await.unwrap_err();
     assert_eq!(erro.codigo_saida(), 4, "{erro}");
     assert_eq!(c.notas.registro(&chave).unwrap().tentativas, 1);
 
     // a SEFAZ responde: a mesma chave fica autorizada, uma nota so'
-    c.falso.0.lock().unwrap().push_back((
+    c.falso.empilhar(
         "NFeConsultaProtocolo4",
         consulta("100", "Autorizado o uso da NF-e", NPROT),
-    ));
+    );
     c.rodar(&["pendentes", "--retomar", "--json"], 20)
         .await
         .unwrap();
