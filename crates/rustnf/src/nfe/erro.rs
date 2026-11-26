@@ -58,8 +58,10 @@ pub enum ErroLeitura {
     SemIdOuVersao,
     /// Versao do leiaute que a leitura nao cobre (cobre 3.10 e 4.00).
     Leiaute(String),
-    /// Modelo diferente de 55 (a NFC-e, modelo 65, ainda nao e' lida).
+    /// Modelo diferente de 55 (NF-e) e de 65 (NFC-e).
     Modelo(String),
+    /// NFC-e (modelo 65) em leiaute que nao e' o 4.00 (o texto lido, cortado em 8 caracteres).
+    NfceLeiaute(String),
     /// `ide` sem `serie` ou `nNF`.
     IdeIncompleto,
     /// O item `n` (posicao no XML) nao tem o grupo `prod`.
@@ -98,6 +100,7 @@ impl fmt::Display for ErroLeitura {
             Self::SemIdOuVersao => f.write_str("infNFe sem o atributo Id ou versao"),
             Self::Leiaute(v) => write!(f, "leiaute {v} nao suportado (3.10 e 4.00)"),
             Self::Modelo(m) => write!(f, "modelo {m} nao e NF-e (55)"),
+            Self::NfceLeiaute(v) => write!(f, "NFC-e so existe no leiaute 4.00 (o arquivo e {v})"),
             Self::IdeIncompleto => f.write_str("ide sem serie ou numero"),
             Self::ItemSemProd(n) => write!(f, "item {n} sem o grupo prod"),
             Self::Campo { tipo, onde, lido } => write!(f, "{tipo} invalido em {onde}: '{lido}'"),

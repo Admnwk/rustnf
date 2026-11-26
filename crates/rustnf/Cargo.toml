@@ -97,6 +97,10 @@ name = "nfe_leitura"
 required-features = ["nfe"]
 
 [[test]]
+name = "nfe_leitura_nfce"
+required-features = ["nfe"]
+
+[[test]]
 name = "nfe_vigencias"
 required-features = ["nfe"]
 

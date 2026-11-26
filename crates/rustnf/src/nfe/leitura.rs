@@ -2,8 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! Leitura do XML da NF-e (modelo 55, leiaute 3.10 e 4.00) para a struct [`Nfe`]: o `nfeProc` / `procNFe` (nota com
-//! o protocolo de autorizacao) e a `NFe` solta (sem protocolo).
+//! Leitura do XML da NF-e (modelo 55, leiaute 3.10 e 4.00) e da NFC-e (modelo 65, leiaute 4.00) para a struct [`Nfe`]:
+//! o `nfeProc` / `procNFe` (nota com o protocolo de autorizacao) e a `NFe` solta (sem protocolo). A NFC-e traz a mais
+//! o `infNFeSupl` (`qrCode` e `urlChave`, grupo ZX do MOC 7.00, Anexo I) e, no mais das vezes, nao traz o destinatario.
 //!
 //! A leitura NAO confere a assinatura XML nem o `digVal` do protocolo: ela le o que o arquivo diz. Quem precisa de
 //! prova de autenticidade confere a assinatura e consulta a SEFAZ pela chave.
@@ -566,13 +567,17 @@ fn ler_nfe(nfe: No, prot: Option<No>) -> R<Nfe> {
         return Err(ErroLeitura::GrupoAusente("ide"));
     };
     let modelo = t(Some(ide), "mod");
-    if modelo != "55" {
+    if !matches!(modelo.as_str(), "55" | "65") {
         let m = corta(&modelo, 4);
         return Err(ErroLeitura::Modelo(if m.is_empty() {
             "vazio".into()
         } else {
             m
         }));
+    }
+    // a NFC-e so' existe no leiaute 4.00 (Manual do DANFE NFC-e, item 1: o 3.10 foi desativado em 01/10/2018)
+    if modelo == "65" && versao != "4.00" {
+        return Err(ErroLeitura::NfceLeiaute(corta(versao, 8)));
     }
     let Some(emit) = filho(Some(inf), "emit") else {
         return Err(ErroLeitura::GrupoAusente("emit"));
@@ -619,7 +624,7 @@ fn ler_nfe(nfe: No, prot: Option<No>) -> R<Nfe> {
     })
 }
 
-/// Le o XML de uma NF-e modelo 55: `nfeProc` ou `procNFe` (com o `protNFe`) ou `NFe` solta.
+/// Le o XML de uma NF-e modelo 55 ou de uma NFC-e modelo 65: `nfeProc` ou `procNFe` (com o `protNFe`) ou `NFe` solta.
 ///
 /// `xml` sao os bytes do arquivo; UTF-8, UTF-16 com BOM, ISO-8859-1 e Windows-1252 (declarado) sao aceitos.
 pub fn ler(xml: &[u8]) -> Result<Nfe, ErroLeitura> {
