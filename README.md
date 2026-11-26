@@ -1,12 +1,25 @@
 # rustnf
 
-Emissor aberto de NFS-e do padrão nacional (Sefin Nacional / ADN), escrito em Rust: uma biblioteca, um binário
-(`rustnf`) que oferece **linha de comando**, **API HTTP** e **servidor MCP** no mesmo executável, e uma
-**interface de desktop** para Windows (`rustnf-gui`).
+Emissor aberto de **NFS-e** do padrão nacional (Sefin Nacional / ADN) e de **NF-e** (modelo 55, SEFAZ), escrito em
+Rust: uma biblioteca, um binário (`rustnf`) que oferece **linha de comando**, **API HTTP** e **servidor MCP** no mesmo
+executável, e uma **interface de desktop** para Windows (`rustnf-gui`).
 
-> **Aviso: este projeto NÃO é software oficial** da Receita Federal, do Comitê Gestor da NFS-e nem de qualquer
-> prefeitura. Ele segue a documentação pública (fontes em `docs/FONTES.md`); a responsabilidade pelo uso em produção é
-> de quem o opera. Emitir ou cancelar nota em produção tem efeito fiscal. Teste antes na produção restrita.
+| | NFS-e | NF-e (modelo 55) |
+|---|---|---|
+| montar, conferir as regras e assinar | sim | sim |
+| emitir, consultar, cancelar | sim (Sefin Nacional) | sim (SEFAZ da UF, contingência SVC e EPEC) |
+| outros eventos | análise fiscal e os eventos do contribuinte | carta de correção, eventos da apuração do IBS/CBS, inutilização |
+| documento auxiliar em PDF | DANFSe | DANFE (A4 retrato) |
+| notas recebidas de terceiros | | distribuição de DF-e e manifestação do destinatário |
+| linha de comando, API HTTP e MCP | sim | sim |
+| interface de desktop | sim | ainda não |
+
+A NFC-e (modelo 65) ainda não é emitida.
+
+> **Aviso: este projeto NÃO é software oficial** da Receita Federal, do Comitê Gestor da NFS-e, de qualquer
+> prefeitura nem de qualquer Secretaria da Fazenda. Ele segue a documentação pública (fontes em `docs/FONTES.md`); a
+> responsabilidade pelo uso em produção é de quem o opera. Emitir, cancelar ou manifestar nota em produção tem efeito
+> fiscal. Teste antes na produção restrita (NFS-e) ou em homologação (NF-e).
 
 ![Nova nota: o formulário, a conferência e a prévia do IBS/CBS](docs/imagens/nova-nota.png)
 
@@ -14,9 +27,9 @@ Emissor aberto de NFS-e do padrão nacional (Sefin Nacional / ADN), escrito em R
 
 As telas acima são da interface de desktop, com dados fictícios.
 
-## Emitir uma nota: passo a passo
+## Emitir uma NFS-e: passo a passo
 
-Pela interface de desktop (Windows):
+Para a NF-e, veja o [passo a passo da NF-e](#passo-a-passo). Pela interface de desktop (Windows):
 
 1. Baixe o `.zip` da versão mais recente em [Releases](https://github.com/Admnwk/rustnf/releases), descompacte e abra o
    `rustnf-gui.exe` (sobre o aviso do Windows no primeiro uso, veja [Baixar pronto](#baixar-pronto)).
@@ -1026,6 +1039,9 @@ DANFSe, cancelar e consultar) e `src/telas` (só desenho).
 |---|---|---|---|
 | produção | `producao` | 1 | `https://sefin.nfse.gov.br/sefinnacional` |
 | produção restrita | `restrita` | 2 | `https://sefin.producaorestrita.nfse.gov.br/SefinNacional` |
+
+A NF-e usa os ambientes da SEFAZ, escolhidos em `[nfe].ambiente`: `homologacao` (`tpAmb` 2, o padrão) e `producao`
+(`tpAmb` 1); os endereços de cada UF vêm da tabela oficial do Portal Nacional da NF-e.
 
 A produção restrita é o ambiente de testes da Sefin: use-a até o fluxo estar certo. A DPS e a nota ficam presas ao
 ambiente em que foram feitas (regra E0006).
