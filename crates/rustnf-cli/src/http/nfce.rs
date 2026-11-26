@@ -87,7 +87,8 @@ impl ServidorNfce {
     ///
     /// # Errors
     ///
-    /// Os de [`cliente_real`].
+    /// [`Erro::Entrada`] se `[nfe].ca_pem` nao le; [`Erro::Recusa`] se o certificado nao serve para TLS; os da configuracao do
+    /// cliente.
     pub fn real(
         config: &Config,
         notas: Option<NotasNfe>,
