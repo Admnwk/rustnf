@@ -8,7 +8,7 @@
 use serde_json::Value;
 
 use super::super::aliquotas::Aliquotas;
-use super::super::tabela;
+use super::super::{credpres, tabela};
 use super::super::{fmt2, fmt4, ErroReforma, Resultado};
 use super::entrada::os;
 use super::*;
@@ -75,14 +75,22 @@ pub(crate) fn cred_pres(vbc: i64, cp: &CredPres) -> Resultado<(Vec<No>, ValCp)> 
             "cCredPres",
         ));
     }
+    // Tabela cCredPres: UB122-10/1055, UB123-10/1053, UB123-20/1054, UB127-10/1050 e UB127-20/1058 (NT 2025.002 v1.53).
+    let codigo = format!("{ccp:0>2}");
+    if let Some(v) = credpres::conferir_grupos(&codigo, cp.ibs.is_some(), cp.cbs.is_some()) {
+        return Err(ErroReforma::novo(
+            format!(
+                "{} -- NT 2025.002 {}, rejeicao {}",
+                v.mensagem, v.regra_item, v.rejeicao
+            ),
+            format!("{}/{}", v.regra_item, v.rejeicao),
+        ));
+    }
     let base = match &cp.vbc {
         Some(x) => c2(x, "vBCCredPres")?,
         None => vbc,
     };
-    let mut nos = vec![
-        f("vBCCredPres", fmt2(base)),
-        f("cCredPres", format!("{ccp:0>2}")),
-    ];
+    let mut nos = vec![f("vBCCredPres", fmt2(base)), f("cCredPres", codigo)];
     let mut val = ValCp {
         ibs: 0,
         cbs: 0,

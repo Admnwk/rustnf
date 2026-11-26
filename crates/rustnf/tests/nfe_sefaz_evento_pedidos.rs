@@ -493,7 +493,7 @@ fn credito_presumido_leva_os_dois_grupos_so_quando_informados() {
     let it = ItemRtc {
         item: 1,
         v_bc: Some("100".into()),
-        c_cred_pres: Some("01".into()),
+        c_cred_pres: Some("08".into()),
         p_cred_ibs: Some("1.5".into()),
         v_cred_ibs: Some("1.5".into()),
         ..ItemRtc::default()
@@ -504,7 +504,7 @@ fn credito_presumido_leva_os_dois_grupos_so_quando_informados() {
     };
     let m = evento_rtc(&e).unwrap();
     assert!(m.xml.contains(
-        "<gCredPresOper nItem=\"1\"><vBCCredPres>100.00</vBCCredPres><cCredPres>01</cCredPres><gIBSCredPres><pCredPres>1.50</pCredPres><vCredPres>1.50</vCredPres></gIBSCredPres></gCredPresOper>"
+        "<gCredPresOper nItem=\"1\"><vBCCredPres>100.00</vBCCredPres><cCredPres>08</cCredPres><gIBSCredPres><pCredPres>1.50</pCredPres><vCredPres>1.50</vCredPres></gIBSCredPres></gCredPresOper>"
     ));
     assert!(!m.xml.contains("gCBSCredPres"));
     // 211110 aceita os dois autores: sem autor distinto vira 1 (emitente)
@@ -518,6 +518,109 @@ fn credito_presumido_leva_os_dois_grupos_so_quando_informados() {
         ..rtc(&chave, "211110")
     };
     assert_eq!(evento_rtc(&e).unwrap_err().campo, "cCredPres");
+}
+
+/// Um item do 211110 com o codigo e os grupos do IBS e da CBS que se pedem (percentual 1.5, valor 1.5).
+fn cred_pres(codigo: &str, ibs: bool, cbs: bool) -> ItemRtc {
+    let g = |t: bool| t.then(|| "1.5".to_string());
+    ItemRtc {
+        item: 3,
+        v_bc: Some("100".into()),
+        c_cred_pres: Some(codigo.into()),
+        p_cred_ibs: g(ibs),
+        v_cred_ibs: g(ibs),
+        p_cred_cbs: g(cbs),
+        v_cred_cbs: g(cbs),
+        ..ItemRtc::default()
+    }
+}
+
+fn recusa_cred_pres(codigo: &str, ibs: bool, cbs: bool) -> rustnf::nfe::sefaz::ErroSefaz {
+    let (_, chave) = nfe(45, 2);
+    let e = EventoRtc {
+        itens: vec![cred_pres(codigo, ibs, cbs)],
+        ..rtc(&chave, "211110")
+    };
+    evento_rtc(&e).unwrap_err()
+}
+
+#[test]
+fn credito_presumido_2p25a_10_codigo_inexistente_1055() {
+    for c in ["00", "14", "99"] {
+        let e = recusa_cred_pres(c, true, true);
+        assert_eq!(e.campo, "cCredPres", "{c}: {e}");
+        assert!(
+            e.mensagem.contains("2P25a-10")
+                && e.mensagem.contains("1055")
+                && e.mensagem.contains("nItem 3"),
+            "{e}"
+        );
+    }
+}
+
+#[test]
+fn credito_presumido_2p26_10_ibs_informado_onde_o_codigo_nao_permite_1053() {
+    // 05 (regime automotivo) so' tem a CBS
+    let e = recusa_cred_pres("05", true, true);
+    assert_eq!(e.campo, "gIBSCredPres", "{e}");
+    assert!(
+        e.mensagem.contains("2P26-10") && e.mensagem.contains("1053"),
+        "{e}"
+    );
+}
+
+#[test]
+fn credito_presumido_2p26_20_ibs_ausente_onde_o_codigo_exige_1054() {
+    let e = recusa_cred_pres("08", false, false);
+    assert_eq!(e.campo, "gIBSCredPres", "{e}");
+    assert!(
+        e.mensagem.contains("2P26-20") && e.mensagem.contains("1054"),
+        "{e}"
+    );
+}
+
+#[test]
+fn credito_presumido_2p30_10_cbs_informada_onde_o_codigo_nao_permite_1050() {
+    let e = recusa_cred_pres("08", true, true);
+    assert_eq!(e.campo, "gCBSCredPres", "{e}");
+    assert!(
+        e.mensagem.contains("2P30-10") && e.mensagem.contains("1050"),
+        "{e}"
+    );
+}
+
+#[test]
+fn credito_presumido_2p30_20_cbs_ausente_onde_o_codigo_exige_1058() {
+    // o codigo antigo do teste (01) exige os dois: so' o IBS nao basta
+    let e = recusa_cred_pres("01", true, false);
+    assert_eq!(e.campo, "gCBSCredPres", "{e}");
+    assert!(
+        e.mensagem.contains("2P30-20") && e.mensagem.contains("1058"),
+        "{e}"
+    );
+}
+
+#[test]
+fn credito_presumido_conferido_passa_com_os_grupos_que_a_tabela_pede() {
+    let (_, chave) = nfe(46, 2);
+    for (c, ibs, cbs, grupos) in [
+        ("01", true, true, ["gIBSCredPres", "gCBSCredPres"]),
+        ("05", false, true, ["", "gCBSCredPres"]),
+        ("08", true, false, ["gIBSCredPres", ""]),
+    ] {
+        let e = EventoRtc {
+            itens: vec![cred_pres(c, ibs, cbs)],
+            ..rtc(&chave, "211110")
+        };
+        let m = evento_rtc(&e).unwrap_or_else(|x| panic!("{c}: {x}"));
+        assert!(
+            m.xml.contains(&format!("<cCredPres>{c}</cCredPres>")),
+            "{c}"
+        );
+        for g in grupos.iter().filter(|g| !g.is_empty()) {
+            assert!(m.xml.contains(&format!("<{g}>")), "{c}: {g}");
+        }
+    }
 }
 
 #[test]

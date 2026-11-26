@@ -23,6 +23,7 @@ use super::super::tabela::uf_valida;
 use super::comum::{montar, protocolo, texto_curto, Cabecalho, Montado};
 use crate::nfe::montagem::{documento_cnpj_cpf, uf_codigo, Dec};
 use crate::nfe::vigencias::Ambiente;
+use crate::reforma::credpres;
 
 /// `tpEvento` do cancelamento de evento (generico).
 pub const CANCELAMENTO_DE_EVENTO: &str = "110001";
@@ -368,6 +369,21 @@ fn credito_presumido(it: &ItemRtc) -> Result<String, ErroSefaz> {
             "<{g}><pCredPres>{}</pCredPres><vCredPres>{}</vCredPres></{g}>",
             valor(p.as_ref(), "pCredPres", 3, 2, Some(4))?,
             valor(v.as_ref(), "vCredPres", 13, 2, None)?
+        ));
+    }
+    // Tabela cCredPres: 2P25a-10/1055, 2P26-10/1053, 2P26-20/1054, 2P30-10/1050 e 2P30-20/1058 (NT 2025.002 v1.53).
+    let tem = |p: &Option<String>, v: &Option<String>| p.is_some() || v.is_some();
+    if let Some(v) = credpres::conferir_grupos(
+        &c,
+        tem(&it.p_cred_ibs, &it.v_cred_ibs),
+        tem(&it.p_cred_cbs, &it.v_cred_cbs),
+    ) {
+        return Err(ErroSefaz::novo(
+            format!(
+                "nItem {}: {} (NT 2025.002 {}, rejeicao {})",
+                it.item, v.mensagem, v.regra_evento, v.rejeicao
+            ),
+            v.campo,
         ));
     }
     Ok(m)

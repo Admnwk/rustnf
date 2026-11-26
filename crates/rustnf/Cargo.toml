@@ -113,6 +113,10 @@ name = "nfe_montar_grupos"
 required-features = ["nfe"]
 
 [[test]]
+name = "nfe_montar_credpres"
+required-features = ["nfe"]
+
+[[test]]
 name = "nfe_sefaz"
 required-features = ["nfe_sefaz", "cert_a1_teste"]
 

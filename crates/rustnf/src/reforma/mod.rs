@@ -10,6 +10,8 @@
 //!   embutido de `dados/atividades_sn.json`: anexo/fator r, documento admitido, motivos e lista da calculadora;
 //! * [`indop`] -- cIndOp (Anexo VII da Reforma Tributaria do Consumo, v1.03.00), embutido de `dados/indop.json`: em que
 //!   documento fiscal cada codigo vale;
+//! * [`credpres`] -- cCredPres: codigo do credito presumido do IBS e da CBS (IT 2025.002 v1.70), embutido de
+//!   `dados/ccredpres.json`, e as regras da NT 2025.002 que o conferem no item da NF-e e no evento 211110;
 //! * [`aliquotas`] -- calendario 2026-2033 e a aliquota do ANO do fato gerador (LC 214/2025, arts. 343-349);
 //! * [`previa`] -- a base de calculo e o IBS/CBS de um servico, como a Sefin Nacional vai calcular;
 //! * `calculo` (feature `nfe`) -- o IBS/CBS de uma mercadoria por item e o total da NF-e (`IBSCBSTot`, `vNFTot`).
@@ -23,6 +25,7 @@ pub mod aliquotas;
 pub mod atividades_sn;
 #[cfg(feature = "nfe")]
 pub mod calculo;
+pub mod credpres;
 mod decimal;
 pub mod indop;
 pub mod previa;
