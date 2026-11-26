@@ -6,6 +6,18 @@ Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` 
 alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
 `cancelada`, continua sendo lido por esta versão.
 
+* Tabela de CFOP oficial embutida (módulo público `cfop`: `info`, `e_devolucao`, `vigente`, `origens`, `devolucoes_de`,
+  `tabela`, `versao`; dado em `dados/cfop.json`, 619 CFOP com os indicadores da planilha publicada em 04/09/2026, IT
+  2023.002 v2.00). `devolucoes_de("5405")` dá `["1411"]` e `origens("1202")` dá `["5102", "5104", "5106"]`, só pela
+  descrição oficial do CFOP de devolução. A partida do módulo e das regras veio da `gaialib`, conferida contra a
+  planilha e as Notas Técnicas. **Muda o que a NF-e 55 aceita:** o `montar` passa a recusar, e o `conferir` a listar, as
+  rejeições 327 (devolução ou nota de crédito 03 e 06 só com CFOP de devolução; 1.949 e 2.949 só no `finNFe` 4; 5.949
+  e 6.949 só com o NCM 27112100), 1179 (MEI) e 328 (CFOP de devolução fora da devolução). A retenção do ICMS do
+  transporte (`transp.ret_transp.cfop`) passa a recusar com a 722 o CFOP que não é de transporte. CFOP fora da
+  tabela ou da vigência e CFOP de combustível sem o grupo `comb` saem como aviso em `Montada.avisos` (770 e 660,
+  que o MOC deixa à critério da UF). Três casos de contrato usavam CFOP que a regra nova recusa e foram corrigidos
+  (a venda `vc30_1130_venda` tinha o 2.201, de devolução, e as notas de crédito 03 e 06 `credito_03_ref_alheia`,
+  `credito_03_ref_nfce` e `credito_06_falta_ref_item` tinham o 5.949; viraram 6.102 e 2.202).
 * Correção no DANFSe: a NFS-e sem incidência do ISSQN (`tribISSQN` 4) passa a trazer no bloco "Tributação Municipal
   (ISSQN)" só a frase "OPERAÇÃO NÃO SUJEITA AO ISSQN", como manda a nota 4 do item 2.4.5 da Nota Técnica 008 v1.02 (antes
   o bloco saía inteiro). Imunidade e exportação continuam com o bloco inteiro.

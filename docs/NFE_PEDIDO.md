@@ -154,7 +154,7 @@ Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endere
 | `itens[].codigo` | `cProd`. |
 | `itens[].descricao` | `xProd`. |
 | `itens[].ncm` | `NCM`: 2 ou 8 digitos. |
-| `itens[].cfop` | `CFOP`. |
+| `itens[].cfop` | `CFOP`, 4 digitos. Conferido contra a Tabela de CFOP do Portal (`cfop`): na NF-e 55 com `fin_nfe` 4, ou nota de credito (`fin_nfe` 5) de `tp_nf_credito` 03 ou 06, so' CFOP de devolucao (`indDevol` 1; rejeicao 327); o 1.949 e o 2.949 so' no `fin_nfe` 4; o 5.949 e o 6.949 so' com o NCM 27112100 (gas natural); emitente MEI (`crt` 4) com `id_dest` diferente de 3, nessa mesma situacao, so' 1.202, 1.553, 2.202, 2.553, 5.202 e 6.202 (1179); fora de `fin_nfe` 2 e 4 o CFOP de devolucao e' recusado (328), salvo na nota de credito 03, 04 e 06. As tres regras valem so' para o modelo 55. CFOP fora da tabela, fora da vigencia na emissao ou de combustivel (`indComb` 1 ou 2) sem o grupo `combustivel` nao sao recusados: saem em `Montada.avisos` (770 e 660, que o MOC deixa a criterio da UF). |
 | `itens[].unidade` | `uCom`. |
 | `itens[].quantidade` | `qCom`. |
 | `itens[].valor_unitario` | `vUnCom`. |
@@ -719,7 +719,7 @@ a tabela e' publicada a parte.
 | `transp.ret_transp.v_bc_ret` | X13 `vBCRet`: base da retencao (2 casas). |
 | `transp.ret_transp.p_icms_ret` | X14 `pICMSRet`: aliquota da retencao, de 0 a 100. |
 | `transp.ret_transp.v_icms_ret` | X15 `vICMSRet`: valor do ICMS retido (2 casas). |
-| `transp.ret_transp.cfop` | X16 `CFOP`: 4 digitos, iniciado por 1, 2, 3, 5, 6 ou 7. Se e' CFOP de transporte (722) e' da tabela do Portal e nao e' conferido. |
+| `transp.ret_transp.cfop` | X16 `CFOP`: 4 digitos, iniciado por 1, 2, 3, 5, 6 ou 7. Tem de ser CFOP de transporte da Tabela de CFOP do Portal (`indTransp` 1), senao a rejeicao 722. |
 | `transp.ret_transp.c_mun_fg` | X17 `cMunFG`: codigo IBGE, 7 digitos. |
 
 ## transp.veic

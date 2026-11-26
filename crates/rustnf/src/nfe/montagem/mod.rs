@@ -14,7 +14,10 @@
 //! * [`assinar`] assina o `infNFe` com o certificado A1 (RSA-SHA1 e digest SHA-1, os unicos que o XSD da NF-e
 //!   aceita);
 //! * [`avisos`] (e `Montada::avisos`) lista o que a nota tem de estranho sem ser recusado: PIS/COFINS que nao combinam com
-//!   o regime informado e o Simples sem regime regular com CST que exige o `gIBSCBS`. Aviso nunca impede a montagem.
+//!   o regime informado, o Simples sem regime regular com CST que exige o `gIBSCBS` e o CFOP que a Tabela de CFOP nao
+//!   admite ou de combustivel sem o grupo `comb`. Aviso nunca impede a montagem;
+//! * o CFOP x finalidade da NF-e 55 (rejeicoes 327, 1179 e 328) e o CFOP da retencao do transporte (722) saem da Tabela
+//!   de CFOP do Portal ([`crate::cfop`]).
 //!
 //! * a NFC-e (modelo 65) e a NF-e com `tpImp` 6 (DANFE Simplificado Tipo 2) seguem as regras da NT 2026.002 (modulo
 //!   `nfce`, cada uma com o codigo da rejeicao), saem de [`assinar`] com o QR Code (`infNFeSupl`, versao 3 sem CSC) e
@@ -40,6 +43,7 @@ use crate::reforma::calculo::{totalizar, vnftot, ItemIbsCbs};
 
 mod assinar;
 mod avisos;
+mod cfop_devolucao;
 mod cobr;
 mod comb;
 mod contingencia;
@@ -211,7 +215,8 @@ pub fn montar(n: &Nota) -> Res<Montada> {
     montar_interno(n, true)
 }
 
-/// A montagem; `com_total` liga as rejeicoes do valor total da NFC-e (o `conferir` as lista a parte).
+/// A montagem; `com_total` liga as rejeicoes do valor total da NFC-e e as do CFOP x finalidade (o `conferir` as lista a
+/// parte).
 pub(crate) fn montar_interno(n: &Nota, com_total: bool) -> Res<Montada> {
     if n.modelo != 55 && n.modelo != 65 {
         return Err(erro(
@@ -261,6 +266,10 @@ pub(crate) fn montar_interno(n: &Nota, com_total: bool) -> Res<Montada> {
     let regime = regime_sn(n)?;
     vigencia_pl010h(n, emissao_uf.date_naive())?;
     finalidade(n, emissao_uf.year())?;
+    if com_total {
+        // I08-140, I08-141 e I08-144 (327, 1179 e 328): CFOP x finalidade pela Tabela de CFOP (o `conferir` as lista a parte)
+        nfce::primeira(cfop_devolucao::regras(n))?;
+    }
     ide(&mut x, n, &chave, &uf)?;
     emit(&mut x, n)?;
     dest(&mut x, n)?;
