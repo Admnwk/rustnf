@@ -35,6 +35,10 @@ fn config_da(efetiva: &Efetiva, ambiente: Option<super::AmbienteNfe>) -> Config 
 }
 
 /// A pasta da NFC-e (`nfce/` dentro da `[notas].pasta`), se a configuracao tiver `[notas].pasta`.
+pub(super) fn pasta_se_ha(c: &Config) -> Result<Option<NotasNfe>, Erro> {
+    pasta_da(c)
+}
+
 fn pasta_da(c: &Config) -> Result<Option<NotasNfe>, Erro> {
     if c.notas.pasta.is_empty() {
         return Ok(None);

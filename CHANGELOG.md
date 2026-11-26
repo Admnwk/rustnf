@@ -8,8 +8,8 @@ alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o �
 
 * NFC-e (modelo 65) na aplicação e na linha de comando (`rustnf nfce`; `crates/rustnf-app` e `crates/rustnf-cli`; a feature
   `danfce` da biblioteca passa a ser usada por elas). **Nenhuma NFC-e real, nenhuma SEFAZ real, nenhum certificado A1 real,
-  nenhum CSC real e nenhuma impressão em impressora real**; sem dependência nova. O servidor e o MCP não mudam: a API HTTP,
-  as ferramentas do MCP e a interface de desktop da NFC-e ficam para depois.
+  nenhum CSC real e nenhuma impressão em impressora real**; sem dependência nova. A API HTTP e o MCP da NFC-e vêm no item
+  seguinte; a interface de desktop da NFC-e fica para depois.
   * Seção `[nfce]` do `rustnf.toml` (`ambiente`, `serie`, `qr_versao`, `id_csc`, `largura_danfce`, `colunas_escpos`,
     `motivo_offline`), que compartilha o emitente, o endereço, a IE, o CRT, o certificado, o cofre, as URLs de simulador e a
     pasta de notas da NF-e. A seção igual ao padrão não é gravada, então um arquivo que não a usa sai idêntico.
@@ -28,6 +28,28 @@ alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o �
     recusa anotada e mostrada por `pendentes`. A retransmissão corrigida com a mesma chave ainda é manual.
   * **Não feito:** cancelamento por substituição (110112) e inutilização da NFC-e (a biblioteca não os tem); prazo de
     cancelamento de cada UF (sem fonte oficial no projeto).
+* NFC-e na API HTTP e no MCP do `rustnf serve`, no MESMO servidor e com as mesmas regras de segurança da NF-e. **Nenhuma NFC-e
+  real, nenhuma SEFAZ real, nenhum CSC real e nenhum cliente MCP de terceiros**; sem dependência nova. As rotas de NFS-e e de
+  NF-e, as ferramentas delas e o `tools/list` delas não mudam (o `tools/list` só ganha as ferramentas da NFC-e).
+  * Rotas: `POST /nfce/danfce` (sempre no ar: PDF de bobina ou, com `?formato=escpos`, bytes ESC/POS; `largura`, `colunas`,
+    `resumido`, `via_estabelecimento`, `cancelada`), e, só com `--permitir-emissao` e o Bearer (sem a opção nem existem, 404):
+    `POST /nfce/emitir` (com `offline` e `offline_se_necessario` no corpo), `GET /nfce/{chave}`, `POST /nfce/cancelar` (o aviso do
+    prazo de 24 horas vai em `aviso_prazo` e nunca bloqueia), `GET /nfce/status`, `GET /nfce/pendentes` (com `pode_fechar_caixa`,
+    no lugar do código de saída 4 do `--fechar-caixa`) e `POST /nfce/pendentes/retomar`. O mesmo envelope de erro e os mesmos
+    códigos da NF-e: a NFC-e não autorizada volta com o JSON inteiro e o envelope `erro` (422 ou 502), para a chave da pendente
+    não se perder. `GET /health` ganha `nfce` e `nfce_csc_guardado` (só booleanos); os campos antigos não mudam.
+  * Ferramentas do MCP: `gerar_danfce` (leitura) e, só com `--permitir-emissao` e o Bearer, `emitir_nfce`, `consultar_nfce`,
+    `cancelar_nfce`, `status_sefaz_nfce` (separada do `status_sefaz`: a NFC-e não tem SVC), `pendentes_nfce` e
+    `retomar_pendentes_nfce`. O `tools/list` sem o Bearer passa de sete a oito ferramentas e, com ele, de 26 a 33.
+  * **O CSC só se guarda pela linha de comando.** Nenhuma rota nem ferramenta o grava, lê ou apaga; o servidor o lê do cofre uma
+    vez, ao subir. Pedido com campo de CSC é recusado antes de qualquer envio, mesmo com `?estrito=false`, e o valor não aparece em
+    resposta nem na pasta de notas (testes de HTTP e de MCP).
+  * `rustnf serve` sobe com a `[nfce]` do mesmo arquivo da linha de comando. Sem `[nfce]` utilizável (falta o `[nfe].uf`, ou o
+    QR Code versão 2 sem CSC guardado), as rotas de efeito fiscal da NFC-e respondem 400 dizendo o que fazer; o DANFC-e, a NF-e e
+    a NFS-e seguem no ar. A NFC-e tem fila própria de emissão: duas NFC-e na mesma série não gastam o mesmo número, e uma NFC-e e
+    uma NF-e ao mesmo tempo numeram cada uma a sua.
+  * **Não feito:** interface de desktop da NFC-e; `/nfce/conferir` e `/nfce/montar` (o pedido se confere e se monta dentro de
+    `/nfce/emitir`, antes de qualquer envio); DANFC-e a partir da chave da pasta pela API (o corpo é o XML).
 * Tabela de CFOP oficial embutida (módulo público `cfop`: `info`, `e_devolucao`, `vigente`, `origens`, `devolucoes_de`,
   `tabela`, `versao`; dado em `dados/cfop.json`, 619 CFOP com os indicadores da planilha publicada em 04/09/2026, IT
   2023.002 v2.00). `devolucoes_de("5405")` dá `["1411"]` e `origens("1202")` dá `["5102", "5104", "5106"]`, só pela

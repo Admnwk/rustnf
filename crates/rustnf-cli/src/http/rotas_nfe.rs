@@ -46,7 +46,7 @@ pub(super) fn e_consulta_de_nota(caminho: &str) -> bool {
         .is_some_and(|resto| !resto.is_empty() && !resto.contains('/') && !FIXAS.contains(&resto))
 }
 
-fn saida(s: &Saida) -> Response {
+pub(super) fn saida(s: &Saida) -> Response {
     let status = s.erro.as_ref().map_or(200, StatusHttp::status_http);
     resposta_json(
         StatusCode::from_u16(status).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR),
@@ -55,7 +55,7 @@ fn saida(s: &Saida) -> Response {
 }
 
 /// `?nome=true|false`; ausente = `None`.
-fn booleano(uri: &Uri, nome: &str) -> Result<Option<bool>, Erro> {
+pub(super) fn booleano(uri: &Uri, nome: &str) -> Result<Option<bool>, Erro> {
     match parametro(uri, nome) {
         None => Ok(None),
         Some("true") => Ok(Some(true)),
@@ -64,7 +64,7 @@ fn booleano(uri: &Uri, nome: &str) -> Result<Option<bool>, Erro> {
     }
 }
 
-async fn corpo_json<T: serde::de::DeserializeOwned>(
+pub(super) async fn corpo_json<T: serde::de::DeserializeOwned>(
     estado: &Estado,
     cabecalhos: &HeaderMap,
     corpo: Body,

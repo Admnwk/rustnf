@@ -10,7 +10,7 @@ use rustnf::nfse::Dps;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
-use super::{ferramentas_nfe, schemas};
+use super::{ferramentas_nfce, ferramentas_nfe, schemas};
 use crate::emissao;
 use crate::erro::Erro;
 use crate::http::Estado;
@@ -116,6 +116,7 @@ pub fn buscar(nome: &str) -> Option<&'static Ferramenta> {
     FERRAMENTAS
         .iter()
         .chain(ferramentas_nfe::FERRAMENTAS.iter())
+        .chain(ferramentas_nfce::FERRAMENTAS.iter())
         .find(|f| f.nome == nome)
 }
 
@@ -125,6 +126,7 @@ pub fn listar(com_emissao: bool) -> Vec<Value> {
     FERRAMENTAS
         .iter()
         .chain(ferramentas_nfe::FERRAMENTAS.iter())
+        .chain(ferramentas_nfce::FERRAMENTAS.iter())
         .filter(|f| com_emissao || !f.emissao)
         .map(|f| {
             json!({
@@ -306,6 +308,9 @@ async fn rodar(f: &Ferramenta, estado: &Estado, args: Value) -> Result<Value, Er
             let p: nucleo::PedidoCancelamento = argumentos(args)?;
             let v = estado.cancelar(em, &p).await?;
             Ok(resultado_estruturado(v, false))
+        }
+        n if ferramentas_nfce::FERRAMENTAS.iter().any(|x| x.nome == n) => {
+            ferramentas_nfce::rodar(n, estado, args).await
         }
         _ => ferramentas_nfe::rodar(f.nome, estado, args).await,
     }

@@ -6,6 +6,7 @@
 #![allow(dead_code, unreachable_pub)]
 
 pub mod dfe_falso;
+pub mod nfce_falso;
 pub mod nfe_falso;
 
 use std::path::{Path, PathBuf};

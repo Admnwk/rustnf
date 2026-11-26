@@ -15,7 +15,7 @@ use tokio::net::TcpListener;
 
 use super::{configuracao, resolver, ArgServe};
 use crate::erro::Erro;
-use crate::http::{roteador, Config, Estado, ServidorNfe, Token};
+use crate::http::{roteador, Config, Estado, ServidorNfce, ServidorNfe, Token};
 
 /// Ajustes do servidor: opcao > variavel > arquivo > padrao.
 fn ajustes(args: &ArgServe, e: &Efetiva) -> Config {
@@ -45,9 +45,15 @@ fn estado(args: &ArgServe, e: &Efetiva, cofre: &dyn Cofre) -> Result<Estado, Err
             super::nfe::notas_da(e)?,
             "o servidor nao foi iniciado com --permitir-emissao",
         );
+        let nfce = ServidorNfce::sem_emissao(
+            &e.config,
+            super::nfce::pasta_se_ha(&e.config)?,
+            "o servidor nao foi iniciado com --permitir-emissao",
+        );
         return Ok(Estado::somente_leitura(config)
             .com_aliquotas(e.config.publicadas())
-            .com_nfe(nfe));
+            .com_nfe(nfe)
+            .com_nfce(nfce));
     }
     let Some(variavel) = &args.token_env else {
         return Err(Erro::Uso(
@@ -77,6 +83,7 @@ fn estado(args: &ArgServe, e: &Efetiva, cofre: &dyn Cofre) -> Result<Estado, Err
     // a NF-e usa o mesmo certificado e a `[nfe]` do mesmo arquivo de configuracao que a linha de comando le; o ambiente
     // dela e' o de `[nfe].ambiente`, que nao muda com o `--ambiente` da NFS-e
     let certificado = super::certificado::abrir(&pfx, &senha)?;
+    let nfce = nfce_do_servidor(e, cofre, certificado.clone())?;
     let nfe = ServidorNfe::real(e.config.clone(), super::nfe::notas_da(e)?, certificado)?;
     if nfe.pronta() {
         eprintln!(
@@ -88,10 +95,45 @@ fn estado(args: &ArgServe, e: &Efetiva, cofre: &dyn Cofre) -> Result<Estado, Err
     }
     // o mesmo arquivo de configuracao da linha de comando: emitente, pasta de notas e aliquotas
     Ok(Estado::com_emissao(config, emissor, token)
+        .com_nfce(nfce)
         .com_aliquotas(e.config.publicadas())
         .com_emitente(e.config.emitente.clone())
         .com_notas(configuracao::notas_da(e)?)
         .com_nfe(nfe))
+}
+
+/// A NFC-e do servidor: a `[nfce]` do mesmo arquivo de configuracao que a linha de comando le, o mesmo certificado, a pasta
+/// `nfce/` e o QR Code. O CSC (so' o QR Code versao 2 o usa) e' lido do cofre UMA vez, aqui, e nao sai mais do processo. Sem
+/// `[nfce]` utilizavel (falta o `[nfe]` compartilhado, ou o QR Code versao 2 sem CSC guardado) a NFC-e fica sem emissao e diz
+/// o que fazer; a NF-e e a NFS-e nao sao afetadas.
+fn nfce_do_servidor(
+    e: &Efetiva,
+    cofre: &dyn Cofre,
+    certificado: rustnf::assinatura::cert_a1::Certificado,
+) -> Result<ServidorNfce, Erro> {
+    let notas = super::nfce::pasta_se_ha(&e.config)?;
+    let cfg = e.config.como_nfce();
+    let qr = match rustnf_app::nfce::opcoes_qr(cofre, &cfg) {
+        Ok(qr) => qr,
+        Err(erro) => {
+            eprintln!("rustnf: NFC-e sem emissao: {erro}");
+            return Ok(ServidorNfce::sem_emissao(
+                &e.config,
+                notas,
+                erro.to_string(),
+            ));
+        }
+    };
+    let nfce = ServidorNfce::real(&e.config, notas, certificado, qr)?;
+    if nfce.pronta() {
+        eprintln!(
+            "rustnf: NFC-e pronta (uf {}, ambiente {}, QR Code versao {})",
+            cfg.nfe.uf, cfg.nfe.ambiente, cfg.nfce.qr_versao
+        );
+    } else {
+        eprintln!("rustnf: NFC-e sem emissao: informe [nfe].uf no arquivo de configuracao");
+    }
+    Ok(nfce)
 }
 
 /// Endereco e porta de escuta: opcao > variavel > arquivo > padrao.

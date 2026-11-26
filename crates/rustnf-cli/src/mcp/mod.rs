@@ -23,8 +23,10 @@
 //! fixo do operador).
 
 mod ferramentas;
+mod ferramentas_nfce;
 mod ferramentas_nfe;
 mod schemas;
+pub mod schemas_nfce;
 pub mod schemas_nfe;
 
 use axum::http::header::AUTHORIZATION;
@@ -243,7 +245,7 @@ fn inicializar(id: &Value, params: Option<&Value>) -> Saida {
             "protocolVersion": VERSAO_LEGADA,
             "capabilities": {"tools": {"listChanged": false}},
             "serverInfo": identidade(),
-            "instructions": "Emissor de NFS-e nacional e de NF-e (modelo 55). Ferramentas de leitura sempre; as que emitem, consultam ou registram eventos (emitir_nfse, emitir_nfe, cancelar_nfe e as demais com efeito fiscal ou de rede) so' com o servidor iniciado com emissao e o Bearer do operador.",
+            "instructions": "Emissor de NFS-e nacional, de NF-e (modelo 55) e de NFC-e (modelo 65). Ferramentas de leitura sempre; as que emitem, consultam ou registram eventos (emitir_nfse, emitir_nfe, emitir_nfce, cancelar_nfe, cancelar_nfce e as demais com efeito fiscal ou de rede) so' com o servidor iniciado com emissao e o Bearer do operador.",
         }),
     )
 }
@@ -256,7 +258,7 @@ fn descobrir(id: &Value) -> Saida {
             json!({
                 "supportedVersions": [VERSAO_MODERNA, VERSAO_LEGADA],
                 "capabilities": {"tools": {}},
-                "instructions": "Emissor de NFS-e nacional e de NF-e (modelo 55). Ferramentas de leitura sempre; as que emitem, consultam ou registram eventos (emitir_nfse, emitir_nfe, cancelar_nfe e as demais com efeito fiscal ou de rede) so' com o servidor iniciado com emissao e o Bearer do operador.",
+                "instructions": "Emissor de NFS-e nacional, de NF-e (modelo 55) e de NFC-e (modelo 65). Ferramentas de leitura sempre; as que emitem, consultam ou registram eventos (emitir_nfse, emitir_nfe, emitir_nfce, cancelar_nfe, cancelar_nfce e as demais com efeito fiscal ou de rede) so' com o servidor iniciado com emissao e o Bearer do operador.",
             }),
             "public",
         ),

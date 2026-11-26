@@ -189,7 +189,7 @@ async fn tools_list_sem_emissao_so_tem_as_de_leitura() {
 async fn tools_list_com_emissao_so_mostra_as_de_emissao_com_o_bearer() {
     let app = app_emissao(Falso::default());
     let (_, _, corpo) = enviar(&app, moderna("tools/list", json!({}), &[])).await;
-    assert_eq!(nomes(&json_do_corpo(&corpo)).len(), 7);
+    assert_eq!(nomes(&json_do_corpo(&corpo)).len(), 8);
 
     let a = auth();
     let (st, _, corpo) = enviar(
@@ -199,7 +199,7 @@ async fn tools_list_com_emissao_so_mostra_as_de_emissao_com_o_bearer() {
     .await;
     assert_eq!(st, StatusCode::OK);
     let n = nomes(&json_do_corpo(&corpo));
-    assert_eq!(n.len(), 26);
+    assert_eq!(n.len(), 33);
     for nome in [
         "emitir_nfse",
         "consultar_nfse",
