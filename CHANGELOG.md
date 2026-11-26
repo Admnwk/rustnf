@@ -6,6 +6,10 @@ Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` 
 alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
 `cancelada`, continua sendo lido por esta versão.
 
+* NF-e: a produção do pacote de esquemas PL_010h (NT 2026.005 v1.00, Simples Nacional, e NT 2026.008, valor líquido do
+  produto) passa de 16/11 para **14/12/2026**, pelo aviso do Portal Nacional da NF-e de 13/11/2026. Até 13/12, em produção,
+  a montagem recusa os campos do PL_010h (`tpRegimeIBSCBS`, `gTribSN`...) com a rejeição 225 que a SEFAZ daria; em
+  homologação nada muda (desde 26/10/2026). A NT 2025.002 v1.53 não foi adiada e segue em 16/11.
 * NF-e (modelo 55), faces, parte 2: API HTTP (`/nfe/`) e MCP no mesmo `rustnf serve`, sobre as mesmas funções de
   `rustnf_app::nfe` que a linha de comando usa. **Nenhuma NF-e real foi emitida, nenhum certificado A1 real foi usado e
   nenhuma SEFAZ real foi chamada**; uma dependência nova no `rustnf-cli` (`async-trait`, já usada pela biblioteca).

@@ -864,12 +864,12 @@
    "conferir": []
   },
   {
-   "nome": "producao_em_16_11",
+   "nome": "producao_em_14_12",
    "entrada": {
     "modelo": 55,
     "serie": 1,
     "numero": 5004,
-    "emissao": "2026-11-16T00:00:00-03:00",
+    "emissao": "2026-12-14T00:00:00-03:00",
     "saida": null,
     "nat_op": "VENDA DE MERCADORIA",
     "cmun_fg": "3550308",
@@ -947,8 +947,8 @@
     "tp_amb": 1,
     "ver_proc": "rustnf teste"
    },
-   "chave": "35261111222333000181550010000050041876543212",
-   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000050041876543212\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>87654321</cNF><natOp>VENDA DE MERCADORIA</natOp><mod>55</mod><serie>1</serie><nNF>5004</nNF><dhEmi>2026-11-16T00:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>6</tpImp><tpEmis>1</tpEmis><cDV>2</cDV><tpAmb>1</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><xFant>TESTE &amp; CIA</xFant><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT><tpRegimeIBSCBS>4</tpRegimeIBSCBS></emit><dest><CPF>12345678909</CPF><xNome>Fulano</xNome><enderDest><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>X</cProd><cEAN>SEM GTIN</cEAN><xProd>Item</xProd><NCM>84879000</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>1.0000</qCom><vUnCom>10.0000000000</vUnCom><vProd>10.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>1.0000</qTrib><vUnTrib>10.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMS00><orig>0</orig><CST>00</CST><modBC>3</modBC><vBC>10.00</vBC><pICMS>18.0000</pICMS><vICMS>1.80</vICMS></ICMS00></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>10.00</vBC><vICMS>1.80</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>10.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>10.00</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>10.00</vPag></detPag></pag><infAdic><infAdFisco>Fisco: ok</infAdFisco><infCpl>Pedido 77; obrigado &amp; volte sempre</infCpl></infAdic></infNFe></NFe>",
+   "chave": "35261211222333000181550010000050041876543216",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261211222333000181550010000050041876543216\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>87654321</cNF><natOp>VENDA DE MERCADORIA</natOp><mod>55</mod><serie>1</serie><nNF>5004</nNF><dhEmi>2026-12-14T00:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>6</tpImp><tpEmis>1</tpEmis><cDV>6</cDV><tpAmb>1</tpAmb><finNFe>1</finNFe><indFinal>1</indFinal><indPres>1</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>INDUSTRIA TESTE S/A</xNome><xFant>TESTE &amp; CIA</xFant><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderEmit><IE>111111111111</IE><CRT>3</CRT><tpRegimeIBSCBS>4</tpRegimeIBSCBS></emit><dest><CPF>12345678909</CPF><xNome>Fulano</xNome><enderDest><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais><fone>1133334444</fone></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>X</cProd><cEAN>SEM GTIN</cEAN><xProd>Item</xProd><NCM>84879000</NCM><CFOP>5102</CFOP><uCom>UN</uCom><qCom>1.0000</qCom><vUnCom>10.0000000000</vUnCom><vProd>10.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>UN</uTrib><qTrib>1.0000</qTrib><vUnTrib>10.0000000000</vUnTrib><indTot>1</indTot></prod><imposto><ICMS><ICMS00><orig>0</orig><CST>00</CST><modBC>3</modBC><vBC>10.00</vBC><pICMS>18.0000</pICMS><vICMS>1.80</vICMS></ICMS00></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>10.00</vBC><vICMS>1.80</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><vProd>10.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>10.00</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>10.00</vPag></detPag></pag><infAdic><infAdFisco>Fisco: ok</infAdFisco><infCpl>Pedido 77; obrigado &amp; volte sempre</infCpl></infAdic></infNFe></NFe>",
    "totais": {
     "vBC": "10.00",
     "vICMS": "1.80",
@@ -2181,12 +2181,12 @@
    "campo": "gTribSN/gIBSSN"
   },
   {
-   "nome": "producao_antes_de_16_11",
+   "nome": "producao_antes_de_14_12",
    "entrada": {
     "modelo": 55,
     "serie": 1,
     "numero": 5004,
-    "emissao": "2026-11-15T23:59:00-03:00",
+    "emissao": "2026-12-13T23:59:00-03:00",
     "saida": null,
     "nat_op": "VENDA DE MERCADORIA",
     "cmun_fg": "3550308",
