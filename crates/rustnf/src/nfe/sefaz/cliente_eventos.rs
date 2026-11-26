@@ -12,7 +12,8 @@
 //!
 //! Onde cada evento e' recebido: cancelamento, no autorizador da chave (a UF, ou a SVC se a chave tem `tpEmis` 6 ou 7);
 //! carta de correcao, sempre na UF (a SVC nao a registra, MOC 7.00, Anexo III, 2.1.3.4); EPEC e manifestacao do
-//! destinatario, no Ambiente Nacional (MOC 7.00, Visao Geral, 3.3 e 5.11); eventos da apuracao do IBS/CBS, na SVRS (NT 2025.002 v1.53, item 8.1). A inutilizacao vai ao
+//! destinatario, no Ambiente Nacional (MOC 7.00, Visao Geral, 3.3 e 5.11); eventos da apuracao do IBS/CBS, na SVRS (NT
+//! 2025.002 v1.53, item 8.1). A inutilizacao vai ao
 //! autorizador da UF do emitente (a SVC nao a oferece, item e).
 
 use chrono::Datelike;
