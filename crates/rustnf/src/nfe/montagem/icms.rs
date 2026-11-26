@@ -8,6 +8,7 @@
 //! SEFAZ rejeita por uma regra conhecida.
 
 use super::formato::*;
+use super::icms_mono::{self, CST_MONO};
 use super::icms_regras::{
     cod_benef, conferir_51, conferir_deson, conferir_part, conferir_st, dif_informado,
     grupo_especial, tem_efet, tem_fcp_ret, tem_st, GRUPOS_ST, ST_OPCIONAL, UF_51_ZERADO,
@@ -39,6 +40,10 @@ pub(crate) fn grupo_icms(cod: &str, simples: bool) -> Option<&'static str> {
             "60" => Some("ICMS60"),
             "70" => Some("ICMS70"),
             "90" => Some("ICMS90"),
+            "02" => Some("ICMS02"),
+            "15" => Some("ICMS15"),
+            "53" => Some("ICMS53"),
+            "61" => Some("ICMS61"),
             _ => None,
         }
     }
@@ -57,18 +62,23 @@ pub(crate) fn icms(
     isuf_dest: bool,
     fin: i64,
     nao_contrib: bool,
+    id_dest: i64,
 ) -> Res<()> {
     let cest = it.cest.as_deref();
     let cod = c.codigo.trim();
     if !(0..=8).contains(&c.orig) {
         return Err(erro(format!("{k}orig invalida: {} (0..8)", c.orig), "orig"));
     }
-    let simples = crt == 1 || crt == 4;
+    // N12-20, excecao da NT 2023.001: o Simples (CRT 1) informa o CST do monofasico
+    let simples = (crt == 1 || crt == 4) && !(crt == 1 && CST_MONO.contains(&cod));
     let Some(grupo) = grupo_icms(cod, simples) else {
         let (tipo, lista) = if simples {
             ("CSOSN", "101, 102, 103, 201, 202, 203, 300, 400, 500, 900")
         } else {
-            ("CST", "00, 10, 20, 30, 40, 41, 50, 51, 60, 70, 90")
+            (
+                "CST",
+                "00, 02, 10, 15, 20, 30, 40, 41, 50, 51, 53, 60, 61, 70, 90",
+            )
         };
         return Err(erro(
             format!("{k}{tipo} '{cod}' fora do escopo desta montagem (CRT {crt}: {lista})"),
@@ -94,7 +104,22 @@ pub(crate) fn icms(
     if com_st {
         conferir_st(c, grupo, cest, k)?;
     }
-    if grupo != "ICMS51" && dif_informado(c) {
+    let tipo = if simples { "CSOSN" } else { "CST" };
+    icms_mono::conferir_fora(c, grupo, tipo, cod, k)?;
+    let mono = if icms_mono::eh_grupo(grupo) {
+        let cx = icms_mono::Contexto {
+            cod,
+            item: it,
+            fin,
+            nao_contrib,
+            id_dest,
+            k,
+        };
+        icms_mono::conferir(c, grupo, &cx)?
+    } else {
+        std::collections::BTreeMap::new()
+    };
+    if grupo != "ICMS51" && grupo != "ICMS53" && dif_informado(c) {
         return Err(erro(
             format!(
                 "{k}{} {cod} nao leva diferimento (vICMSOp/pDif/vICMSDif/FCP diferido: so' CST 51)",
@@ -463,6 +488,7 @@ pub(crate) fn icms(
         Ok(())
     };
     match grupo {
+        "ICMS02" | "ICMS15" | "ICMS53" | "ICMS61" => icms_mono::escreve(x, ac, grupo, c, &mono)?,
         "ICMS00" => {
             proprio(x, ac, false, true)?;
             fcp(x, ac, false)?;

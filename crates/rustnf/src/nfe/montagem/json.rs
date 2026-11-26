@@ -235,6 +235,19 @@ pub fn nota_de_json(v: &Value) -> Res<Nota> {
                     p_icms_efet: n2(ic, "p_icms_efet")?,
                     v_icms_efet: n2(ic, "v_icms_efet")?,
                     c_benef_rbc: s_(ic, "c_benef_rbc"),
+                    q_bc_mono: n2(ic, "q_bc_mono")?,
+                    ad_rem_icms: n2(ic, "ad_rem_icms")?,
+                    v_icms_mono: n2(ic, "v_icms_mono")?,
+                    q_bc_mono_reten: n2(ic, "q_bc_mono_reten")?,
+                    ad_rem_icms_reten: n2(ic, "ad_rem_icms_reten")?,
+                    v_icms_mono_reten: n2(ic, "v_icms_mono_reten")?,
+                    p_red_ad_rem: n2(ic, "p_red_ad_rem")?,
+                    mot_red_ad_rem: mot("mot_red_ad_rem"),
+                    v_icms_mono_op: n2(ic, "v_icms_mono_op")?,
+                    v_icms_mono_dif: n2(ic, "v_icms_mono_dif")?,
+                    q_bc_mono_ret: n2(ic, "q_bc_mono_ret")?,
+                    ad_rem_icms_ret: n2(ic, "ad_rem_icms_ret")?,
+                    v_icms_mono_ret: n2(ic, "v_icms_mono_ret")?,
                 })
             }
         };

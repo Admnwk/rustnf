@@ -437,7 +437,10 @@ pub(crate) fn det(
     x.abre("imposto");
     x.o("vTotTrib", &num_ou_none(&it.v_tot_trib, 2, "vTotTrib")?);
     let v_ipi_antes = ac.get("vIPI");
-    let st_antes = ac.get("vST").mais(ac.get("vFCPST"));
+    let st_antes = ac
+        .get("vST")
+        .mais(ac.get("vFCPST"))
+        .mais(ac.get("vICMSMonoReten"));
     let deduz_antes = ac.get(DESON_DEDUZ);
     classicos(n, it, &k, ano)?;
     repasse_do_cst60(it, &k)?;
@@ -473,6 +476,7 @@ pub(crate) fn det(
             isuf,
             n.fin_nfe,
             nao_contrib,
+            n.id_dest,
         )?;
     }
     ipi(x, it, ac, &k)?;
@@ -495,8 +499,12 @@ pub(crate) fn det(
 
     let v_ipi = ac.get("vIPI").menos(v_ipi_antes);
     // vItem (VB01-10, NT 2025.002): vProd - vDesc - vICMSDeson (indDeduzDeson 1) + vFrete + vSeg + vOutro + vIPI +
-    // vICMSST + vFCPST; no faturamento direto de veiculo novo sem o ICMS-ST (VB01-20); de 2027 em diante soma o IBS e a CBS.
-    let mut v_st = ac.get("vST").mais(ac.get("vFCPST")).menos(st_antes);
+    // vICMSST + vICMSMonoReten + vFCPST; no faturamento direto de veiculo novo sem o ICMS-ST (VB01-20); de 2027 em diante soma o IBS e a CBS.
+    let mut v_st = ac
+        .get("vST")
+        .mais(ac.get("vFCPST"))
+        .mais(ac.get("vICMSMonoReten"))
+        .menos(st_antes);
     if it.veiculo.as_ref().is_some_and(|v| v.tp_op.trim() == "2") {
         v_st = Dec::ZERO;
     }

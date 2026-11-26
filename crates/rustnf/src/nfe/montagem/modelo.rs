@@ -277,6 +277,37 @@ pub struct Icms {
     /// N14a `cBenefRBC` (NT 2019.001): beneficio fiscal da reducao de base quando acumula com o diferimento (CST 51)
     /// ou no CST 90. Confere-se o formato do XSD; se o codigo existe na tabela da UF e' assunto da UF.
     pub c_benef_rbc: Option<String>,
+    /// ICMS monofasico sobre combustiveis (NT 2023.001 v1.60): CST 02 (monofasico proprio), 15 (proprio com retencao),
+    /// 53 (recolhimento diferido) e 61 (cobrado anteriormente); o emitente do Simples (CRT 1) tambem informa estes
+    /// CST. A aliquota ad rem e os valores vao PRONTOS: a montagem confere as contas que a NT manda conferir. O
+    /// item leva o grupo `comb` (sem ele, rejeicao 959). N37a `qBCMono`: quantidade tributada (02, 15 e 53;
+    /// obrigatoria, rejeicao 767).
+    pub q_bc_mono: Option<String>,
+    /// N38 `adRemICMS`: aliquota ad rem do ICMS proprio (02, 15 e 53).
+    pub ad_rem_icms: Option<String>,
+    /// N39 `vICMSMono`: valor do ICMS proprio (02, 15 e 53; no 53 e' o devido: operacao menos diferido).
+    pub v_icms_mono: Option<String>,
+    /// N39a `qBCMonoReten`: quantidade sujeita a retencao (15; obrigatoria, rejeicao 768).
+    pub q_bc_mono_reten: Option<String>,
+    /// N40 `adRemICMSReten`: aliquota ad rem do ICMS com retencao (15).
+    pub ad_rem_icms_reten: Option<String>,
+    /// N41 `vICMSMonoReten`: valor do ICMS com retencao (15); soma no `vItem` e no `vNF`.
+    pub v_icms_mono_reten: Option<String>,
+    /// N47 `pRedAdRem`: percentual de reducao da aliquota ad rem (15, de 0 a 100, junto com o motivo).
+    pub p_red_ad_rem: Option<String>,
+    /// N48 `motRedAdRem`: 1 transporte coletivo de passageiros, 9 outros.
+    pub mot_red_ad_rem: Option<String>,
+    /// N41a `vICMSMonoOp`: ICMS da operacao como se nao houvesse o diferimento (53; o `pDif` do grupo e' o
+    /// [`Icms::p_dif`]).
+    pub v_icms_mono_op: Option<String>,
+    /// N43 `vICMSMonoDif`: ICMS diferido (53).
+    pub v_icms_mono_dif: Option<String>,
+    /// N43a `qBCMonoRet`: quantidade retida anteriormente (61; obrigatoria, rejeicao 769).
+    pub q_bc_mono_ret: Option<String>,
+    /// N44 `adRemICMSRet`: aliquota ad rem do ICMS retido anteriormente (61).
+    pub ad_rem_icms_ret: Option<String>,
+    /// N45 `vICMSMonoRet`: valor do ICMS retido anteriormente (61).
+    pub v_icms_mono_ret: Option<String>,
 }
 
 /// PIS ou COFINS do item (grupos Q e S).

@@ -8,6 +8,7 @@
 use sha1::{Digest, Sha1};
 
 use super::formato::*;
+use super::icms_mono::TOT_MONO;
 use super::modelo::*;
 use super::*;
 
@@ -45,13 +46,15 @@ fn direto(n: &Nota) -> bool {
         .any(|it| it.veiculo.as_ref().is_some_and(|v| v.tp_op.trim() == "2"))
 }
 
-/// Grupo `total`: `ICMSTot`, `IBSCBSTot` e `vNFTot`. O `vNF` segue a W16-10: + vST + vFCPST (fora o faturamento
+/// Grupo `total`: `ICMSTot`, `IBSCBSTot` e `vNFTot`. O `vNF` segue a W16-10: + vST + vFCPST + vICMSMonoReten (fora o faturamento
 /// direto de veiculo), - vICMSDeson dos itens com `indDeduzDeson` 1 (excecao 4).
 pub(crate) fn total(x: &mut X, n: &Nota, ac: &Ac, uf: &str) -> Res<BTreeMap<String, String>> {
     let st_no_vnf = if direto(n) {
         Dec::ZERO
     } else {
-        ac.get("vST").mais(ac.get("vFCPST"))
+        ac.get("vST")
+            .mais(ac.get("vFCPST"))
+            .mais(ac.get("vICMSMonoReten"))
     };
     let vnf = ac
         .get("vProd")
@@ -94,6 +97,17 @@ pub(crate) fn total(x: &mut X, n: &Nota, ac: &Ac, uf: &str) -> Res<BTreeMap<Stri
         ("vST", ac.get("vST")),
         ("vFCPST", ac.get("vFCPST")),
         ("vFCPSTRet", ac.get("vFCPSTRet")),
+    ] {
+        x.t(tag, &num(v, 2, tag)?);
+    }
+    for tag in TOT_MONO {
+        // W06b.1 a W06e: ocorrencia 0-1, so' com valor; 2 casas (`TDec_1302`)
+        let v = ac.get(tag).arred(2);
+        if !v.eh_zero() {
+            x.t(tag, &num(v, 2, tag)?);
+        }
+    }
+    for (tag, v) in [
         ("vProd", ac.get("vProd")),
         ("vFrete", ac.get("vFrete")),
         ("vSeg", ac.get("vSeg")),
@@ -129,6 +143,11 @@ pub(crate) fn total(x: &mut X, n: &Nota, ac: &Ac, uf: &str) -> Res<BTreeMap<Stri
     }
     for k in ["vICMSDeson", "vFCPSTRet"] {
         if ac.v.contains_key(k) {
+            out.insert(k.into(), ac.get(k).fixo(2));
+        }
+    }
+    for k in TOT_MONO {
+        if !ac.get(k).arred(2).eh_zero() {
             out.insert(k.into(), ac.get(k).fixo(2));
         }
     }
