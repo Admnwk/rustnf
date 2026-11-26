@@ -1,6 +1,6 @@
 [package]
 name = "rustnf"
-description = "Emissor aberto de NFS-e nacional (padrao Sefin Nacional / ADN) com o grupo IBS/CBS da Reforma Tributaria."
+description = "Emissor aberto de NFS-e nacional (Sefin Nacional / ADN) e de NF-e modelo 55 (SEFAZ), com o IBS/CBS da Reforma Tributaria."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

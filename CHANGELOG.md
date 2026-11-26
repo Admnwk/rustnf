@@ -58,6 +58,8 @@ alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o �
   grupo do IBS passou para `08` (o `01` exige IBS e CBS: seria a rejeição 1058). As colunas "apropria via nota", "via
   evento", `indNFe` e a vigência estão na consulta, mas nenhuma regra da NT as transforma em rejeição, então a
   montagem não as aplica. Nenhuma SEFAZ real foi chamada.
+* Apresentação: o README, a descrição dos crates `rustnf` e `rustnf-cli` e o repositório passam a dizer que o rustnf
+  emite NFS-e e NF-e (modelo 55), com um quadro do que cada uma tem hoje; a interface de desktop segue só com a NFS-e.
 * NF-e: a produção do pacote de esquemas PL_010h (NT 2026.005 v1.00, Simples Nacional, e NT 2026.008, valor líquido do
   produto) passa de 16/11 para **14/12/2026**, pelo aviso do Portal Nacional da NF-e de 13/11/2026. Até 13/12, em produção,
   a montagem recusa os campos do PL_010h (`tpRegimeIBSCBS`, `gTribSN`...) com a rejeição 225 que a SEFAZ daria; em
