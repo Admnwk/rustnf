@@ -123,6 +123,13 @@ pub(super) fn preparar_e_gravar<T: Transporte>(
 ) -> Result<(Preparada, String, Registro), Erro> {
     let notas = ctx.pasta()?;
     let p = preparar(ctx.config, Some(notas), pedido, ctx.agora, estrito, epec)?;
+    // a NFC-e (65) tem numeracao, CSC e prazos proprios: a aplicacao ainda so' emite o 55 (montar a previa do 65 vale)
+    if p.nota.modelo != 55 {
+        return Err(Erro::Entrada(format!(
+            "a aplicacao emite so' a NF-e (modelo 55); o modelo {} por enquanto so' na biblioteca",
+            p.nota.modelo
+        )));
+    }
     conferir_o_numero(notas, &p)?;
     let montada = montagem::montar(&p.nota)?;
     let assinada = montagem::assinar(&montada, ctx.certificado)?;

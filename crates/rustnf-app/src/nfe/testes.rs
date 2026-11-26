@@ -132,6 +132,22 @@ async fn autorizada_guarda_o_nfeproc_gasta_o_numero_e_manda_o_emitente_da_config
 }
 
 #[tokio::test]
+async fn nfce_nao_e_emitida_pela_aplicacao_e_nao_toca_a_pasta() {
+    let c = Cenario::novo("nfe-modelo65", vec![]);
+    for modelo in [json!(65), json!("65")] {
+        let mut p = pedido();
+        p["modelo"] = modelo.clone();
+        let erro = emitir(&c.ctx(), p, true).await.unwrap_err();
+        assert!(
+            matches!(&erro, Erro::Entrada(m) if m.contains("modelo 55")),
+            "{modelo}: {erro:?}"
+        );
+    }
+    assert!(c.notas.listar().unwrap().is_empty());
+    assert_eq!(c.notas.proximo_numero("1").unwrap(), 1, "nada reservado");
+}
+
+#[tokio::test]
 async fn rejeitada_nao_gasta_o_numero_e_a_mesma_numeracao_serve_ao_pedido_corrigido() {
     let c = Cenario::novo(
         "nfe-rej",
