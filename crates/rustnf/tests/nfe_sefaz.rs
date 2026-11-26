@@ -533,7 +533,10 @@ async fn a_nfe_que_nao_serve_nao_chega_a_rede() {
     };
     let (prod, _) = nfe(31, 1);
     let mut p = pedido(31, 2);
-    p["tp_emis"] = json!(6);
+    // SP e' da SVC-AN (tpEmis 6): o tpEmis 7 e' da SVC-RS e a SVC-AN o rejeitaria com 713
+    p["tp_emis"] = json!(7);
+    p["dh_cont"] = json!("2026-10-03T08:30:00-03:00");
+    p["x_just"] = json!("Falha na comunicacao com a SEFAZ de origem");
     let (svc, _) = nfe_de(&p);
     let casos: Vec<(&str, String, &str)> = vec![
         ("sem assinatura", sem_ass, "Signature"),
@@ -557,7 +560,7 @@ async fn a_nfe_que_nao_serve_nao_chega_a_rede() {
         "{e}"
     );
     assert!(f.chamadas().is_empty());
-    // contingencia SVC (tpEmis 6): fora desta versao do cliente
+    // contingencia SVC com o tpEmis da SVC errada para a UF: recusada antes da rede (a SVC certa esta em nfe_sefaz_svc)
     let f = Falso::novo(vec![]);
     let (c, _) = cliente(f.clone());
     let e = c.autorizar(&svc).await.unwrap_err();

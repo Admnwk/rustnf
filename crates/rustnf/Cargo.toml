@@ -118,6 +118,22 @@ required-features = ["nfe_sefaz", "cert_a1_teste"]
 name = "nfe_sefaz_limbo"
 required-features = ["nfe_sefaz", "cert_a1_teste"]
 
+[[test]]
+name = "nfe_sefaz_evento_pedidos"
+required-features = ["nfe_sefaz", "cert_a1_teste"]
+
+[[test]]
+name = "nfe_sefaz_evento_cliente"
+required-features = ["nfe_sefaz", "cert_a1_teste"]
+
+[[test]]
+name = "nfe_sefaz_inutilizacao"
+required-features = ["nfe_sefaz", "cert_a1_teste"]
+
+[[test]]
+name = "nfe_sefaz_svc"
+required-features = ["nfe_sefaz", "cert_a1_teste"]
+
 [[example]]
 name = "nfe_sefaz"
 required-features = ["nfe_sefaz"]

@@ -67,8 +67,12 @@
   (660), do CFOP e do município da retenção do transporte (722 e 288) nem da inscrição estadual da transportadora (544).
 * Webservices da SEFAZ, parte 1 (feature `nfe_sefaz`): tabela oficial de endereços, SOAP 1.2 com certificado A1, status do
   serviço, autorização síncrona (e assíncrona até o corte da NT 2023.002 v1.02), retorno do recibo, consulta pela chave e
-  recuperação da nota enviada sem resposta. Feita nesta frente. **Fica para a parte 2:** eventos (cancelamento, CC-e,
-  EPEC), inutilização e contingência SVC.
+  recuperação da nota enviada sem resposta. Feita nesta frente.
+* Webservices da SEFAZ, parte 2 (feature `nfe_sefaz`): cancelamento, carta de correção, EPEC, eventos da apuração do
+  IBS/CBS da NT 2025.002 v1.53 (13 tipos mais o cancelamento de evento), inutilização (com o fim do serviço em AC, BA e
+  SP) e contingência SVC (`tpEmis` 6 e 7). Feita nesta frente. **Fica para depois:** o evento de vinculação de
+  pagamento (110300, NT 2026.006), a distribuição de DF-e e a manifestação do destinatário, a consulta de cadastro e o
+  cancelamento por substituição (110112, só da NFC-e).
 * DANFE.
 * Faces: aplicação, linha de comando, API HTTP e MCP.
 * Documentos recebidos e manifestação do destinatário.

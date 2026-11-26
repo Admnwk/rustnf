@@ -7,6 +7,8 @@
 
 #![allow(dead_code, unreachable_pub)]
 
+pub mod eventos;
+
 use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;

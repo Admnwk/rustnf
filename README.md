@@ -53,6 +53,7 @@ Os detalhes de cada passo estão em [Interface de desktop](#interface-de-desktop
 | prévia do IBS/CBS | casos de teste da calculadora oficial da Receita Federal | comparar com os valores de uma NFS-e autorizada |
 | montagem e assinatura da NF-e (feature `nfe`) | 188 XML de contrato validados no XSD oficial 4.00 (pacote PL_010h v1.03), regras com o código da rejeição, assinatura conferida pelo verificador da própria biblioteca | **nenhum envio a SEFAZ e nenhum XML conferido por uma SEFAZ real**; o XML não foi comparado com uma nota autorizada |
 | cliente da SEFAZ para a NF-e (feature `nfe_sefaz`) | transporte falso (autorizada, denegada, rejeitada, lote em processamento, resposta perdida, duplicidade 204 e 539, Fault, HTTP de erro, corte do assíncrono), esquemas XSD oficiais para os pedidos e o `nfeProc` e um simulador local (fora do repositório) | **nenhuma chamada a uma SEFAZ real e nenhum certificado A1 real**; o espaço de nomes e a ação SOAP de cada serviço não foram conferidos no WSDL publicado; as raízes da ICP-Brasil não foram testadas contra o servidor de uma SEFAZ |
+| eventos, inutilização e contingência SVC do cliente da SEFAZ (feature `nfe_sefaz`) | transporte falso (cancelamento homologado, fora do prazo e recusado por prazo, carta de correção, EPEC, evento da apuração do IBS/CBS, evento sem resposta que a consulta acha, não acha ou também não responde, duplicidade 573, inutilização 102, 563 e 998, AC, BA e SP sem o serviço, SVC por UF), 68 validações nos esquemas XSD oficiais (`envEvento` de cada tipo, `inutNFe`, `procEventoNFe`, `ProcInutNFe`) e um simulador local (fora do repositório) | **nenhuma chamada a uma SEFAZ real e nenhum certificado A1 real**; os WSDL de `NFeRecepcaoEvento4` e `NFeInutilizacao4` não foram lidos; o `cOrgao` 91 do EPEC e o `cOrgao` da UF nos eventos da apuração seguem o texto do MOC e da NT, sem confirmação de uma SEFAZ; o formato da linha do protocolo do EPEC no DANFE (Anexo II do MOC) não foi conferido |
 | DANFSe | contrato de conteúdo e leiaute | comparar com um DANFSe emitido pelo portal |
 | interface de desktop (`rustnf-gui`, só Windows) | testes do modelo (máscaras, conferência, pedido, prévia, sugestão, rascunho, lista das notas, detalhe, cancelamento, conferência em lote, histórico de eventos, pedido de análise fiscal, confirmação e recusa de nota recebida, consulta pela chave e pela DPS e prévia avulsa), dos fluxos com emissor de demonstração e pasta temporária e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuração e pelo exemplo de demonstração | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, e nenhuma consulta de DPS ou de evento, nenhuma conferência de situação e nenhum evento (análise fiscal, confirmação, recusa) foi feito por ela contra a Sefin; só o emissor de demonstração respondeu**; o DANFSe aberto no leitor de PDF de outra máquina; uma chamada real à Sefin pelo botão "Testar conexão"; exame da janela em outras escalas de tela; o executável de release aberto numa máquina sem as ferramentas de desenvolvimento |
 
@@ -105,9 +106,17 @@ biblioteca ENVIA a NF-e assinada**: `rustnf::nfe::sefaz` traz os endereços ofic
 o SOAP 1.2 com certificado A1, o status do serviço, a autorização (síncrona, e assíncrona até a data de corte da NT
 2023.002 v1.02), o retorno do recibo e a consulta pela chave. Se a resposta se perde, o cliente consulta a chave antes de
 qualquer reenvio e nunca produz nota com outra chave; o resultado diz em palavras se a nota foi autorizada, denegada,
-rejeitada ou ficou sem resposta (veja `crates/rustnf/examples/nfe_sefaz.rs`). **Ainda não há eventos (cancelamento,
-CC-e, EPEC), inutilização, contingência SVC, DANFE, linha de comando, API nem interface para a NF-e, e o modelo 65
-(NFC-e) é recusado.** A leitura não confere a assinatura XML.
+rejeitada ou ficou sem resposta (veja `crates/rustnf/examples/nfe_sefaz.rs`). O mesmo cliente **registra eventos**:
+cancelamento (o prazo é o da legislação da UF: fora dele a SEFAZ recusa com 501 ou homologa com 155, e o resultado diz
+qual), carta de correção (a carta nova substitui as anteriores), EPEC no Ambiente Nacional e os eventos da apuração do
+IBS/CBS da NT 2025.002, todos assinados com o A1; guarda o `procEventoNFe` pelo texto cru; e, se a resposta do evento
+se perde, consulta a nota antes de qualquer reenvio (nunca cria um segundo cancelamento nem uma carta de sequência
+nova por causa disso). **Inutiliza numeração** (`inutNFe`), e nas UF que acabaram com o serviço (AC, BA e SP desde
+11/11/2026, NT 2023.002 v1.02) devolve o erro em palavras sem chamar a rede (`nfe::sefaz::inutilizacao::disponivel`
+diz se a UF ainda tem o serviço). **Envia à contingência SVC**: a nota com `tpEmis` 6 ou 7 vai ao endereço da SVC-AN ou
+da SVC-RS da UF (Ato COTEPE/ICMS 39/12), e a consulta e o cancelamento dela também (a SVC não registra carta de
+correção nem inutiliza: MOC 7.00, Anexo III). **Ainda não há DANFE, linha de
+comando, API nem interface para a NF-e, e o modelo 65 (NFC-e) é recusado.** A leitura não confere a assinatura XML.
 
 ## Instalação
 

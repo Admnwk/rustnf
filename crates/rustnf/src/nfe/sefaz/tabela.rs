@@ -7,8 +7,7 @@
 //!
 //! Os dados (`dados/nfe_ws.json`) saem das paginas "Relacao de Servicos Web" do Portal Nacional da NF-e (producao e
 //! homologacao); a data da leitura e as duas paginas estao em [`fonte`] e em `docs/FONTES.md`. Servico que a pagina
-//! lista e o cliente ainda nao usa (inutilizacao, consulta de cadastro, evento, distribuicao) fica na tabela para a
-//! parte seguinte.
+//! lista e o cliente ainda nao usa (consulta de cadastro, distribuicao) fica na tabela para a parte seguinte.
 //!
 //! A pagina publica alguns enderecos com `?wsdl` no fim (GO, MT, PR e um de PE). O `?wsdl` e' o pedido da descricao do
 //! servico, nao o endereco da chamada: [`Endereco::url_da_chamada`] o tira, e [`Endereco::url`] guarda o texto como a
@@ -41,16 +40,23 @@ pub enum Servico {
     RetAutorizacao,
     /// `NfeConsultaProtocolo`: situacao da NF-e pela chave.
     ConsultaProtocolo,
+    /// `RecepcaoEvento`: cancelamento, carta de correcao, EPEC e os eventos da Reforma Tributaria.
+    RecepcaoEvento,
+    /// `NfeInutilizacao`: inutilizacao de faixa de numeracao.
+    Inutilizacao,
 }
 
 impl Servico {
-    /// Os quatro servicos, na ordem do fluxo de uma emissao.
+    /// Os quatro servicos da emissao, na ordem do fluxo (status, envio, recibo, consulta).
     pub const TODOS: [Servico; 4] = [
         Servico::StatusServico,
         Servico::Autorizacao,
         Servico::RetAutorizacao,
         Servico::ConsultaProtocolo,
     ];
+
+    /// Os dois servicos que registram algo na nota ou na numeracao: eventos e inutilizacao.
+    pub const DE_REGISTRO: [Servico; 2] = [Servico::RecepcaoEvento, Servico::Inutilizacao];
 
     /// O nome do servico na pagina "Relacao de Servicos Web".
     #[must_use]
@@ -60,6 +66,8 @@ impl Servico {
             Servico::Autorizacao => "NFeAutorizacao",
             Servico::RetAutorizacao => "NFeRetAutorizacao",
             Servico::ConsultaProtocolo => "NfeConsultaProtocolo",
+            Servico::RecepcaoEvento => "RecepcaoEvento",
+            Servico::Inutilizacao => "NfeInutilizacao",
         }
     }
 
@@ -77,6 +85,8 @@ impl Servico {
             Servico::Autorizacao => "nfeAutorizacaoLote",
             Servico::RetAutorizacao => "nfeRetAutorizacaoLote",
             Servico::ConsultaProtocolo => "nfeConsultaNF",
+            Servico::RecepcaoEvento => "nfeRecepcaoEvento",
+            Servico::Inutilizacao => "nfeInutilizacaoNF",
         };
         format!("{}/{metodo}", self.namespace())
     }
@@ -87,6 +97,8 @@ impl Servico {
             Servico::Autorizacao => "NFeAutorizacao4",
             Servico::RetAutorizacao => "NFeRetAutorizacao4",
             Servico::ConsultaProtocolo => "NFeConsultaProtocolo4",
+            Servico::RecepcaoEvento => "NFeRecepcaoEvento4",
+            Servico::Inutilizacao => "NFeInutilizacao4",
         }
     }
 }
@@ -267,7 +279,20 @@ pub fn endereco(
 /// [`ErroSefaz`] se a UF e' desconhecida ou o servico nao existe no autorizador.
 pub fn url(uf: &str, ambiente: Ambiente, servico: Servico) -> Result<String, ErroSefaz> {
     let aut = autorizador_da_uf(uf)?;
-    Ok(endereco(aut, ambiente, servico.nome_na_pagina())?
+    url_do_autorizador(aut, ambiente, servico)
+}
+
+/// O endereco da chamada de um servico num autorizador pelo nome (`SVC-AN`, `SVC-RS`, `AN`, `SVRS`...), sem o `?wsdl`.
+///
+/// # Errors
+///
+/// [`ErroSefaz`] se o autorizador esta fora da tabela ou nao oferece o servico no ambiente.
+pub fn url_do_autorizador(
+    autorizador: &str,
+    ambiente: Ambiente,
+    servico: Servico,
+) -> Result<String, ErroSefaz> {
+    Ok(endereco(autorizador, ambiente, servico.nome_na_pagina())?
         .url_da_chamada()
         .to_string())
 }

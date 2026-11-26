@@ -11,12 +11,13 @@ use std::pin::Pin;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::Duration;
 
-use chrono::{DateTime, NaiveDate, Utc};
+use chrono::{DateTime, FixedOffset, NaiveDate, Utc};
 
 use super::erro::ErroSefaz;
 use super::pedidos::{self, conferir_nfe, NfeConferida};
 use super::resposta::{self, Retorno};
 use super::resultado::{Desfecho, Resultado, SituacaoServico, StatusServico};
+use super::svc::{self, Svc};
 use super::tabela::{self, Servico};
 use super::transporte::{Transporte, TransporteReqwest};
 use crate::assinatura::cert_a1::Certificado;
@@ -167,6 +168,24 @@ impl<T: Transporte> ClienteSefaz<T> {
         ((self.relogio)() - chrono::Duration::hours(3)).date_naive()
     }
 
+    /// Agora, com o fuso de Greenwich (o `dhEvento` sai no fuso da UF da chave).
+    pub(super) fn agora(&self) -> DateTime<FixedOffset> {
+        (self.relogio)().fixed_offset()
+    }
+
+    /// A quem se pergunta ou se envia sobre a NF-e dessa chave: a SVC se a chave tem `tpEmis` 6 ou 7, senao o
+    /// autorizador da UF. Devolve o nome que `chamar` entende (sigla da UF ou nome do autorizador).
+    pub(super) fn destino_da_chave(&self, chave: &str, uf: &str) -> String {
+        let tp = chave
+            .as_bytes()
+            .get(34)
+            .and_then(|b| char::from(*b).to_digit(10));
+        match tp.and_then(Svc::do_tp_emis) {
+            Some(svc) => svc.autorizador().to_string(),
+            None => uf.to_string(),
+        }
+    }
+
     /// 15 digitos no maximo: relogio (AAMMDDhhmmss) + contador. Unico dentro do processo.
     pub(super) fn id_lote(&self) -> String {
         let n = (self.lote.fetch_add(1, Ordering::SeqCst) + 1) % 1000;
@@ -178,14 +197,19 @@ impl<T: Transporte> ClienteSefaz<T> {
         (base * 1000 + u64::from(n)).to_string()
     }
 
-    fn url_do(&self, servico: Servico, uf: &str) -> Result<String, ErroSefaz> {
+    fn url_do(&self, servico: Servico, destino: &str) -> Result<String, ErroSefaz> {
         match self.urls.get(&servico) {
             Some(u) => Ok(u.clone()),
-            None => tabela::url(uf, self.ambiente, servico),
+            // `SVC-AN`, `SVC-RS`, `AN` e `SVRS` sao autorizadores; o resto e' sigla de UF
+            None if matches!(destino, "SVC-AN" | "SVC-RS" | "AN" | "SVRS") => {
+                tabela::url_do_autorizador(destino, self.ambiente, servico)
+            }
+            None => tabela::url(destino, self.ambiente, servico),
         }
     }
 
-    /// Uma chamada SOAP. `uf` e' a UF cujo autorizador atende (a do emitente, ou a da chave na consulta).
+    /// Uma chamada SOAP. `uf` e' a UF cujo autorizador atende (a do emitente, ou a da chave na consulta) ou o nome de
+    /// um autorizador (`SVC-AN`, `SVC-RS`, `AN`, `SVRS`).
     pub(super) async fn chamar(
         &self,
         servico: Servico,
@@ -228,6 +252,22 @@ impl<T: Transporte> ClienteSefaz<T> {
     ///
     /// [`ErroSefaz`] so' se o pedido nao monta; falha de rede volta como [`SituacaoServico::SemResposta`].
     pub async fn status(&self) -> Result<StatusServico, ErroSefaz> {
+        self.status_em(self.uf).await
+    }
+
+    /// O status da SVC que atende a UF do cliente (`NfeStatusServico` da SVC-AN ou da SVC-RS). Consulte-o so' quando o
+    /// ambiente normal da SEFAZ estiver fora: a SVC so' serve quando responde 107; 113 e 114 dizem que ela esta sendo
+    /// desativada ou foi desabilitada pela SEFAZ de origem (MOC 7.00, Anexo III, 2.1.3.4, item g).
+    ///
+    /// # Errors
+    ///
+    /// [`ErroSefaz`] so' se o pedido nao monta; falha de rede volta como [`SituacaoServico::SemResposta`].
+    pub async fn status_svc(&self) -> Result<StatusServico, ErroSefaz> {
+        let svc = svc::svc_da_uf(self.uf)?;
+        self.status_em(svc.autorizador()).await
+    }
+
+    async fn status_em(&self, destino: &str) -> Result<StatusServico, ErroSefaz> {
         let pedido = pedidos::cons_stat(self.ambiente, self.uf)?;
         let sem = |detalhe: String| StatusServico {
             situacao: SituacaoServico::SemResposta,
@@ -239,7 +279,7 @@ impl<T: Transporte> ClienteSefaz<T> {
             detalhe,
         };
         let r = match self
-            .chamar(Servico::StatusServico, &pedido, self.uf)
+            .chamar(Servico::StatusServico, &pedido, destino)
             .await?
         {
             Resp::Ok(r) => r,
@@ -350,7 +390,8 @@ impl<T: Transporte> ClienteSefaz<T> {
             }
             None => None,
         };
-        self.consultar_chave(&ch.chave, ch.uf, nfe).await
+        let destino = self.destino_da_chave(&ch.chave, ch.uf);
+        self.consultar_chave(&ch.chave, &destino, nfe).await
     }
 
     /// Confere a NF-e contra o cliente: UF, ambiente e forma de emissao.
@@ -375,11 +416,24 @@ impl<T: Transporte> ClienteSefaz<T> {
                 "tpAmb",
             ));
         }
+        // na SVC a nota leva o tpEmis da SVC da UF (rejeicao 713, MOC 7.00, Anexo I, B25-40)
         if matches!(c.chave.tp_emis, 6 | 7) {
-            return Err(ErroSefaz::novo(
-                "nota de contingencia SVC (tpEmis 6 ou 7): a SVC nao esta nesta versao do cliente",
-                "tpEmis",
-            ));
+            let esperado = svc::svc_da_uf(self.uf)?;
+            if c.chave.tp_emis != esperado.tp_emis()
+                && !svc::homologacao_diverge_do_ato(self.uf, self.ambiente, c.chave.tp_emis)
+            {
+                return Err(ErroSefaz::novo(
+                    format!(
+                        "a UF {} e' atendida pela {} (tpEmis {}), e a nota tem tpEmis {} (rejeicao 713; {})",
+                        self.uf,
+                        esperado.autorizador(),
+                        esperado.tp_emis(),
+                        c.chave.tp_emis,
+                        svc::ATO_COTEPE
+                    ),
+                    "tpEmis",
+                ));
+            }
         }
         Ok(c)
     }

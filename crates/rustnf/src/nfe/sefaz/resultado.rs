@@ -176,7 +176,7 @@ fn frase_do(d: &Desfecho) -> String {
                  confira-a antes de qualquer reenvio e nao emita uma terceira."
             )
         }
-        Desfecho::SoEpec { .. } => "Na SEFAZ consta so' o EPEC (124), sem a NF-e: a nota ainda precisa ser                                     transmitida."
+        Desfecho::SoEpec { .. } => "Na SEFAZ consta so' o EPEC (124), sem a NF-e: a nota ainda precisa ser transmitida."
             .to_string(),
         Desfecho::EmProcessamento { recibo } => format!(
             "A SEFAZ ainda esta processando o lote (recibo {recibo}). Consulte o recibo de novo mais tarde; \

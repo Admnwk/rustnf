@@ -75,7 +75,8 @@ impl<T: Transporte> ClienteSefaz<T> {
             nfe: nfe.texto,
             pedido: &pedido,
         };
-        match self.chamar(Servico::Autorizacao, &pedido, self.uf).await? {
+        let destino = self.destino_da_chave(&chave, self.uf);
+        match self.chamar(Servico::Autorizacao, &pedido, &destino).await? {
             Resp::Sem(s) => {
                 let porque = format!("o envio ficou sem resposta ({})", s.detalhe);
                 self.recuperar(&ctx, &porque, false).await
@@ -136,13 +137,14 @@ impl<T: Transporte> ClienteSefaz<T> {
             (self.dormir)(e).await;
         }
         let consulta = pedidos::cons_reci(self.ambiente, recibo)?;
+        let destino = self.destino_da_chave(chave, self.uf);
         let mut ultimo = String::new();
         for i in 0..self.tentativas {
             if i > 0 {
                 (self.dormir)(self.intervalo).await;
             }
             let r = match self
-                .chamar(Servico::RetAutorizacao, &consulta, self.uf)
+                .chamar(Servico::RetAutorizacao, &consulta, &destino)
                 .await?
             {
                 Resp::Ok(r) => r,
@@ -272,7 +274,8 @@ impl<T: Transporte> ClienteSefaz<T> {
                 && o.serie == n.serie
                 && o.numero == n.numero;
             if mesmo_numero && o.chave != n.chave {
-                let c = self.consultar_chave(&o.chave, o.uf, None).await?;
+                let destino = self.destino_da_chave(&o.chave, o.uf);
+                let c = self.consultar_chave(&o.chave, &destino, None).await?;
                 situacao = cstat_do(&c.desfecho).map(str::to_string);
                 chave_existente = Some(o.chave);
             }
@@ -293,8 +296,9 @@ impl<T: Transporte> ClienteSefaz<T> {
         porque: &str,
         deve_existir: bool,
     ) -> Result<Resultado, ErroSefaz> {
+        let destino = self.destino_da_chave(ctx.chave, self.uf);
         let c = self
-            .consultar_chave(ctx.chave, self.uf, Some(ctx.nfe))
+            .consultar_chave(ctx.chave, &destino, Some(ctx.nfe))
             .await?;
         let da_consulta = c.detalhe.clone();
         let mut r = match &c.desfecho {
@@ -313,7 +317,7 @@ impl<T: Transporte> ClienteSefaz<T> {
         Ok(r)
     }
 
-    /// `consultar` sobre a chave ja conferida; `uf` e' a da chave.
+    /// `consultar` sobre a chave ja conferida; `uf` e' a da chave (ou a SVC que a atende).
     pub(super) async fn consultar_chave(
         &self,
         chave: &str,

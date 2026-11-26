@@ -76,9 +76,11 @@ pub use transp::{RetencaoIcms, Transportadora, Transporte, VeiculoTransp, Volume
 
 use cobr::cobr;
 use exporta::{compra, exporta};
+#[cfg(feature = "nfe_sefaz")]
+pub(crate) use formato::documento as documento_cnpj_cpf;
 pub(crate) use formato::uf_codigo;
 #[cfg(feature = "nfe_sefaz")]
-pub(crate) use formato::uf_sigla;
+pub(crate) use formato::{dh, esc, filtrar, uf_sigla, Dec};
 use formato::{documento, erro, erro_r, na_uf};
 use ide::{finalidade, ide};
 use item::det;
