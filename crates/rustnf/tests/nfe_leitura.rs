@@ -83,7 +83,7 @@ fn o_erro_e_tipado() {
     assert_eq!(por_nome("dtd_vazio"), ErroLeitura::Dtd);
     assert_eq!(por_nome("mal_formado"), ErroLeitura::MalFormado);
     assert_eq!(por_nome("leiaute_200"), ErroLeitura::Leiaute("2.00".into()));
-    assert_eq!(por_nome("nfce_modelo_65"), ErroLeitura::Modelo("65".into()));
+    assert_eq!(por_nome("modelo_57"), ErroLeitura::Modelo("57".into()));
     assert_eq!(por_nome("item_sem_prod"), ErroLeitura::ItemSemProd(1));
 }
 

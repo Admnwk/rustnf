@@ -31,7 +31,7 @@ mod blocos_rtc;
 mod conteudo;
 mod desenho;
 mod folhas;
-mod formato;
+use crate::nfe::impressao as formato;
 mod medidas;
 mod rtc;
 mod tabela;
@@ -198,6 +198,12 @@ impl fmt::Debug for Opcoes<'_> {
 /// dados que o papel exige).
 pub fn dados(xml: &[u8], op: &Opcoes) -> Result<Value, ErroDanfe> {
     let nfe = crate::nfe::ler(xml).map_err(|e| ErroDanfe::Leitura(e.to_string()))?;
+    // a leitura tambem le a NFC-e (modelo 65); o DANFE A4 continua so' do 55, com a recusa de sempre para o XML
+    if nfe.modelo != "55" {
+        return Err(ErroDanfe::Leitura(
+            crate::nfe::ErroLeitura::Modelo(nfe.modelo).to_string(),
+        ));
+    }
     dados_da_nfe(&nfe, op)
 }
 
