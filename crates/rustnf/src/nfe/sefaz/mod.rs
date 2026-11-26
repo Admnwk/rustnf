@@ -42,6 +42,7 @@
 
 mod cliente;
 mod cliente_eventos;
+pub mod dfe;
 mod erro;
 pub mod evento;
 mod fluxo;

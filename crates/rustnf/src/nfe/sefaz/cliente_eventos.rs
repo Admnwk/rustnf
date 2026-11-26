@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//! Os eventos no cliente: `cancelar`, `corrigir`, `registrar_evento_rtc`, `registrar_epec` e `inutilizar`.
+//! Os eventos no cliente: `cancelar`, `corrigir`, `manifestar`, `registrar_evento_rtc`, `registrar_epec` e `inutilizar`.
 //!
 //! A regra que o cliente nao quebra, a mesma da nota: resposta perdida NAO quer dizer evento nao registrado. Antes de
 //! qualquer reenvio o cliente consulta a NF-e (`consSitNFe` devolve os eventos dela): achou o evento, devolve-o
@@ -11,15 +11,18 @@
 //! cancelamento ou uma carta com sequencia nova por causa de uma resposta perdida.
 //!
 //! Onde cada evento e' recebido: cancelamento, no autorizador da chave (a UF, ou a SVC se a chave tem `tpEmis` 6 ou 7);
-//! carta de correcao, sempre na UF (a SVC nao a registra, MOC 7.00, Anexo III, 2.1.3.4); EPEC, no Ambiente Nacional (MOC
-//! 7.00, Visao Geral, 3.3); eventos da apuracao do IBS/CBS, na SVRS (NT 2025.002 v1.53, item 8.1). A inutilizacao vai ao
+//! carta de correcao, sempre na UF (a SVC nao a registra, MOC 7.00, Anexo III, 2.1.3.4); EPEC e manifestacao do
+//! destinatario, no Ambiente Nacional (MOC 7.00, Visao Geral, 3.3 e 5.11); eventos da apuracao do IBS/CBS, na SVRS (NT 2025.002 v1.53, item 8.1). A inutilizacao vai ao
 //! autorizador da UF do emitente (a SVC nao a oferece, item e).
 
 use chrono::Datelike;
 
 use super::cliente::{ClienteSefaz, Resp};
+use super::dfe::pedido::interessado;
 use super::erro::ErroSefaz;
-use super::evento::{self, Cancelamento, CartaCorrecao, Epec, EventoRtc, PedidoEvento};
+use super::evento::{
+    self, Cancelamento, CartaCorrecao, Epec, EventoRtc, Manifestacao, PedidoEvento,
+};
 use super::inutilizacao::{self, Inutilizacao, PedidoInutilizacao, PedidoInutilizar};
 use super::pedidos::chave_valida;
 use super::resposta_evento::{
@@ -40,8 +43,15 @@ const DECLARACAO: &str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 fn registrado_do(ev: &InfRetEvento, tp_evento: &str) -> Option<DesfechoEvento> {
     let (cstat, motivo, protocolo) = (ev.cstat.clone(), ev.motivo.clone(), ev.protocolo.clone());
     match ev.cstat.as_str() {
-        "135" | "155" => Some(DesfechoEvento::Registrado {
-            fora_do_prazo: cstat == "155",
+        "135" => Some(DesfechoEvento::Registrado {
+            fora_do_prazo: false,
+            cstat,
+            motivo,
+            protocolo,
+        }),
+        // 155 e' "cancelamento homologado fora de prazo": so' o cancelamento o recebe
+        "155" if tp_evento == evento::CANCELAMENTO => Some(DesfechoEvento::Registrado {
+            fora_do_prazo: true,
             cstat,
             motivo,
             protocolo,
@@ -59,6 +69,30 @@ fn registrado_do(ev: &InfRetEvento, tp_evento: &str) -> Option<DesfechoEvento> {
         }),
         _ => None,
     }
+}
+
+/// A manifestacao e' assinada com o certificado do CNPJ-base (ou do CPF) do destinatario (MOC 7.00, Visao Geral, 5.11).
+/// So' recusa quando o certificado DIZ de quem e' e nao bate: o que nao traz CNPJ nem CPF legivel fica para o Ambiente
+/// Nacional decidir.
+fn conferir_certificado(cert: &Certificado, documento: &str) -> Result<(), ErroSefaz> {
+    let (tag, doc) = interessado(documento)?;
+    let sem_identidade = cert.cnpj.is_empty() && cert.cpf.is_empty();
+    let bate = sem_identidade
+        || if tag == "CNPJ" {
+            cert.cnpj
+                .get(..8)
+                .is_some_and(|base| base.eq_ignore_ascii_case(&doc[..8]))
+        } else {
+            cert.cpf == doc
+        };
+    if bate {
+        return Ok(());
+    }
+    Err(ErroSefaz::novo(
+        "o certificado nao e' do destinatario: a manifestacao e' assinada com o certificado do mesmo CNPJ-base (ou CPF) \
+         do destinatario (MOC 7.00, Visao Geral, 5.11)",
+        "certificado",
+    ))
 }
 
 /// O `retEvento` que e' deste pedido: mesmo tipo, mesma sequencia, mesma chave (o que a SEFAZ nao mandou nao conta).
@@ -149,6 +183,37 @@ impl<T: Transporte> ClienteSefaz<T> {
         };
         let m = evento::evento_rtc(&ev)?;
         self.registrar(m.assinar(cert, &self.id_lote())?, "SVRS", c.uf)
+            .await
+    }
+
+    /// Registra a manifestacao do destinatario (210200, 210210, 210220 ou 210240) no Ambiente Nacional. O ambiente, a hora
+    /// do evento e a UF do autor sao os do cliente (os de `m` sao trocados). O certificado tem de ser do mesmo CNPJ-base
+    /// (ou CPF) do destinatario (MOC 7.00, Visao Geral, 5.11).
+    ///
+    /// A mesma regra dos outros eventos: resposta perdida NAO quer dizer manifestacao nao registrada. O cliente consulta a
+    /// NF-e antes de qualquer reenvio e, se a duplicidade (573) voltar, devolve a manifestacao que ja esta registrada
+    /// (`recuperado`); repetir o MESMO pedido e' sempre seguro, porque `nSeqEvento` e' sempre 1.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroSefaz`] se o pedido nao monta (chave, destinatario, justificativa, combinacao recusada pelo MOC), o
+    /// certificado e' de outro CNPJ-base ou nao assina.
+    pub async fn manifestar(
+        &self,
+        cert: &Certificado,
+        m: &Manifestacao<'_>,
+    ) -> Result<ResultadoEvento, ErroSefaz> {
+        let c = chave_valida(m.chave)?;
+        let pedido = Manifestacao {
+            chave: &c.chave,
+            uf_autor: self.uf,
+            ambiente: self.ambiente,
+            quando: self.agora(),
+            ..m.clone()
+        };
+        let montado = evento::manifestacao(&pedido)?;
+        conferir_certificado(cert, m.documento)?;
+        self.registrar(montado.assinar(cert, &self.id_lote())?, "AN", c.uf)
             .await
     }
 

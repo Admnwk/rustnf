@@ -123,6 +123,10 @@ pub(super) fn nome_do_evento(tp_evento: &str) -> String {
         "110111" => "Cancelamento".to_string(),
         "110110" => "Carta de correcao".to_string(),
         "110140" => "EPEC".to_string(),
+        "210200" => "Evento de confirmacao da operacao".to_string(),
+        "210210" => "Evento de ciencia da operacao".to_string(),
+        "210220" => "Evento de desconhecimento da operacao".to_string(),
+        "210240" => "Evento de operacao nao realizada".to_string(),
         outro => format!("Evento {outro}"),
     }
 }
