@@ -181,11 +181,7 @@ pub(crate) fn json_da_inutilizacao(r: &rustnf::nfe::sefaz::ResultadoInutilizacao
 /// O erro da inutilizacao: `None` se a faixa esta inutilizada.
 pub(crate) fn erro_da_inutilizacao(r: &rustnf::nfe::sefaz::ResultadoInutilizacao) -> Option<Erro> {
     match &r.desfecho {
-        d if matches!(
-            d,
-            DesfechoInutilizacao::Inutilizada { .. } | DesfechoInutilizacao::JaInutilizada { .. }
-        ) =>
-        {
+        DesfechoInutilizacao::Inutilizada { .. } | DesfechoInutilizacao::JaInutilizada { .. } => {
             None
         }
         DesfechoInutilizacao::Rejeitada { .. } | DesfechoInutilizacao::ServicoDesativado { .. } => {

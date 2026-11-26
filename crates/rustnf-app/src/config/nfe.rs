@@ -313,7 +313,8 @@ mod testes {
 
     #[test]
     fn cada_recusa_aponta_a_secao_e_o_campo() {
-        let casos: [(&str, Box<dyn Fn(&mut Nfe)>); 9] = [
+        type Muda = Box<dyn Fn(&mut Nfe)>;
+        let casos: [(&str, Muda); 9] = [
             ("ambiente", Box::new(|n| n.ambiente = "restrita".into())),
             ("uf", Box::new(|n| n.uf = "sp".into())),
             ("uf", Box::new(|n| n.uf = "ZZ".into())),

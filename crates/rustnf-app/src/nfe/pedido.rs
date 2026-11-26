@@ -277,6 +277,50 @@ fn ausente_no(pedido: &Value, chave: &str) -> bool {
     pedido.as_object().is_none_or(|o| ausente(o, chave))
 }
 
+/// A NF-e montada a partir do pedido, SEM assinar, sem rede e sem gravar nada.
+#[derive(Debug, Clone)]
+pub struct Montado {
+    /// O XML da `NFe` (sem `Signature`).
+    pub xml: String,
+    /// A chave de acesso.
+    pub chave: String,
+    /// Serie.
+    pub serie: String,
+    /// Numero.
+    pub numero: u64,
+    /// Os totais do `ICMSTot`, em texto.
+    pub totais: std::collections::BTreeMap<String, String>,
+    /// Os avisos da montagem.
+    pub avisos: Vec<Aviso>,
+    /// Campos do pedido que o leiaute nao conhece (ignorados).
+    pub desconhecidos: Vec<String>,
+}
+
+/// Completa o pedido, confere e monta o XML da NF-e, com o relogio do sistema. Nao assina, nao envia e NAO reserva o
+/// numero: o que a pasta diz e' so' o proximo livre, e o `cNF` sorteado muda a cada chamada.
+///
+/// # Errors
+///
+/// Os de [`preparar`].
+pub fn montar_pedido(
+    config: &Config,
+    notas: Option<&NotasNfe>,
+    pedido: Value,
+    estrito: bool,
+) -> Result<Montado, Erro> {
+    let p = preparar(config, notas, pedido, Utc::now(), estrito, false)?;
+    let m = montagem::montar(&p.nota)?;
+    Ok(Montado {
+        xml: m.xml,
+        chave: m.chave,
+        serie: p.serie,
+        numero: p.numero,
+        totais: m.totais,
+        avisos: m.avisos,
+        desconhecidos: p.desconhecidos,
+    })
+}
+
 /// Os avisos da montagem em JSON: codigo, item e texto.
 #[must_use]
 pub fn avisos_json(avisos: &[Aviso]) -> Value {

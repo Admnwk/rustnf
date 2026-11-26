@@ -96,17 +96,14 @@ fn conferir_o_numero(notas: &NotasNfe, p: &Preparada) -> Result<(), Erro> {
     let msg = match notas.ocupante(&p.serie, p.numero)? {
         None => return Ok(()),
         Some(Ocupante::Nota(chave, Situacao::Pendente)) => format!(
-            "o numero {} da serie {} esta com uma NF-e pendente ({}): retome os pendentes para saber o que a SEFAZ fez \
-             antes de emitir",
-            p.numero,
-            p.serie,
-            format!("chave {chave}")
+            "o numero {} da serie {} esta com uma NF-e pendente (chave {chave}): retome os pendentes para saber o que a \
+             SEFAZ fez antes de emitir",
+            p.numero, p.serie
         ),
         Some(Ocupante::Nota(chave, situacao)) => format!(
-            "o numero {} da serie {} ja foi gasto pela nota {} ({}): o proximo livre e' {proximo}",
+            "o numero {} da serie {} ja foi gasto pela nota de chave {chave} ({}): o proximo livre e' {proximo}",
             p.numero,
             p.serie,
-            format!("chave {chave}"),
             situacao.texto()
         ),
         Some(Ocupante::Inutilizada) => format!(

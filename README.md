@@ -56,9 +56,10 @@ Os detalhes de cada passo estão em [Interface de desktop](#interface-de-desktop
 | eventos, inutilização e contingência SVC do cliente da SEFAZ (feature `nfe_sefaz`) | transporte falso (cancelamento homologado, fora do prazo e recusado por prazo, carta de correção, EPEC, evento da apuração do IBS/CBS, evento sem resposta que a consulta acha, não acha ou também não responde, duplicidade 573, inutilização 102, 563 e 998, AC, BA e SP sem o serviço, SVC por UF), 68 validações nos esquemas XSD oficiais (`envEvento` de cada tipo, `inutNFe`, `procEventoNFe`, `ProcInutNFe`) e um simulador local (fora do repositório) | **nenhuma chamada a uma SEFAZ real e nenhum certificado A1 real**; os WSDL de `NFeRecepcaoEvento4` e `NFeInutilizacao4` não foram lidos; o `cOrgao` 91 do EPEC e o `cOrgao` da UF nos eventos da apuração seguem o texto do MOC e da NT, sem confirmação de uma SEFAZ |
 | DANFSe | contrato de conteúdo e leiaute | comparar com um DANFSe emitido pelo portal |
 | DANFE da NF-e (feature `danfe`) | contrato de conteúdo, plano das folhas e desenho; medidas, código de barras (decodificado de volta na chave) e corpos de fonte conferidos nas operações; fotos das folhas conferidas contra o Anexo II | **nenhum DANFE conferido por fiscal ou SEFAZ e nenhum impresso em papel**; a leitura do código de barras por um leitor óptico |
+| faces da NF-e (camada `rustnf-app` e `rustnf nfe`) | transporte falso (autorizada, denegada, rejeitada que não gasta número, número já autorizado com outra chave, resposta perdida com a nota pendente e retomada sem nota gêmea, reenvio da mesma NF-e, cancelamento, carta de correção numerada pela pasta, inutilização, EPEC e sua transmissão, status), pasta de notas e configuração; DANFE gerado da nota guardada; um simulador local, fora do repositório, pela linha de comando | **nenhuma NF-e real foi emitida, consultada nem cancelada por estas faces, nenhum certificado A1 real foi usado e nenhuma SEFAZ real foi chamada** (nem a de homologação) |
 | interface de desktop (`rustnf-gui`, só Windows) | testes do modelo (máscaras, conferência, pedido, prévia, sugestão, rascunho, lista das notas, detalhe, cancelamento, conferência em lote, histórico de eventos, pedido de análise fiscal, confirmação e recusa de nota recebida, consulta pela chave e pela DPS e prévia avulsa), dos fluxos com emissor de demonstração e pasta temporária e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuração e pelo exemplo de demonstração | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, e nenhuma consulta de DPS ou de evento, nenhuma conferência de situação e nenhum evento (análise fiscal, confirmação, recusa) foi feito por ela contra a Sefin; só o emissor de demonstração respondeu**; o DANFSe aberto no leitor de PDF de outra máquina; uma chamada real à Sefin pelo botão "Testar conexão"; exame da janela em outras escalas de tela; o executável de release aberto numa máquina sem as ferramentas de desenvolvimento |
 
-Se você testar, conte como foi: abra um relato pelo modelo **"Relato de emissão"** (aba Issues), mesmo quando der
+Se você testar a NFS-e, conte como foi: abra um relato pelo modelo **"Relato de emissão"** (aba Issues), mesmo quando der
 certo. Correção é bem-vinda por pedido de mudança, com a fonte oficial citada e um caso no contrato (veja
 `CONTRIBUTING.md`). Comece sempre pela produção restrita. Se a assinatura for recusada, repita com
 `--assinatura sha1` e diga no relato qual das duas passou.
@@ -86,6 +87,7 @@ certo. Correção é bem-vinda por pedido de mudança, com a fonte oficial citad
 | `rustnf notas reindexar` | refaz o índice da pasta de notas a partir dos XML guardados |
 | `rustnf notas atualizar` | confere na Sefin a situação das notas da pasta (cancelada, substituída, em análise fiscal) e atualiza o índice |
 | `rustnf notas numero` | mostra a próxima DPS da série; com `--proximo`, continua a numeração de quem já emitia por outro sistema |
+| `rustnf nfe montar` / `conferir` / `emitir` / `consultar` / `cancelar` / `corrigir` / `inutilizar` / `status` / `epec` / `pendentes` / `danfe` / `notas` | a NF-e (modelo 55): veja [NF-e](#nf-e-modelo-55) |
 | `rustnf certificado mostrar` | mostra o titular, o documento, a validade e os avisos do certificado A1 |
 | `rustnf sefin testar` | testa a conexão com a Sefin Nacional e a aceitação do certificado |
 
@@ -118,8 +120,8 @@ diz se a UF ainda tem o serviço). **Envia à contingência SVC**: a nota com `t
 da SVC-RS da UF (Ato COTEPE/ICMS 39/12), e a consulta e o cancelamento dela também (a SVC não registra carta de
 correção nem inutiliza: MOC 7.00, Anexo III). Com a feature `danfe`, **gera o DANFE em PDF**
 (`rustnf::danfe::pdf`, A4 retrato, várias folhas, MOC 7.00 Anexo II e o leiaute da NT 2026.010; veja
-`crates/rustnf/examples/danfe.rs`). **Ainda não há linha de comando, API nem interface para a NF-e, e o modelo 65
-(NFC-e) é recusado.** A leitura não confere a assinatura XML.
+`crates/rustnf/examples/danfe.rs`). A NF-e tem a camada de aplicação (`rustnf-app`) e a linha de comando (`rustnf nfe`, veja [NF-e](#nf-e-modelo-55)); **ainda não há
+API HTTP, MCP nem interface de desktop para a NF-e, e o modelo 65 (NFC-e) é recusado.** A leitura não confere a assinatura XML.
 
 ## Instalação
 
@@ -292,7 +294,7 @@ existir, valem os padrões e nada muda em relação a usar só opções. `rustnf
 **Precedência**, em todo parâmetro: opção da chamada > variável de ambiente `RUSTNF_*` > arquivo > padrão. As
 variáveis: `RUSTNF_AMBIENTE`, `RUSTNF_PFX`, `RUSTNF_ASSINATURA`, `RUSTNF_TEMPO_LIMITE_SEFIN`, `RUSTNF_FOLGA_RELOGIO`,
 `RUSTNF_SERIE`, `RUSTNF_NOTAS_PASTA`, `RUSTNF_CANHOTO`, `RUSTNF_ENDERECO`, `RUSTNF_PORTA`, `RUSTNF_LIMITE_CORPO`,
-`RUSTNF_TEMPO_LIMITE` e `RUSTNF_ORIGENS_PERMITIDAS` (separadas por vírgula). Campo desconhecido no arquivo é recusado,
+`RUSTNF_TEMPO_LIMITE` e `RUSTNF_ORIGENS_PERMITIDAS` (separadas por vírgula); para a NF-e, `RUSTNF_NFE_AMBIENTE`, `RUSTNF_NFE_SERIE`, `RUSTNF_NFE_CONTINGENCIA` e `RUSTNF_NFE_TEMPO_LIMITE`. Campo desconhecido no arquivo é recusado,
 e os valores são conferidos (ambiente, código do município, CNPJ/CPF, números, anos de alíquota repetidos...) com a
 seção e o campo no erro.
 
@@ -302,6 +304,7 @@ seção e o campo no erro.
 | `[sefin]` | `ambiente` (`producao` ou `restrita`), `pfx`, `assinatura` (`sha256` ou `sha1`), `tempo_limite_s`, `folga_relogio_s` |
 | `[notas]` | `pasta` (vazio = não guardar) |
 | `[danfse]` | `canhoto` |
+| `[nfe]`, `[nfe.endereco]`, `[nfe.urls]` | a NF-e: `ambiente`, `uf`, `ie`, `crt`, `regime_pis_cofins`, `serie`, `contingencia`, `motivo_contingencia`, `fantasia`, `tempo_limite_s`, `tentativas_retorno`, `intervalo_retorno_s`, `canhoto`, `ca_pem`, o endereço e os endereços do simulador; veja [NF-e](#nf-e-modelo-55) |
 | `[servidor]` | `endereco`, `porta`, `limite_corpo`, `tempo_limite_s`, `origens_permitidas` |
 | `[interface]` | `tema` (`sistema`, `claro` ou `escuro`; padrão `sistema`): preferência da interface de desktop, a linha de comando não a usa |
 | `[[aliquotas]]` | `ano`, `cbs_referencia`, `cbs`, `ibs_uf`, `ibs_mun`, `fonte` (uma tabela por ano) |
@@ -443,6 +446,153 @@ $ rustnf notas numero --proximo 1501                       # ja emitia por outro
   `--proximo` com o número seguinte ao da última DPS de lá: a série continua dali. A numeração só anda para a frente,
   porque um número já usado faria a Sefin devolver a nota antiga em vez de autorizar a nova. Na interface:
   Configurações > Notas e DANFSe > "Continuar deste número".
+
+## NF-e (modelo 55)
+
+A NF-e usa a mesma camada de aplicação da NFS-e (`crates/rustnf-app`): o mesmo arquivo de configuração, o mesmo
+certificado A1 e a mesma senha no cofre, a mesma pasta de notas e a mesma gravação atômica. A biblioteca monta, assina,
+envia e entende a resposta da SEFAZ; a linha de comando `rustnf nfe` completa o pedido com a configuração, numera pela
+pasta, guarda o que a SEFAZ devolve e diz o resultado em palavras.
+
+**Nenhuma NF-e real foi emitida com este código**, nem em homologação, e nenhuma chamada a uma SEFAZ real nem nenhum
+certificado A1 real foram usados: o que existe foi conferido com transporte falso e com um simulador local, fora do
+repositório. **Ainda não há API HTTP, MCP nem interface de desktop para a NF-e**, e o modelo 65 (NFC-e) é recusado.
+
+### Passo a passo
+
+1. **Configure.** No mesmo `rustnf.toml` da NFS-e, acrescente a seção `[nfe]` com a UF, a inscrição estadual, o regime
+   (`crt`) e o endereço do emitente (o CNPJ, o nome e o município continuam sendo os do `[emitente]`, e o certificado é o
+   do `[sefin].pfx`):
+
+   ```toml
+   [nfe]
+   uf = "SP"
+   ie = "111111111111"
+   crt = 1                      # 1 Simples Nacional, 3 regime normal, 4 MEI
+   [nfe.endereco]
+   logradouro = "Rua das Flores"
+   numero = "100"
+   bairro = "Centro"
+   municipio = "Sao Paulo"
+   cep = "01001000"
+   ```
+
+   O ambiente começa em **homologação** (`tpAmb` 2): a nota de teste não vale. A senha do certificado vai para o cofre
+   com `rustnf senha guardar`, como na NFS-e. O arquivo de exemplo, com todos os campos, é
+   [`crates/rustnf-cli/exemplos/rustnf.toml`](crates/rustnf-cli/exemplos/rustnf.toml).
+2. **Escreva o pedido** em JSON (campos em [docs/NFE_PEDIDO.md](docs/NFE_PEDIDO.md)). O que o pedido não traz vem da
+   configuração: o emitente, a UF, o ambiente, a série, o número (o próximo da pasta), o `cNF` e a data de emissão.
+3. **Confira, sem rede e sem gastar número:** `rustnf nfe conferir pedido.json`. Diz "ok" ou a recusa com o campo e o
+   código da rejeição que a SEFAZ devolveria, e mostra os avisos (por exemplo, PIS e COFINS que não combinam com o
+   regime). `rustnf nfe montar pedido.json` escreve só o XML, sem assinar.
+4. **Veja se o serviço está no ar:** `rustnf nfe status`.
+5. **Emita em homologação:** `rustnf nfe emitir pedido.json --senha-env SENHA_A1`. A NF-e assinada é gravada na pasta
+   como **pendente antes** de ir à rede; a resposta da SEFAZ fecha a nota (`autorizada`, `denegada`) ou, se foi
+   rejeitada, tira a nota da pasta e devolve o número.
+6. **Gere o DANFE:** `rustnf nfe danfe --chave <chave>` grava o PDF ao lado do XML, na pasta de notas.
+7. **Se a conexão cair no meio:** a nota fica `pendente` e o comando sai com código 4. **Não emita outra nota no lugar:**
+   rode `rustnf nfe pendentes --retomar`. Ele consulta a mesma chave e, se a SEFAZ diz que nunca recebeu, reenvia a mesma
+   NF-e assinada que está na pasta. Não nasce nota gemea.
+8. **Cancele ou corrija:** `rustnf nfe cancelar --chave <chave> --justificativa "..."` (de 15 a 255 caracteres; o prazo é o
+   da legislação da UF) e `rustnf nfe corrigir --chave <chave> --texto "..."` (carta de correção: a sequência 1, 2, 3 sai da
+   pasta, e **a carta nova substitui as anteriores**, então o texto leva todas as correções que ainda valem).
+9. **Número pulado:** `rustnf nfe notas numero` mostra o próximo e os números pulados; os que não vão mais ser usados se
+   inutilizam com `rustnf nfe inutilizar --inicio 2 --fim 3 --justificativa "..."`.
+
+Só depois de tudo certo em homologação troque o ambiente (`--ambiente producao`, `RUSTNF_NFE_AMBIENTE` ou
+`[nfe].ambiente`): a partir daí cada nota tem valor fiscal.
+
+### Comandos
+
+| comando | o que faz |
+|---|---|
+| `rustnf nfe montar` | monta o XML da NF-e a partir do pedido (sem assinar, sem rede, sem gastar número) |
+| `rustnf nfe conferir` | confere as regras do MOC e das Notas Técnicas e mostra os avisos; sem rede |
+| `rustnf nfe emitir` | completa, confere, monta, assina, grava como pendente, envia e grava o resultado |
+| `rustnf nfe consultar` | consulta a NF-e pela chave e põe a nota da pasta em dia com o que a SEFAZ diz |
+| `rustnf nfe cancelar` | cancela a NF-e (evento 110111) |
+| `rustnf nfe corrigir` | registra uma carta de correção (evento 110110), com a sequência tirada da pasta |
+| `rustnf nfe inutilizar` | inutiliza uma faixa de numeração (a UF que acabou com o serviço devolve o erro sem chamar a rede) |
+| `rustnf nfe status` | o estado do serviço da SEFAZ (ou da SVC, com `--svc`) |
+| `rustnf nfe epec` | emite em contingência EPEC: registra o evento no Ambiente Nacional; a mesma NF-e é transmitida depois |
+| `rustnf nfe pendentes` | lista as notas pendentes e em EPEC; com `--retomar`, consulta, reenvia a mesma NF-e ou transmite a do EPEC |
+| `rustnf nfe danfe` | gera o DANFE em PDF do XML ou de uma nota da pasta (`--chave`) |
+| `rustnf nfe notas listar` / `exportar` / `reindexar` / `numero` | a pasta de notas da NF-e, como `rustnf notas` na NFS-e; `listar --situacao inutilizada` lista as faixas |
+
+Opções das ações que falam com a SEFAZ: `--pfx`, `--senha-env` ou `--senha-stdin` (ou a senha do cofre), `--ambiente
+homologacao|producao`, `--json`. A NF-e é sempre assinada em SHA-1 (o único algoritmo que o esquema da NF-e aceita), então
+não há `--assinatura`. Códigos de saída de `rustnf nfe`:
+
+| código | significado |
+|---|---|
+| 0 | nota autorizada, evento registrado, faixa inutilizada, serviço em operação, retomada sem pendência |
+| 2 | erro de uso ou de entrada (opção errada, JSON inválido, falta de configuração, número já gasto) |
+| 3 | recusa de regra: o pedido que a conferência recusa, nota rejeitada ou denegada, cancelamento fora do prazo |
+| 4 | sem resposta da SEFAZ ou serviço parado: a nota **pode** ter sido autorizada; consulte, nunca emita outra |
+
+Com `--json`, o resultado completo sai no stdout mesmo quando o código de saída é 3 ou 4.
+
+### Tabela da `[nfe]`
+
+Campo desconhecido é recusado e os valores são conferidos, com a seção e o campo no erro. O que a NF-e compartilha com
+a NFS-e **não** se repete aqui: o CNPJ ou CPF e o nome (`[emitente]`), o município (`[emitente].municipio`, que também é o
+`cMun` do endereço quando `[nfe.endereco].cod_municipio` está vazio e o `cMunFG`), o certificado (`[sefin].pfx` e o cofre
+da senha), a folga do relógio (`[sefin].folga_relogio_s`, tirada do `dhEmi` que o pedido não traz) e a pasta
+(`[notas].pasta`, com a subpasta `nfe/`). O ambiente, a série, o tempo limite e o canhoto têm campo próprio porque a NFS-e
+usa outro serviço, outra numeração e outro documento.
+
+| campo | o que é | padrão |
+|---|---|---|
+| `ambiente` | `homologacao` ou `producao`; variável `RUSTNF_NFE_AMBIENTE` | `homologacao` |
+| `uf` | sigla da UF do emitente: escolhe o autorizador e vai no `cUF` da chave | (obrigatório para emitir) |
+| `ie` | inscrição estadual, só dígitos | vazio |
+| `crt` | 1 Simples Nacional, 2 Simples com excesso de sublimite, 3 regime normal, 4 MEI | 0 (a emissão recusa) |
+| `regime_pis_cofins` | `cumulativo` ou `nao_cumulativo` (CRT 3): liga o aviso de CST ou alíquota que não combina | vazio |
+| `serie` | série da NF-e, de 0 a 999; variável `RUSTNF_NFE_SERIE` | `1` |
+| `contingencia` | `normal` ou `svc` (SEFAZ Virtual de Contingência, `tpEmis` 6 ou 7 conforme a UF); variável `RUSTNF_NFE_CONTINGENCIA` | `normal` |
+| `motivo_contingencia` | de 15 a 255 caracteres; obrigatório com `svc` e usado no EPEC | vazio |
+| `fantasia` | nome fantasia (`xFant`) | vazio |
+| `tempo_limite_s` | tempo limite de cada chamada, em segundos; variável `RUSTNF_NFE_TEMPO_LIMITE` | 60 |
+| `tentativas_retorno` | consultas do recibo de um lote que segue em processamento | 5 |
+| `intervalo_retorno_s` | espera entre elas (a SEFAZ rejeita consulta em rajada) | 3 |
+| `canhoto` | canhoto de recebimento no DANFE | `true` |
+| `ca_pem` | arquivo PEM com uma raiz de confiança a mais (simulador ou homologação própria) | vazio |
+| `[nfe.urls]` | endereços que trocam os da tabela oficial, por serviço: `status`, `autorizacao`, `retorno`, `consulta`, `eventos`, `inutilizacao` (`https`, ou `http` só no próprio computador) | vazio |
+| `[nfe.endereco]` | `logradouro`, `numero`, `complemento`, `bairro`, `cod_municipio`, `municipio`, `cep`, `fone` | vazio |
+
+### Pasta de notas da NF-e
+
+Dentro da mesma `[notas].pasta` da NFS-e, separada dela (a NFS-e não lê a subpasta `nfe/` e a NF-e não toca nos arquivos
+da NFS-e, nem nos da versão 0.4.0):
+
+```
+<pasta>/nfe/<AAAA>/<MM>/<chave>-procNFe.xml                     o nfeProc: autorizada ou denegada
+<pasta>/nfe/<AAAA>/<MM>/<chave>-NFe.xml                         a NF-e assinada, gravada ANTES de ir à rede (pendente)
+<pasta>/nfe/<AAAA>/<MM>/<chave>-<tipo>-<seq>-procEventoNFe.xml  cada evento registrado (cancelamento, carta, EPEC)
+<pasta>/nfe/inutilizacao/<AAAA>/<serie>-<ini>-<fim>-procInutNFe.xml   cada faixa inutilizada
+<pasta>/nfe/indice.json                                         uma linha por nota e por faixa
+<pasta>/nfe/estado.json                                         o último número consumido em cada série
+<pasta>/nfe/<AAAA>/<MM>/<chave>-procNFe.pdf                     o DANFE, quando já foi gerado (não entra no índice)
+```
+
+A situação no índice é `autorizada`, `denegada`, `cancelada`, `pendente`, `inutilizada` (as faixas) ou `epec`. As
+gravações são atômicas (arquivo temporário e `rename`) e protegidas por uma trava; o nome de cada arquivo vem só da
+chave de acesso conferida.
+
+**Regras de numeração** (a fonte é o MOC 7.00, que o repositório lista em `docs/FONTES.md`):
+
+* Nota **autorizada** ou **denegada** gasta o número: a SEFAZ o guarda e recusa outro igual (Anexo I, regras 2B08-10 e
+  2B08-20, rejeição 539 para o mesmo número com outra chave; 2B08-40, rejeição 205, para a denegada). A nota cancelada
+  também continua gastando o número (2B08-30, rejeição 218).
+* Nota **rejeitada** não gasta: a regra de duplicidade só olha a NF-e "já cadastrada", e o MOC (Visão Geral, 4.2, consumo
+  indevido) manda corrigir a causa e reenviar. A rejeitada sai da pasta e o número volta a ficar livre. O MOC não diz isso
+  numa frase só: é o que as duas regras juntas mostram.
+* Número **pulado**, que não vai mais ser usado, se **inutiliza** (Visão Geral, 5.3; a rejeição 206 vale para quem tentar
+  emiti-lo depois, regra 3B08-100).
+* Nota **pendente** (enviada sem resultado) conta como gasta até se saber: ela pode ter sido autorizada. Por isso a
+  NF-e assinada é gravada antes do envio.
+* Quando a SEFAZ responde 539 (o número já foi autorizado com outra chave), o número é consumido sem nota na pasta: a nota
+  que vale é a outra.
 
 ## API HTTP
 

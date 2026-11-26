@@ -69,6 +69,8 @@ struct Estado {
     versao: u32,
     /// Ultimo numero consumido, por serie.
     series: BTreeMap<String, u64>,
+    /// Ate onde a numeracao veio de outro sistema (`definir_proximo`): o que esta ate aqui nao e' numero pulado.
+    bases: BTreeMap<String, u64>,
 }
 
 /// Quem esta com um numero.
@@ -366,7 +368,8 @@ impl NotasNfe {
         let serie = serie_nfe(serie)?;
         let indice = self.indice()?;
         let ultimo = self.ultimo_numero(&serie)?;
-        Ok((1..=ultimo)
+        let base = self.estado()?.bases.get(&serie).copied().unwrap_or(0);
+        Ok((base + 1..=ultimo)
             .filter(|n| ocupante_em(&indice, &serie, *n).is_none())
             .collect())
     }
@@ -515,6 +518,29 @@ impl NotasNfe {
         }
         let _trava = Trava::obter(&self.pasta)?;
         self.consumir_sob_trava(serie, numero)
+    }
+
+    /// Faz a serie continuar em `proximo`: para quem ja emitia por outro sistema. So' anda para a frente: `proximo` abaixo
+    /// do [`NotasNfe::proximo_numero`] de agora seria um numero ja gasto.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroNotas::SerieInvalida`], [`ErroNotas::NumeroInvalido`], [`ErroNotas::NumeroNfeOcupado`] ou erro de pasta.
+    pub fn definir_proximo(&self, serie: &str, proximo: u64) -> Result<(), ErroNotas> {
+        let normal = serie_nfe(serie)?;
+        if proximo == 0 || proximo > NUMERO_MAXIMO {
+            return Err(ErroNotas::NumeroInvalido);
+        }
+        let _trava = Trava::obter(&self.pasta)?;
+        if proximo < self.proximo_numero(&normal)? {
+            return Err(ErroNotas::NumeroNfeOcupado);
+        }
+        self.consumir_sob_trava(&normal, proximo - 1)?;
+        let mut estado = self.estado()?;
+        let base = estado.bases.entry(normal).or_insert(0);
+        *base = (*base).max(proximo - 1);
+        estado.versao = 1;
+        gravar_json(&self.pasta.join(ESTADO), &estado)
     }
 
     /// Conta uma consulta da retomada: `tentativas` mais uma e `ultima` no instante dado.
