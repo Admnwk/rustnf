@@ -56,7 +56,7 @@ Os detalhes de cada passo estão em [Interface de desktop](#interface-de-desktop
 | eventos, inutilização e contingência SVC do cliente da SEFAZ (feature `nfe_sefaz`) | transporte falso (cancelamento homologado, fora do prazo e recusado por prazo, carta de correção, EPEC, evento da apuração do IBS/CBS, evento sem resposta que a consulta acha, não acha ou também não responde, duplicidade 573, inutilização 102, 563 e 998, AC, BA e SP sem o serviço, SVC por UF), 68 validações nos esquemas XSD oficiais (`envEvento` de cada tipo, `inutNFe`, `procEventoNFe`, `ProcInutNFe`) e um simulador local (fora do repositório) | **nenhuma chamada a uma SEFAZ real e nenhum certificado A1 real**; os WSDL de `NFeRecepcaoEvento4` e `NFeInutilizacao4` não foram lidos; o `cOrgao` 91 do EPEC e o `cOrgao` da UF nos eventos da apuração seguem o texto do MOC e da NT, sem confirmação de uma SEFAZ |
 | DANFSe | contrato de conteúdo e leiaute | comparar com um DANFSe emitido pelo portal |
 | DANFE da NF-e (feature `danfe`) | contrato de conteúdo, plano das folhas e desenho; medidas, código de barras (decodificado de volta na chave) e corpos de fonte conferidos nas operações; fotos das folhas conferidas contra o Anexo II | **nenhum DANFE conferido por fiscal ou SEFAZ e nenhum impresso em papel**; a leitura do código de barras por um leitor óptico |
-| faces da NF-e (camada `rustnf-app` e `rustnf nfe`) | transporte falso (autorizada, denegada, rejeitada que não gasta número, número já autorizado com outra chave, resposta perdida com a nota pendente e retomada sem nota gêmea, reenvio da mesma NF-e, cancelamento, carta de correção numerada pela pasta, inutilização, EPEC e sua transmissão, status), pasta de notas e configuração; DANFE gerado da nota guardada; um simulador local, fora do repositório, pela linha de comando | **nenhuma NF-e real foi emitida, consultada nem cancelada por estas faces, nenhum certificado A1 real foi usado e nenhuma SEFAZ real foi chamada** (nem a de homologação) |
+| faces da NF-e (camada `rustnf-app`, `rustnf nfe`, API HTTP `/nfe/` e MCP) | transporte falso (autorizada, denegada, rejeitada que não gasta número, número já autorizado com outra chave, resposta perdida com a nota pendente e retomada sem nota gêmea, reenvio da mesma NF-e, cancelamento, carta de correção numerada pela pasta, inutilização, EPEC e sua transmissão, status), pasta de notas e configuração; DANFE gerado da nota guardada; um simulador local, fora do repositório, pela linha de comando, pela API (curl) e por um cliente MCP mínimo escrito para o teste; rotas e ferramentas por requisição em memória, com transporte falso | **nenhuma NF-e real foi emitida, consultada nem cancelada por estas faces, nenhum certificado A1 real foi usado e nenhuma SEFAZ real foi chamada** (nem a de homologação); nenhum cliente MCP de terceiros leu as ferramentas |
 | interface de desktop (`rustnf-gui`, só Windows) | testes do modelo (máscaras, conferência, pedido, prévia, sugestão, rascunho, lista das notas, detalhe, cancelamento, conferência em lote, histórico de eventos, pedido de análise fiscal, confirmação e recusa de nota recebida, consulta pela chave e pela DPS e prévia avulsa), dos fluxos com emissor de demonstração e pasta temporária e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuração e pelo exemplo de demonstração | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, e nenhuma consulta de DPS ou de evento, nenhuma conferência de situação e nenhum evento (análise fiscal, confirmação, recusa) foi feito por ela contra a Sefin; só o emissor de demonstração respondeu**; o DANFSe aberto no leitor de PDF de outra máquina; uma chamada real à Sefin pelo botão "Testar conexão"; exame da janela em outras escalas de tela; o executável de release aberto numa máquina sem as ferramentas de desenvolvimento |
 
 Se você testar a NFS-e, conte como foi: abra um relato pelo modelo **"Relato de emissão"** (aba Issues), mesmo quando der
@@ -120,8 +120,8 @@ diz se a UF ainda tem o serviço). **Envia à contingência SVC**: a nota com `t
 da SVC-RS da UF (Ato COTEPE/ICMS 39/12), e a consulta e o cancelamento dela também (a SVC não registra carta de
 correção nem inutiliza: MOC 7.00, Anexo III). Com a feature `danfe`, **gera o DANFE em PDF**
 (`rustnf::danfe::pdf`, A4 retrato, várias folhas, MOC 7.00 Anexo II e o leiaute da NT 2026.010; veja
-`crates/rustnf/examples/danfe.rs`). A NF-e tem a camada de aplicação (`rustnf-app`) e a linha de comando (`rustnf nfe`, veja [NF-e](#nf-e-modelo-55)); **ainda não há
-API HTTP, MCP nem interface de desktop para a NF-e, e o modelo 65 (NFC-e) é recusado.** A leitura não confere a assinatura XML.
+`crates/rustnf/examples/danfe.rs`). A NF-e tem a camada de aplicação (`rustnf-app`), a linha de comando (`rustnf nfe`, veja [NF-e](#nf-e-modelo-55)), a API HTTP (`/nfe/`) e o MCP; **ainda não há
+interface de desktop para a NF-e, e o modelo 65 (NFC-e) é recusado.** A leitura não confere a assinatura XML.
 
 ## Instalação
 
@@ -456,7 +456,7 @@ pasta, guarda o que a SEFAZ devolve e diz o resultado em palavras.
 
 **Nenhuma NF-e real foi emitida com este código**, nem em homologação, e nenhuma chamada a uma SEFAZ real nem nenhum
 certificado A1 real foram usados: o que existe foi conferido com transporte falso e com um simulador local, fora do
-repositório. **Ainda não há API HTTP, MCP nem interface de desktop para a NF-e**, e o modelo 65 (NFC-e) é recusado.
+repositório. A NF-e também tem API HTTP e MCP no mesmo servidor (veja [NF-e pela API](#nf-e-pela-api) e o [MCP](#mcp)); **ainda não há interface de desktop para a NF-e**, e o modelo 65 (NFC-e) é recusado.
 
 ### Passo a passo
 
@@ -607,7 +607,7 @@ limpo.
 
 | rota | corpo | resposta |
 |---|---|---|
-| `GET /health` | | `{"status":"ok","versao":"...","emissao":false}` |
+| `GET /health` | | `{"status":"ok","versao":"...","emissao":false,"nfe":false}` (`nfe`: a NF-e pode falar com a SEFAZ neste servidor) |
 | `POST /calcular` | JSON de `calcular` | JSON da prévia |
 | `POST /dps/conferir` | JSON da DPS | `{"ok":true}` ou 422 com o campo |
 | `POST /dps/montar` | JSON da DPS | `{"xml":"..."}` |
@@ -621,9 +621,11 @@ limpo.
 | `POST /notas/atualizar` | filtro: `{"de","ate","situacao","busca","intervalo_ms"}` (todos opcionais) | relatório: `conferidas`, `mudaram`, `iguais`, `falhas` (só com emissão) |
 | `POST /mcp` | mensagem JSON-RPC | veja abaixo |
 
+As rotas da NF-e (`/nfe/...`) estão em [NF-e pela API](#nf-e-pela-api).
+
 ```
 $ curl -s http://127.0.0.1:8080/health
-{"emissao":false,"status":"ok","versao":"0.3.0"}
+{"emissao":false,"nfe":false,"status":"ok","versao":"0.3.0"}
 
 $ curl -s -X POST http://127.0.0.1:8080/calcular -H 'Content-Type: application/json' \
     --data-binary @crates/rustnf-cli/exemplos/calculo.json
@@ -677,6 +679,53 @@ Códigos: `entrada_invalida` (400), `nao_autorizado` (401), `nao_encontrada` (40
 `recusa` (422), `sefin` (502), `tempo_esgotado` (504), `erro_interno` (500). A mensagem nunca traz caminho de arquivo,
 senha, token, chave de acesso nem o XML assinado, e nada disso vai para o registro do servidor (stderr).
 
+### NF-e pela API
+
+A NF-e (modelo 55) entra no MESMO servidor, com as mesmas regras de segurança e as mesmas funções da camada de aplicação
+que `rustnf nfe` usa: nenhuma regra fiscal mora na API. O servidor lê a `[nfe]` e a `[notas].pasta` do arquivo de
+configuração; o ambiente da NF-e é o de `[nfe].ambiente` (`homologacao` por padrão) e **não muda com o `--ambiente` da
+NFS-e**. O certificado é o mesmo do `--pfx`.
+
+| rota | corpo | resposta | função de `rustnf_app::nfe` |
+|---|---|---|---|
+| `POST /nfe/conferir` | pedido da NF-e ([docs/NFE_PEDIDO.md](docs/NFE_PEDIDO.md)) | `{"ok":true,"chave","serie","numero","totais","avisos"}` ou 422 com o campo e a rejeição | `montar_pedido` |
+| `POST /nfe/montar` | o mesmo pedido | `{"xml","assinada":false,"chave",...}`: monta, **nunca assina**, não envia e não reserva o número | `montar_pedido` |
+| `POST /nfe/danfe` | XML da NF-e autorizada, `nfeProc` (`?canhoto=false&cancelada=true`) | `application/pdf` | `danfe_do_xml` |
+| `POST /nfe/emitir` | o pedido | JSON do resultado (só com emissão) | `emitir` |
+| `POST /nfe/epec` | o pedido, com `x_just` ou `[nfe].motivo_contingencia` | JSON do resultado (só com emissão) | `epec` |
+| `GET /nfe/{chave}` | | JSON da consulta; atualiza a pasta (só com emissão) | `consultar` |
+| `POST /nfe/cancelar` | `{"chave","justificativa","protocolo"?}` | JSON do evento (só com emissão) | `cancelar` |
+| `POST /nfe/corrigir` | `{"chave","texto","sequencia"?}` | JSON do evento (só com emissão) | `corrigir` |
+| `POST /nfe/inutilizar` | `{"serie"?,"inicio","fim","justificativa"}` | JSON da inutilização (só com emissão) | `inutilizar` |
+| `GET /nfe/status` | (`?svc=true` pergunta a SVC) | estado do serviço (só com emissão) | `status` |
+| `GET /nfe/pendentes` | | `{"notas":[...]}` sem rede (só com emissão) | `NotasNfe::a_resolver` |
+| `POST /nfe/pendentes/retomar` | | `{"notas":[...]}`: consulta a MESMA chave de cada pendente (só com emissão) | `retomar` |
+
+`conferir`, `montar` e `danfe` ficam sempre no ar e não usam a rede. As demais **nem existem** (404) sem
+`--permitir-emissao`, e com ela pedem o `Authorization: Bearer` (401 sem ele). O envelope de erro e os códigos HTTP são os
+da NFS-e. O que a SEFAZ não autoriza (rejeição, denegação, sem resposta, serviço parado) volta com o JSON COMPLETO do
+resultado (`chave`, `cstat`, `situacao` na pasta) mais o envelope `erro` com a frase e o `cStat`, no status do erro:
+422 para recusa de regra e 502 para o que ficou sem resposta (a nota fica `pendente`: use `/nfe/pendentes/retomar`, nunca emita outra no lugar). Campo que o leiaute não conhece
+recusa o pedido (422, com o campo) antes de qualquer envio; `?estrito=false` o ignora e a resposta o lista em
+`campos_desconhecidos`. O servidor emite, reserva faixa e retoma uma operação por vez, para duas emissões
+simultâneas na mesma série não gastarem o mesmo número. Sem `[nfe].uf`, as rotas de efeito fiscal respondem 400 dizendo o que configurar, e
+`conferir`, `montar` e `danfe` seguem no ar.
+
+```
+$ curl -s http://127.0.0.1:8080/nfe/status -H "Authorization: Bearer $TOKEN_RUSTNF"
+$ curl -s -X POST http://127.0.0.1:8080/nfe/emitir -H "Authorization: Bearer $TOKEN_RUSTNF" \
+    -H 'Content-Type: application/json' --data-binary @pedido-nfe.json
+$ curl -s -X POST http://127.0.0.1:8080/nfe/cancelar -H "Authorization: Bearer $TOKEN_RUSTNF" \
+    -H 'Content-Type: application/json' \
+    -d '{"chave":"<chave>","justificativa":"Cancelamento por erro de digitacao"}'
+$ curl -s -X POST 'http://127.0.0.1:8080/nfe/danfe?canhoto=false' --data-binary @nfe-autorizada.xml -o danfe.pdf
+```
+
+O pedido (`pedido-nfe.json`) é o de `rustnf nfe emitir`, com dados fictícios, por exemplo: `{"nat_op":"VENDA","dest":{"documento":"52998224725",
+"nome":"CLIENTE TESTE","ind_ie_dest":9,"endereco":{...}},"ind_final":1,"ind_pres":1,"itens":[{"codigo":"1",
+"descricao":"Cafe torrado 500g","ncm":"09012100","cfop":"5102","unidade":"UN","quantidade":"2","valor_unitario":"15.90",
+"icms":{"codigo":"102"},"pis":{"cst":"49"},"cofins":{"cst":"49"}}],"pagamentos":[{"t_pag":"01","valor":"31.80"}]}`.
+
 ## MCP
 
 `POST /mcp` no mesmo servidor, transporte **Streamable HTTP** com resposta JSON (sem SSE) e sem estado. Implementa a
@@ -698,11 +747,22 @@ a versão e as capacidades em `_meta` e os cabeçalhos `MCP-Protocol-Version`, `
 | `consultar_evento` | consulta um evento pela chave, o tipo e a sequência; só com `--permitir-emissao` e o Bearer |
 | `registrar_evento` | registra um evento que o contribuinte pede, como o `POST /eventos` (**efeito fiscal**, como `cancelar_nfse`); só com `--permitir-emissao` e o Bearer |
 | `atualizar_situacoes` | confere a situação das notas da pasta, como o `POST /notas/atualizar`; só com `--permitir-emissao` e o Bearer |
+| `conferir_nfe` | confere o pedido da NF-e (regras do MOC e das NT), sem rede e sem gastar número; recusa volta com `isError: true` |
+| `montar_nfe` | XML da NF-e, **nunca assinado** |
+| `gerar_danfe` | PDF do DANFE em base64, num recurso embutido |
+| `emitir_nfe` | emite como o `POST /nfe/emitir` (**efeito fiscal**); só com `--permitir-emissao` e o Bearer |
+| `consultar_nfe` | consulta pela chave e atualiza a pasta; só com `--permitir-emissao` e o Bearer |
+| `cancelar_nfe` | cancela como o `POST /nfe/cancelar` (**efeito fiscal**); só com `--permitir-emissao` e o Bearer |
+| `corrigir_nfe` | carta de correção, como o `POST /nfe/corrigir` (**efeito fiscal**); só com `--permitir-emissao` e o Bearer |
+| `inutilizar_nfe` | inutiliza uma faixa de números (**efeito fiscal**); só com `--permitir-emissao` e o Bearer |
+| `status_sefaz` | estado do serviço da SEFAZ da UF (ou da SVC); só com `--permitir-emissao` e o Bearer |
+| `registrar_epec` | emite em contingência EPEC (**efeito fiscal**); só com `--permitir-emissao` e o Bearer |
+| `retomar_pendentes_nfe` | consulta a MESMA chave de cada NF-e pendente (**efeito fiscal**); só com `--permitir-emissao` e o Bearer |
 
 Recusa de regra fiscal volta como resultado da ferramenta com `isError: true`, não como erro de protocolo. Campo que
 a DPS não conhece volta listado em `campos_desconhecidos` no `conferir_dps`, e no `emitir_nfse` recusa o pedido
-(`isError: true`) antes de qualquer envio. Sem o
-Bearer, `tools/list` mostra só as quatro de leitura. Cada ferramenta tem `inputSchema` (JSON Schema). Exemplo:
+(`isError: true`) antes de qualquer envio. Na NF-e, o pedido com campo desconhecido é sempre recusado (`isError: true`) antes de qualquer envio. Sem o
+Bearer, `tools/list` mostra só as sete de leitura (quatro da NFS-e e `conferir_nfe`, `montar_nfe` e `gerar_danfe`). Cada ferramenta tem `inputSchema` (JSON Schema). Exemplo:
 
 ```
 $ curl -s -X POST http://127.0.0.1:8080/mcp \

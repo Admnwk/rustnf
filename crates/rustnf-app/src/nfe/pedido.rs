@@ -331,3 +331,30 @@ pub fn avisos_json(avisos: &[Aviso]) -> Value {
             .collect(),
     )
 }
+
+/// O resultado da conferencia em JSON: `ok`, `chave`, `serie`, `numero`, `totais`, `avisos` (e `campos_desconhecidos`)
+/// se o pedido monta; a recusa (`codigo`, `mensagem`, `campo`) com `ok: false` se nao.
+#[must_use]
+pub fn conferencia_json(r: &Result<Montado, Erro>) -> Value {
+    match r {
+        Ok(m) => {
+            let mut v = json!({
+                "ok": true,
+                "chave": m.chave,
+                "serie": m.serie,
+                "numero": m.numero,
+                "totais": m.totais,
+                "avisos": avisos_json(&m.avisos),
+            });
+            if !m.desconhecidos.is_empty() {
+                v["campos_desconhecidos"] = json!(m.desconhecidos);
+            }
+            v
+        }
+        Err(e) => {
+            let mut v = e.envelope()["erro"].clone();
+            v["ok"] = json!(false);
+            v
+        }
+    }
+}

@@ -6,8 +6,24 @@ Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` 
 alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
 `cancelada`, continua sendo lido por esta versão.
 
+* NF-e (modelo 55), faces, parte 2: API HTTP (`/nfe/`) e MCP no mesmo `rustnf serve`, sobre as mesmas funções de
+  `rustnf_app::nfe` que a linha de comando usa. **Nenhuma NF-e real foi emitida, nenhum certificado A1 real foi usado e
+  nenhuma SEFAZ real foi chamada**; uma dependência nova no `rustnf-cli` (`async-trait`, já usada pela biblioteca).
+  * Rotas: `POST /nfe/conferir`, `/nfe/montar` (nunca assina) e `/nfe/danfe` (sempre no ar, sem rede); e, só com
+    `--permitir-emissao` e o Bearer (sem a opção, 404): `POST /nfe/emitir`, `/nfe/epec`, `/nfe/cancelar`,
+    `/nfe/corrigir`, `/nfe/inutilizar`, `/nfe/pendentes/retomar`, `GET /nfe/{chave}`, `/nfe/status` e `/nfe/pendentes`.
+    `GET /health` ganha `"nfe"` (a NF-e pode falar com a SEFAZ); os campos que já existiam não mudam. O que a SEFAZ não
+    autoriza volta com o JSON completo e o envelope `erro` (422 recusa, 502 sem resposta); campo desconhecido recusa o
+    pedido antes de qualquer envio.
+  * Ferramentas MCP: `conferir_nfe`, `montar_nfe`, `gerar_danfe` (leitura) e `emitir_nfe`, `consultar_nfe`,
+    `cancelar_nfe`, `corrigir_nfe`, `inutilizar_nfe`, `status_sefaz`, `registrar_epec` e `retomar_pendentes_nfe` (só com
+    emissão e o Bearer). `tools/list` sem o Bearer passa de 4 para 7 ferramentas e, com ele, de 11 para 22; nada da NFS-e
+    mudou.
+  * O servidor numera, reserva faixa e retoma uma operação por vez: duas emissões simultâneas na mesma série não gastam o
+    mesmo número. Sem `[nfe].uf`, as ações de efeito fiscal da NF-e respondem em palavras o que configurar.
+  * `rustnf_app::nfe` ganha `conferencia_json` e `erro_da_retomada`, que a linha de comando também passa a usar (mesma saída).
 * NF-e (modelo 55), faces, parte 1: a camada de aplicação (`rustnf-app`) e a linha de comando `rustnf nfe` (a API HTTP e o
-  MCP vêm na parte 2, e a interface de desktop depois). Nenhuma crate nova. **Nenhuma NF-e real foi emitida, nenhum
+  MCP vieram na parte 2, e a interface de desktop vem depois). Nenhuma crate nova. **Nenhuma NF-e real foi emitida, nenhum
   certificado A1 real foi usado e nenhuma SEFAZ real foi chamada.**
   * Configuração: seção `[nfe]` (`ambiente`, `uf`, `ie`, `crt`, `regime_pis_cofins`, `serie`, `contingencia` e
     `motivo_contingencia`, `fantasia`, `tempo_limite_s`, `tentativas_retorno`, `intervalo_retorno_s`, `canhoto`, `ca_pem`),
@@ -31,7 +47,7 @@ alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o �
     `status`, `epec`, `pendentes [--retomar]`, `danfe` e `notas listar|exportar|reindexar|numero`, com as mesmas opções
     globais, `--json` e códigos de saída (0 ok, 2 uso, 3 recusa de regra, 4 sem resposta ou serviço parado). `completar`
     cobre os comandos novos.
-  * **Fica de fora:** API HTTP e MCP da NF-e (parte 2), interface de desktop, NFC-e, manifestação do destinatário e
+  * **Fica de fora:** interface de desktop, NFC-e, manifestação do destinatário e
     documentos recebidos.
 * NF-e (modelo 55), DANFE em PDF (feature `danfe` = `nfe` + `danfse`, nenhuma crate nova): `rustnf::danfe::{dados, pdf}`
   desenham o DANFE A4 retrato direto no PDF, com o escritor do DANFSe (que segue com os mesmos bytes), em Liberation

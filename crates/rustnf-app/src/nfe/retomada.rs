@@ -173,3 +173,28 @@ async fn transmitir<T: Transporte>(ctx: &Contexto<'_, T>, r: &Registro) -> Resul
         }),
     }
 }
+
+/// O erro do lote retomado, ou `None` se tudo se resolveu: notas que seguem sem resultado sao falha de rede (nao emita outra
+/// no lugar); notas que a SEFAZ recusou ou denegou sao recusa de regra.
+#[must_use]
+pub fn erro_da_retomada(feitos: &[Retomada]) -> Option<Erro> {
+    let sem = feitos
+        .iter()
+        .filter(|f| matches!(f.situacao, Some(Situacao::Pendente | Situacao::Epec)))
+        .count();
+    if sem > 0 {
+        return Some(Erro::Rede(format!(
+            "{sem} nota(s) seguem sem resultado: tente de novo mais tarde e nao emita outra no lugar"
+        )));
+    }
+    let recusadas = feitos
+        .iter()
+        .filter(|f| matches!(f.status, "rejeitada" | "denegada" | "numero_ja_usado"))
+        .count();
+    (recusadas > 0).then(|| {
+        Erro::recusa(
+            "",
+            format!("{recusadas} nota(s) foram recusadas ou denegadas pela SEFAZ"),
+        )
+    })
+}

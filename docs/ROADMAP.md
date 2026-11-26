@@ -81,7 +81,7 @@
   ST por item e o quadro do ISSQN com nota de verdade (hoje só testado com o grupo inserido à mão no XML: entra junto
   com o `ISSQN` e o `ISSQNtot` na montagem).
 * Faces, parte 1: aplicação (`rustnf-app`: configuração `[nfe]`, pasta de notas `nfe/`, numeração, emissão com recuperação, eventos, inutilização, EPEC, retomada dos pendentes e DANFE) e linha de comando (`rustnf nfe`). Feita nesta frente, com transporte falso e um simulador local: **nenhuma NF-e real foi emitida e nenhuma SEFAZ real foi chamada**.
-* Faces, parte 2: API HTTP e MCP da NF-e, sobre as mesmas funções da aplicação.
+* Faces, parte 2: API HTTP (`/nfe/`) e MCP da NF-e (11 ferramentas), sobre as mesmas funções da aplicação e no mesmo servidor. Feita nesta frente, com transporte falso e um simulador local: **nenhuma NF-e real foi emitida, consultada nem cancelada pela API ou pelo MCP, nenhum certificado A1 real foi usado e nenhuma SEFAZ real foi chamada.** Falta um cliente MCP de terceiros ler as ferramentas.
 * Documentos recebidos e manifestação do destinatário.
 * NFC-e.
 * Interface de desktop.

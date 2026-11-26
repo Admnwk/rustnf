@@ -15,7 +15,7 @@ use tokio::net::TcpListener;
 
 use super::{configuracao, resolver, ArgServe};
 use crate::erro::Erro;
-use crate::http::{roteador, Config, Estado, Token};
+use crate::http::{roteador, Config, Estado, ServidorNfe, Token};
 
 /// Ajustes do servidor: opcao > variavel > arquivo > padrao.
 fn ajustes(args: &ArgServe, e: &Efetiva) -> Config {
@@ -40,7 +40,14 @@ fn estado(args: &ArgServe, e: &Efetiva, cofre: &dyn Cofre) -> Result<Estado, Err
                 "--pfx e --token-env so' valem com --permitir-emissao".into(),
             ));
         }
-        return Ok(Estado::somente_leitura(config).com_aliquotas(e.config.publicadas()));
+        let nfe = ServidorNfe::sem_emissao(
+            e.config.clone(),
+            super::nfe::notas_da(e)?,
+            "o servidor nao foi iniciado com --permitir-emissao",
+        );
+        return Ok(Estado::somente_leitura(config)
+            .com_aliquotas(e.config.publicadas())
+            .com_nfe(nfe));
     }
     let Some(variavel) = &args.token_env else {
         return Err(Erro::Uso(
@@ -67,11 +74,24 @@ fn estado(args: &ArgServe, e: &Efetiva, cofre: &dyn Cofre) -> Result<Estado, Err
         resolver::assinatura(e, args.assinatura),
         resolver::tempo_sefin(e),
     )?;
+    // a NF-e usa o mesmo certificado e a `[nfe]` do mesmo arquivo de configuracao que a linha de comando le; o ambiente
+    // dela e' o de `[nfe].ambiente`, que nao muda com o `--ambiente` da NFS-e
+    let certificado = super::certificado::abrir(&pfx, &senha)?;
+    let nfe = ServidorNfe::real(e.config.clone(), super::nfe::notas_da(e)?, certificado)?;
+    if nfe.pronta() {
+        eprintln!(
+            "rustnf: NF-e pronta (uf {}, ambiente {})",
+            e.config.nfe.uf, e.config.nfe.ambiente
+        );
+    } else {
+        eprintln!("rustnf: NF-e sem emissao: informe [nfe].uf no arquivo de configuracao");
+    }
     // o mesmo arquivo de configuracao da linha de comando: emitente, pasta de notas e aliquotas
     Ok(Estado::com_emissao(config, emissor, token)
         .com_aliquotas(e.config.publicadas())
         .com_emitente(e.config.emitente.clone())
-        .com_notas(configuracao::notas_da(e)?))
+        .com_notas(configuracao::notas_da(e)?)
+        .com_nfe(nfe))
 }
 
 /// Endereco e porta de escuta: opcao > variavel > arquivo > padrao.

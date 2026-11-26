@@ -8,185 +8,18 @@
 
 mod comum;
 
-use std::collections::VecDeque;
 use std::process::Command;
-use std::sync::{Arc, Mutex};
 
-use async_trait::async_trait;
 use chrono::{Duration, TimeZone, Utc};
 use clap::Parser;
+use comum::nfe_falso::*;
 use comum::*;
-use rustnf::nfe::sefaz::{ClienteSefaz, FalhaRede, Transporte};
+use rustnf::nfe::sefaz::ClienteSefaz;
 use rustnf_app::config::Config;
 use rustnf_app::nfe::{config_sefaz, Contexto};
 use rustnf_app::notas::nfe::{NotasNfe, Situacao};
 use rustnf_cli::cli::{nfe_com, AcaoNfe, Cli, Comando};
 use serde_json::json;
-
-const NS: &str = "http://www.portalfiscal.inf.br/nfe";
-const NPROT: &str = "135260000000001";
-
-type Resposta = Box<dyn Fn(&str) -> Result<(u16, Vec<u8>), FalhaRede> + Send + Sync>;
-
-/// Transporte com roteiro: cada chamada tira a proxima resposta, montada do pedido que chegou.
-#[derive(Clone, Default)]
-struct FalsoNfe(Arc<Mutex<VecDeque<(&'static str, Resposta)>>>);
-
-impl FalsoNfe {
-    fn novo(r: Vec<(&'static str, Resposta)>) -> Self {
-        Self(Arc::new(Mutex::new(r.into())))
-    }
-
-    fn restantes(&self) -> usize {
-        self.0.lock().unwrap().len()
-    }
-}
-
-#[async_trait]
-impl Transporte for FalsoNfe {
-    async fn enviar(
-        &self,
-        url: &str,
-        corpo: Vec<u8>,
-        _content_type: &str,
-    ) -> Result<(u16, Vec<u8>), FalhaRede> {
-        let texto = String::from_utf8(corpo).unwrap();
-        let (espera, resp) = self
-            .0
-            .lock()
-            .unwrap()
-            .pop_front()
-            .unwrap_or_else(|| panic!("chamada fora do roteiro: {url}"));
-        assert!(
-            texto.contains(&format!("wsdl/{espera}\"")),
-            "esperava {espera}: {texto}"
-        );
-        resp(&texto)
-    }
-}
-
-fn entre<'a>(t: &'a str, a: &str, f: &str) -> &'a str {
-    t.find(a).map_or("", |i| {
-        let i = i + a.len();
-        t[i..].find(f).map_or("", |j| &t[i..i + j])
-    })
-}
-
-fn soap(ns: &str, ret: &str) -> Result<(u16, Vec<u8>), FalhaRede> {
-    Ok((
-        200,
-        format!(
-            "<?xml version=\"1.0\" encoding=\"utf-8\"?><soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\">\
-             <soap:Body><nfeResultMsg xmlns=\"{NS}/wsdl/{ns}\">{ret}</nfeResultMsg></soap:Body></soap:Envelope>"
-        )
-        .into_bytes(),
-    ))
-}
-
-fn prot(chave: &str, cstat: &str, motivo: &str, nprot: &str) -> String {
-    let np = if nprot.is_empty() {
-        String::new()
-    } else {
-        format!("<nProt>{nprot}</nProt><digVal>qZk+NkcGgWq6PiVxeFDCbJzQ2J0=</digVal>")
-    };
-    format!(
-        "<protNFe versao=\"4.00\"><infProt><tpAmb>2</tpAmb><verAplic>SP_NFE_PL_009_V4</verAplic><chNFe>{chave}</chNFe>\
-         <dhRecbto>2026-10-03T09:00:05-03:00</dhRecbto>{np}<cStat>{cstat}</cStat><xMotivo>{motivo}</xMotivo></infProt></protNFe>"
-    )
-}
-
-fn envio(cstat: &'static str, motivo: &'static str, nprot: &'static str) -> Resposta {
-    Box::new(move |corpo| {
-        let chave = entre(corpo, "Id=\"NFe", "\"");
-        soap(
-            "NFeAutorizacao4",
-            &format!(
-                "<retEnviNFe versao=\"4.00\" xmlns=\"{NS}\"><tpAmb>2</tpAmb><verAplic>SP</verAplic><cStat>104</cStat>\
-                 <xMotivo>Lote processado</xMotivo><cUF>35</cUF><dhRecbto>2026-10-03T09:00:05-03:00</dhRecbto>{}</retEnviNFe>",
-                prot(chave, cstat, motivo, nprot)
-            ),
-        )
-    })
-}
-
-fn consulta(cstat: &'static str, motivo: &'static str, nprot: &'static str) -> Resposta {
-    Box::new(move |corpo| {
-        let chave = entre(corpo, "<chNFe>", "</chNFe>");
-        let miolo = if nprot.is_empty() {
-            String::new()
-        } else {
-            prot(chave, "100", "Autorizado o uso da NF-e", nprot)
-        };
-        soap(
-            "NFeConsultaProtocolo4",
-            &format!(
-                "<retConsSitNFe versao=\"4.00\" xmlns=\"{NS}\"><tpAmb>2</tpAmb><verAplic>SP</verAplic><cStat>{cstat}</cStat>\
-                 <xMotivo>{motivo}</xMotivo><cUF>35</cUF><dhRecbto>2026-10-03T09:00:20-03:00</dhRecbto><chNFe>{chave}</chNFe>{miolo}</retConsSitNFe>"
-            ),
-        )
-    })
-}
-
-fn evento(cstat: &'static str, motivo: &'static str, nprot: &'static str) -> Resposta {
-    Box::new(move |corpo| {
-        let (chave, tipo, seq) = (
-            entre(corpo, "<chNFe>", "</chNFe>"),
-            entre(corpo, "<tpEvento>", "</tpEvento>"),
-            entre(corpo, "<nSeqEvento>", "</nSeqEvento>"),
-        );
-        let np = if nprot.is_empty() {
-            String::new()
-        } else {
-            format!("<nProt>{nprot}</nProt>")
-        };
-        soap(
-            "NFeRecepcaoEvento4",
-            &format!(
-                "<retEnvEvento versao=\"1.00\" xmlns=\"{NS}\"><idLote>1</idLote><tpAmb>2</tpAmb><verAplic>SP</verAplic>\
-                 <cOrgao>35</cOrgao><cStat>128</cStat><xMotivo>Lote de Evento Processado</xMotivo>\
-                 <retEvento versao=\"1.00\"><infEvento><tpAmb>2</tpAmb><verAplic>SP</verAplic><cOrgao>35</cOrgao>\
-                 <cStat>{cstat}</cStat><xMotivo>{motivo}</xMotivo><chNFe>{chave}</chNFe><tpEvento>{tipo}</tpEvento>\
-                 <xEvento>Evento</xEvento><nSeqEvento>{seq}</nSeqEvento><dhRegEvento>2026-10-03T09:00:03-03:00</dhRegEvento>{np}\
-                 </infEvento></retEvento></retEnvEvento>"
-            ),
-        )
-    })
-}
-
-fn inutilizacao(nprot: &'static str) -> Resposta {
-    Box::new(move |corpo| {
-        let (serie, ini, fim) = (
-            entre(corpo, "<serie>", "</serie>"),
-            entre(corpo, "<nNFIni>", "</nNFIni>"),
-            entre(corpo, "<nNFFin>", "</nNFFin>"),
-        );
-        soap(
-            "NFeInutilizacao4",
-            &format!(
-                "<retInutNFe versao=\"4.00\" xmlns=\"{NS}\"><infInut><tpAmb>2</tpAmb><verAplic>SP</verAplic><cStat>102</cStat>\
-                 <xMotivo>Inutilizacao de numero homologado</xMotivo><cUF>35</cUF><ano>26</ano><CNPJ>11222333000181</CNPJ>\
-                 <mod>55</mod><serie>{serie}</serie><nNFIni>{ini}</nNFIni><nNFFin>{fim}</nNFFin>\
-                 <dhRecbto>2026-10-03T09:00:03-03:00</dhRecbto><nProt>{nprot}</nProt></infInut></retInutNFe>"
-            ),
-        )
-    })
-}
-
-fn status(cstat: &'static str, motivo: &'static str) -> Resposta {
-    Box::new(move |_| {
-        soap(
-            "NFeStatusServico4",
-            &format!(
-                "<retConsStatServ versao=\"4.00\" xmlns=\"{NS}\"><tpAmb>2</tpAmb><verAplic>SP</verAplic><cStat>{cstat}</cStat>\
-                 <xMotivo>{motivo}</xMotivo><cUF>35</cUF><dhRecbto>2026-10-03T09:00:30-03:00</dhRecbto></retConsStatServ>"
-            ),
-        )
-    })
-}
-
-fn perdida() -> Resposta {
-    Box::new(|_| Err(FalhaRede::Tempo))
-}
 
 struct Cenario {
     pasta: Pasta,
@@ -344,20 +177,16 @@ async fn sem_resposta_sai_4_a_nota_fica_pendente_e_o_retomar_a_fecha() {
     assert_eq!(c.notas.listar().unwrap()[0].situacao, Situacao::Pendente);
 
     // retomar sem resposta de novo: continua pendente, saida 4
-    c.falso
-        .0
-        .lock()
-        .unwrap()
-        .push_back(("NFeConsultaProtocolo4", perdida()));
+    c.falso.empilhar("NFeConsultaProtocolo4", perdida());
     let erro = c.rodar(&["pendentes", "--retomar"], 10).await.unwrap_err();
     assert_eq!(erro.codigo_saida(), 4, "{erro}");
     assert_eq!(c.notas.registro(&chave).unwrap().tentativas, 1);
 
     // a SEFAZ responde: a mesma chave fica autorizada, uma nota so'
-    c.falso.0.lock().unwrap().push_back((
+    c.falso.empilhar(
         "NFeConsultaProtocolo4",
         consulta("100", "Autorizado o uso da NF-e", NPROT),
-    ));
+    );
     c.rodar(&["pendentes", "--retomar", "--json"], 20)
         .await
         .unwrap();

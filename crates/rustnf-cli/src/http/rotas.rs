@@ -24,7 +24,11 @@ use crate::nucleo::{self, SituacaoNota};
 type Resposta = Result<Response, ErroHttp>;
 
 /// Le o corpo ate o teto; passou dele, 413 sem ler o resto quando o `Content-Length` ja avisa.
-async fn ler_corpo(cabecalhos: &HeaderMap, corpo: Body, limite: usize) -> Result<Vec<u8>, Erro> {
+pub(super) async fn ler_corpo(
+    cabecalhos: &HeaderMap,
+    corpo: Body,
+    limite: usize,
+) -> Result<Vec<u8>, Erro> {
     let declarado = cabecalhos
         .get(CONTENT_LENGTH)
         .and_then(|v| v.to_str().ok())
@@ -38,11 +42,14 @@ async fn ler_corpo(cabecalhos: &HeaderMap, corpo: Body, limite: usize) -> Result
         .map_err(|_| Erro::Grande(limite))
 }
 
-fn json_de<T: DeserializeOwned>(bytes: &[u8]) -> Result<T, Erro> {
+pub(super) fn json_de<T: DeserializeOwned>(bytes: &[u8]) -> Result<T, Erro> {
     Ok(serde_json::from_slice(bytes)?)
 }
 
-fn exigir_token<'a>(estado: &'a Estado, cabecalhos: &HeaderMap) -> Result<&'a Emissao, Erro> {
+pub(super) fn exigir_token<'a>(
+    estado: &'a Estado,
+    cabecalhos: &HeaderMap,
+) -> Result<&'a Emissao, Erro> {
     let em = estado
         .emissao
         .as_ref()
@@ -64,6 +71,7 @@ pub(super) async fn health(State(estado): State<Arc<Estado>>) -> Response {
             "status": "ok",
             "versao": env!("CARGO_PKG_VERSION"),
             "emissao": estado.emissao.is_some(),
+            "nfe": estado.nfe.pronta(),
         }),
     )
 }
@@ -81,7 +89,7 @@ pub(super) async fn calcular(
 }
 
 /// Valor de um parametro da query (`?situacao=cancelada&canhoto=false`); valores simples, sem percentual.
-fn parametro<'a>(uri: &'a Uri, nome: &str) -> Option<&'a str> {
+pub(super) fn parametro<'a>(uri: &'a Uri, nome: &str) -> Option<&'a str> {
     uri.query()?
         .split('&')
         .filter_map(|par| par.split_once('='))
@@ -90,7 +98,7 @@ fn parametro<'a>(uri: &'a Uri, nome: &str) -> Option<&'a str> {
 }
 
 /// `?estrito=true|false`: recusar ou nao o pedido com campo desconhecido; sem o parametro, vale `padrao`.
-fn estrito(uri: &Uri, padrao: bool) -> Result<bool, Erro> {
+pub(super) fn estrito(uri: &Uri, padrao: bool) -> Result<bool, Erro> {
     match parametro(uri, "estrito") {
         None => Ok(padrao),
         Some("false") => Ok(false),

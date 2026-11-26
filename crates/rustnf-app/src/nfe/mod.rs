@@ -43,9 +43,11 @@ pub use consulta::{
 };
 pub use emissao::{emitir, Emitida};
 pub use eventos::{cancelar, corrigir, epec, inutilizar, Inutilizada, Registrado};
-pub use pedido::{avisos_json, completar_pedido, montar_pedido, preparar, Montado, Preparada};
+pub use pedido::{
+    avisos_json, completar_pedido, conferencia_json, montar_pedido, preparar, Montado, Preparada,
+};
 pub use resposta::{erro_do_evento, erro_do_resultado, json_do_resultado};
-pub use retomada::{retomar, Retomada};
+pub use retomada::{erro_da_retomada, retomar, Retomada};
 
 use crate::erro::Erro;
 use crate::notas::nfe::NotasNfe;
