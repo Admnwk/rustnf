@@ -198,3 +198,12 @@ pub fn aviso_de_fechamento(lista: &[Pendente]) -> Option<String> {
 pub fn erro_de_fechamento(lista: &[Pendente]) -> Option<Erro> {
     aviso_de_fechamento(lista).map(Erro::Rede)
 }
+
+/// Como [`listar`], com o relogio do sistema.
+///
+/// # Errors
+///
+/// [`Erro`] se a pasta nao le.
+pub fn listar_agora(notas: &NotasNfe) -> Result<Vec<Pendente>, Erro> {
+    listar(notas, Utc::now())
+}

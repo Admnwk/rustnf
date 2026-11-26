@@ -609,6 +609,8 @@ fn o_exemplo_traz_a_secao_da_nfe_e_ela_so_muda_o_que_o_emitente_precisa() {
     assert_eq!(c.nfe.intervalo_retorno_s, padrao.intervalo_retorno_s);
     assert_eq!(c.nfe.canhoto, padrao.canhoto);
     assert_eq!(c.nfe.contingencia, padrao.contingencia);
+    // a secao da NFC-e do exemplo e' o padrao: quem nao a personaliza emite em homologacao, QR Code 3, bobina de 80 mm
+    assert_eq!(c.nfce, rustnf_app::config::Config::default().nfce);
 }
 
 #[test]

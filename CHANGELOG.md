@@ -6,6 +6,28 @@ Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` 
 alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
 `cancelada`, continua sendo lido por esta versão.
 
+* NFC-e (modelo 65) na aplicação e na linha de comando (`rustnf nfce`; `crates/rustnf-app` e `crates/rustnf-cli`; a feature
+  `danfce` da biblioteca passa a ser usada por elas). **Nenhuma NFC-e real, nenhuma SEFAZ real, nenhum certificado A1 real,
+  nenhum CSC real e nenhuma impressão em impressora real**; sem dependência nova. O servidor e o MCP não mudam: a API HTTP,
+  as ferramentas do MCP e a interface de desktop da NFC-e ficam para depois.
+  * Seção `[nfce]` do `rustnf.toml` (`ambiente`, `serie`, `qr_versao`, `id_csc`, `largura_danfce`, `colunas_escpos`,
+    `motivo_offline`), que compartilha o emitente, o endereço, a IE, o CRT, o certificado, o cofre, as URLs de simulador e a
+    pasta de notas da NF-e. A seção igual ao padrão não é gravada, então um arquivo que não a usa sai idêntico.
+  * O CSC (valor) vai só para o cofre, sob a chave `csc:<documento>:<ambiente>:<idCSC>` (por `rustnf nfce csc guardar`,
+    `testar` e `apagar`; lido de uma linha do stdin ou de `--csc-env`, nunca de argumento). Com `qr_versao = 2` e sem CSC no
+    cofre, a emissão recusa antes de numerar.
+  * A NFC-e tem pasta própria, `<pasta>/nfce/`, com índice, estado e numeração só do modelo 65 (a série 1 do 65 e a série 1
+    do 55 são sequências distintas). **A pasta `nfe/` e os comandos e saídas da NF-e 55 não mudam um byte**: o índice só
+    ganha os campos novos (`offline`, `prazo`, `recusa`) quando a nota os tem, e o `rustnf nfe` agora recusa o pedido do
+    modelo 65 dizendo que ele se emite por `rustnf nfce` (era a recusa "só o modelo 55").
+  * `rustnf nfce emitir` (envio sempre síncrono, `--offline`, `--offline-se-necessario`, `--danfce`), `consultar`,
+    `cancelar` (com o aviso do prazo nacional de 24 horas, MOC 7.00, Visão Geral, regra 2P12-14, que nunca bloqueia o
+    envio), `status`, `pendentes` (`--retomar`, `--fechar-caixa` que sai com 4 se sobrar nota pendente) e `danfce` (`--pdf` ou
+    `--escpos`, `--largura`, `--colunas`, `--resumido`, `--via-estabelecimento`; gera arquivo, nunca fala com impressora).
+  * A NFC-e emitida off-line que a SEFAZ rejeita na transmissão não sai da pasta nem libera o número: fica pendente, com a
+    recusa anotada e mostrada por `pendentes`. A retransmissão corrigida com a mesma chave ainda é manual.
+  * **Não feito:** cancelamento por substituição (110112) e inutilização da NFC-e (a biblioteca não os tem); prazo de
+    cancelamento de cada UF (sem fonte oficial no projeto).
 * Tabela de CFOP oficial embutida (módulo público `cfop`: `info`, `e_devolucao`, `vigente`, `origens`, `devolucoes_de`,
   `tabela`, `versao`; dado em `dados/cfop.json`, 619 CFOP com os indicadores da planilha publicada em 04/09/2026, IT
   2023.002 v2.00). `devolucoes_de("5405")` dá `["1411"]` e `origens("1202")` dá `["5102", "5104", "5106"]`, só pela

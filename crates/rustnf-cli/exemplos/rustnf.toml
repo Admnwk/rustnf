@@ -69,6 +69,18 @@ municipio = "Sao Paulo"
 cep = "01001000"
 fone = "1133334444"
 
+# NFC-e (modelo 65): o emitente, o endereco, a IE, o CRT, o certificado, a senha no cofre, as URLs de simulador
+# ([nfe.urls]) e a pasta de notas sao os de cima; a NFC-e guarda em [notas].pasta, na subpasta nfce/, com numeracao
+# propria (a serie 1 do 65 nao e' a serie 1 da NF-e). O VALOR do CSC nunca vai para este arquivo: `rustnf nfce csc guardar`.
+[nfce]
+ambiente = "homologacao"         # homologacao (padrao) | producao: a NFC-e de homologacao nao vale
+serie = "1"                      # serie da NFC-e, de 0 a 999
+qr_versao = 3                    # 3 (padrao, sem CSC) | 2 (com o CSC que a SEFAZ da UF forneceu; exige id_csc)
+id_csc = ""                      # idCSC, de 1 a 6 digitos: so' com qr_versao = 2
+largura_danfce = 80              # bobina do DANFC-e: 80 (padrao) | 58 mm
+colunas_escpos = 0               # ESC/POS: 0 = pela largura (48 ou 32) | 48 | 42 | 32
+motivo_offline = ""              # xJust da contingencia off-line (15 a 255 caracteres); vazio = texto padrao
+
 [servidor]
 endereco = "127.0.0.1"
 porta = 8080

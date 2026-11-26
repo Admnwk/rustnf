@@ -87,6 +87,10 @@ impl Emissao {
             Self::Enviada(e) => {
                 let mut v = e.para_json();
                 v["offline"] = json!(false);
+                // a frase da NF-e fala em "NF-e": aqui a nota e' a NFC-e
+                if let Some(f) = v["frase"].as_str() {
+                    v["frase"] = json!(f.replace("A NF-e ficou", "A NFC-e ficou"));
+                }
                 v
             }
             Self::Offline(g) => json!({

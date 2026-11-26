@@ -31,7 +31,8 @@ pub use cancelar::{aviso_de_prazo, PRAZO_NACIONAL_HORAS};
 pub use csc::opcoes_qr;
 pub use emissao::{emitir, Emissao, Gravada, Modo};
 pub use pendentes::{
-    aviso_de_fechamento, erro_de_fechamento, listar as listar_pendentes, Pendente, Prazo,
+    aviso_de_fechamento, erro_de_fechamento, listar as listar_pendentes,
+    listar_agora as listar_pendentes_agora, Pendente, Prazo,
 };
 
 /// A pasta da NFC-e dentro da `[notas].pasta`.
