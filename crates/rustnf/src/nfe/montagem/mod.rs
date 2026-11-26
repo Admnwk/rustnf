@@ -3,7 +3,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 //! Montagem e assinatura da NF-e (modelo 55), leiaute 4.00 com o IBS/CBS: do pedido em JSON ate o XML assinado,
-//! sem rede. **Nao envia** a nota a SEFAZ.
+//! sem rede. **Nao envia** a nota: o envio e' do `nfe::sefaz` (feature `nfe_sefaz`).
 //!
 //! * [`nota_de_json`] le o pedido ([`Nota`]); [`campos_desconhecidos`] e [`nota_de_json_estrito`] tratam o campo
 //!   que o pedido traz e o leiaute nao conhece;
@@ -76,7 +76,10 @@ pub use transp::{RetencaoIcms, Transportadora, Transporte, VeiculoTransp, Volume
 
 use cobr::cobr;
 use exporta::{compra, exporta};
-use formato::{documento, erro, erro_r, na_uf, uf_codigo};
+pub(crate) use formato::uf_codigo;
+#[cfg(feature = "nfe_sefaz")]
+pub(crate) use formato::uf_sigla;
+use formato::{documento, erro, erro_r, na_uf};
 use ide::{finalidade, ide};
 use item::det;
 use partes::{dest, emit, local, regime_sn, vigencia_pl010h};

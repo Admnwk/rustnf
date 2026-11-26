@@ -31,6 +31,9 @@ const URLS_ACEITAS: &[&str] = &[
     r"^https?://([a-z0-9-]+\.)*gov\.br(/|$)",
     // espaco de nomes do XML da NF-e (targetNamespace do XSD oficial): identificador, nao e' endereco acessado
     r"^http://www\.portalfiscal\.inf\.br/nfe$",
+    // espaco de nomes do WSDL de cada servico da NF-e e o envelope SOAP 1.1 (identificadores, nao enderecos acessados)
+    r"^http://www\.portalfiscal\.inf\.br/nfe/wsdl/",
+    r"^http://schemas\.xmlsoap\.org/soap/envelope/$",
     r"^https?://www\.w3\.org(/|$)",
     r"^https://www\.rfc-editor\.org/",
     r"^https://mozilla\.org/MPL/",

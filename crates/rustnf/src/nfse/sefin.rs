@@ -35,23 +35,7 @@ pub const JA_EXISTE: &str = "E0014";
 /// Quantas sequencias de um mesmo tipo de evento a recuperacao de um pedido sem resposta confere, no maximo.
 const SEQUENCIAS_CONFERIDAS: u32 = 20;
 
-/// Falha sem resposta HTTP.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum FalhaRede {
-    Tempo,
-    Tls(String),
-    Rede(String),
-}
-
-impl std::fmt::Display for FalhaRede {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            FalhaRede::Tempo => f.write_str("tempo esgotado"),
-            FalhaRede::Tls(d) => write!(f, "TLS: {d}"),
-            FalhaRede::Rede(d) => write!(f, "rede: {d}"),
-        }
-    }
-}
+pub use crate::https::FalhaRede;
 
 /// Porta de transporte: (metodo, url, corpo JSON, Accept) -> (status, corpo).
 #[async_trait]
@@ -78,25 +62,8 @@ impl TransporteReqwest {
         timeout: Duration,
         ver_aplic: &str,
     ) -> Result<Self, String> {
-        let id = reqwest::Identity::from_pem(&cert.identidade_pem())
-            .map_err(|_| "certificado A1 nao serve para TLS".to_string())?;
-        let mut b = reqwest::Client::builder()
-            .identity(id)
-            .timeout(timeout)
-            .connect_timeout(Duration::from_secs(10))
-            .redirect(reqwest::redirect::Policy::none())
-            .user_agent(ver_aplic)
-            .use_rustls_tls();
-        if let Some(ca) = ca_pem {
-            for c in ca_extra(ca)? {
-                b = b.add_root_certificate(c);
-            }
-        }
-        Ok(TransporteReqwest {
-            cliente: b
-                .build()
-                .map_err(|_| "nao foi possivel montar o cliente HTTPS".to_string())?,
-        })
+        let cliente = crate::https::cliente(cert, ca_pem, &[], timeout, ver_aplic)?;
+        Ok(TransporteReqwest { cliente })
     }
 }
 
@@ -118,34 +85,15 @@ impl Transporte for TransporteReqwest {
         if let Some(c) = corpo {
             r = r.header("Content-Type", "application/json").body(c);
         }
-        let resp = r.send().await.map_err(|e| {
-            if e.is_timeout() {
-                FalhaRede::Tempo
-            } else {
-                let t = format!("{e:?}");
-                if t.contains("Certificate")
-                    || t.contains("tls")
-                    || t.contains("Tls")
-                    || t.contains("handshake")
-                {
-                    FalhaRede::Tls("certificado recusado ou servidor nao confiavel".into())
-                } else {
-                    FalhaRede::Rede(if e.is_connect() {
-                        "sem conexao".into()
-                    } else {
-                        "falha de transporte".into()
-                    })
-                }
-            }
-        })?;
+        let resp = r
+            .send()
+            .await
+            .map_err(|e| crate::https::falha_do_envio(&e))?;
         let st = resp.status().as_u16();
-        let b = resp.bytes().await.map_err(|e| {
-            if e.is_timeout() {
-                FalhaRede::Tempo
-            } else {
-                FalhaRede::Rede("corpo interrompido".into())
-            }
-        })?;
+        let b = resp
+            .bytes()
+            .await
+            .map_err(|e| crate::https::falha_do_corpo(&e))?;
         Ok((st, b.to_vec()))
     }
 }
@@ -918,18 +866,4 @@ impl<T: Transporte> ClienteNfse<T> {
         }
         (true, frase)
     }
-}
-
-/// CA extra: PEM colado achatado passa pelo `pem::remontar`; texto sem nenhum certificado e' erro (antes
-/// `from_pem_bundle` podia devolver lista vazia e a CA sumia calada). So' espaco = sem CA extra.
-fn ca_extra(ca: &[u8]) -> Result<Vec<reqwest::Certificate>, String> {
-    if ca.trim_ascii().is_empty() {
-        return Ok(Vec::new());
-    }
-    let v = reqwest::Certificate::from_pem_bundle(&crate::assinatura::pem::remontar_bytes(ca))
-        .map_err(|_| "CA extra ilegivel".to_string())?;
-    if v.is_empty() {
-        return Err("CA extra ilegivel".to_string());
-    }
-    Ok(v)
 }

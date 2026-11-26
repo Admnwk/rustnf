@@ -6,7 +6,28 @@ Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` 
 alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
 `cancelada`, continua sendo lido por esta versão.
 
-* NF-e (modelo 55), base da biblioteca, atrás da feature `nfe` (sem dependência nova). **A NF-e ainda não emite**: só
+* NF-e (modelo 55), cliente dos webservices da SEFAZ, parte 1, atrás da nova feature `nfe_sefaz` (= `nfe` + as
+  dependências que a `sefin` já usa; nenhuma crate nova). **Eventos (cancelamento, CC-e, EPEC), inutilização, a
+  contingência SVC, o DANFE e as faces (aplicação, linha de comando, API, MCP, interface) não estão nesta parte.**
+  **Nenhuma chamada a uma SEFAZ real foi feita.**
+  * `nfe::sefaz::tabela`: endereços dos webservices lidos das páginas oficiais "Relação de Serviços Web" (produção e
+    homologação; 15 tabelas, 96 endereços por ambiente), UF -> autorizador e a lista da contingência.
+  * `nfe::sefaz::pedidos` e `resposta`: `consStatServ`, `enviNFe` (síncrono e assíncrono), `consReciNFe` e `consSitNFe`;
+    envelope SOAP 1.2 sem `nfeCabecMsg`; leitura de `retConsStatServ`, `retEnviNFe`, `retConsReciNFe` e `retConsSitNFe`. A
+    NF-e vai no lote como veio assinada, sem reescrever um byte, e o `nfeProc` usa o `protNFe` recortado do texto da
+    resposta.
+  * `nfe::sefaz::ClienteSefaz`: `status`, `autorizar` (síncrono), `autorizar_assincrono` (só até a data de corte da NT
+    2023.002 v1.02 de cada ambiente), `retorno` (consulta do recibo com espera e tentativas configuráveis) e `consultar`.
+    Resposta perdida vira consulta pela chave antes de qualquer reenvio; duplicidade 204 devolve a nota já autorizada;
+    539 diz qual é a nota que tem o número. O resultado diz em palavras se a nota foi autorizada, denegada, rejeitada ou
+    ficou sem resposta, e o que fazer.
+  * `nfe::sefaz::limbo`: a varredura das notas enviadas sem resultado (espera crescente, aviso, reenvio da mesma NF-e).
+  * Transporte real: `reqwest` com mTLS pelo certificado A1, raízes vigentes da AC Raiz da ICP-Brasil somadas às do
+    `webpki-roots` só neste cliente (`dados/icp_brasil_raizes.crt`), tempo limite configurável, resposta limitada a 16
+    MB e raiz extra para simulador local. O que o `nfse::sefin` já fazia para montar o cliente TLS agora mora num módulo
+    comum (`https`), sem mudar o comportamento dele.
+  * A recuperação da nota e a varredura do limbo partiram da `gaialib`; aqui foram reescritas e cobertas por casos novos.
+* NF-e (modelo 55), base da biblioteca, atrás da feature `nfe` (sem dependência nova). **A NF-e ainda não emite (o envio vem no item do cliente da SEFAZ, acima)**: só
   chave, leitura e tabelas.
   * `chave_dfe`: a chave de acesso de 44 posições (NF-e e NFC-e). `montar` recusa campo que não cabe, UF ou modelo
     desconhecido, CPF ou CNPJ do emitente com dígito verificador inválido e `cNF` que a regra B09-30 recusa; `validar`,
@@ -23,7 +44,7 @@ alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o �
   * `nfe::vigencias`: calendário das Notas Técnicas por ambiente, com as datas conferidas no cronograma de cada NT.
   * A chave de acesso e a leitura da NF-e partiram da `gaialib`; aqui foram reescritas e cobertas por casos novos, com
     documentos fictícios.
-* NF-e (modelo 55), montagem e assinatura, atrás da feature `nfe` (sem dependência nova). **A NF-e ainda não é enviada**:
+* NF-e (modelo 55), montagem e assinatura, atrás da feature `nfe` (sem dependência nova). **O envio vem no item do cliente da SEFAZ, acima**:
   não há cliente da SEFAZ, DANFE, linha de comando, API nem interface para ela.
   * `nfe::montagem`: o pedido em JSON (`nota_de_json`, formato em `docs/NFE_PEDIDO.md`) vira a `Nota` e o XML `NFe` 4.00
     do modelo 55 (`montar`), na ordem do XSD PL_010h: ide (referenciadas, intermediador, contingência, `cIndOp`), emit,

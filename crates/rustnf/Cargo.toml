@@ -20,6 +20,9 @@ cert_a1_teste = ["dep:x509-cert", "dep:rand"]
 sefin = ["dep:reqwest", "dep:tokio", "dep:async-trait"]
 # NF-e modelo 55: leitura do XML, tabela de cStat e calendario das Notas Tecnicas (sem crate nova).
 nfe = []
+# Cliente dos webservices da SEFAZ para a NF-e modelo 55 (SOAP 1.2, mTLS com o A1, reqwest + rustls): status do
+# servico, autorizacao, retorno do recibo e consulta pela chave. Sem crate nova alem das do `sefin`.
+nfe_sefaz = ["nfe", "dep:reqwest", "dep:tokio", "dep:async-trait"]
 # DANFSe em PDF (NT 008): escreve a pagina direto no PDF; as fontes e o logotipo vao dentro do binario.
 danfse = ["dep:krilla", "dep:skrifa", "dep:qrcode"]
 
@@ -51,7 +54,7 @@ qrcode = { version = "0.15", default-features = false, optional = true }
 [dev-dependencies]
 regex = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
-rustnf = { path = ".", features = ["cert_a1_teste", "sefin", "danfse", "nfe"] }
+rustnf = { path = ".", features = ["cert_a1_teste", "sefin", "danfse", "nfe", "nfe_sefaz"] }
 async-trait = "0.1"
 tokio = { version = "1", features = ["rt", "rt-multi-thread", "macros", "time"] }
 
@@ -98,3 +101,23 @@ required-features = ["nfe", "cert_a1_teste"]
 [[test]]
 name = "nfe_montar_grupos"
 required-features = ["nfe"]
+
+[[test]]
+name = "nfe_sefaz"
+required-features = ["nfe_sefaz", "cert_a1_teste"]
+
+[[test]]
+name = "nfe_sefaz_tabela"
+required-features = ["nfe_sefaz"]
+
+[[test]]
+name = "nfe_sefaz_pedidos"
+required-features = ["nfe_sefaz", "cert_a1_teste"]
+
+[[test]]
+name = "nfe_sefaz_limbo"
+required-features = ["nfe_sefaz", "cert_a1_teste"]
+
+[[example]]
+name = "nfe_sefaz"
+required-features = ["nfe_sefaz"]
