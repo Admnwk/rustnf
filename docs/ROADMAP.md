@@ -76,7 +76,8 @@
   SP) e contingência SVC (`tpEmis` 6 e 7). Feita nesta frente. **Fica para depois:** o evento de vinculação de
   pagamento (110300, NT 2026.006), a distribuição de DF-e e a manifestação do destinatário, a consulta de cadastro e o
   cancelamento por substituição (110112, só da NFC-e).
-* DANFE.
+* DANFE (feature `danfe`): A4 retrato em PDF, várias folhas, situações e contingências, leiaute da Reforma Tributária.
+  Feito nesta frente. **Fica para depois:** o DANFE paisagem, as colunas de ICMS ST por item e o DANFE Simplificado.
 * Faces: aplicação, linha de comando, API HTTP e MCP.
 * Documentos recebidos e manifestação do destinatário.
 * NFC-e.

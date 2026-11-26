@@ -10,7 +10,7 @@ use super::ErroDanfse;
 
 /// `{"texto", "n", "corridas": [[linha, coluna, comprimento]...]}`, correcao de erro nivel M. Os modulos escuros
 /// de cada linha viram corridas para o modelo desenhar menos retangulos.
-pub(super) fn dados(texto: &str) -> Result<Value, ErroDanfse> {
+pub(crate) fn dados(texto: &str) -> Result<Value, ErroDanfse> {
     let qr = qrcode::QrCode::with_error_correction_level(texto.as_bytes(), qrcode::EcLevel::M)
         .map_err(|e| ErroDanfse::Qr(e.to_string()))?;
     let n = qr.width();

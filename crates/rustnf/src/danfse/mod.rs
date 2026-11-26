@@ -19,14 +19,14 @@
 //! Valores em inteiros de ponto fixo, arredondamento meio-para-cima; nada de ponto flutuante nas contas de dinheiro.
 
 mod conteudo;
-mod escritor;
+pub(crate) mod escritor;
 mod formato;
 mod leiaute;
 mod medidas;
-mod metrica;
+pub(crate) mod metrica;
 pub mod municipio;
 mod pagina;
-mod qr;
+pub(crate) mod qr;
 mod tabelas;
 mod xml;
 

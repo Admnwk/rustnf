@@ -13,7 +13,7 @@ use krilla::image::Image;
 use krilla::metadata::Metadata;
 use krilla::num::NormalizedF32;
 use krilla::page::PageSettings;
-use krilla::paint::{Fill, Stroke};
+use krilla::paint::{Fill, Stroke, StrokeDash};
 use krilla::surface::Surface;
 use krilla::text::{Font, GlyphId, KrillaGlyph};
 use krilla::Document;
@@ -24,11 +24,17 @@ use skrifa::metrics::GlyphMetrics;
 use skrifa::{FontRef, MetadataProvider};
 
 use super::medidas::{f, s, CM};
+use super::metrica::Familia;
 use super::ErroDanfse;
 
 /// Liberation Sans (metrica da Arial, NT 008 item 2.4): regular e negrito, licenca SIL OFL 1.1.
 const REGULAR: &[u8] = include_bytes!("../../dados/fontes/LiberationSans-Regular.ttf");
 const NEGRITO: &[u8] = include_bytes!("../../dados/fontes/LiberationSans-Bold.ttf");
+/// Liberation Serif (metrica da Times New Roman, a fonte que o DANFE manda usar), mesma licenca.
+#[cfg(feature = "danfe")]
+const SERIF_REGULAR: &[u8] = include_bytes!("../../dados/fontes/LiberationSerif-Regular.ttf");
+#[cfg(feature = "danfe")]
+const SERIF_NEGRITO: &[u8] = include_bytes!("../../dados/fontes/LiberationSerif-Bold.ttf");
 /// Logotipo da NFS-e (NT 008 item 2.4.3).
 const LOGO: &[u8] = include_bytes!("../../dados/danfse_logo_nfse.png");
 /// A4 em pontos (210 x 297 mm).
@@ -93,6 +99,18 @@ struct Fontes {
 }
 
 impl Fontes {
+    fn da_familia(fam: Familia) -> Result<Self, ErroDanfse> {
+        let (regular, negrito) = match fam {
+            Familia::Sans => (REGULAR, NEGRITO),
+            #[cfg(feature = "danfe")]
+            Familia::Serif => (SERIF_REGULAR, SERIF_NEGRITO),
+        };
+        Ok(Fontes {
+            regular: Fonte::nova(regular)?,
+            negrito: Fonte::nova(negrito)?,
+        })
+    }
+
     fn escolher(&self, negrito: bool) -> &Fonte {
         if negrito {
             &self.negrito
@@ -109,6 +127,7 @@ fn pt(cm: &Value) -> f32 {
 fn cor(nome: &str) -> rgb::Color {
     match nome {
         "vermelho" => rgb::Color::new(255, 0, 0),
+        "cinza" => rgb::Color::new(226, 226, 226),
         _ => rgb::Color::new(0, 0, 0),
     }
 }
@@ -153,8 +172,68 @@ fn linha(sup: &mut Surface, op: &Value) -> Result<(), ErroDanfse> {
     caminho.line_to(pt(&op["x2"]), pt(&op["y2"]));
     let caminho = caminho.finish().ok_or_else(|| erro("linha invalida"))?;
     sup.set_fill(None);
-    sup.set_stroke(tracar(f(&op["esp"]) as f32));
+    let mut traco = tracar(f(&op["esp"]) as f32);
+    // `tr` (cm) = linha tracejada, tracos e vaos desse comprimento; so' o DANFE usa
+    if let (Some(t), Some(comprimento)) = (traco.as_mut(), op.get("tr").and_then(Value::as_f64)) {
+        t.dash = Some(StrokeDash {
+            array: vec![(comprimento * CM) as f32; 2],
+            offset: 0.0,
+        });
+    }
+    sup.set_stroke(traco);
     sup.draw_path(&caminho);
+    Ok(())
+}
+
+/// Codigo de barras: `p` = larguras em modulos de barra e espaco alternados (comecando por barra), `m` = largura do
+/// modulo em cm, `x`/`y` o canto superior esquerdo e `h` a altura. Todas as barras num unico caminho.
+fn barras(sup: &mut Surface, op: &Value) -> Result<(), ErroDanfse> {
+    let (mut x, y, m, h) = (f(&op["x"]), f(&op["y"]), f(&op["m"]), f(&op["h"]));
+    let mut caminho = PathBuilder::new();
+    for (i, c) in s(&op["p"]).bytes().enumerate() {
+        let w = f64::from(c - b'0') * m;
+        if i % 2 == 0 {
+            let area = Rect::from_xywh(
+                (x * CM) as f32,
+                (y * CM) as f32,
+                (w * CM) as f32,
+                (h * CM) as f32,
+            )
+            .ok_or_else(|| erro("barra sem area"))?;
+            caminho.push_rect(area);
+        }
+        x += w;
+    }
+    let caminho = caminho
+        .finish()
+        .ok_or_else(|| erro("codigo de barras vazio"))?;
+    sup.set_fill(preencher(rgb::Color::new(0, 0, 0), 1.0));
+    sup.set_stroke(None);
+    sup.draw_path(&caminho);
+    Ok(())
+}
+
+/// O logotipo do emitente (PNG ou JPEG), encaixado sem distorcer e centrado na caixa `x`, `y`, `w`, `h` (cm).
+fn logotipo(sup: &mut Surface, op: &Value, bytes: &[u8]) -> Result<(), ErroDanfse> {
+    let dados: krilla::Data = bytes.to_vec().into();
+    let figura = if bytes.starts_with(b"\x89PNG") {
+        Image::from_png(dados, true)
+    } else {
+        Image::from_jpeg(dados, true)
+    }
+    .map_err(erro)?;
+    let (iw, ih) = figura.size();
+    let (caixa_w, caixa_h) = (pt(&op["w"]), pt(&op["h"]));
+    let escala = (caixa_w / iw as f32).min(caixa_h / ih as f32);
+    let (w, h) = (iw as f32 * escala, ih as f32 * escala);
+    let tamanho = Tamanho::from_wh(w, h).ok_or_else(|| erro("logotipo sem area"))?;
+    let (x, y) = (
+        pt(&op["x"]) + (caixa_w - w) / 2.0,
+        pt(&op["y"]) + (caixa_h - h) / 2.0,
+    );
+    sup.push_transform(&Transform::from_translate(x, y));
+    sup.draw_image(figura, tamanho);
+    sup.pop();
     Ok(())
 }
 
@@ -229,8 +308,14 @@ fn marca(sup: &mut Surface, fontes: &Fontes, op: &Value) {
     sup.pop();
 }
 
-fn executar(sup: &mut Surface, fontes: &Fontes, dados: &Value) -> Result<(), ErroDanfse> {
-    for op in dados["pagina"].as_array().into_iter().flatten() {
+fn executar(
+    sup: &mut Surface,
+    fontes: &Fontes,
+    dados: &Value,
+    ops: &[Value],
+    logo: Option<&[u8]>,
+) -> Result<(), ErroDanfse> {
+    for op in ops {
         match s(&op["t"]) {
             "ret" => retangulo(sup, op)?,
             "lin" => linha(sup, op)?,
@@ -238,26 +323,49 @@ fn executar(sup: &mut Surface, fontes: &Fontes, dados: &Value) -> Result<(), Err
             "txt" => texto(sup, fontes, op),
             "qr" => qr(sup, dados, op)?,
             "marca" => marca(sup, fontes, op),
+            "barras" => barras(sup, op)?,
+            "logo" => {
+                if let Some(bytes) = logo {
+                    logotipo(sup, op, bytes)?;
+                }
+            }
             _ => {}
         }
     }
     Ok(())
 }
 
+/// O PDF de uma pagina com a Liberation Sans: o DANFSe.
 pub(super) fn pdf(dados: &Value) -> Result<Vec<u8>, ErroDanfse> {
-    let fontes = Fontes {
-        regular: Fonte::nova(REGULAR)?,
-        negrito: Fonte::nova(NEGRITO)?,
-    };
-    let mut documento = Document::new();
     let titulo = format!("DANFSe {}", s(&dados["acesso"]["numero"]));
-    documento.set_metadata(Metadata::new().title(titulo).language("pt".to_string()));
-    let tamanho =
-        PageSettings::from_wh(LARGURA_A4, ALTURA_A4).ok_or_else(|| erro("pagina invalida"))?;
-    let mut pagina = documento.start_page_with(tamanho);
-    let mut sup = pagina.surface();
-    executar(&mut sup, &fontes, dados)?;
-    sup.finish();
-    pagina.finish();
+    let ops = dados["pagina"].as_array().map_or(&[][..], Vec::as_slice);
+    pdf_paginas(Familia::Sans, &titulo, dados, &[ops], None)
+}
+
+/// O PDF A4 de uma ou mais paginas, cada uma uma lista de operacoes de desenho (em cm). `dados` guarda o QR (`qr`)
+/// que a operacao `qr` desenha; `logo` sao os bytes (PNG ou JPEG) que a operacao `logo` desenha.
+pub(crate) fn pdf_paginas(
+    familia: Familia,
+    titulo: &str,
+    dados: &Value,
+    paginas: &[&[Value]],
+    logo: Option<&[u8]>,
+) -> Result<Vec<u8>, ErroDanfse> {
+    let fontes = Fontes::da_familia(familia)?;
+    let mut documento = Document::new();
+    documento.set_metadata(
+        Metadata::new()
+            .title(titulo.to_string())
+            .language("pt".to_string()),
+    );
+    for ops in paginas {
+        let tamanho =
+            PageSettings::from_wh(LARGURA_A4, ALTURA_A4).ok_or_else(|| erro("pagina invalida"))?;
+        let mut pagina = documento.start_page_with(tamanho);
+        let mut sup = pagina.surface();
+        executar(&mut sup, &fontes, dados, ops, logo)?;
+        sup.finish();
+        pagina.finish();
+    }
     documento.finish().map_err(|e| erro(format!("{e:?}")))
 }

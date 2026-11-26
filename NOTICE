@@ -1,7 +1,7 @@
 rustnf
 Copyright (c) Os autores do rustnf. Licença: Mozilla Public License 2.0 (arquivo LICENSE).
 
-Material de terceiros distribuído com o código-fonte e embutido nos binários (itens 1 a 3: feature `danfse`; item 4: `rustnf-gui`):
+Material de terceiros distribuído com o código-fonte e embutido nos binários (itens 1 a 3: feature `danfse`, e a Liberation Serif do item 1: feature `danfe`; item 4: `rustnf-gui`):
 
 1. Liberation Sans, Regular e Bold
    (crates/rustnf/dados/fontes/LiberationSans-Regular.ttf e LiberationSans-Bold.ttf)
@@ -10,6 +10,9 @@ Material de terceiros distribuído com o código-fonte e embutido nos binários 
    Licença: SIL Open Font License 1.1; o texto integral está em
    crates/rustnf/dados/fontes/Liberation-LICENSE.txt. As fontes seguem sem modificação. A tabela
    crates/rustnf/dados/fontes/LiberationSans-larguras.json guarda só as larguras de avanço extraídas delas.
+   Liberation Serif, Regular e Bold, versão 2.1.5 (crates/rustnf/dados/fontes/LiberationSerif-Regular.ttf e
+   LiberationSerif-Bold.ttf, DANFE da NF-e), com o mesmo aviso de copyright e a mesma licença; a tabela
+   LiberationSerif-larguras.json guarda as larguras extraídas delas.
 
 2. Logotipo da NFS-e (crates/rustnf/dados/danfse_logo_nfse.png)
    Marca do governo federal da NFS-e Padrão Nacional, usada no cabeçalho do DANFSe para identificar o documento,
