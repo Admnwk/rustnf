@@ -351,6 +351,22 @@ pub(crate) fn pdf_paginas(
     paginas: &[&[Value]],
     logo: Option<&[u8]>,
 ) -> Result<Vec<u8>, ErroDanfse> {
+    let a4: Vec<(f32, f32, &[Value])> = paginas
+        .iter()
+        .map(|ops| (LARGURA_A4, ALTURA_A4, *ops))
+        .collect();
+    pdf_paginas_com_tamanho(familia, titulo, dados, &a4, logo)
+}
+
+/// O PDF de uma ou mais paginas, cada uma com a sua largura e altura em pontos e a lista de operacoes de desenho (em
+/// cm, a partir do canto superior esquerdo).
+pub(crate) fn pdf_paginas_com_tamanho(
+    familia: Familia,
+    titulo: &str,
+    dados: &Value,
+    paginas: &[(f32, f32, &[Value])],
+    logo: Option<&[u8]>,
+) -> Result<Vec<u8>, ErroDanfse> {
     let fontes = Fontes::da_familia(familia)?;
     let mut documento = Document::new();
     documento.set_metadata(
@@ -358,9 +374,9 @@ pub(crate) fn pdf_paginas(
             .title(titulo.to_string())
             .language("pt".to_string()),
     );
-    for ops in paginas {
+    for (largura, altura, ops) in paginas {
         let tamanho =
-            PageSettings::from_wh(LARGURA_A4, ALTURA_A4).ok_or_else(|| erro("pagina invalida"))?;
+            PageSettings::from_wh(*largura, *altura).ok_or_else(|| erro("pagina invalida"))?;
         let mut pagina = documento.start_page_with(tamanho);
         let mut sup = pagina.surface();
         executar(&mut sup, &fontes, dados, ops, logo)?;

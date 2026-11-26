@@ -24,6 +24,8 @@ pub mod conferencia;
 pub mod cstat;
 pub mod decimal;
 pub mod erro;
+#[cfg(any(feature = "danfe", feature = "danfce"))]
+pub(crate) mod impressao;
 pub mod leitura;
 pub mod modelo;
 pub mod montagem;

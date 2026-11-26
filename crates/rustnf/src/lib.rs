@@ -19,6 +19,8 @@
 pub mod aleatorio;
 pub mod assinatura;
 pub mod chave_dfe;
+#[cfg(feature = "danfce")]
+pub mod danfce;
 #[cfg(feature = "danfe")]
 pub mod danfe;
 #[cfg(feature = "danfse")]

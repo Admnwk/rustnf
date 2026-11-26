@@ -31,7 +31,7 @@ mod blocos_rtc;
 mod conteudo;
 mod desenho;
 mod folhas;
-mod formato;
+use crate::nfe::impressao as formato;
 mod medidas;
 mod rtc;
 mod tabela;
