@@ -82,8 +82,15 @@ fn alterar_o_xml_depois_de_assinar_derruba_a_conferencia() {
 }
 
 #[test]
-fn o_danfe_simplificado_nao_e_assinado_sem_o_qr_code() {
+fn o_danfe_simplificado_sai_assinado_com_o_qr_code() {
     let m = montar(&nota_de_json(&pedido(Some(6))).unwrap()).unwrap();
-    let e = assinar(&m, &certificado()).unwrap_err();
-    assert_eq!(e.campo, "tpImp");
+    let xml = assinar(&m, &certificado()).unwrap();
+    assert!(xmldsig::conferido(&xml), "{xml}");
+    // o QR Code (versao 3, sem CSC) fica entre o infNFe e a Signature
+    let supl = xml.find("<infNFeSupl>").unwrap();
+    assert!(xml.find("</infNFe>").unwrap() < supl && supl < xml.find("<Signature").unwrap());
+    assert!(
+        xml.contains(&format!("?p={}|3|2</qrCode>", m.chave)),
+        "{xml}"
+    );
 }

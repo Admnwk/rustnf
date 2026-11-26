@@ -28,6 +28,9 @@ use crate::nfe::vigencias::{self, Ambiente};
 /// valor; o cliente nao dorme minutos por causa dele).
 pub(super) const ESPERA_MAXIMA_RECIBO: Duration = Duration::from_secs(30);
 
+/// Marca do destino que pede a tabela de enderecos da NFC-e em vez da da NF-e (`NFCE:SP`).
+const PREFIXO_NFCE: &str = "NFCE:";
+
 /// Parametros do cliente (um por emitente/UF/ambiente).
 #[derive(Debug, Clone)]
 pub struct Config {
@@ -176,6 +179,10 @@ impl<T: Transporte> ClienteSefaz<T> {
     /// A quem se pergunta ou se envia sobre a NF-e dessa chave: a SVC se a chave tem `tpEmis` 6 ou 7, senao o
     /// autorizador da UF. Devolve o nome que `chamar` entende (sigla da UF ou nome do autorizador).
     pub(super) fn destino_da_chave(&self, chave: &str, uf: &str) -> String {
+        // a NFC-e (modelo 65, posicoes 20 e 21 da chave) tem tabela de enderecos propria e nao passa pela SVC
+        if chave.get(20..22) == Some("65") {
+            return format!("{PREFIXO_NFCE}{uf}");
+        }
         let tp = chave
             .as_bytes()
             .get(34)
@@ -200,6 +207,9 @@ impl<T: Transporte> ClienteSefaz<T> {
     fn url_do(&self, servico: Servico, destino: &str) -> Result<String, ErroSefaz> {
         match self.urls.get(&servico) {
             Some(u) => Ok(u.clone()),
+            None if destino.starts_with(PREFIXO_NFCE) => {
+                tabela::url_nfce(&destino[PREFIXO_NFCE.len()..], self.ambiente, servico)
+            }
             // `SVC-AN`, `SVC-RS`, `AN` e `SVRS` sao autorizadores; o resto e' sigla de UF
             None if matches!(destino, "SVC-AN" | "SVC-RS" | "AN" | "SVRS") => {
                 tabela::url_do_autorizador(destino, self.ambiente, servico)
@@ -265,6 +275,16 @@ impl<T: Transporte> ClienteSefaz<T> {
     pub async fn status_svc(&self) -> Result<StatusServico, ErroSefaz> {
         let svc = svc::svc_da_uf(self.uf)?;
         self.status_em(svc.autorizador()).await
+    }
+
+    /// O status do servico de autorizacao da NFC-e da UF (`NfeStatusServico`, endereco da tabela da NFC-e). A NFC-e
+    /// nao tem SVC: se o servico nao responde, a saida e' a contingencia off-line (`tpEmis` 9).
+    ///
+    /// # Errors
+    ///
+    /// [`ErroSefaz`] so' se o pedido nao monta; falha de rede volta como [`SituacaoServico::SemResposta`].
+    pub async fn status_nfce(&self) -> Result<StatusServico, ErroSefaz> {
+        self.status_em(&format!("{PREFIXO_NFCE}{}", self.uf)).await
     }
 
     async fn status_em(&self, destino: &str) -> Result<StatusServico, ErroSefaz> {
@@ -333,6 +353,12 @@ impl<T: Transporte> ClienteSefaz<T> {
     ///
     /// [`ErroSefaz`] se a NF-e nao passa na conferencia ou se o ambiente ja passou do corte do assincrono.
     pub async fn autorizar_assincrono(&self, nfe_assinada: &str) -> Result<Resultado, ErroSefaz> {
+        if conferir_nfe(nfe_assinada).is_ok_and(|c| c.chave.modelo == "65") {
+            return Err(ErroSefaz::novo(
+                "a NFC-e nao tem lote assincrono: o envio e' sempre sincrono (NT 2025.001, item 02.3)",
+                "indSinc",
+            ));
+        }
         let hoje = self.hoje();
         if vigencias::vigente("nt2023_002.assincrono", hoje, self.ambiente).unwrap_or(false) {
             let corte = vigencias::inicio("nt2023_002.assincrono", self.ambiente)
@@ -376,7 +402,7 @@ impl<T: Transporte> ClienteSefaz<T> {
         chave: &str,
         nfe_assinada: Option<&str>,
     ) -> Result<Resultado, ErroSefaz> {
-        let ch = pedidos::chave_valida(chave)?;
+        let ch = pedidos::chave_valida_qualquer(chave)?;
         let nfe = match nfe_assinada {
             Some(n) => {
                 let c = conferir_nfe(n)?;
@@ -414,6 +440,13 @@ impl<T: Transporte> ClienteSefaz<T> {
                     pedidos::tp_amb(self.ambiente)
                 ),
                 "tpAmb",
+            ));
+        }
+        // a NFC-e nao e' autorizada pela SVC (rejeicao 783, MOC 7.00, Anexo I, grupo B)
+        if c.chave.modelo == "65" && matches!(c.chave.tp_emis, 6 | 7) {
+            return Err(ErroSefaz::novo(
+                "a NFC-e nao tem SVC: o tpEmis 6 ou 7 e' rejeitado (783); sem o servico use a contingencia off-line (tpEmis 9)",
+                "tpEmis",
             ));
         }
         // na SVC a nota leva o tpEmis da SVC da UF (rejeicao 713, MOC 7.00, Anexo I, B25-40)

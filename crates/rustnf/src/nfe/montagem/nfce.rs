@@ -74,31 +74,59 @@ fn icms_do_item(i: usize, it: &Item, n: &Nota, uf: &str, out: &mut Vec<Rej>) {
     let lista: &[&str] = if csosn { &CSOSN_OK } else { &CST_OK };
     if !lista.contains(&cod) {
         out.push(if csosn {
-            r("383", "ICMS", format!("Item com CSOSN indevido [nItem: {ni}]"))
+            r(
+                "383",
+                "ICMS",
+                format!("Item com CSOSN indevido [nItem: {ni}]"),
+            )
         } else {
             r("766", "ICMS", format!("Item com CST indevido [nItem:{ni}]"))
         });
     }
     if (cod == "90" || cod == "900") && ic.mod_bc_st.is_some() {
         out.push(if csosn {
-            r("385", "ICMS", format!("Grupo de tributacao ICMSSN900, informando dados do ICMS-ST [nItem: {ni}]"))
+            r(
+                "385",
+                "ICMS",
+                format!("Grupo de tributacao ICMSSN900, informando dados do ICMS-ST [nItem: {ni}]"),
+            )
         } else {
-            r("381", "ICMS", format!("Grupo de tributacao ICMS90, informando dados do ICMS-ST [nItem:{ni}]"))
+            r(
+                "381",
+                "ICMS",
+                format!("Grupo de tributacao ICMS90, informando dados do ICMS-ST [nItem:{ni}]"),
+            )
         });
     }
     cfop_do_icms(ni, cfop, cod, csosn, uf, out);
     if ic.partilha {
-        out.push(r("741", "ICMSPart", "NFC-e ou NF-e com DANFE Simplificado Tipo 2 com Partilha de ICMS entre UF"));
+        out.push(r(
+            "741",
+            "ICMSPart",
+            "NFC-e ou NF-e com DANFE Simplificado Tipo 2 com Partilha de ICMS entre UF",
+        ));
     }
     if ic.repasse {
-        out.push(r("740", "ICMSST", format!("Item com Repasse de ICMS retido por Substituto Tributario [nItem: {ni}]")));
+        out.push(r(
+            "740",
+            "ICMSST",
+            format!("Item com Repasse de ICMS retido por Substituto Tributario [nItem: {ni}]"),
+        ));
     }
     if n.emit.crt == 4 && n.id_dest != 3 {
         if csosn && !["102", "300"].contains(&cod) {
-            out.push(r("782", "ICMS", format!("CSOSN invalido para emitente MEI (CRT=4) [nItem:{ni}]")));
+            out.push(r(
+                "782",
+                "ICMS",
+                format!("CSOSN invalido para emitente MEI (CRT=4) [nItem:{ni}]"),
+            ));
         }
         if cfop != "5102" {
-            out.push(r("337", "CFOP", format!("CFOP invalido para emitente MEI (CRT=4) [nItem:{ni}]")));
+            out.push(r(
+                "337",
+                "CFOP",
+                format!("CFOP invalido para emitente MEI (CRT=4) [nItem:{ni}]"),
+            ));
         }
     }
 }
@@ -113,8 +141,16 @@ fn cfop_do_icms(ni: usize, cfop: &str, cod: &str, csosn: bool, uf: &str, out: &m
     let st = cod == "60" || (csosn && cod == "500");
     let ok = (tributado && CFOP_TRIBUTADO.contains(&cfop)) || (st && CFOP_ST.contains(&cfop));
     if (tributado || st) && !ok && !excecao_de_uf(uf, cfop, cod) {
-        let (cs, doc) = if csosn { ("386", "CSOSN") } else { ("382", "CST") };
-        out.push(r(cs, "CFOP", format!("CFOP nao permitido para o {doc} informado [nItem:{ni}]")));
+        let (cs, doc) = if csosn {
+            ("386", "CSOSN")
+        } else {
+            ("382", "CST")
+        };
+        out.push(r(
+            cs,
+            "CFOP",
+            format!("CFOP nao permitido para o {doc} informado [nItem:{ni}]"),
+        ));
     }
 }
 
@@ -123,22 +159,39 @@ fn item(i: usize, it: &Item, n: &Nota, uf: &str, out: &mut Vec<Rej>) {
     let cfop = cfop_de(it);
     let cod = it.icms.as_ref().map_or("", |c: &Icms| c.codigo.trim());
     if !CFOP_NOTA.contains(&cfop) && !excecao_de_uf(uf, cfop, cod) {
-        out.push(r("725", "CFOP", format!("NFC-e ou NF-e com DANFE Simplificado Tipo 2 com CFOP invalido[nItem:{ni}]")));
+        out.push(r(
+            "725",
+            "CFOP",
+            format!("NFC-e ou NF-e com DANFE Simplificado Tipo 2 com CFOP invalido[nItem:{ni}]"),
+        ));
     }
     if it.ind_tot == 0 {
         out.push(r("774", "indTot", format!("NFC-e ou NF-e com DANFE Simplificado Tipo 2 com indicador de item nao participante do total [nItem: {ni}]")));
     }
     if it.veiculo.is_some() {
-        out.push(r("736", "veicProd", "NFC-e ou NF-e com DANFE Simplificado Tipo 2 com grupo de Veiculos novos"));
+        out.push(r(
+            "736",
+            "veicProd",
+            "NFC-e ou NF-e com DANFE Simplificado Tipo 2 com grupo de Veiculos novos",
+        ));
     }
     if it.ipi.is_some() {
-        out.push(r("742", "IPI", "NFC-e ou NF-e com DANFE Simplificado Tipo 2 com grupo do IPI"));
+        out.push(r(
+            "742",
+            "IPI",
+            "NFC-e ou NF-e com DANFE Simplificado Tipo 2 com grupo do IPI",
+        ));
     }
     if it.icms_uf_dest.is_some() {
         out.push(r("807", "ICMSUFDest", "NFC-e ou NF-e com DANFE Simplificado Tipo 2 com grupo de ICMS para a UF do destinatario"));
     }
-    if it.dfe_ref.is_some() {
-        out.push(r("708", "DFeReferenciado", "NFC-e ou NF-e com DANFE Simplificado Tipo 2 nao pode referenciar documento fiscal"));
+    // na NF-e com tpImp 6 o item referenciado e' conferido pela regra VC02-04 (com a data de vigencia), em `regras`
+    if n.modelo == 65 && it.dfe_ref.is_some() {
+        out.push(r(
+            "708",
+            "DFeReferenciado",
+            "NFC-e ou NF-e com DANFE Simplificado Tipo 2 nao pode referenciar documento fiscal",
+        ));
     }
     icms_do_item(i, it, n, uf, out);
 }
@@ -152,37 +205,76 @@ fn tem_destinatario(n: &Nota) -> bool {
 fn ide(n: &Nota, out: &mut Vec<Rej>) {
     const T2: &str = "NFC-e ou NF-e com DANFE Simplificado Tipo 2";
     if n.saida.is_some() {
-        out.push(r("705", "dhSaiEnt", format!("{T2} com data de entrada/saida")));
+        out.push(r(
+            "705",
+            "dhSaiEnt",
+            format!("{T2} com data de entrada/saida"),
+        ));
     }
     if n.tp_nf == 0 {
         out.push(r("706", "tpNF", format!("{T2} para operacao de entrada")));
     }
     if n.id_dest != 1 {
-        out.push(r("707", "idDest", format!("{T2} para operacao interestadual ou com o exterior")));
+        out.push(r(
+            "707",
+            "idDest",
+            format!("{T2} para operacao interestadual ou com o exterior"),
+        ));
     }
     if n.fin_nfe != 1 {
         out.push(r("715", "finNFe", format!("{T2} com finalidade invalida")));
     }
     if ind_final(n) == 0 {
-        out.push(r("716", "indFinal", format!("{T2} em operacao nao destinada a consumidor final")));
+        out.push(r(
+            "716",
+            "indFinal",
+            format!("{T2} em operacao nao destinada a consumidor final"),
+        ));
     }
     if ![1, 4, 5].contains(&ind_pres(n)) {
-        out.push(r("717", "indPres", format!("{T2} em operacao nao permitida")));
+        out.push(r(
+            "717",
+            "indPres",
+            format!("{T2} em operacao nao permitida"),
+        ));
     }
     if ind_pres(n) == 4 && !tem_destinatario(n) {
-        out.push(r("787", "dest", format!("{T2} (tpImp 6) em operacao nao presencial sem a identificacao do destinatario")));
+        out.push(r(
+            "787",
+            "dest",
+            format!(
+                "{T2} (tpImp 6) em operacao nao presencial sem a identificacao do destinatario"
+            ),
+        ));
     }
     if !n.refs_nfe.is_empty() {
-        out.push(r("708", "NFref", format!("{T2} nao pode referenciar documento fiscal")));
+        out.push(r(
+            "708",
+            "NFref",
+            format!("{T2} nao pode referenciar documento fiscal"),
+        ));
     }
     if n.emit.iest.as_deref().is_some_and(|s| !s.trim().is_empty()) {
-        out.push(r("718", "IEST", format!("{T2} nao deve informar IE de Substituto Tributario")));
+        out.push(r(
+            "718",
+            "IEST",
+            format!("{T2} nao deve informar IE de Substituto Tributario"),
+        ));
     }
     if n.retirada.is_some() {
-        out.push(r("669", "retirada", "Local de retirada informado indevidamente"));
+        out.push(r(
+            "669",
+            "retirada",
+            "Local de retirada informado indevidamente",
+        ));
     }
-    if n.modelo == 65 && n.dest.as_ref().is_some_and(|d| d.ind_ie_dest != 9) && tem_destinatario(n) {
-        out.push(r("789", "indIEDest", "NFC-e para destinatario contribuinte de ICMS"));
+    if n.modelo == 65 && n.dest.as_ref().is_some_and(|d| d.ind_ie_dest != 9) && tem_destinatario(n)
+    {
+        out.push(r(
+            "789",
+            "indIEDest",
+            "NFC-e para destinatario contribuinte de ICMS",
+        ));
     }
 }
 
@@ -194,7 +286,11 @@ fn emissao(n: &Nota, out: &mut Vec<Rej>) {
             out.push(r("709", "tpImp", "NFC-e com formato de DANFE invalido"));
         }
         if matches!(emis, 2 | 5) {
-            out.push(r("714", "tpEmis", "NFC-e com contingencia invalida (tpEmis=2, 4 (a criterio da UF) ou 5)"));
+            out.push(r(
+                "714",
+                "tpEmis",
+                "NFC-e com contingencia invalida (tpEmis=2, 4 (a criterio da UF) ou 5)",
+            ));
         }
         if matches!(emis, 3 | 6 | 7) {
             out.push(r("783", "tpEmis", "NFC-e nao e' autorizada pela SVC"));
@@ -203,7 +299,11 @@ fn emissao(n: &Nota, out: &mut Vec<Rej>) {
         out.push(r("710", "tpImp", "NF-e com formato de DANFE invalido"));
     }
     if n.modelo == 55 && emis == 9 && imp != 6 {
-        out.push(r("711", "tpEmis", "NF-e com contingencia off-line em operacao nao permitida"));
+        out.push(r(
+            "711",
+            "tpEmis",
+            "NF-e com contingencia off-line em operacao nao permitida",
+        ));
     }
 }
 
@@ -214,29 +314,65 @@ fn transporte_e_grupos(n: &Nota, out: &mut Vec<Rej>) {
     }
     if let Some(t) = &n.transp {
         if t.ret_transp.is_some() {
-            out.push(r("755", "retTransp", format!("{T2} com dados de Retencao do ICMS no Transporte")));
+            out.push(r(
+                "755",
+                "retTransp",
+                format!("{T2} com dados de Retencao do ICMS no Transporte"),
+            ));
         }
         if t.veic.is_some() {
-            out.push(r("756", "veicTransp", format!("{T2} com dados do veiculo de Transporte")));
+            out.push(r(
+                "756",
+                "veicTransp",
+                format!("{T2} com dados do veiculo de Transporte"),
+            ));
         }
         if !t.reboque.is_empty() {
-            out.push(r("757", "reboque", format!("{T2} com dados de Reboque do veiculo de Transporte")));
+            out.push(r(
+                "757",
+                "reboque",
+                format!("{T2} com dados de Reboque do veiculo de Transporte"),
+            ));
         }
         if t.vagao.is_some() {
-            out.push(r("758", "vagao", format!("{T2} com dados do Vagao de Transporte")));
+            out.push(r(
+                "758",
+                "vagao",
+                format!("{T2} com dados do Vagao de Transporte"),
+            ));
         }
         if t.balsa.is_some() {
-            out.push(r("759", "balsa", format!("{T2} com dados da Balsa de Transporte")));
+            out.push(r(
+                "759",
+                "balsa",
+                format!("{T2} com dados da Balsa de Transporte"),
+            ));
         }
     }
     if n.cobr.is_some() {
-        out.push(r("760", "cobr", format!("{T2} com dados de cobranca (Fatura, Duplicata)")));
+        out.push(r(
+            "760",
+            "cobr",
+            format!("{T2} com dados de cobranca (Fatura, Duplicata)"),
+        ));
     }
     if n.compra.is_some() {
-        out.push(r("762", "compra", format!("{T2} com dados de compras (Empenho, Pedido, Contrato)")));
+        out.push(r(
+            "762",
+            "compra",
+            format!("{T2} com dados de compras (Empenho, Pedido, Contrato)"),
+        ));
     }
-    if n.modelo == 65 && n.pagamentos.iter().any(|p| format!("{:0>2}", p.t_pag.trim()) == "99") {
-        out.push(r("436", "tPag", "Informado 99-Outros como meio de pagamento"));
+    if n.modelo == 65
+        && n.pagamentos
+            .iter()
+            .any(|p| format!("{:0>2}", p.t_pag.trim()) == "99")
+    {
+        out.push(r(
+            "436",
+            "tPag",
+            "Informado 99-Outros como meio de pagamento",
+        ));
     }
 }
 

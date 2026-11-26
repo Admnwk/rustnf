@@ -69,10 +69,22 @@ pub fn assinar_com(m: &Montada, cert: &Certificado, op: &OpcoesQr) -> Res<String
     let assina = |b: &[u8]| xmldsig::assinar_sha1(&cert.chave, b);
     let qr = qrcode::texto_do_qr(&d, versao, endereco, op.csc.as_ref(), &dig_val, &assina)?;
     let supl = qrcode::infnfesupl(&qr, url_chave)?;
+    // a Signature e' o ultimo filho da NFe, logo depois do fechamento do infNFe: o infNFeSupl entra antes dela
     let ponto = assinada
-        .rfind("<Signature")
-        .ok_or_else(|| erro("a nota assinada nao tem a Signature", "Signature"))?;
-    Ok(format!("{}{supl}{}", &assinada[..ponto], &assinada[ponto..]))
+        .find("</infNFe>")
+        .map(|i| i + "</infNFe>".len())
+        .filter(|&i| assinada[i..].starts_with("<Signature"))
+        .ok_or_else(|| {
+            erro(
+                "a nota assinada nao tem a Signature depois do infNFe",
+                "Signature",
+            )
+        })?;
+    Ok(format!(
+        "{}{supl}{}",
+        &assinada[..ponto],
+        &assinada[ponto..]
+    ))
 }
 
 /// O texto do `DigestValue` da assinatura (base64, 28 caracteres para o SHA-1).

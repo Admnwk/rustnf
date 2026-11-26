@@ -38,8 +38,8 @@ struct Linha {
 
 #[derive(Deserialize)]
 struct PorAmbiente {
-    producao: Linha,
-    homologacao: Linha,
+    producao: Option<Linha>,
+    homologacao: Option<Linha>,
 }
 
 #[derive(Deserialize)]
@@ -61,10 +61,18 @@ fn arquivo() -> &'static Arquivo {
     })
 }
 
-fn do_ambiente(p: &PorAmbiente, amb: Ambiente) -> &str {
+fn do_ambiente(p: &PorAmbiente, amb: Ambiente) -> Option<&str> {
     match amb {
-        Ambiente::Producao => &p.producao.url,
-        Ambiente::Homologacao => &p.homologacao.url,
+        Ambiente::Producao => p.producao.as_ref(),
+        Ambiente::Homologacao => p.homologacao.as_ref(),
+    }
+    .map(|l| l.url.as_str())
+}
+
+fn nome_do_ambiente(amb: Ambiente) -> &'static str {
+    match amb {
+        Ambiente::Producao => "producao",
+        Ambiente::Homologacao => "homologacao",
     }
 }
 
@@ -75,16 +83,20 @@ fn do_ambiente(p: &PorAmbiente, amb: Ambiente) -> &str {
 /// [`super::ErroMontagem`] (campo `qrCode`) se a tabela oficial nao tem a UF: a mensagem diz por que ela ficou fora.
 pub fn url_qrcode(uf: &str, amb: Ambiente) -> Res<&'static str> {
     let a = arquivo();
-    match a.qrcode.get(uf) {
-        Some(p) => Ok(do_ambiente(p, amb)),
-        None => Err(erro(
-            match a.fora_da_tabela.get(uf) {
-                Some(porque) => format!("sem endereco do QR Code para {uf}: {porque}"),
-                None => format!("sem endereco do QR Code para a UF {uf}"),
-            },
-            "qrCode",
-        )),
+    if let Some(u) = a.qrcode.get(uf).and_then(|p| do_ambiente(p, amb)) {
+        return Ok(u);
     }
+    let porque = a.fora_da_tabela.get(uf).or_else(|| {
+        a.fora_da_tabela
+            .get(&format!("{uf}/{}", nome_do_ambiente(amb)))
+    });
+    Err(erro(
+        match porque {
+            Some(porque) => format!("sem endereco do QR Code para {uf}: {porque}"),
+            None => format!("sem endereco do QR Code para a UF {uf}"),
+        },
+        "qrCode",
+    ))
 }
 
 /// O endereco da consulta por chave de acesso (`urlChave`) da UF no ambiente, como o Portal Nacional da NFC-e o publica.
@@ -96,7 +108,7 @@ pub fn url_chave(uf: &str, amb: Ambiente) -> Res<&'static str> {
     arquivo()
         .url_chave
         .get(uf)
-        .map(|p| do_ambiente(p, amb))
+        .and_then(|p| do_ambiente(p, amb))
         .ok_or_else(|| {
             erro(
                 format!("sem endereco de consulta por chave para a UF {uf}"),
@@ -297,7 +309,11 @@ fn qr_v3(d: &Dados, assinar: &dyn Fn(&[u8]) -> Vec<u8>) -> String {
 pub(crate) fn versao(d: &Dados, op: &OpcoesQr) -> Res<u8> {
     let v = op
         .versao
-        .unwrap_or(if op.csc.is_some() && d.modelo == "65" { 2 } else { 3 });
+        .unwrap_or(if op.csc.is_some() && d.modelo == "65" {
+            2
+        } else {
+            3
+        });
     if !(2..=3).contains(&v) {
         return Err(erro(format!("versao do QR Code {v}: use 2 ou 3"), "qrCode"));
     }

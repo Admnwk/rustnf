@@ -105,7 +105,11 @@ pub struct Resultado {
 
 impl Resultado {
     pub(crate) fn novo(desfecho: Desfecho, chave: &str) -> Self {
-        let frase = frase_do(&desfecho);
+        let mut frase = frase_do(&desfecho);
+        // as frases falam da NF-e; na NFC-e (modelo 65, posicoes 20 e 21 da chave) falam da NFC-e
+        if chave.get(20..22) == Some("65") {
+            frase = frase.replace("NF-e", "NFC-e");
+        }
         Resultado {
             desfecho,
             chave: chave.to_string(),

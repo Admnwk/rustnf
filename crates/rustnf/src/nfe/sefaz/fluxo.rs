@@ -324,7 +324,7 @@ impl<T: Transporte> ClienteSefaz<T> {
         uf: &str,
         nfe: Option<&str>,
     ) -> Result<Resultado, ErroSefaz> {
-        let pedido = pedidos::cons_sit(self.ambiente, chave)?;
+        let pedido = pedidos::cons_sit_qualquer(self.ambiente, chave)?;
         let sem = |detalhe: String| {
             let mut r = Resultado::novo(Desfecho::SemResposta, chave);
             r.detalhe = detalhe;

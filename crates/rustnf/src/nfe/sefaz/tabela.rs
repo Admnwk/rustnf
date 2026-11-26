@@ -23,6 +23,8 @@ use crate::nfe::montagem::{uf_codigo, uf_sigla};
 use crate::nfe::vigencias::Ambiente;
 
 const TABELA: &str = include_str!("../../../dados/nfe_ws.json");
+/// Os enderecos da NFC-e (modelo 65): o autorizador da UF e a tabela dos servicos da versao 4.00.
+const TABELA_NFCE: &str = include_str!("../../../dados/nfce_ws.json");
 
 /// Prefixo do espaco de nomes do WSDL de cada servico (MOC 7.00, Visao Geral, 4.2.2: o `nfeDadosMsg` leva o espaco de
 /// nomes do servico que esta sendo chamado).
@@ -155,7 +157,16 @@ struct Arquivo {
 
 fn arquivo() -> &'static Arquivo {
     static T: OnceLock<Arquivo> = OnceLock::new();
-    T.get_or_init(|| match serde_json::from_str(TABELA) {
+    T.get_or_init(|| ler_tabela(TABELA))
+}
+
+fn arquivo_nfce() -> &'static Arquivo {
+    static T: OnceLock<Arquivo> = OnceLock::new();
+    T.get_or_init(|| ler_tabela(TABELA_NFCE))
+}
+
+fn ler_tabela(texto: &str) -> Arquivo {
+    match serde_json::from_str(texto) {
         Ok(a) => a,
         // o JSON e' embutido e conferido por teste: este ramo nao roda
         Err(_) => Arquivo {
@@ -167,7 +178,7 @@ fn arquivo() -> &'static Arquivo {
             uf_autorizador: BTreeMap::new(),
             autorizadores: BTreeMap::new(),
         },
-    })
+    }
 }
 
 /// As duas paginas de onde a tabela veio e o dia da leitura.
@@ -300,4 +311,59 @@ pub fn url_do_autorizador(
     Ok(endereco(autorizador, ambiente, servico.nome_na_pagina())?
         .url_da_chamada()
         .to_string())
+}
+
+/// O autorizador da NFC-e da UF: ela mesma ou a `SVRS` (mapa de autorizadores do portal da SVRS).
+///
+/// # Errors
+///
+/// [`ErroSefaz`] se a UF e' desconhecida.
+pub fn autorizador_nfce_da_uf(uf: &str) -> Result<&'static str, ErroSefaz> {
+    let sigla = uf_valida(uf)?;
+    arquivo_nfce()
+        .uf_autorizador
+        .get(sigla)
+        .map(String::as_str)
+        .ok_or_else(|| {
+            ErroSefaz::novo(
+                format!("a tabela da NFC-e nao tem autorizador para {sigla}"),
+                "uf",
+            )
+        })
+}
+
+/// O endereco da chamada de um servico da NFC-e para a UF no ambiente: UF -> autorizador -> linha da tabela, sem o
+/// `?wsdl`. A NFC-e usa tabela propria (os enderecos do modelo 65 sao outros que os do 55).
+///
+/// # Errors
+///
+/// [`ErroSefaz`] se a UF e' desconhecida ou o autorizador nao oferece o servico no ambiente.
+pub fn url_nfce(uf: &str, ambiente: Ambiente, servico: Servico) -> Result<String, ErroSefaz> {
+    let aut = autorizador_nfce_da_uf(uf)?;
+    let a = arquivo_nfce().autorizadores.get(aut).ok_or_else(|| {
+        ErroSefaz::novo(
+            format!("autorizador '{aut}' fora da tabela da NFC-e"),
+            "autorizador",
+        )
+    })?;
+    let m = match ambiente {
+        Ambiente::Producao => &a.producao,
+        Ambiente::Homologacao => &a.homologacao,
+    };
+    m.get(servico.nome_na_pagina())
+        .map(|e| e.url_da_chamada().to_string())
+        .ok_or_else(|| {
+            ErroSefaz::novo(
+                format!(
+                    "{} nao e' oferecido por {aut} para a NFC-e neste ambiente",
+                    servico.nome_na_pagina()
+                ),
+                "servico",
+            )
+        })
+}
+
+/// Os autorizadores da tabela da NFC-e (as UF com webservice proprio e a `SVRS`).
+pub fn autorizadores_nfce() -> impl Iterator<Item = &'static str> {
+    arquivo_nfce().autorizadores.keys().map(String::as_str)
 }

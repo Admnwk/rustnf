@@ -45,6 +45,7 @@
 
 mod cliente;
 mod cliente_eventos;
+pub mod contingencia;
 pub mod dfe;
 mod erro;
 pub mod evento;

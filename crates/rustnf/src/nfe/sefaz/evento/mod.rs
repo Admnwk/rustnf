@@ -17,8 +17,8 @@ mod manifestacao;
 mod rtc;
 
 pub use cancelamento::{
-    cancelamento, carta_correcao, Cancelamento, CartaCorrecao, CANCELAMENTO, CARTA_CORRECAO,
-    COND_USO, MAX_SEQ_CARTA,
+    cancelamento, cancelamento_nfce, carta_correcao, Cancelamento, CartaCorrecao, CANCELAMENTO,
+    CARTA_CORRECAO, COND_USO, MAX_SEQ_CARTA,
 };
 pub use comum::{Montado, PedidoEvento, VERSAO_EVENTO};
 pub use epec::{campos_epec, epec, CamposEpec, Epec, EPEC, ORGAO_AMBIENTE_NACIONAL};
