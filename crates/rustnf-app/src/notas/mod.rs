@@ -16,6 +16,7 @@
 
 mod filtro;
 mod manutencao;
+pub mod nfe;
 mod registro;
 #[cfg(test)]
 mod testes;
@@ -72,6 +73,8 @@ pub enum ErroNotas {
     Bloqueada,
     /// O proximo numero pedido ja foi usado nesta serie (confirmado ou guardado na pasta).
     NumeroJaUsado,
+    /// O numero da NF-e ja esta com outra nota ou faixa inutilizada (ou a nota nao esta pendente).
+    NumeroNfeOcupado,
 }
 
 impl fmt::Display for ErroNotas {
@@ -91,6 +94,9 @@ impl fmt::Display for ErroNotas {
             Self::Bloqueada => "notas: a pasta esta em uso por outro processo; tente de novo",
             Self::NumeroJaUsado => {
                 "notas: esse numero de DPS ja foi usado nesta serie; o proximo so' pode ir para a frente"
+            }
+            Self::NumeroNfeOcupado => {
+                "notas: esse numero de NF-e ja esta com uma nota (autorizada, denegada, cancelada, pendente ou em EPEC) ou inutilizado nesta serie"
             }
         })
     }

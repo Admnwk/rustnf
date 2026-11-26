@@ -14,7 +14,8 @@
 //! * [`cofre`] -- onde a senha do certificado fica guardada;
 //! * [`certificado`] -- abrir o certificado A1 e montar o cliente da Sefin Nacional;
 //! * [`eventos`] -- o Id da DPS pelo `[emitente]` e o registro de eventos do contribuinte;
-//! * [`notas`] -- a pasta de notas autorizadas e a numeracao da DPS;
+//! * [`notas`] -- a pasta de notas autorizadas e a numeracao da DPS (e, em `notas::nfe`, a da NF-e);
+//! * [`nfe`] -- a NF-e (modelo 55): emissao com recuperacao, eventos, inutilizacao, retomada, consulta e DANFE;
 //! * [`atualizacao`] -- a situacao das notas da pasta conferida contra a Sefin, em lote;
 //! * [`atomico`] -- gravacao atomica de arquivo, para quem guarda algo na pasta de notas.
 #![forbid(unsafe_code)]
@@ -30,6 +31,7 @@ pub mod config;
 pub mod emissao;
 pub mod erro;
 pub mod eventos;
+pub mod nfe;
 pub mod notas;
 pub mod nucleo;
 pub mod pedido;

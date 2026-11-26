@@ -13,10 +13,12 @@ publish = false
 workspace = true
 
 [dependencies]
-rustnf = { path = "../rustnf", features = ["sefin", "danfse"] }
+rustnf = { path = "../rustnf", features = ["sefin", "danfse", "nfe_sefaz", "danfe"] }
 async-trait = "0.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+# o relogio da emissao da NF-e (o `dhEmi` e os instantes da pasta de notas); a mesma crate que a biblioteca ja usa
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
 # o intervalo entre as consultas da atualizacao em lote (so' o relogio; o runtime e' de quem chama)
 tokio = { version = "1", default-features = false, features = ["time"] }
 toml = "1"
@@ -25,8 +27,7 @@ zeroize = "1"
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
 
 [dev-dependencies]
-rustnf = { path = "../rustnf", features = ["sefin", "danfse", "cert_a1_teste"] }
-chrono = { version = "0.4", default-features = false, features = ["clock"] }
+rustnf = { path = "../rustnf", features = ["sefin", "danfse", "nfe_sefaz", "danfe", "cert_a1_teste"] }
 tokio = { version = "1", features = ["rt", "time", "macros"] }
 
 [target.'cfg(windows)'.dependencies]

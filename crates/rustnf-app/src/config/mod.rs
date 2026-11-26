@@ -17,6 +17,7 @@ mod efetiva;
 mod emitente;
 mod erro;
 mod modelo;
+mod nfe;
 mod validar;
 
 use std::collections::BTreeMap;
@@ -26,11 +27,13 @@ use rustnf::reforma::aliquotas::{Publicada, Publicadas};
 pub use arquivo::{caminho_do_arquivo, caminho_padrao, LerAmbiente, VARIAVEL_CONFIG};
 pub use efetiva::{Efetiva, VARIAVEIS};
 pub use emitente::aplicar_emitente;
+pub(crate) use emitente::{ausente, completar, texto};
 pub use erro::{ErroConfig, Indicado};
 pub use modelo::{
     aliquota_iss_vai_na_dps, Aliquota, Config, Danfse, Emitente, Interface, Notas, Sefin, Servidor,
     TEMAS,
 };
+pub use nfe::{EnderecoNfe, Nfe, SERVICOS};
 
 fn opcional(s: &str) -> Option<String> {
     let t = s.trim();

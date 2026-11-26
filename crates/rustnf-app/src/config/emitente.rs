@@ -9,7 +9,7 @@ use serde_json::{json, Map, Value};
 use super::modelo::{aliquota_iss_vai_na_dps, Emitente};
 
 /// Campo ausente: nao existe, e' `null` ou e' texto vazio.
-fn ausente(objeto: &Map<String, Value>, chave: &str) -> bool {
+pub(crate) fn ausente(objeto: &Map<String, Value>, chave: &str) -> bool {
     match objeto.get(chave) {
         None | Some(Value::Null) => true,
         Some(Value::String(s)) => s.trim().is_empty(),
@@ -17,13 +17,13 @@ fn ausente(objeto: &Map<String, Value>, chave: &str) -> bool {
     }
 }
 
-fn completar(objeto: &mut Map<String, Value>, chave: &str, valor: Value) {
+pub(crate) fn completar(objeto: &mut Map<String, Value>, chave: &str, valor: Value) {
     if ausente(objeto, chave) {
         objeto.insert(chave.into(), valor);
     }
 }
 
-fn texto(s: &str) -> Option<Value> {
+pub(crate) fn texto(s: &str) -> Option<Value> {
     (!s.is_empty()).then(|| json!(s))
 }
 
