@@ -5,6 +5,8 @@
 //! Ajudantes dos testes de integracao: contratos da biblioteca, transporte falso da Sefin e roteador em memoria.
 #![allow(dead_code, unreachable_pub)]
 
+pub mod nfe_falso;
+
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::atomic::{AtomicU64, Ordering};

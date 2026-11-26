@@ -23,7 +23,9 @@
 //! fixo do operador).
 
 mod ferramentas;
+mod ferramentas_nfe;
 mod schemas;
+pub mod schemas_nfe;
 
 use axum::http::header::AUTHORIZATION;
 use axum::http::{HeaderMap, StatusCode};
@@ -241,7 +243,7 @@ fn inicializar(id: &Value, params: Option<&Value>) -> Saida {
             "protocolVersion": VERSAO_LEGADA,
             "capabilities": {"tools": {"listChanged": false}},
             "serverInfo": identidade(),
-            "instructions": "Emissor de NFS-e nacional. Ferramentas de leitura sempre; emitir_nfse, consultar_nfse e cancelar_nfse so' com o servidor iniciado com emissao e o Bearer do operador.",
+            "instructions": "Emissor de NFS-e nacional e de NF-e (modelo 55). Ferramentas de leitura sempre; as que emitem, consultam ou registram eventos (emitir_nfse, emitir_nfe, cancelar_nfe e as demais com efeito fiscal ou de rede) so' com o servidor iniciado com emissao e o Bearer do operador.",
         }),
     )
 }
@@ -254,7 +256,7 @@ fn descobrir(id: &Value) -> Saida {
             json!({
                 "supportedVersions": [VERSAO_MODERNA, VERSAO_LEGADA],
                 "capabilities": {"tools": {}},
-                "instructions": "Emissor de NFS-e nacional. Ferramentas de leitura sempre; emitir_nfse, consultar_nfse e cancelar_nfse so' com o servidor iniciado com emissao e o Bearer do operador.",
+                "instructions": "Emissor de NFS-e nacional e de NF-e (modelo 55). Ferramentas de leitura sempre; as que emitem, consultam ou registram eventos (emitir_nfse, emitir_nfe, cancelar_nfe e as demais com efeito fiscal ou de rede) so' com o servidor iniciado com emissao e o Bearer do operador.",
             }),
             "public",
         ),

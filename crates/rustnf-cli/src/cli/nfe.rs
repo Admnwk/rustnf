@@ -38,7 +38,7 @@ impl From<SituacaoNfe> for Situacao {
 }
 
 /// A pasta de notas da NF-e, se a configuracao tiver `[notas].pasta`.
-fn notas_da(e: &Efetiva) -> Result<Option<NotasNfe>, Erro> {
+pub(super) fn notas_da(e: &Efetiva) -> Result<Option<NotasNfe>, Erro> {
     if e.config.notas.pasta.is_empty() {
         return Ok(None);
     }
@@ -236,27 +236,7 @@ fn conferir(a: &ArgConferirNfe, config: Option<&Path>) -> Result<(), Erro> {
         pedido,
         !a.ignorar_desconhecidos,
     );
-    let v = match &r {
-        Ok(m) => {
-            let mut v = json!({
-                "ok": true,
-                "chave": m.chave,
-                "serie": m.serie,
-                "numero": m.numero,
-                "totais": m.totais,
-                "avisos": nfe::avisos_json(&m.avisos),
-            });
-            if !m.desconhecidos.is_empty() {
-                v["campos_desconhecidos"] = json!(m.desconhecidos);
-            }
-            v
-        }
-        Err(e) => {
-            let mut v = e.envelope()["erro"].clone();
-            v["ok"] = json!(false);
-            v
-        }
-    };
+    let v = nfe::conferencia_json(&r);
     if r.is_ok() {
         avisar(&v);
     }
@@ -292,26 +272,7 @@ async fn retomar<T: Transporte>(ctx: &Contexto<'_, T>, json: bool) -> Result<(),
             escrever_stdout(linha.as_bytes())?;
         }
     }
-    let sem = feitos
-        .iter()
-        .filter(|f| matches!(f.situacao, Some(Situacao::Pendente | Situacao::Epec)))
-        .count();
-    let recusadas = feitos
-        .iter()
-        .filter(|f| matches!(f.status, "rejeitada" | "denegada" | "numero_ja_usado"))
-        .count();
-    if sem > 0 {
-        return Err(Erro::Rede(format!(
-            "{sem} nota(s) seguem sem resultado: tente de novo mais tarde e nao emita outra no lugar"
-        )));
-    }
-    if recusadas > 0 {
-        return Err(Erro::recusa(
-            "",
-            format!("{recusadas} nota(s) foram recusadas ou denegadas pela SEFAZ"),
-        ));
-    }
-    Ok(())
+    nfe::erro_da_retomada(&feitos).map_or(Ok(()), Err)
 }
 
 fn listar_pendentes(json: bool, config: Option<&Path>) -> Result<(), Erro> {

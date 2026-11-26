@@ -166,7 +166,10 @@ async fn tools_list_sem_emissao_so_tem_as_de_leitura() {
                 "calcular_cbs_ibs",
                 "conferir_dps",
                 "montar_dps",
-                "gerar_danfse"
+                "gerar_danfse",
+                "conferir_nfe",
+                "montar_nfe",
+                "gerar_danfe"
             ]
         );
         for t in v["result"]["tools"].as_array().unwrap() {
@@ -186,7 +189,7 @@ async fn tools_list_sem_emissao_so_tem_as_de_leitura() {
 async fn tools_list_com_emissao_so_mostra_as_de_emissao_com_o_bearer() {
     let app = app_emissao(Falso::default());
     let (_, _, corpo) = enviar(&app, moderna("tools/list", json!({}), &[])).await;
-    assert_eq!(nomes(&json_do_corpo(&corpo)).len(), 4);
+    assert_eq!(nomes(&json_do_corpo(&corpo)).len(), 7);
 
     let a = auth();
     let (st, _, corpo) = enviar(
@@ -196,7 +199,7 @@ async fn tools_list_com_emissao_so_mostra_as_de_emissao_com_o_bearer() {
     .await;
     assert_eq!(st, StatusCode::OK);
     let n = nomes(&json_do_corpo(&corpo));
-    assert_eq!(n.len(), 11);
+    assert_eq!(n.len(), 22);
     for nome in [
         "emitir_nfse",
         "consultar_nfse",

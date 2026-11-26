@@ -10,7 +10,7 @@ use rustnf::nfse::Dps;
 use serde::Deserialize;
 use serde_json::{json, Value};
 
-use super::schemas;
+use super::{ferramentas_nfe, schemas};
 use crate::emissao;
 use crate::erro::Erro;
 use crate::http::Estado;
@@ -27,7 +27,7 @@ pub struct Ferramenta {
     pub descricao: &'static str,
     /// So' existe e so' executa com `--permitir-emissao` e o Bearer.
     pub emissao: bool,
-    schema: fn() -> Value,
+    pub(super) schema: fn() -> Value,
 }
 
 const FERRAMENTAS: [Ferramenta; 11] = [
@@ -113,7 +113,10 @@ const FERRAMENTAS: [Ferramenta; 11] = [
 /// Acha a ferramenta pelo nome.
 #[must_use]
 pub fn buscar(nome: &str) -> Option<&'static Ferramenta> {
-    FERRAMENTAS.iter().find(|f| f.nome == nome)
+    FERRAMENTAS
+        .iter()
+        .chain(ferramentas_nfe::FERRAMENTAS.iter())
+        .find(|f| f.nome == nome)
 }
 
 /// Definicoes para `tools/list`, em ordem fixa; as de emissao so' com `com_emissao`.
@@ -121,6 +124,7 @@ pub fn buscar(nome: &str) -> Option<&'static Ferramenta> {
 pub fn listar(com_emissao: bool) -> Vec<Value> {
     FERRAMENTAS
         .iter()
+        .chain(ferramentas_nfe::FERRAMENTAS.iter())
         .filter(|f| com_emissao || !f.emissao)
         .map(|f| {
             json!({
@@ -133,11 +137,11 @@ pub fn listar(com_emissao: bool) -> Vec<Value> {
         .collect()
 }
 
-fn resultado_texto(texto: String, erro: bool) -> Value {
+pub(super) fn resultado_texto(texto: String, erro: bool) -> Value {
     json!({"content": [{"type": "text", "text": texto}], "isError": erro})
 }
 
-fn resultado_estruturado(v: Value, erro: bool) -> Value {
+pub(super) fn resultado_estruturado(v: Value, erro: bool) -> Value {
     json!({
         "content": [{"type": "text", "text": v.to_string()}],
         "structuredContent": v,
@@ -149,7 +153,7 @@ fn falha(e: &Erro) -> Value {
     resultado_texto(e.to_string(), true)
 }
 
-fn argumentos<T: for<'de> Deserialize<'de>>(args: Value) -> Result<T, Erro> {
+pub(super) fn argumentos<T: for<'de> Deserialize<'de>>(args: Value) -> Result<T, Erro> {
     Ok(serde_json::from_value(args)?)
 }
 
@@ -303,7 +307,7 @@ async fn rodar(f: &Ferramenta, estado: &Estado, args: Value) -> Result<Value, Er
             let v = estado.cancelar(em, &p).await?;
             Ok(resultado_estruturado(v, false))
         }
-        _ => Err(Erro::Interno),
+        _ => ferramentas_nfe::rodar(f.nome, estado, args).await,
     }
 }
 
