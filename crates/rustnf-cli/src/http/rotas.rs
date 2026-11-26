@@ -72,6 +72,8 @@ pub(super) async fn health(State(estado): State<Arc<Estado>>) -> Response {
             "versao": env!("CARGO_PKG_VERSION"),
             "emissao": estado.emissao.is_some(),
             "nfe": estado.nfe.pronta(),
+            "nfce": estado.nfce.pronta(),
+            "nfce_csc_guardado": estado.nfce.csc_guardado(),
         }),
     )
 }

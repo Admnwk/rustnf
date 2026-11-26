@@ -40,6 +40,23 @@ impl Transporte for TransporteDin {
     }
 }
 
+/// O cliente real da SEFAZ para a `config` (a da NF-e ou a vista pela NFC-e): TLS mutuo pelo A1, raizes da ICP-Brasil e a CA
+/// extra de `[nfe].ca_pem`.
+///
+/// # Errors
+///
+/// [`Erro::Entrada`] se `ca_pem` nao le; [`Erro::Recusa`] se o certificado nao serve para TLS; os da configuracao do cliente.
+pub(super) fn cliente_real(
+    config: &Config,
+    certificado: &Certificado,
+) -> Result<ClienteSefaz<TransporteDin>, Erro> {
+    let sefaz = nfe::config_sefaz(config)?;
+    let ca = nfe::ler_ca_pem(config)?;
+    let transporte = TransporteReqwest::novo(certificado, ca.as_deref(), sefaz.timeout)
+        .map_err(|_| Erro::recusa("certificado", "o certificado nao serve para TLS"))?;
+    Ok(ClienteSefaz::com_transporte(sefaz, dinamico(transporte))?)
+}
+
 /// O que uma acao da NF-e devolveu: o JSON completo e, se a nota nao ficou como o pedido queria, o erro (recusa de regra
 /// ou falha de rede) com a frase da SEFAZ.
 #[derive(Debug)]
@@ -112,11 +129,7 @@ impl ServidorNfe {
         if config.nfe.uf.is_empty() {
             return Ok(Self::sem_emissao(config, notas, SEM_UF));
         }
-        let sefaz = nfe::config_sefaz(&config)?;
-        let ca = nfe::ler_ca_pem(&config)?;
-        let transporte = TransporteReqwest::novo(&certificado, ca.as_deref(), sefaz.timeout)
-            .map_err(|_| Erro::recusa("certificado", "o certificado nao serve para TLS"))?;
-        let cliente = ClienteSefaz::com_transporte(sefaz, dinamico(transporte))?;
+        let cliente = cliente_real(&config, &certificado)?;
         Ok(Self::com_cliente(config, notas, cliente, certificado))
     }
 

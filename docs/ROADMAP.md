@@ -93,10 +93,10 @@
 * DANFC-e (feature `danfce`): leitura do modelo 65, conteúdo por divisão do Manual, PDF de bobina (80 e 58 mm) e ESC/POS. Feito
   nesta frente. **Fica para depois:** o logotipo do emitente no cupom, o valor de tributos por item, os acréscimos e descontos
   por item (a critério da UF), a mensagem `xMsg` do retorno da autorização e perfis de impressora de fabricante.
-* NFC-e, faces: **feitas a aplicação (`rustnf-app`) e a linha de comando (`rustnf nfce`)**: `[nfce]`, CSC no cofre, pasta `nfce/`
-  de numeração própria, emissão normal e off-line, retomada, pendentes e fechamento do caixa, cancelamento com aviso de prazo
-  e DANFC-e como arquivo. Feitas com transporte falso e um simulador local: **nenhuma NFC-e real**. **Fica para a próxima
-  entrega:** a API HTTP e o MCP da NFC-e. **Fica para a interface:** a tela da NFC-e.
+* NFC-e, faces: **feitas a aplicação (`rustnf-app`), a linha de comando (`rustnf nfce`), a API HTTP (`/nfce/`) e o MCP (`*_nfce`)**:
+  `[nfce]`, CSC no cofre (que só se guarda pela linha de comando), pasta `nfce/` de numeração própria, emissão normal e off-line,
+  retomada, pendentes e fechamento do caixa, cancelamento com aviso de prazo e DANFC-e como arquivo. Feitas com transporte falso
+  e um simulador local: **nenhuma NFC-e real**. **Fica para a interface:** a tela da NFC-e.
 * NFC-e, o que ficou sem fazer e por quê: o cancelamento por substituição (110112, NT 2018.004: a biblioteca não tem o
   evento nem o esquema dele no pacote PL_010h v1.03); a inutilização da NFC-e (o `inutNFe` da biblioteca é só do modelo 55);
   o prazo de cancelamento de **cada UF** (só o prazo nacional de 24 horas, MOC 7.00, Visão Geral, regra 2P12-14, tem fonte

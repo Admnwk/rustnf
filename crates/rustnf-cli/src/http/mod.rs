@@ -6,9 +6,11 @@
 //! sem CORS. As rotas de emissao so' existem quando o servidor sobe com emissao e token.
 
 pub mod auth;
+pub mod nfce;
 pub mod nfe;
 pub mod nfe_recebidas;
 mod rotas;
+mod rotas_nfce;
 mod rotas_nfe;
 
 use std::sync::Arc;
@@ -31,6 +33,7 @@ use rustnf_app::pedido;
 use serde_json::{json, Value};
 
 pub use auth::Token;
+pub use nfce::ServidorNfce;
 pub use nfe::ServidorNfe;
 
 use crate::emissao::Emissor;
@@ -83,6 +86,8 @@ pub struct Estado {
     pub notas: Option<Notas>,
     /// A NF-e (modelo 55): as rotas de `/nfe/` e as ferramentas `*_nfe` do MCP.
     pub nfe: ServidorNfe,
+    /// A NFC-e (modelo 65): as rotas de `/nfce/` e as ferramentas `*_nfce` do MCP.
+    pub nfce: ServidorNfce,
     /// Uma emissao por vez: o numero da DPS so' avanca quando a nota e' autorizada, entao duas emissoes
     /// simultaneas pegariam o mesmo numero.
     fila: tokio::sync::Mutex<()>,
@@ -100,6 +105,11 @@ impl Estado {
                 rustnf_app::config::Config::default(),
                 None,
                 "o servidor nao foi iniciado com a configuracao da NF-e ([nfe] e [notas] no arquivo de configuracao)",
+            ),
+            nfce: ServidorNfce::sem_emissao(
+                &rustnf_app::config::Config::default(),
+                None,
+                "o servidor nao foi iniciado com a configuracao da NFC-e ([nfe] e [notas] no arquivo de configuracao)",
             ),
             fila: tokio::sync::Mutex::new(()),
         }
@@ -142,6 +152,13 @@ impl Estado {
     #[must_use]
     pub fn com_nfe(mut self, nfe: ServidorNfe) -> Self {
         self.nfe = nfe;
+        self
+    }
+
+    /// Com a NFC-e do servidor (configuracao, pasta `nfce/`, o QR Code e, com emissao, o cliente da SEFAZ).
+    #[must_use]
+    pub fn com_nfce(mut self, nfce: ServidorNfce) -> Self {
+        self.nfce = nfce;
         self
     }
 
@@ -253,7 +270,8 @@ pub fn roteador(estado: Estado) -> Router {
         .route("/mcp", post(rotas::mcp))
         .route("/nfe/conferir", post(rotas_nfe::conferir))
         .route("/nfe/montar", post(rotas_nfe::montar))
-        .route("/nfe/danfe", post(rotas_nfe::danfe));
+        .route("/nfe/danfe", post(rotas_nfe::danfe))
+        .route("/nfce/danfce", post(rotas_nfce::danfce));
     if estado.emissao.is_some() {
         r = r
             .route("/nfe/emitir", post(rotas_nfe::emitir))
@@ -276,6 +294,12 @@ pub fn roteador(estado: Estado) -> Router {
                 post(rotas_nfe::recebidas_manifestar),
             )
             .route("/nfe/{chave}", get(rotas_nfe::consultar))
+            .route("/nfce/emitir", post(rotas_nfce::emitir))
+            .route("/nfce/cancelar", post(rotas_nfce::cancelar))
+            .route("/nfce/status", get(rotas_nfce::status))
+            .route("/nfce/pendentes", get(rotas_nfce::pendentes))
+            .route("/nfce/pendentes/retomar", post(rotas_nfce::retomar))
+            .route("/nfce/{chave}", get(rotas_nfce::consultar))
             .route("/emitir", post(rotas::emitir))
             .route("/cancelar", post(rotas::cancelar))
             .route("/nfse/{chave}", get(rotas::consultar))
@@ -307,6 +331,8 @@ fn rota_para_log(caminho: &str) -> &str {
         "/nfse/{chave}"
     } else if rotas_nfe::e_consulta_de_nota(caminho) {
         "/nfe/{chave}"
+    } else if rotas_nfce::e_consulta_de_nota(caminho) {
+        "/nfce/{chave}"
     } else if caminho.starts_with("/dps/") && !matches!(caminho, "/dps/conferir" | "/dps/montar") {
         "/dps/{id}"
     } else {
@@ -443,6 +469,11 @@ mod testes {
             rota_para_log("/nfe/35260111222333000181550010000000011234567890"),
             "/nfe/{chave}"
         );
+        assert_eq!(
+            rota_para_log("/nfce/35260111222333000181650010000000011234567890"),
+            "/nfce/{chave}"
+        );
+        assert_eq!(rota_para_log("/nfce/status"), "/nfce/status");
         assert_eq!(rota_para_log("/nfe/status"), "/nfe/status");
         assert_eq!(
             rota_para_log("/nfe/pendentes/retomar"),
