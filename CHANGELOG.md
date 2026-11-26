@@ -6,6 +6,23 @@ Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` 
 alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
 `cancelada`, continua sendo lido por esta versão.
 
+* NF-e (modelo 55), DANFE em PDF (feature `danfe` = `nfe` + `danfse`, nenhuma crate nova): `rustnf::danfe::{dados, pdf}`
+  desenham o DANFE A4 retrato direto no PDF, com o escritor do DANFSe (que segue com os mesmos bytes), em Liberation
+  Serif (a métrica da Times New Roman que o item 3.7 do Anexo II manda usar; mesma licença SIL OFL 1.1). Blocos e
+  medidas do item 3.8.1 do Anexo II do MOC 7.00, corpos de fonte mínimos do 3.7 (os campos crescem na altura em vez de o
+  texto descer abaixo do corpo), itens em várias folhas com o cabeçalho de identificação repetido e "FOLHA nn/total"
+  (3.5 e 3.10.2), continuação das informações complementares, canhoto e logotipo opcionais. O código de barras é o
+  CODE-128 da chave (conjunto C; B só onde a chave tem letra), com margem clara de 10 módulos e módulo de pelo menos
+  0,2 mm; `danfe::barras::decodificar` lê as barras de volta. Situações: homologação, cancelada, denegada, nota sem
+  protocolo (só prévia, com marca), contingência com formulário de segurança (campos 1 e 2 do item 3.9.2, com o
+  código de barras dos dados da NF-e), SVC e EPEC (protocolo do evento nas `Opcoes`, como sai de
+  `nfe::sefaz::protocolo_epec_danfe`), com as expressões e o motivo e a hora de entrada em contingência que o Anexo III
+  e a Visão Geral mandam imprimir. O leiaute da Reforma Tributária (NT 2026.010 v1.00: bloco IBS/CBS/IS, CRT, QR Code
+  e as bases, alíquotas e valores por item) vale para a emissão a partir de 01/12/2026 (`nfe::vigencias`); antes disso
+  vale o do MOC, e `Leiaute::Rtc` o força. Contrato em `tests/casos/danfe.json`. **Fica de fora:** NFC-e (DANFE NFC-e),
+  as faces (aplicação, linha de comando, API, MCP e interface), o DANFE em paisagem e as colunas de ICMS ST por item.
+  O ponto de partida foi o desenho equivalente da `gaialib`. **Nenhum DANFE foi conferido por fiscal ou SEFAZ e nenhum
+  foi impresso em papel.**
 * NF-e (modelo 55), ICMS monofásico sobre combustíveis (NT 2023.001 v1.60): os grupos `ICMS02`, `ICMS15`, `ICMS53` e
   `ICMS61` (CST 02, 15, 53 e 61, também no CRT 1) no pedido (13 campos novos em `itens[].icms`), na montagem e nos totais
   do `ICMSTot` (`qBCMono`, `vICMSMono`, `qBCMonoReten`, `vICMSMonoReten`, `qBCMonoRet`, `vICMSMonoRet`, só com valor). Regras

@@ -12,12 +12,15 @@
 //! * `nfe` (feature `nfe`) -- NF-e modelo 55: leitura do XML, tabela de `cStat`, calendario das Notas Tecnicas, montagem
 //!   e assinatura do XML; com a feature `nfe_sefaz`, o cliente dos webservices da SEFAZ (`nfe::sefaz`);
 //! * `danfse` (feature `danfse`) -- DANFSe em PDF (NT 008) a partir do XML da NFS-e autorizada.
+//! * `danfe` (feature `danfe`) -- DANFE da NF-e modelo 55 em PDF (MOC 7.00, Anexo II, e NT 2026.010).
 #![forbid(unsafe_code)]
 #![deny(clippy::unwrap_used)]
 
 pub mod aleatorio;
 pub mod assinatura;
 pub mod chave_dfe;
+#[cfg(feature = "danfe")]
+pub mod danfe;
 #[cfg(feature = "danfse")]
 pub mod danfse;
 #[cfg(any(feature = "sefin", feature = "nfe_sefaz"))]

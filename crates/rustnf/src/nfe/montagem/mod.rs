@@ -79,10 +79,11 @@ use cobr::cobr;
 use exporta::{compra, exporta};
 #[cfg(feature = "nfe_sefaz")]
 pub(crate) use formato::documento as documento_cnpj_cpf;
+pub(crate) use formato::na_uf;
 pub(crate) use formato::uf_codigo;
 #[cfg(feature = "nfe_sefaz")]
 pub(crate) use formato::{dh, esc, filtrar, uf_sigla, Dec};
-use formato::{documento, erro, erro_r, na_uf};
+use formato::{documento, erro, erro_r};
 use ide::{finalidade, ide};
 use item::det;
 use partes::{dest, emit, local, regime_sn, vigencia_pl010h};

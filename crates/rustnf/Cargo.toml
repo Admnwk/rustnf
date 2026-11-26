@@ -25,6 +25,8 @@ nfe = []
 nfe_sefaz = ["nfe", "dep:reqwest", "dep:tokio", "dep:async-trait"]
 # DANFSe em PDF (NT 008): escreve a pagina direto no PDF; as fontes e o logotipo vao dentro do binario.
 danfse = ["dep:krilla", "dep:skrifa", "dep:qrcode"]
+# DANFE da NF-e modelo 55 em PDF (MOC 7.00, Anexo II): desenhado com o escritor do DANFSe, sem crate nova.
+danfe = ["nfe", "danfse"]
 
 [dependencies]
 chrono = { version = "0.4", default-features = false, features = ["std", "clock", "serde"] }
@@ -54,13 +56,17 @@ qrcode = { version = "0.15", default-features = false, optional = true }
 [dev-dependencies]
 regex = "1"
 serde_json = { version = "1", features = ["preserve_order"] }
-rustnf = { path = ".", features = ["cert_a1_teste", "sefin", "danfse", "nfe", "nfe_sefaz"] }
+rustnf = { path = ".", features = ["cert_a1_teste", "sefin", "danfse", "danfe", "nfe", "nfe_sefaz"] }
 async-trait = "0.1"
 tokio = { version = "1", features = ["rt", "rt-multi-thread", "macros", "time"] }
 
 [[example]]
 name = "montar_e_assinar"
 required-features = ["cert_a1_teste"]
+
+[[example]]
+name = "danfe"
+required-features = ["danfe"]
 
 [[test]]
 name = "nfse_assinatura"
@@ -73,6 +79,10 @@ required-features = ["sefin", "cert_a1_teste"]
 [[test]]
 name = "danfse"
 required-features = ["danfse"]
+
+[[test]]
+name = "danfe"
+required-features = ["danfe"]
 
 [[test]]
 name = "nfe_chave"
