@@ -157,6 +157,19 @@ const ICMS: &[Campo] = &[
     folha("p_icms_efet"),
     folha("v_icms_efet"),
     folha("c_benef_rbc"),
+    folha("q_bc_mono"),
+    folha("ad_rem_icms"),
+    folha("v_icms_mono"),
+    folha("q_bc_mono_reten"),
+    folha("ad_rem_icms_reten"),
+    folha("v_icms_mono_reten"),
+    folha("p_red_ad_rem"),
+    folha("mot_red_ad_rem"),
+    folha("v_icms_mono_op"),
+    folha("v_icms_mono_dif"),
+    folha("q_bc_mono_ret"),
+    folha("ad_rem_icms_ret"),
+    folha("v_icms_mono_ret"),
 ];
 
 const PIS_COFINS: &[Campo] = &[

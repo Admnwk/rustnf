@@ -6,6 +6,15 @@ Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` 
 alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
 `cancelada`, continua sendo lido por esta versão.
 
+* NF-e (modelo 55), ICMS monofásico sobre combustíveis (NT 2023.001 v1.60): os grupos `ICMS02`, `ICMS15`, `ICMS53` e
+  `ICMS61` (CST 02, 15, 53 e 61, também no CRT 1) no pedido (13 campos novos em `itens[].icms`), na montagem e nos totais
+  do `ICMSTot` (`qBCMono`, `vICMSMono`, `qBCMonoReten`, `vICMSMonoReten`, `qBCMonoRet`, `vICMSMonoRet`, só com valor). Regras
+  conferidas antes do envio: 959 (sem o grupo `comb`), 508 (não contribuinte), 767, 768 e 769 (quantidade obrigatória), 962 e
+  964 (valor = quantidade x alíquota ad rem, com o fator 0,3333 do biodiesel e do diesel B; só na nota normal) e a soma do
+  `vICMSMonoReten` no `vNF` e no `vItem` (W16-10 e VB01-10). Os campos fora do XSD e os de outro CST são recusados. As regras
+  revogadas (961, 963, 965 e 966) e a conferência do `cProdANP` com a Tabela de Combustíveis Monofásicos (960, e 959 pela
+  tabela) não entram. O ponto de partida foi a correção equivalente da `gaialib`. O percentual de redução da alíquota ad rem
+  zero é aceito, como no XSD. **Nenhuma chamada a uma SEFAZ real foi feita.**
 * NF-e (modelo 55), cliente dos webservices da SEFAZ, parte 2: eventos, inutilização e contingência SVC, na mesma
   feature `nfe_sefaz` (nenhuma crate nova). **O DANFE, as faces (aplicação, linha de comando, API, MCP, interface), a
   distribuição de DF-e e a manifestação do destinatário não estão nesta parte. Nenhuma chamada a uma SEFAZ real foi

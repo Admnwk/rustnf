@@ -45,6 +45,7 @@ mod exporta;
 mod formato;
 mod gtin;
 mod icms;
+mod icms_mono;
 mod icms_regras;
 mod ide;
 mod item;

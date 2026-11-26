@@ -164,7 +164,7 @@ Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endere
 
 | campo | o que e' |
 |---|---|
-| `itens[].icms.codigo` | CST (2 digitos) ou CSOSN (3 digitos), conforme o CRT do emitente. |
+| `itens[].icms.codigo` | CST (2 digitos) ou CSOSN (3 digitos), conforme o CRT do emitente. Os CST do ICMS monofasico (02, 15, 53 e 61) valem tambem no CRT 1. |
 | `itens[].icms.orig` | `orig`: 0 a 8. |
 | `itens[].icms.mod_bc` | `modBC`. |
 | `itens[].icms.vbc` | `vBC`. |
@@ -214,6 +214,29 @@ Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endere
 | `itens[].icms.p_icms_efet` | N36 `pICMSEfet`. |
 | `itens[].icms.v_icms_efet` | N37 `vICMSEfet`. |
 | `itens[].icms.c_benef_rbc` | N14a `cBenefRBC` (NT 2019.001): beneficio fiscal da reducao de base quando acumula com o diferimento (CST 51) ou no CST 90. Confere-se o formato do XSD; se o codigo existe na tabela da UF e' assunto da UF. |
+| `itens[].icms.q_bc_mono` | N37a `qBCMono`: quantidade tributada do ICMS proprio, ate 11 inteiros e 4 casas (CST 02, 15 e 53). Obrigatoria (rejeicao 767). |
+| `itens[].icms.ad_rem_icms` | N38 `adRemICMS`: aliquota ad rem do ICMS proprio, ate 3 inteiros e 4 casas (CST 02, 15 e 53; obrigatoria no 02 e no 15). |
+| `itens[].icms.v_icms_mono` | N39 `vICMSMono`: valor do ICMS proprio (CST 02, 15 e 53). No 02 e no 15, na nota normal (`finNFe` 1), e' `qBCMono` x `adRemICMS` arredondado a 2 casas, com tolerancia de 0,01 (rejeicao 962). No 53 e' o devido (operacao menos diferido) e a tag so' sai com valor. |
+| `itens[].icms.q_bc_mono_reten` | N39a `qBCMonoReten`: quantidade sujeita a retencao (CST 15). Obrigatoria (rejeicao 768). |
+| `itens[].icms.ad_rem_icms_reten` | N40 `adRemICMSReten`: aliquota ad rem do ICMS com retencao (CST 15; obrigatoria). |
+| `itens[].icms.v_icms_mono_reten` | N41 `vICMSMonoReten`: valor do ICMS com retencao (CST 15; obrigatorio). Na nota normal e' `qBCMonoReten` x `adRemICMSReten` (x 0,3333 nos codigos ANP do biodiesel e do diesel B da regra N41-20), arredondado a 2 casas, tolerancia de 0,01 (rejeicao 964). Soma no `vItem` e no `vNF`. |
+| `itens[].icms.p_red_ad_rem` | N47 `pRedAdRem`: percentual de reducao da aliquota ad rem, de 0 a 100 com 2 casas (CST 15); vai junto com `mot_red_ad_rem`. |
+| `itens[].icms.mot_red_ad_rem` | N48 `motRedAdRem`: 1 transporte coletivo de passageiros, 9 outros (CST 15). |
+| `itens[].icms.v_icms_mono_op` | N41a `vICMSMonoOp`: ICMS da operacao como se nao houvesse o diferimento (CST 53). O percentual do diferimento (N42 `pDif`, ate 100) e' o `p_dif` do grupo. |
+| `itens[].icms.v_icms_mono_dif` | N43 `vICMSMonoDif`: ICMS diferido (CST 53). |
+| `itens[].icms.q_bc_mono_ret` | N43a `qBCMonoRet`: quantidade tributada retida anteriormente (CST 61). Obrigatoria (rejeicao 769). |
+| `itens[].icms.ad_rem_icms_ret` | N44 `adRemICMSRet`: aliquota ad rem do ICMS retido anteriormente (CST 61; obrigatoria). |
+| `itens[].icms.v_icms_mono_ret` | N45 `vICMSMonoRet`: valor do ICMS retido anteriormente (CST 61; obrigatorio; sem rejeicao de conta, a NT revogou a 966). |
+
+O **ICMS monofasico sobre combustiveis** (NT 2023.001 v1.60) usa os CST 02 (proprio), 15 (proprio com retencao), 53
+(recolhimento diferido) e 61 (cobrado anteriormente), com os campos `q_bc_mono*`, `ad_rem_icms*` e `v_icms_mono*` acima, e
+o emitente do Simples (CRT 1) tambem os informa (regra N12-20, excecao). O item leva o grupo `combustivel` (sem ele, rejeicao
+959) e nao leva `vbc`, `p_icms`, `v_icms` nem os campos de outros CST. A saida a nao contribuinte (`ind_ie_dest` 9) so' aceita o
+61 (e o 02 na operacao interna): CST 15 ou 53, ou 02 interestadual, e' a rejeicao 508. A nota de entrada (`tp_nf` 0) nao tem
+essa recusa. Os seis totais (`qBCMono`, `vICMSMono`, `qBCMonoReten`, `vICMSMonoReten`, `qBCMonoRet`, `vICMSMonoRet`) saem no
+`ICMSTot` so' com valor, somados dos itens. As rejeicoes 961, 963, 965 e 966 estao revogadas na NT e nao sao conferidas; a
+comparacao do `cProdANP` com a Tabela de Combustiveis Sujeitos a Tributacao Monofasica (959 pela tabela e 960) fica fora, porque
+a tabela e' publicada a parte.
 
 ## itens[].pis
 

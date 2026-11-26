@@ -1,0 +1,5076 @@
+{
+ "_nota": "Casos do ICMS monofasico sobre combustiveis (CST 02, 15, 53 e 61) da NF-e modelo 55, NT 2023.001 v1.60. Pedidos com documentos e nomes ficticios. O XML esperado foi conferido campo a campo contra o XSD PL_010h v1.03 e contra uma montagem independente em outra linguagem, fora do repositorio.",
+ "casos": [
+  {
+   "nome": "mono_02_gasolina",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>DISTRIBUIDORA TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Cidade</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>2</indIEDest></dest><det nItem=\"1\"><prod><cProd>C1</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>1000.0000</qCom><vUnCom>5.5000000000</vUnCom><vProd>5500.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>1000.0000</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>320102001</cProdANP><descANP>GASOLINA C COMUM</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS02><orig>0</orig><CST>02</CST><qBCMono>1000.0000</qBCMono><adRemICMS>1.3721</adRemICMS><vICMSMono>1372.10</vICMSMono></ICMS02></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><qBCMono>1000.00</qBCMono><vICMSMono>1372.10</vICMSMono><vProd>5500.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>5500.00</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>5500.00</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "qBCMono": "1000.00",
+    "vBC": "0.00",
+    "vCOFINS": "0.00",
+    "vDesc": "0.00",
+    "vFCP": "0.00",
+    "vFrete": "0.00",
+    "vICMS": "0.00",
+    "vICMSMono": "1372.10",
+    "vIPI": "0.00",
+    "vNF": "5500.00",
+    "vOutro": "0.00",
+    "vPIS": "0.00",
+    "vProd": "5500.00",
+    "vSeg": "0.00",
+    "vTotTrib": "0.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "mono_15_diesel_b_bio",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "850",
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "803.76",
+       "q_bc_mono_reten": "150",
+       "ad_rem_icms_reten": "0.9456",
+       "v_icms_mono_reten": "47.28"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "820101034",
+       "desc_anp": "OLEO DIESEL B S10",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5547.28"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>DISTRIBUIDORA TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Cidade</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>2</indIEDest></dest><det nItem=\"1\"><prod><cProd>C1</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>1000.0000</qCom><vUnCom>5.5000000000</vUnCom><vProd>5500.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>1000.0000</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>820101034</cProdANP><descANP>OLEO DIESEL B S10</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS15><orig>0</orig><CST>15</CST><qBCMono>850.0000</qBCMono><adRemICMS>0.9456</adRemICMS><vICMSMono>803.76</vICMSMono><qBCMonoReten>150.0000</qBCMonoReten><adRemICMSReten>0.9456</adRemICMSReten><vICMSMonoReten>47.28</vICMSMonoReten></ICMS15></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><qBCMono>850.00</qBCMono><vICMSMono>803.76</vICMSMono><qBCMonoReten>150.00</qBCMonoReten><vICMSMonoReten>47.28</vICMSMonoReten><vProd>5500.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>5547.28</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>5547.28</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "qBCMono": "850.00",
+    "qBCMonoReten": "150.00",
+    "vBC": "0.00",
+    "vCOFINS": "0.00",
+    "vDesc": "0.00",
+    "vFCP": "0.00",
+    "vFrete": "0.00",
+    "vICMS": "0.00",
+    "vICMSMono": "803.76",
+    "vICMSMonoReten": "47.28",
+    "vIPI": "0.00",
+    "vNF": "5547.28",
+    "vOutro": "0.00",
+    "vPIS": "0.00",
+    "vProd": "5500.00",
+    "vSeg": "0.00",
+    "vTotTrib": "0.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "mono_15_sem_bio_com_reducao",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "900",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1234.89",
+       "q_bc_mono_reten": "100",
+       "ad_rem_icms_reten": "0.2000",
+       "v_icms_mono_reten": "20.00",
+       "p_red_ad_rem": "25.50",
+       "mot_red_ad_rem": "1"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5520.00"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>DISTRIBUIDORA TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Cidade</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>2</indIEDest></dest><det nItem=\"1\"><prod><cProd>C1</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>1000.0000</qCom><vUnCom>5.5000000000</vUnCom><vProd>5500.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>1000.0000</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>320102001</cProdANP><descANP>GASOLINA C COMUM</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS15><orig>0</orig><CST>15</CST><qBCMono>900.0000</qBCMono><adRemICMS>1.3721</adRemICMS><vICMSMono>1234.89</vICMSMono><qBCMonoReten>100.0000</qBCMonoReten><adRemICMSReten>0.2000</adRemICMSReten><vICMSMonoReten>20.00</vICMSMonoReten><pRedAdRem>25.50</pRedAdRem><motRedAdRem>1</motRedAdRem></ICMS15></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><qBCMono>900.00</qBCMono><vICMSMono>1234.89</vICMSMono><qBCMonoReten>100.00</qBCMonoReten><vICMSMonoReten>20.00</vICMSMonoReten><vProd>5500.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>5520.00</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>5520.00</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "qBCMono": "900.00",
+    "qBCMonoReten": "100.00",
+    "vBC": "0.00",
+    "vCOFINS": "0.00",
+    "vDesc": "0.00",
+    "vFCP": "0.00",
+    "vFrete": "0.00",
+    "vICMS": "0.00",
+    "vICMSMono": "1234.89",
+    "vICMSMonoReten": "20.00",
+    "vIPI": "0.00",
+    "vNF": "5520.00",
+    "vOutro": "0.00",
+    "vPIS": "0.00",
+    "vProd": "5500.00",
+    "vSeg": "0.00",
+    "vTotTrib": "0.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "mono_15_reducao_zero_motivo_9",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "900",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1234.89",
+       "q_bc_mono_reten": "100",
+       "ad_rem_icms_reten": "0.2000",
+       "v_icms_mono_reten": "20.00",
+       "p_red_ad_rem": "0",
+       "mot_red_ad_rem": 9
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5520.00"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>DISTRIBUIDORA TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Cidade</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>2</indIEDest></dest><det nItem=\"1\"><prod><cProd>C1</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>1000.0000</qCom><vUnCom>5.5000000000</vUnCom><vProd>5500.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>1000.0000</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>320102001</cProdANP><descANP>GASOLINA C COMUM</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS15><orig>0</orig><CST>15</CST><qBCMono>900.0000</qBCMono><adRemICMS>1.3721</adRemICMS><vICMSMono>1234.89</vICMSMono><qBCMonoReten>100.0000</qBCMonoReten><adRemICMSReten>0.2000</adRemICMSReten><vICMSMonoReten>20.00</vICMSMonoReten><pRedAdRem>0.00</pRedAdRem><motRedAdRem>9</motRedAdRem></ICMS15></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><qBCMono>900.00</qBCMono><vICMSMono>1234.89</vICMSMono><qBCMonoReten>100.00</qBCMonoReten><vICMSMonoReten>20.00</vICMSMonoReten><vProd>5500.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>5520.00</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>5520.00</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "qBCMono": "900.00",
+    "qBCMonoReten": "100.00",
+    "vBC": "0.00",
+    "vCOFINS": "0.00",
+    "vDesc": "0.00",
+    "vFCP": "0.00",
+    "vFrete": "0.00",
+    "vICMS": "0.00",
+    "vICMSMono": "1234.89",
+    "vICMSMonoReten": "20.00",
+    "vIPI": "0.00",
+    "vNF": "5520.00",
+    "vOutro": "0.00",
+    "vPIS": "0.00",
+    "vProd": "5500.00",
+    "vSeg": "0.00",
+    "vTotTrib": "0.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "mono_53_diferimento_total",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "53",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono_op": "1372.10",
+       "p_dif": "100",
+       "v_icms_mono_dif": "1372.10",
+       "v_icms_mono": "0"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>DISTRIBUIDORA TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Cidade</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>2</indIEDest></dest><det nItem=\"1\"><prod><cProd>C1</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>1000.0000</qCom><vUnCom>5.5000000000</vUnCom><vProd>5500.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>1000.0000</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>320102001</cProdANP><descANP>GASOLINA C COMUM</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS53><orig>0</orig><CST>53</CST><qBCMono>1000.0000</qBCMono><adRemICMS>1.3721</adRemICMS><vICMSMonoOp>1372.10</vICMSMonoOp><pDif>100.0000</pDif><vICMSMonoDif>1372.10</vICMSMonoDif></ICMS53></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><qBCMono>1000.00</qBCMono><vProd>5500.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>5500.00</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>5500.00</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "qBCMono": "1000.00",
+    "vBC": "0.00",
+    "vCOFINS": "0.00",
+    "vDesc": "0.00",
+    "vFCP": "0.00",
+    "vFrete": "0.00",
+    "vICMS": "0.00",
+    "vIPI": "0.00",
+    "vNF": "5500.00",
+    "vOutro": "0.00",
+    "vPIS": "0.00",
+    "vProd": "5500.00",
+    "vSeg": "0.00",
+    "vTotTrib": "0.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "mono_53_diferimento_parcial",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "53",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono_op": "1372.10",
+       "p_dif": "40.50",
+       "v_icms_mono_dif": "555.70",
+       "v_icms_mono": "816.40"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>DISTRIBUIDORA TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Cidade</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>2</indIEDest></dest><det nItem=\"1\"><prod><cProd>C1</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>1000.0000</qCom><vUnCom>5.5000000000</vUnCom><vProd>5500.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>1000.0000</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>320102001</cProdANP><descANP>GASOLINA C COMUM</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS53><orig>0</orig><CST>53</CST><qBCMono>1000.0000</qBCMono><adRemICMS>1.3721</adRemICMS><vICMSMonoOp>1372.10</vICMSMonoOp><pDif>40.5000</pDif><vICMSMonoDif>555.70</vICMSMonoDif><vICMSMono>816.40</vICMSMono></ICMS53></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><qBCMono>1000.00</qBCMono><vICMSMono>816.40</vICMSMono><vProd>5500.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>5500.00</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>5500.00</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "qBCMono": "1000.00",
+    "vBC": "0.00",
+    "vCOFINS": "0.00",
+    "vDesc": "0.00",
+    "vFCP": "0.00",
+    "vFrete": "0.00",
+    "vICMS": "0.00",
+    "vICMSMono": "816.40",
+    "vIPI": "0.00",
+    "vNF": "5500.00",
+    "vOutro": "0.00",
+    "vPIS": "0.00",
+    "vProd": "5500.00",
+    "vSeg": "0.00",
+    "vTotTrib": "0.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "mono_53_so_com_quantidade",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "53",
+       "orig": 0,
+       "q_bc_mono": "1000"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>DISTRIBUIDORA TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Cidade</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>2</indIEDest></dest><det nItem=\"1\"><prod><cProd>C1</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>1000.0000</qCom><vUnCom>5.5000000000</vUnCom><vProd>5500.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>1000.0000</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>320102001</cProdANP><descANP>GASOLINA C COMUM</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS53><orig>0</orig><CST>53</CST><qBCMono>1000.0000</qBCMono></ICMS53></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><qBCMono>1000.00</qBCMono><vProd>5500.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>5500.00</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>5500.00</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "qBCMono": "1000.00",
+    "vBC": "0.00",
+    "vCOFINS": "0.00",
+    "vDesc": "0.00",
+    "vFCP": "0.00",
+    "vFrete": "0.00",
+    "vICMS": "0.00",
+    "vIPI": "0.00",
+    "vNF": "5500.00",
+    "vOutro": "0.00",
+    "vPIS": "0.00",
+    "vProd": "5500.00",
+    "vSeg": "0.00",
+    "vTotTrib": "0.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "mono_61_gasolina",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "61",
+       "orig": 0,
+       "q_bc_mono_ret": "1000",
+       "ad_rem_icms_ret": "1.3721",
+       "v_icms_mono_ret": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>DISTRIBUIDORA TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Cidade</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>2</indIEDest></dest><det nItem=\"1\"><prod><cProd>C1</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>1000.0000</qCom><vUnCom>5.5000000000</vUnCom><vProd>5500.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>1000.0000</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>320102001</cProdANP><descANP>GASOLINA C COMUM</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS61><orig>0</orig><CST>61</CST><qBCMonoRet>1000.0000</qBCMonoRet><adRemICMSRet>1.3721</adRemICMSRet><vICMSMonoRet>1372.10</vICMSMonoRet></ICMS61></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><qBCMonoRet>1000.00</qBCMonoRet><vICMSMonoRet>1372.10</vICMSMonoRet><vProd>5500.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>5500.00</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>5500.00</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "qBCMonoRet": "1000.00",
+    "vBC": "0.00",
+    "vCOFINS": "0.00",
+    "vDesc": "0.00",
+    "vFCP": "0.00",
+    "vFrete": "0.00",
+    "vICMS": "0.00",
+    "vICMSMonoRet": "1372.10",
+    "vIPI": "0.00",
+    "vNF": "5500.00",
+    "vOutro": "0.00",
+    "vPIS": "0.00",
+    "vProd": "5500.00",
+    "vSeg": "0.00",
+    "vTotTrib": "0.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "mono_61_simples_crt1",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 1,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "61",
+       "orig": 0,
+       "q_bc_mono_ret": "1000",
+       "ad_rem_icms_ret": "1.3721",
+       "v_icms_mono_ret": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>DISTRIBUIDORA TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>1</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Cidade</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>2</indIEDest></dest><det nItem=\"1\"><prod><cProd>C1</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>1000.0000</qCom><vUnCom>5.5000000000</vUnCom><vProd>5500.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>1000.0000</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>320102001</cProdANP><descANP>GASOLINA C COMUM</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS61><orig>0</orig><CST>61</CST><qBCMonoRet>1000.0000</qBCMonoRet><adRemICMSRet>1.3721</adRemICMSRet><vICMSMonoRet>1372.10</vICMSMonoRet></ICMS61></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><qBCMonoRet>1000.00</qBCMonoRet><vICMSMonoRet>1372.10</vICMSMonoRet><vProd>5500.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>5500.00</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>5500.00</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "qBCMonoRet": "1000.00",
+    "vBC": "0.00",
+    "vCOFINS": "0.00",
+    "vDesc": "0.00",
+    "vFCP": "0.00",
+    "vFrete": "0.00",
+    "vICMS": "0.00",
+    "vICMSMonoRet": "1372.10",
+    "vIPI": "0.00",
+    "vNF": "5500.00",
+    "vOutro": "0.00",
+    "vPIS": "0.00",
+    "vProd": "5500.00",
+    "vSeg": "0.00",
+    "vTotTrib": "0.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "mono_61_nao_contribuinte",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "61",
+       "orig": 0,
+       "q_bc_mono_ret": "1000",
+       "ad_rem_icms_ret": "1.3721",
+       "v_icms_mono_ret": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>DISTRIBUIDORA TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Cidade</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>C1</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>1000.0000</qCom><vUnCom>5.5000000000</vUnCom><vProd>5500.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>1000.0000</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>320102001</cProdANP><descANP>GASOLINA C COMUM</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS61><orig>0</orig><CST>61</CST><qBCMonoRet>1000.0000</qBCMonoRet><adRemICMSRet>1.3721</adRemICMSRet><vICMSMonoRet>1372.10</vICMSMonoRet></ICMS61></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><qBCMonoRet>1000.00</qBCMonoRet><vICMSMonoRet>1372.10</vICMSMonoRet><vProd>5500.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>5500.00</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>5500.00</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "qBCMonoRet": "1000.00",
+    "vBC": "0.00",
+    "vCOFINS": "0.00",
+    "vDesc": "0.00",
+    "vFCP": "0.00",
+    "vFrete": "0.00",
+    "vICMS": "0.00",
+    "vICMSMonoRet": "1372.10",
+    "vIPI": "0.00",
+    "vNF": "5500.00",
+    "vOutro": "0.00",
+    "vPIS": "0.00",
+    "vProd": "5500.00",
+    "vSeg": "0.00",
+    "vTotTrib": "0.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "mono_02_nao_contribuinte_interno",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>DISTRIBUIDORA TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Cidade</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>9</indIEDest></dest><det nItem=\"1\"><prod><cProd>C1</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>1000.0000</qCom><vUnCom>5.5000000000</vUnCom><vProd>5500.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>1000.0000</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>320102001</cProdANP><descANP>GASOLINA C COMUM</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS02><orig>0</orig><CST>02</CST><qBCMono>1000.0000</qBCMono><adRemICMS>1.3721</adRemICMS><vICMSMono>1372.10</vICMSMono></ICMS02></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><qBCMono>1000.00</qBCMono><vICMSMono>1372.10</vICMSMono><vProd>5500.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>5500.00</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>5500.00</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "qBCMono": "1000.00",
+    "vBC": "0.00",
+    "vCOFINS": "0.00",
+    "vDesc": "0.00",
+    "vFCP": "0.00",
+    "vFrete": "0.00",
+    "vICMS": "0.00",
+    "vICMSMono": "1372.10",
+    "vIPI": "0.00",
+    "vNF": "5500.00",
+    "vOutro": "0.00",
+    "vPIS": "0.00",
+    "vProd": "5500.00",
+    "vSeg": "0.00",
+    "vTotTrib": "0.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "mono_tolerancia_de_um_centavo",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.11"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>DISTRIBUIDORA TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Cidade</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>2</indIEDest></dest><det nItem=\"1\"><prod><cProd>C1</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>1000.0000</qCom><vUnCom>5.5000000000</vUnCom><vProd>5500.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>1000.0000</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>320102001</cProdANP><descANP>GASOLINA C COMUM</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS02><orig>0</orig><CST>02</CST><qBCMono>1000.0000</qBCMono><adRemICMS>1.3721</adRemICMS><vICMSMono>1372.11</vICMSMono></ICMS02></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><qBCMono>1000.00</qBCMono><vICMSMono>1372.11</vICMSMono><vProd>5500.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>5500.00</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>5500.00</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "qBCMono": "1000.00",
+    "vBC": "0.00",
+    "vCOFINS": "0.00",
+    "vDesc": "0.00",
+    "vFCP": "0.00",
+    "vFrete": "0.00",
+    "vICMS": "0.00",
+    "vICMSMono": "1372.11",
+    "vIPI": "0.00",
+    "vNF": "5500.00",
+    "vOutro": "0.00",
+    "vPIS": "0.00",
+    "vProd": "5500.00",
+    "vSeg": "0.00",
+    "vTotTrib": "0.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "mono_soma_de_3_itens",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "10.1255",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "10.1255",
+       "ad_rem_icms": "1.1200",
+       "v_icms_mono": "11.34"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     },
+     {
+      "codigo": "C2",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "20.5",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "61",
+       "orig": 0,
+       "q_bc_mono_ret": "20.5000",
+       "ad_rem_icms_ret": "1.1200",
+       "v_icms_mono_ret": "22.96"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     },
+     {
+      "codigo": "C3",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "40",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "30",
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "28.37",
+       "q_bc_mono_reten": "10",
+       "ad_rem_icms_reten": "0.9456",
+       "v_icms_mono_reten": "3.15"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "820101034",
+       "desc_anp": "OLEO DIESEL B S10",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "391.59"
+     }
+    ]
+   },
+   "chave": "35261011222333000181550010000000101123456704",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261011222333000181550010000000101123456704\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-10-03T09:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>4</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>DISTRIBUIDORA TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Cidade</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>2</indIEDest></dest><det nItem=\"1\"><prod><cProd>C1</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>10.1255</qCom><vUnCom>5.5000000000</vUnCom><vProd>55.69</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>10.1255</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>320102001</cProdANP><descANP>GASOLINA C COMUM</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS02><orig>0</orig><CST>02</CST><qBCMono>10.1255</qBCMono><adRemICMS>1.1200</adRemICMS><vICMSMono>11.34</vICMSMono></ICMS02></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><det nItem=\"2\"><prod><cProd>C2</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>20.5000</qCom><vUnCom>5.5000000000</vUnCom><vProd>112.75</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>20.5000</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>320102001</cProdANP><descANP>GASOLINA C COMUM</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS61><orig>0</orig><CST>61</CST><qBCMonoRet>20.5000</qBCMonoRet><adRemICMSRet>1.1200</adRemICMSRet><vICMSMonoRet>22.96</vICMSMonoRet></ICMS61></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><det nItem=\"3\"><prod><cProd>C3</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>40.0000</qCom><vUnCom>5.5000000000</vUnCom><vProd>220.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>40.0000</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>820101034</cProdANP><descANP>OLEO DIESEL B S10</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS15><orig>0</orig><CST>15</CST><qBCMono>30.0000</qBCMono><adRemICMS>0.9456</adRemICMS><vICMSMono>28.37</vICMSMono><qBCMonoReten>10.0000</qBCMonoReten><adRemICMSReten>0.9456</adRemICMSReten><vICMSMonoReten>3.15</vICMSMonoReten></ICMS15></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS></imposto></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><qBCMono>40.13</qBCMono><vICMSMono>39.71</vICMSMono><qBCMonoReten>10.00</qBCMonoReten><vICMSMonoReten>3.15</vICMSMonoReten><qBCMonoRet>20.50</qBCMonoRet><vICMSMonoRet>22.96</vICMSMonoRet><vProd>388.44</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>391.59</vNF></ICMSTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>391.59</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "qBCMono": "40.13",
+    "qBCMonoRet": "20.50",
+    "qBCMonoReten": "10.00",
+    "vBC": "0.00",
+    "vCOFINS": "0.00",
+    "vDesc": "0.00",
+    "vFCP": "0.00",
+    "vFrete": "0.00",
+    "vICMS": "0.00",
+    "vICMSMono": "39.71",
+    "vICMSMonoRet": "22.96",
+    "vICMSMonoReten": "3.15",
+    "vIPI": "0.00",
+    "vNF": "391.59",
+    "vOutro": "0.00",
+    "vPIS": "0.00",
+    "vProd": "388.44",
+    "vSeg": "0.00",
+    "vTotTrib": "0.00"
+   },
+   "conferir": []
+  },
+  {
+   "nome": "mono_15_com_ibscbs_vitem_soma_a_retencao",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-11-16T10:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "850",
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "803.76",
+       "q_bc_mono_reten": "150",
+       "ad_rem_icms_reten": "0.9456",
+       "v_icms_mono_reten": "47.28"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "820101034",
+       "desc_anp": "OLEO DIESEL B S10",
+       "uf_cons": "SP"
+      },
+      "ibscbs": {
+       "cst": "000",
+       "cclass_trib": "000001",
+       "vbc": "5500.00",
+       "data": "2026-11-16"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5547.28"
+     }
+    ]
+   },
+   "chave": "35261111222333000181550010000000101123456708",
+   "xml": "<NFe xmlns=\"http://www.portalfiscal.inf.br/nfe\"><infNFe Id=\"NFe35261111222333000181550010000000101123456708\" versao=\"4.00\"><ide><cUF>35</cUF><cNF>12345670</cNF><natOp>VENDA</natOp><mod>55</mod><serie>1</serie><nNF>10</nNF><dhEmi>2026-11-16T10:00:00-03:00</dhEmi><tpNF>1</tpNF><idDest>1</idDest><cMunFG>3550308</cMunFG><tpImp>1</tpImp><tpEmis>1</tpEmis><cDV>8</cDV><tpAmb>2</tpAmb><finNFe>1</finNFe><indFinal>0</indFinal><indPres>9</indPres><procEmi>0</procEmi><verProc>rustnf teste</verProc></ide><emit><CNPJ>11222333000181</CNPJ><xNome>DISTRIBUIDORA TESTE LTDA</xNome><enderEmit><xLgr>Rua das Flores</xLgr><nro>100</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Sao Paulo</xMun><UF>SP</UF><CEP>01001000</CEP><cPais>1058</cPais><xPais>BRASIL</xPais></enderEmit><IE>111111111111</IE><CRT>3</CRT></emit><dest><CPF>52998224725</CPF><xNome>NF-E EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL</xNome><enderDest><xLgr>Rua A</xLgr><nro>1</nro><xBairro>Centro</xBairro><cMun>3550308</cMun><xMun>Cidade</xMun><UF>SP</UF><cPais>1058</cPais><xPais>BRASIL</xPais></enderDest><indIEDest>2</indIEDest></dest><det nItem=\"1\"><prod><cProd>C1</cProd><cEAN>SEM GTIN</cEAN><xProd>Combustivel de teste</xProd><NCM>27101259</NCM><CFOP>5102</CFOP><uCom>L</uCom><qCom>1000.0000</qCom><vUnCom>5.5000000000</vUnCom><vProd>5500.00</vProd><cEANTrib>SEM GTIN</cEANTrib><uTrib>L</uTrib><qTrib>1000.0000</qTrib><vUnTrib>5.5000000000</vUnTrib><indTot>1</indTot><comb><cProdANP>820101034</cProdANP><descANP>OLEO DIESEL B S10</descANP><UFCons>SP</UFCons></comb></prod><imposto><ICMS><ICMS15><orig>0</orig><CST>15</CST><qBCMono>850.0000</qBCMono><adRemICMS>0.9456</adRemICMS><vICMSMono>803.76</vICMSMono><qBCMonoReten>150.0000</qBCMonoReten><adRemICMSReten>0.9456</adRemICMSReten><vICMSMonoReten>47.28</vICMSMonoReten></ICMS15></ICMS><PIS><PISOutr><CST>49</CST><vBC>0.00</vBC><pPIS>0.0000</pPIS><vPIS>0.00</vPIS></PISOutr></PIS><COFINS><COFINSOutr><CST>49</CST><vBC>0.00</vBC><pCOFINS>0.0000</pCOFINS><vCOFINS>0.00</vCOFINS></COFINSOutr></COFINS><IBSCBS><CST>000</CST><cClassTrib>000001</cClassTrib><gIBSCBS><vBC>5500.00</vBC><gIBSUF><pIBSUF>0.1000</pIBSUF><vIBSUF>5.50</vIBSUF></gIBSUF><gIBSMun><pIBSMun>0.0000</pIBSMun><vIBSMun>0.00</vIBSMun></gIBSMun><vIBS>5.50</vIBS><gCBS><pCBS>0.9000</pCBS><vCBS>49.50</vCBS></gCBS></gIBSCBS></IBSCBS></imposto><vItem>5547.28</vItem></det><total><ICMSTot><vBC>0.00</vBC><vICMS>0.00</vICMS><vICMSDeson>0.00</vICMSDeson><vFCP>0.00</vFCP><vBCST>0.00</vBCST><vST>0.00</vST><vFCPST>0.00</vFCPST><vFCPSTRet>0.00</vFCPSTRet><qBCMono>850.00</qBCMono><vICMSMono>803.76</vICMSMono><qBCMonoReten>150.00</qBCMonoReten><vICMSMonoReten>47.28</vICMSMonoReten><vProd>5500.00</vProd><vFrete>0.00</vFrete><vSeg>0.00</vSeg><vDesc>0.00</vDesc><vII>0.00</vII><vIPI>0.00</vIPI><vIPIDevol>0.00</vIPIDevol><vPIS>0.00</vPIS><vCOFINS>0.00</vCOFINS><vOutro>0.00</vOutro><vNF>5547.28</vNF></ICMSTot><IBSCBSTot><vBCIBSCBS>5500.00</vBCIBSCBS><gIBS><gIBSUF><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vIBSUF>5.50</vIBSUF></gIBSUF><gIBSMun><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vIBSMun>0.00</vIBSMun></gIBSMun><vIBS>5.50</vIBS><vCredPres>0.00</vCredPres><vCredPresCondSus>0.00</vCredPresCondSus></gIBS><gCBS><vDif>0.00</vDif><vDevTrib>0.00</vDevTrib><vCBS>49.50</vCBS><vCredPres>0.00</vCredPres><vCredPresCondSus>0.00</vCredPresCondSus></gCBS></IBSCBSTot><vNFTot>5547.28</vNFTot></total><transp><modFrete>9</modFrete></transp><pag><detPag><tPag>01</tPag><vPag>5547.28</vPag></detPag></pag></infNFe></NFe>",
+   "totais": {
+    "qBCMono": "850.00",
+    "qBCMonoReten": "150.00",
+    "vBC": "0.00",
+    "vCOFINS": "0.00",
+    "vDesc": "0.00",
+    "vFCP": "0.00",
+    "vFrete": "0.00",
+    "vICMS": "0.00",
+    "vICMSMono": "803.76",
+    "vICMSMonoReten": "47.28",
+    "vIPI": "0.00",
+    "vNF": "5547.28",
+    "vNFTot": "5547.28",
+    "vOutro": "0.00",
+    "vPIS": "0.00",
+    "vProd": "5500.00",
+    "vSeg": "0.00",
+    "vTotTrib": "0.00"
+   },
+   "conferir": []
+  }
+ ],
+ "erros": [
+  {
+   "nome": "959_sem_grupo_comb",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "CST",
+   "regra": "959"
+  },
+  {
+   "nome": "508_cst15_nao_contribuinte",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "850",
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "803.76",
+       "q_bc_mono_reten": "150",
+       "ad_rem_icms_reten": "0.9456",
+       "v_icms_mono_reten": "47.28"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "820101034",
+       "desc_anp": "OLEO DIESEL B S10",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "CST",
+   "regra": "508"
+  },
+  {
+   "nome": "508_cst53_nao_contribuinte",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "53",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono_op": "1372.10",
+       "p_dif": "100",
+       "v_icms_mono_dif": "1372.10",
+       "v_icms_mono": "0"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "CST",
+   "regra": "508"
+  },
+  {
+   "nome": "508_cst02_interestadual_nao_contribuinte",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 9,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "2927408",
+      "municipio": "Cidade",
+      "uf": "BA"
+     }
+    },
+    "id_dest": 2,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "CST",
+   "regra": "508"
+  },
+  {
+   "nome": "767_cst02_sem_qbcmono",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "qBCMono",
+   "regra": "767"
+  },
+  {
+   "nome": "767_cst15_sem_qbcmono",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "803.76",
+       "q_bc_mono_reten": "150",
+       "ad_rem_icms_reten": "0.9456",
+       "v_icms_mono_reten": "47.28"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "820101034",
+       "desc_anp": "OLEO DIESEL B S10",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "qBCMono",
+   "regra": "767"
+  },
+  {
+   "nome": "767_cst53_sem_qbcmono",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "53",
+       "orig": 0,
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono_op": "1372.10",
+       "p_dif": "100",
+       "v_icms_mono_dif": "1372.10",
+       "v_icms_mono": "0"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "qBCMono",
+   "regra": "767"
+  },
+  {
+   "nome": "768_cst15_sem_qbcmonoreten",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "850",
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "803.76",
+       "ad_rem_icms_reten": "0.9456",
+       "v_icms_mono_reten": "47.28"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "820101034",
+       "desc_anp": "OLEO DIESEL B S10",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "qBCMonoReten",
+   "regra": "768"
+  },
+  {
+   "nome": "769_cst61_sem_qbcmonoret",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "61",
+       "orig": 0,
+       "ad_rem_icms_ret": "1.3721",
+       "v_icms_mono_ret": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "qBCMonoRet",
+   "regra": "769"
+  },
+  {
+   "nome": "962_cst02_difere_2_centavos",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.12"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "vICMSMono",
+   "regra": "962"
+  },
+  {
+   "nome": "962_cst15_difere",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "850",
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "803.00",
+       "q_bc_mono_reten": "150",
+       "ad_rem_icms_reten": "0.9456",
+       "v_icms_mono_reten": "47.28"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "820101034",
+       "desc_anp": "OLEO DIESEL B S10",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "vICMSMono",
+   "regra": "962"
+  },
+  {
+   "nome": "964_cst15_sem_o_fator_do_biodiesel",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "850",
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "803.76",
+       "q_bc_mono_reten": "150",
+       "ad_rem_icms_reten": "0.9456",
+       "v_icms_mono_reten": "141.84"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "820101034",
+       "desc_anp": "OLEO DIESEL B S10",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "vICMSMonoReten",
+   "regra": "964"
+  },
+  {
+   "nome": "964_cst15_com_o_fator_fora_da_lista",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "850",
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "803.76",
+       "q_bc_mono_reten": "150",
+       "ad_rem_icms_reten": "0.9456",
+       "v_icms_mono_reten": "47.28"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "vICMSMonoReten",
+   "regra": "964"
+  },
+  {
+   "nome": "cst15_sem_adremicmsreten",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "850",
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "803.76",
+       "q_bc_mono_reten": "150",
+       "v_icms_mono_reten": "47.28"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "820101034",
+       "desc_anp": "OLEO DIESEL B S10",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "adRemICMSReten"
+  },
+  {
+   "nome": "cst02_sem_adremicms",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "v_icms_mono": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "adRemICMS"
+  },
+  {
+   "nome": "cst02_sem_vicmsmono",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "vICMSMono"
+  },
+  {
+   "nome": "cst61_sem_adremicmsret",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "61",
+       "orig": 0,
+       "q_bc_mono_ret": "1000",
+       "v_icms_mono_ret": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "adRemICMSRet"
+  },
+  {
+   "nome": "cst61_sem_vicmsmonoret",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "61",
+       "orig": 0,
+       "q_bc_mono_ret": "1000",
+       "ad_rem_icms_ret": "1.3721"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "vICMSMonoRet"
+  },
+  {
+   "nome": "cst02_com_campo_do_cst15",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.10",
+       "v_icms_mono_reten": "1.00"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "vICMSMonoReten"
+  },
+  {
+   "nome": "cst02_com_campo_do_cst61",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.10",
+       "q_bc_mono_ret": "1"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "qBCMonoRet"
+  },
+  {
+   "nome": "cst61_com_campo_do_cst02",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "61",
+       "orig": 0,
+       "q_bc_mono_ret": "1000",
+       "ad_rem_icms_ret": "1.3721",
+       "v_icms_mono_ret": "1372.10",
+       "q_bc_mono": "1"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "qBCMono"
+  },
+  {
+   "nome": "cst53_com_reten",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "53",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono_op": "1372.10",
+       "p_dif": "100",
+       "v_icms_mono_dif": "1372.10",
+       "v_icms_mono": "0",
+       "q_bc_mono_reten": "1"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "qBCMonoReten"
+  },
+  {
+   "nome": "cst02_com_vbc",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.10",
+       "vbc": "100.00"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "vBC"
+  },
+  {
+   "nome": "cst02_com_vicms",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.10",
+       "v_icms": "1.00"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "vICMS"
+  },
+  {
+   "nome": "cst02_com_pdif",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.10",
+       "p_dif": "10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "pDif"
+  },
+  {
+   "nome": "cst61_com_vicmsop_do_cst51",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "61",
+       "orig": 0,
+       "q_bc_mono_ret": "1000",
+       "ad_rem_icms_ret": "1.3721",
+       "v_icms_mono_ret": "1372.10",
+       "v_icms_op": "1.00"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "vICMSOp"
+  },
+  {
+   "nome": "cst02_com_desoneracao",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.10",
+       "v_icms_deson": "1.00",
+       "mot_des_icms": "9"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "vICMSDeson"
+  },
+  {
+   "nome": "cst02_com_st",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.10",
+       "mod_bc_st": 4,
+       "p_mva_st": "10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "modBCST"
+  },
+  {
+   "nome": "cst02_com_cbenefrbc",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.10",
+       "c_benef_rbc": "SP800000"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "cBenefRBC"
+  },
+  {
+   "nome": "pRedAdRem_sem_motivo",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "850",
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "803.76",
+       "q_bc_mono_reten": "150",
+       "ad_rem_icms_reten": "0.9456",
+       "v_icms_mono_reten": "47.28",
+       "p_red_ad_rem": "10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "820101034",
+       "desc_anp": "OLEO DIESEL B S10",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "motRedAdRem"
+  },
+  {
+   "nome": "motRedAdRem_sem_percentual",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "850",
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "803.76",
+       "q_bc_mono_reten": "150",
+       "ad_rem_icms_reten": "0.9456",
+       "v_icms_mono_reten": "47.28",
+       "mot_red_ad_rem": "9"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "820101034",
+       "desc_anp": "OLEO DIESEL B S10",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "pRedAdRem"
+  },
+  {
+   "nome": "motRedAdRem_fora_de_1_e_9",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "850",
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "803.76",
+       "q_bc_mono_reten": "150",
+       "ad_rem_icms_reten": "0.9456",
+       "v_icms_mono_reten": "47.28",
+       "p_red_ad_rem": "10",
+       "mot_red_ad_rem": "5"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "820101034",
+       "desc_anp": "OLEO DIESEL B S10",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "motRedAdRem"
+  },
+  {
+   "nome": "pRedAdRem_acima_de_100",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "850",
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "803.76",
+       "q_bc_mono_reten": "150",
+       "ad_rem_icms_reten": "0.9456",
+       "v_icms_mono_reten": "47.28",
+       "p_red_ad_rem": "100.01",
+       "mot_red_ad_rem": "9"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "820101034",
+       "desc_anp": "OLEO DIESEL B S10",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "pRedAdRem"
+  },
+  {
+   "nome": "pRedAdRem_3_casas",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "850",
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "803.76",
+       "q_bc_mono_reten": "150",
+       "ad_rem_icms_reten": "0.9456",
+       "v_icms_mono_reten": "47.28",
+       "p_red_ad_rem": "10.123",
+       "mot_red_ad_rem": "9"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "820101034",
+       "desc_anp": "OLEO DIESEL B S10",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "pRedAdRem"
+  },
+  {
+   "nome": "pRedAdRem_negativo",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "15",
+       "orig": 0,
+       "q_bc_mono": "850",
+       "ad_rem_icms": "0.9456",
+       "v_icms_mono": "803.76",
+       "q_bc_mono_reten": "150",
+       "ad_rem_icms_reten": "0.9456",
+       "v_icms_mono_reten": "47.28",
+       "p_red_ad_rem": "-1",
+       "mot_red_ad_rem": "9"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "820101034",
+       "desc_anp": "OLEO DIESEL B S10",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "pRedAdRem"
+  },
+  {
+   "nome": "pDif_acima_de_100",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "53",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono_op": "1372.10",
+       "p_dif": "100.5",
+       "v_icms_mono_dif": "1372.10",
+       "v_icms_mono": "0"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "pDif"
+  },
+  {
+   "nome": "qBCMono_5_casas",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000.00001",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "qBCMono"
+  },
+  {
+   "nome": "qBCMono_12_inteiros",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "123456789012",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "qBCMono"
+  },
+  {
+   "nome": "adRemICMS_4_inteiros",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1000.1",
+       "v_icms_mono": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "adRemICMS"
+  },
+  {
+   "nome": "adRemICMS_negativo",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "-1.3721",
+       "v_icms_mono": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "adRemICMS"
+  },
+  {
+   "nome": "vICMSMono_3_casas",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "02",
+       "orig": 0,
+       "q_bc_mono": "1000",
+       "ad_rem_icms": "1.3721",
+       "v_icms_mono": "1372.105"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "vICMSMono"
+  },
+  {
+   "nome": "cst61_valor_com_texto",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "61",
+       "orig": 0,
+       "q_bc_mono_ret": "1000",
+       "ad_rem_icms_ret": "1.3721",
+       "v_icms_mono_ret": "abc"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "vICMSMonoRet"
+  },
+  {
+   "nome": "crt4_cst61_e_csosn",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 4,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "61",
+       "orig": 0,
+       "q_bc_mono_ret": "1000",
+       "ad_rem_icms_ret": "1.3721",
+       "v_icms_mono_ret": "1372.10"
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "CSOSN"
+  },
+  {
+   "nome": "cst_monofasico_inexistente_cst03",
+   "entrada": {
+    "modelo": 55,
+    "serie": 1,
+    "numero": 10,
+    "emissao": "2026-10-03T09:00:00-03:00",
+    "nat_op": "VENDA",
+    "cmun_fg": "3550308",
+    "codigo": 12345670,
+    "emit": {
+     "documento": "11222333000181",
+     "nome": "DISTRIBUIDORA TESTE LTDA",
+     "crt": 3,
+     "ie": "111111111111",
+     "endereco": {
+      "logradouro": "Rua das Flores",
+      "numero": "100",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Sao Paulo",
+      "uf": "SP",
+      "cep": "01001000"
+     }
+    },
+    "dest": {
+     "documento": "52998224725",
+     "nome": "CLIENTE TESTE",
+     "ind_ie_dest": 2,
+     "endereco": {
+      "logradouro": "Rua A",
+      "numero": "1",
+      "bairro": "Centro",
+      "cod_municipio": "3550308",
+      "municipio": "Cidade",
+      "uf": "SP"
+     }
+    },
+    "id_dest": 1,
+    "ind_final": 0,
+    "ind_pres": 9,
+    "ver_proc": "rustnf teste",
+    "itens": [
+     {
+      "codigo": "C1",
+      "descricao": "Combustivel de teste",
+      "ncm": "27101259",
+      "cfop": "5102",
+      "unidade": "L",
+      "quantidade": "1000",
+      "valor_unitario": "5.50",
+      "icms": {
+       "codigo": "03",
+       "orig": 0
+      },
+      "pis": {
+       "cst": "49"
+      },
+      "cofins": {
+       "cst": "49"
+      },
+      "combustivel": {
+       "c_prod_anp": "320102001",
+       "desc_anp": "GASOLINA C COMUM",
+       "uf_cons": "SP"
+      }
+     }
+    ],
+    "pagamentos": [
+     {
+      "t_pag": "01",
+      "valor": "5500.00"
+     }
+    ]
+   },
+   "campo": "CST"
+  }
+ ]
+}
