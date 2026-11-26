@@ -188,7 +188,7 @@ pub fn aviso_de_fechamento(lista: &[Pendente]) -> Option<String> {
         None => String::new(),
     };
     Some(format!(
-        "{} NFC-e ainda dependem da SEFAZ: rode `rustnf nfce pendentes --retomar` com internet{quando}",
+        "ha {} NFC-e que ainda depende(m) da SEFAZ: rode `rustnf nfce pendentes --retomar` com internet{quando}",
         lista.len()
     ))
 }
