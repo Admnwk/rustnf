@@ -115,7 +115,7 @@ fn conferir_o_numero(notas: &NotasNfe, p: &Preparada) -> Result<(), Erro> {
 }
 
 /// Monta, assina e GRAVA como pendente a nota do pedido. Devolve o pedido preparado, a NF-e assinada e a linha.
-pub(super) fn preparar_e_gravar<T: Transporte>(
+pub(crate) fn preparar_e_gravar<T: Transporte>(
     ctx: &Contexto<'_, T>,
     pedido: Value,
     estrito: bool,
@@ -123,19 +123,27 @@ pub(super) fn preparar_e_gravar<T: Transporte>(
 ) -> Result<(Preparada, String, Registro), Erro> {
     let notas = ctx.pasta()?;
     let p = preparar(ctx.config, Some(notas), pedido, ctx.agora, estrito, epec)?;
-    // a NFC-e (65) tem numeracao, CSC e prazos proprios: a aplicacao ainda so' emite o 55 (montar a previa do 65 vale)
-    if p.nota.modelo != 55 {
+    // cada modelo tem a sua pasta, a sua numeracao e as suas regras: o 55 vai por `nfe`, o 65 por `nfce`
+    if p.nota.modelo.to_string() != notas.modelo() {
         return Err(Erro::Entrada(format!(
-            "a aplicacao emite so' a NF-e (modelo 55); o modelo {} por enquanto so' na biblioteca",
-            p.nota.modelo
+            "o pedido e' do modelo {} e esta pasta e' do modelo {}: a NF-e (55) se emite por `rustnf nfe` e a NFC-e (65) por `rustnf nfce`",
+            p.nota.modelo,
+            notas.modelo()
         )));
     }
     conferir_o_numero(notas, &p)?;
     let montada = montagem::montar(&p.nota)?;
-    let assinada = montagem::assinar(&montada, ctx.certificado)?;
+    let assinada = montagem::assinar_com(&montada, ctx.certificado, &ctx.qr)?;
     let lida = rustnf::nfe::ler(assinada.as_bytes()).map_err(|_| Erro::Interno)?;
+    let prazo = match (&lida.ide.emissao, lida.ide.tipo_emissao.as_str()) {
+        (Some(e), "9") => {
+            Some(montagem::prazo_de_transmissao(&e.0, &ctx.config.nfe.uf)?.timestamp())
+        }
+        _ => None,
+    };
     let registro = Registro {
         desde: ctx.segundos(),
+        prazo,
         ..Registro::da_nfe(&lida, Situacao::Pendente)
     };
     notas.guardar_pendente(&registro, &assinada)?;
@@ -175,7 +183,7 @@ pub async fn emitir<T: Transporte>(
 /// rejeitada e saiu da pasta.
 ///
 /// * autorizada, denegada, cancelada: guarda o `nfeProc` e gasta o numero;
-/// * rejeitada: tira a pendente, o numero volta a ficar livre;
+/// * rejeitada: tira a pendente, o numero volta a ficar livre (a NFC-e off-line fica pendente, com a recusa anotada);
 /// * numero ja autorizado com outra chave (539): tira a pendente e GASTA o numero (a SEFAZ o tem);
 /// * sem resposta, servico parado, lote em processamento, so' EPEC: fica como esta.
 pub(super) fn aplicar_resultado(
@@ -207,6 +215,14 @@ pub(super) fn aplicar_resultado(
             nfe_proc,
             ..
         } => (Situacao::Cancelada, nfe_proc.as_deref(), protocolo, cstat),
+        // a NFC-e off-line ja foi entregue ao consumidor com esta chave: a recusa nao libera o numero, a nota segue
+        // pendente (corrigir e transmitir de novo com a MESMA chave) e a pasta guarda o que a SEFAZ disse
+        Desfecho::Rejeitada { cstat, motivo, .. }
+            if atual.offline && atual.situacao == Situacao::Pendente =>
+        {
+            notas.anotar_recusa(&nota.chave, &format!("cStat {cstat}: {motivo}"))?;
+            return Ok(Some(Situacao::Pendente));
+        }
         Desfecho::Rejeitada { .. } | Desfecho::NumeroJaUsado { .. } => {
             if atual.situacao != Situacao::Pendente {
                 // a nota em EPEC segue la: o EPEC existe no Ambiente Nacional

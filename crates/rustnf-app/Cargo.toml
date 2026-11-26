@@ -13,7 +13,7 @@ publish = false
 workspace = true
 
 [dependencies]
-rustnf = { path = "../rustnf", features = ["sefin", "danfse", "nfe_sefaz", "danfe"] }
+rustnf = { path = "../rustnf", features = ["sefin", "danfse", "nfe_sefaz", "danfe", "danfce"] }
 async-trait = "0.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -27,7 +27,7 @@ zeroize = "1"
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
 
 [dev-dependencies]
-rustnf = { path = "../rustnf", features = ["sefin", "danfse", "nfe_sefaz", "danfe", "cert_a1_teste"] }
+rustnf = { path = "../rustnf", features = ["sefin", "danfse", "nfe_sefaz", "danfe", "danfce", "cert_a1_teste"] }
 tokio = { version = "1", features = ["rt", "time", "macros"] }
 # so' os testes: o gzip e o base64 do docZip dos documentos ficticios (as mesmas crates que a biblioteca ja usa)
 flate2 = "1"

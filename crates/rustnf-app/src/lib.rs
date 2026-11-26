@@ -31,6 +31,7 @@ pub mod config;
 pub mod emissao;
 pub mod erro;
 pub mod eventos;
+pub mod nfce;
 pub mod nfe;
 pub mod notas;
 pub mod nucleo;

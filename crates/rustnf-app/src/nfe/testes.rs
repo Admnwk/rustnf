@@ -132,14 +132,14 @@ async fn autorizada_guarda_o_nfeproc_gasta_o_numero_e_manda_o_emitente_da_config
 }
 
 #[tokio::test]
-async fn nfce_nao_e_emitida_pela_aplicacao_e_nao_toca_a_pasta() {
+async fn pedido_do_65_na_pasta_do_55_e_recusado_e_nao_toca_a_pasta() {
     let c = Cenario::novo("nfe-modelo65", vec![]);
     for modelo in [json!(65), json!("65")] {
         let mut p = pedido();
         p["modelo"] = modelo.clone();
         let erro = emitir(&c.ctx(), p, true).await.unwrap_err();
         assert!(
-            matches!(&erro, Erro::Entrada(m) if m.contains("modelo 55")),
+            matches!(&erro, Erro::Entrada(m) if m.contains("modelo 55") && m.contains("rustnf nfce")),
             "{modelo}: {erro:?}"
         );
     }

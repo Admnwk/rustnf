@@ -89,14 +89,21 @@ pub enum Ocupante {
 #[derive(Debug, Clone)]
 pub struct NotasNfe {
     pasta: PathBuf,
+    /// O modelo da pasta: `"55"` (`nfe/`) ou `"65"` (`nfce/`). Cada modelo tem indice, estado e numeracao proprios.
+    modelo: &'static str,
 }
 
 /// So' digitos, 44 posicoes, digito verificador e emitente certos e modelo 55: a chave vira nome de arquivo.
 pub(crate) fn chave_estrita(chave: &str) -> Result<&str, ErroNotas> {
+    chave_do_modelo(chave, "55")
+}
+
+/// Como [`chave_estrita`], para o modelo dado (`"55"` ou `"65"`).
+pub(crate) fn chave_do_modelo<'a>(chave: &'a str, modelo: &str) -> Result<&'a str, ErroNotas> {
     let forma = chave.len() == 44 && chave.bytes().all(|b| b.is_ascii_digit());
     let valida = forma
         && chave_dfe::decompor(chave, true)
-            .map(|c| c.valida() && c.modelo == "55")
+            .map(|c| c.valida() && c.modelo == modelo)
             .unwrap_or(false);
     if valida {
         Ok(chave)
@@ -132,13 +139,37 @@ impl NotasNfe {
     ///
     /// [`ErroNotas::Pasta`] se o caminho for vazio ou a pasta nao puder ser criada.
     pub fn abrir(raiz: impl AsRef<Path>) -> Result<Self, ErroNotas> {
-        let raiz = raiz.as_ref();
+        Self::abrir_modelo(raiz.as_ref(), "nfe", "55")
+    }
+
+    /// Abre `<raiz>/nfce`, a pasta da NFC-e (modelo 65): indice, estado e numeracao PROPRIOS, sem tocar o que a NF-e
+    /// (modelo 55) guardou em `<raiz>/nfe`. A serie 1 do 65 e a serie 1 do 55 sao sequencias distintas.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroNotas::Pasta`] se o caminho for vazio ou a pasta nao puder ser criada.
+    pub fn abrir_nfce(raiz: impl AsRef<Path>) -> Result<Self, ErroNotas> {
+        Self::abrir_modelo(raiz.as_ref(), "nfce", "65")
+    }
+
+    fn abrir_modelo(raiz: &Path, nome: &str, modelo: &'static str) -> Result<Self, ErroNotas> {
         if raiz.as_os_str().is_empty() {
             return Err(ErroNotas::Pasta);
         }
-        let pasta = raiz.join("nfe");
+        let pasta = raiz.join(nome);
         std::fs::create_dir_all(&pasta).map_err(|_| ErroNotas::Pasta)?;
-        Ok(Self { pasta })
+        Ok(Self { pasta, modelo })
+    }
+
+    /// O modelo da pasta: `"55"` ou `"65"`.
+    #[must_use]
+    pub fn modelo(&self) -> &'static str {
+        self.modelo
+    }
+
+    /// A chave conferida (so' digitos, 44 posicoes, DV, emitente e o modelo DESTA pasta).
+    pub(crate) fn chave<'a>(&self, chave: &'a str) -> Result<&'a str, ErroNotas> {
+        chave_do_modelo(chave, self.modelo)
     }
 
     /// A pasta `nfe`.
@@ -153,6 +184,9 @@ impl NotasNfe {
     ///
     /// [`ErroNotas::Pasta`] se ela nao puder ser criada.
     pub fn recebidas(&self) -> Result<NotasRecebidas, ErroNotas> {
+        if self.modelo != "55" {
+            return Err(ErroNotas::Pasta);
+        }
         NotasRecebidas::abrir(&self.pasta)
     }
 
@@ -176,7 +210,7 @@ impl NotasNfe {
     }
 
     fn dos_arquivos(&self, r: &Registro) -> Result<PathBuf, ErroNotas> {
-        chave_estrita(&r.chave)?;
+        self.chave(&r.chave)?;
         let (ano, mes) = ano_e_mes(&r.emissao)?;
         Ok(self.pasta.join(ano).join(mes))
     }
@@ -184,7 +218,7 @@ impl NotasNfe {
     fn caminho(&self, r: &Registro, sufixo: &str) -> Result<PathBuf, ErroNotas> {
         Ok(self
             .dos_arquivos(r)?
-            .join(format!("{}-{sufixo}", chave_estrita(&r.chave)?)))
+            .join(format!("{}-{sufixo}", self.chave(&r.chave)?)))
     }
 
     /// Onde esta (ou estaria) o `nfeProc` da nota.
@@ -235,7 +269,7 @@ impl NotasNfe {
     ///
     /// [`ErroNotas::ChaveInvalida`] ou [`ErroNotas::NaoEncontrada`].
     pub fn registro(&self, chave: &str) -> Result<Registro, ErroNotas> {
-        let chave = chave_estrita(chave)?;
+        let chave = self.chave(chave)?;
         self.indice()?
             .notas
             .into_iter()
@@ -445,7 +479,7 @@ impl NotasNfe {
         chave: &str,
         f: impl FnOnce(&mut Registro, &mut Estado) -> Result<(), ErroNotas>,
     ) -> Result<(), ErroNotas> {
-        let chave = chave_estrita(chave)?;
+        let chave = self.chave(chave)?;
         let _trava = Trava::obter(&self.pasta)?;
         let mut indice = self.indice()?;
         let mut estado = self.estado()?;
@@ -484,6 +518,7 @@ impl NotasNfe {
         }
         self.alterar(chave, |r, estado| {
             r.situacao = situacao;
+            r.recusa.clear();
             r.cstat = cstat.to_string();
             if !protocolo.is_empty() {
                 r.protocolo = protocolo.to_string();
@@ -564,6 +599,18 @@ impl NotasNfe {
         self.alterar(chave, |r, _| {
             r.tentativas = r.tentativas.saturating_add(1);
             r.ultima = Some(agora);
+            Ok(())
+        })
+    }
+
+    /// Anota o que a SEFAZ recusou na transmissao da NFC-e off-line (vazio limpa a anotacao). A nota segue pendente.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroNotas::NaoEncontrada`] e os de gravacao.
+    pub fn anotar_recusa(&self, chave: &str, recusa: &str) -> Result<(), ErroNotas> {
+        self.alterar(chave, |r, _| {
+            r.recusa = recusa.to_string();
             Ok(())
         })
     }

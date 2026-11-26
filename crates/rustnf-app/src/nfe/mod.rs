@@ -42,14 +42,17 @@ mod testes_retomada;
 
 use chrono::{DateTime, Utc};
 use rustnf::assinatura::cert_a1::Certificado;
+use rustnf::nfe::montagem::OpcoesQr;
 use rustnf::nfe::sefaz::{ClienteSefaz, Transporte};
 
 pub use cliente::{cliente_real, config_sefaz, ler_ca_pem};
 pub use consulta::{
     consultar, danfe_da_pasta, danfe_do_xml, estado_do_servico, status, Consultada,
 };
+pub(crate) use emissao::preparar_e_gravar;
 pub use emissao::{emitir, Emitida};
 pub use eventos::{cancelar, corrigir, epec, inutilizar, Inutilizada, Registrado};
+pub(crate) use pedido::emissao_agora;
 pub use pedido::{
     avisos_json, completar_pedido, conferencia_json, montar_pedido, preparar, Montado, Preparada,
 };
@@ -76,6 +79,8 @@ pub struct Contexto<'a, T: Transporte> {
     pub notas: Option<&'a NotasNfe>,
     /// Agora.
     pub agora: DateTime<Utc>,
+    /// O QR Code da NFC-e (versao e CSC); o padrao (3, sem CSC) serve a NF-e, que nao leva QR Code.
+    pub qr: OpcoesQr,
 }
 
 impl<'a, T: Transporte> Contexto<'a, T> {
@@ -93,7 +98,15 @@ impl<'a, T: Transporte> Contexto<'a, T> {
             config,
             notas,
             agora: Utc::now(),
+            qr: OpcoesQr::default(),
         }
+    }
+
+    /// Troca as opcoes do QR Code (a NFC-e com CSC).
+    #[must_use]
+    pub fn com_qr(mut self, qr: OpcoesQr) -> Self {
+        self.qr = qr;
+        self
     }
 
     /// Troca o relogio (teste).

@@ -274,6 +274,11 @@ impl Falso {
         self.corpos.lock().unwrap().clone()
     }
 
+    /// Troca o roteiro (o cliente e as chamadas ja feitas seguem as mesmas).
+    pub(crate) fn programar(&self, r: Vec<(&'static str, Resp)>) {
+        *self.roteiro.lock().unwrap() = r.into();
+    }
+
     pub(crate) fn restantes(&self) -> usize {
         self.roteiro.lock().unwrap().len()
     }
