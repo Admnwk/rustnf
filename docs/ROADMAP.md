@@ -90,7 +90,10 @@
 * Faces, parte 1: aplicação (`rustnf-app`: configuração `[nfe]`, pasta de notas `nfe/`, numeração, emissão com recuperação, eventos, inutilização, EPEC, retomada dos pendentes e DANFE) e linha de comando (`rustnf nfe`). Feita nesta frente, com transporte falso e um simulador local: **nenhuma NF-e real foi emitida e nenhuma SEFAZ real foi chamada**.
 * Faces, parte 2: API HTTP (`/nfe/`) e MCP da NF-e (11 ferramentas), sobre as mesmas funções da aplicação e no mesmo servidor. Feita nesta frente, com transporte falso e um simulador local: **nenhuma NF-e real foi emitida, consultada nem cancelada pela API ou pelo MCP, nenhum certificado A1 real foi usado e nenhuma SEFAZ real foi chamada.** Falta um cliente MCP de terceiros ler as ferramentas.
 * Faces, parte 3: documentos recebidos e manifestação do destinatário na aplicação (pasta `nfe/recebidas` com o cursor de NSU), na linha de comando (`rustnf nfe recebidas`), na API HTTP e no MCP (4 ferramentas), sobre a distribuição de DF-e da biblioteca. Feita nesta frente, com transporte falso e um simulador local: **nenhuma chamada ao Ambiente Nacional real e nenhum certificado A1 real**. **Fica para depois:** interface de desktop dos recebidos, o DANFE de uma NF-e recebida pela linha de comando (`rustnf nfe danfe` lê o XML, mas não a pasta dos recebidos) e a leitura dos eventos de manifestação que a consulta da NF-e devolve para repor a situação de uma pasta nova.
-* NFC-e: o DANFE NFC-e e as faces (aplicação, linha de comando, API HTTP e MCP); o cancelamento por substituição (110112) e a
+* DANFC-e (feature `danfce`): leitura do modelo 65, conteúdo por divisão do Manual, PDF de bobina (80 e 58 mm) e ESC/POS. Feito
+  nesta frente. **Fica para depois:** o logotipo do emitente no cupom, o valor de tributos por item, os acréscimos e descontos
+  por item (a critério da UF), a mensagem `xMsg` do retorno da autorização e perfis de impressora de fabricante.
+* NFC-e: as faces (aplicação, linha de comando, API HTTP e MCP); o cancelamento por substituição (110112) e a
   inutilização da NFC-e.
 * Interface de desktop.
 

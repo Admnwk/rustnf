@@ -57,7 +57,7 @@ fn colunas(op: &Opcoes) -> Result<usize, ErroDanfce> {
     }
 }
 
-/// Quebra por palavra em linhas de ate `cols` caracteres; palavra maior que a linha e' cortada.
+/// Quebra por palavra em linhas de ate `cols` caracteres; palavra maior que a linha e' cortada (de preferencia depois de uma barra).
 fn quebrar(texto: &str, cols: usize) -> Vec<String> {
     let mut linhas: Vec<String> = Vec::new();
     let mut atual = String::new();
@@ -67,7 +67,14 @@ fn quebrar(texto: &str, cols: usize) -> Vec<String> {
             if !atual.is_empty() {
                 linhas.push(std::mem::take(&mut atual));
             }
-            linhas.push(p.drain(..cols).collect());
+            // endereco longo: corta depois de uma barra, se houver uma na segunda metade da linha
+            let corte = p[..cols]
+                .iter()
+                .rposition(|c| *c == '/')
+                .map(|k| k + 1)
+                .filter(|k| *k > cols / 2)
+                .unwrap_or(cols);
+            linhas.push(p.drain(..corte).collect());
         }
         let p: String = p.into_iter().collect();
         if atual.is_empty() {

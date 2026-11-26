@@ -9,6 +9,21 @@ alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o �
 * Correção no DANFSe: a NFS-e sem incidência do ISSQN (`tribISSQN` 4) passa a trazer no bloco "Tributação Municipal
   (ISSQN)" só a frase "OPERAÇÃO NÃO SUJEITA AO ISSQN", como manda a nota 4 do item 2.4.5 da Nota Técnica 008 v1.02 (antes
   o bloco saía inteiro). Imunidade e exportação continuam com o bloco inteiro.
+* DANFC-e (feature nova `danfce` = `nfe` + `danfse`, sem dependência nova): `danfce::dados` (conteúdo por divisão I a IX do
+  Manual de Padrões do DANFE NFC-e e QR Code 6.0, em JSON estável), `danfce::pdf` (bobina de 80 mm ou 58 mm, altura pelo
+  conteúdo, QR Code de nível M com zona quieta de 10%, escritor e fonte do DANFSe) e `danfce::escpos` (bytes para
+  impressora térmica: 48, 42 ou 32 colunas, PC850, PC860 ou Windows-1252, QR Code pelo comando nativo, corte opcional; sem abrir
+  impressora). Só sai cupom de nota autorizada, cancelada ou emitida em contingência off-line ainda pendente (com
+  "EMITIDA EM CONTINGÊNCIA / Pendente de autorização" abaixo do cabeçalho e da identificação, "Via consumidor" e a
+  segunda via "Via do Estabelecimento"); nota sem protocolo fora da contingência, denegada, rejeitada e NF-e 55 são
+  recusadas com o motivo. O documento do consumidor sai como está no XML (o Manual não permite máscara); nome e endereço são
+  opcionais (`consumidor_com_nome_e_endereco`) e saem sempre na entrega a domicílio. **Nenhuma impressão em impressora
+  real, nenhum DANFC-e conferido por fiscal ou SEFAZ e nenhum QR Code lido por aplicativo de consulta de SEFAZ.**
+  * `nfe::ler` passa a ler o modelo 65 (`nfeProc`, `procNFe` e `NFe` solta, com o `infNFeSupl`); a NFC-e só existe no leiaute
+    4.00 (o 3.10 é recusado com `ErroLeitura::NfceLeiaute`) e outros modelos continuam recusados. A NF-e 55 sai idêntica.
+    O caso de erro "modelo 65" de `nfe_leitura.json` virou o do modelo 57. `nfe::conferir` e os pedidos da SEFAZ não mudam.
+  * Os formatos de impressão do DANFE (valor, quantidade, documento, data no fuso da UF) passaram para `nfe::impressao`, sem
+    mudar um byte do DANFE.
 * NFC-e (modelo 65) na biblioteca (features `nfe` e `nfe_sefaz`): montagem, QR Code, envio e contingência off-line. A
   partida da leitura e da montagem da NF-e e do cálculo do QR Code veio da `gaialib`; o resto, das fontes oficiais de
   `docs/FONTES.md`. **Nenhum envio a uma SEFAZ real, nenhum certificado A1 real, nenhum CSC real e nenhum QR Code lido por
@@ -26,7 +41,7 @@ alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o �
     `autorizar_assincrono` recusa a NFC-e. `sefaz::contingencia::passo_offline` e `montagem::prazo_de_transmissao` dizem o
     que fazer com a NFC-e emitida em contingência off-line e até quando. `pedidos::chave_valida_nfce`, `cons_sit_nfce` e
     `evento::cancelamento_nfce` são novos; os pedidos que eram da NF-e continuam recusando a chave do modelo 65.
-  * **Fica para depois:** o DANFE NFC-e, as faces (aplicação, linha de comando, API HTTP e MCP), o cancelamento por
+  * **Fica para depois:** as faces (aplicação, linha de comando, API HTTP e MCP), o cancelamento por
     substituição (110112) e a inutilização da NFC-e.
 * NF-e (modelo 55), distribuição de DF-e e manifestação do destinatário, na biblioteca (feature `nfe_sefaz`; as faces estão no item seguinte). **Nenhuma chamada ao Ambiente Nacional real e nenhum certificado A1
   real**; sem dependência nova.
