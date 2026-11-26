@@ -732,3 +732,22 @@ async fn retorno_com_o_xml_escapado_e_lido_nos_servicos_da_parte_1() {
         SituacaoServico::SemResposta
     );
 }
+
+#[tokio::test]
+async fn consulta_com_so_o_epec_124_diz_que_a_nota_ainda_precisa_ser_transmitida() {
+    let (_, chave) = nfe(52, 2);
+    let f = Falso::novo(vec![(
+        CON,
+        ok(CON, &ret_sit(&chave, "124", "EPEC Autorizado", "")),
+    )]);
+    let (c, _) = cliente(f);
+    let r = c.consultar(&chave, None).await.unwrap();
+    assert!(matches!(
+        r.desfecho,
+        rustnf::nfe::sefaz::Desfecho::SoEpec { .. }
+    ));
+    assert_eq!(
+        r.frase,
+        "Na SEFAZ consta so' o EPEC (124), sem a NF-e: a nota ainda precisa ser transmitida."
+    );
+}

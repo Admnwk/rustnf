@@ -10,9 +10,10 @@
 //! e' seguro; sem resposta nem da consulta, o resultado manda consultar de novo. Nenhum caminho cria um segundo
 //! cancelamento ou uma carta com sequencia nova por causa de uma resposta perdida.
 //!
-//! Onde cada evento e' recebido: cancelamento e carta, no autorizador da chave (a UF, ou a SVC se a chave tem `tpEmis`
-//! 6 ou 7); EPEC, no Ambiente Nacional (MOC 7.00, Visao Geral, 3.3); eventos da apuracao do IBS/CBS, na SVRS (NT
-//! 2025.002 v1.53, item 8.1). A inutilizacao vai ao autorizador da UF do emitente.
+//! Onde cada evento e' recebido: cancelamento, no autorizador da chave (a UF, ou a SVC se a chave tem `tpEmis` 6 ou 7);
+//! carta de correcao, sempre na UF (a SVC nao a registra, MOC 7.00, Anexo III, 2.1.3.4); EPEC, no Ambiente Nacional (MOC
+//! 7.00, Visao Geral, 3.3); eventos da apuracao do IBS/CBS, na SVRS (NT 2025.002 v1.53, item 8.1). A inutilizacao vai ao
+//! autorizador da UF do emitente (a SVC nao a oferece, item e).
 
 use chrono::Datelike;
 
@@ -122,8 +123,9 @@ impl<T: Transporte> ClienteSefaz<T> {
             ambiente: self.ambiente,
             quando: self.agora(),
         })?;
-        let destino = self.destino_da_chave(&c.chave, c.uf);
-        self.registrar(m.assinar(cert, &self.id_lote())?, &destino, c.uf)
+        // a SVC nao registra carta de correcao (MOC 7.00, Anexo III, 2.1.3.4, item d): a carta de uma nota autorizada na
+        // SVC vai a SEFAZ de origem, que ja a tem na base (item h) quando volta
+        self.registrar(m.assinar(cert, &self.id_lote())?, c.uf, c.uf)
             .await
     }
 
@@ -303,7 +305,12 @@ impl<T: Transporte> ClienteSefaz<T> {
         porque: &str,
         deve_existir: bool,
     ) -> Result<ResultadoEvento, ErroSefaz> {
-        let onde = self.destino_da_chave(&p.chave, uf);
+        // o evento que foi a uma UF ou a SVC se procura la; o do Ambiente Nacional e o da SVRS, onde a nota esta
+        let onde = if matches!(destino, "AN" | "SVRS") {
+            self.destino_da_chave(&p.chave, uf)
+        } else {
+            destino.to_string()
+        };
         let c = self.consultar_chave(&p.chave, &onde, None).await?;
         let da_consulta = format!("consulta: {}", c.detalhe);
         let sem_informacao = matches!(

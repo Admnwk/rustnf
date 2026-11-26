@@ -257,6 +257,10 @@ pub(super) fn frase_da_inutilizacao(d: &DesfechoInutilizacao) -> String {
         DesfechoInutilizacao::Inutilizada { protocolo, .. } => {
             format!("Faixa inutilizada: protocolo {protocolo}.")
         }
+        DesfechoInutilizacao::JaInutilizada { protocolo, .. } if protocolo.is_empty() => {
+            "A mesma faixa ja estava inutilizada (563); a SEFAZ nao informou o protocolo do pedido anterior."
+                .to_string()
+        }
         DesfechoInutilizacao::JaInutilizada { protocolo, .. } => format!(
             "A mesma faixa ja estava inutilizada (563): protocolo {protocolo} do pedido anterior."
         ),

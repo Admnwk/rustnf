@@ -77,6 +77,18 @@ pub(crate) fn ide(x: &mut X, n: &Nota, chave: &str, uf: &str) -> Res<()> {
             "557",
         ));
     }
+    // SVC: o MOC 7.00, Anexo III, 2.1.3.5, manda gerar a NF-e com o motivo (xJust) e o inicio (dhCont) da contingencia, que
+    // saem no DANFE. O Anexo I nao tem rejeicao para a falta deles nos tpEmis 6 e 7 (a 557 vale so' para 2, 4, 5 e 9):
+    // por isso o erro nao leva codigo de rejeicao.
+    if [6, 7].contains(&n.tp_emis) && (n.dh_cont.is_none() || xj.is_none()) {
+        return Err(erro(
+            format!(
+                "contingencia SVC (tpEmis {}): informe dhCont e xJust, que saem no DANFE (MOC 7.00, Anexo III, 2.1.3.5)",
+                n.tp_emis
+            ),
+            "dhCont",
+        ));
+    }
     if n.dh_cont.is_some() || xj.is_some() {
         let (Some(dc), Some(j)) = (&n.dh_cont, xj) else {
             return Err(erro(

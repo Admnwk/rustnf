@@ -435,3 +435,34 @@ async fn o_pedido_que_nao_monta_nao_chega_a_rede() {
     assert!(f.chamadas().is_empty());
     let _: Ambiente = Homologacao;
 }
+
+#[tokio::test]
+async fn a_563_sem_o_protocolo_do_pedido_anterior_nao_inventa_numero() {
+    let f = Falso::novo(vec![(
+        INU,
+        ok(
+            INU,
+            &ret_inut(
+                "563",
+                "Rejeicao: Ja existe pedido de Inutilizacao com a mesma faixa",
+                1,
+                10,
+                25,
+                "",
+            ),
+        ),
+    )]);
+    let r = minas(f)
+        .inutilizar(&certificado(), &faixa(10, 25))
+        .await
+        .unwrap();
+    let DesfechoInutilizacao::JaInutilizada { protocolo, .. } = &r.desfecho else {
+        panic!("{r:?}")
+    };
+    assert!(protocolo.is_empty());
+    assert_eq!(
+        r.frase,
+        "A mesma faixa ja estava inutilizada (563); a SEFAZ nao informou o protocolo do pedido anterior."
+    );
+    assert!(r.inutilizada() && r.proc_inut.is_some());
+}

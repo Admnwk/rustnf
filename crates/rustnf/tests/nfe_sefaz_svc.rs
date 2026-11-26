@@ -49,7 +49,7 @@ fn cada_uf_vai_para_a_svc_que_o_ato_cotepe_39_12_diz() {
 }
 
 #[test]
-fn a_tabela_do_portal_atende_as_duas_svc_e_a_svc_rs_nao_lista_a_inutilizacao() {
+fn o_manual_limita_a_svc_e_a_inutilizacao_nao_e_oferecida_mesmo_listada_no_portal() {
     assert_eq!((Svc::An.tp_emis(), Svc::Rs.tp_emis()), (6, 7));
     assert_eq!(
         (Svc::An.autorizador(), Svc::Rs.autorizador()),
@@ -68,13 +68,12 @@ fn a_tabela_do_portal_atende_as_duas_svc_e_a_svc_rs_nao_lista_a_inutilizacao() {
             Svc::An.oferece(amb, Servico::RecepcaoEvento)
                 && Svc::Rs.oferece(amb, Servico::RecepcaoEvento)
         );
-        assert!(Svc::An.oferece(amb, Servico::Inutilizacao));
-        assert!(
-            !Svc::Rs.oferece(amb, Servico::Inutilizacao),
-            "a SVC-RS nao lista NfeInutilizacao"
-        );
+        // MOC 7.00, Anexo III, 2.1.3.4, item e: a SVC nao oferece a inutilizacao; o Portal lista NfeInutilizacao so' na SVC-AN
+        assert!(tabela::url_do_autorizador("SVC-AN", amb, Servico::Inutilizacao).is_ok());
+        assert!(!Svc::An.oferece(amb, Servico::Inutilizacao));
+        assert!(!Svc::Rs.oferece(amb, Servico::Inutilizacao));
     }
-    // o que a SVC nao lista nao tem endereco: nada se inventa
+    // a SVC-RS nem endereco de inutilizacao tem: nada se inventa
     let e = tabela::url_do_autorizador("SVC-RS", Homologacao, Servico::Inutilizacao).unwrap_err();
     assert!(
         e.mensagem.contains("NfeInutilizacao") && e.mensagem.contains("SVC-RS"),
@@ -84,6 +83,30 @@ fn a_tabela_do_portal_atende_as_duas_svc_e_a_svc_rs_nao_lista_a_inutilizacao() {
         tabela::url_do_autorizador("SVC-AN", Producao, Servico::RecepcaoEvento).unwrap(),
         "https://www.sefazvirtual.fazenda.gov.br/NFeRecepcaoEvento4/NFeRecepcaoEvento4.asmx"
     );
+    // dos eventos, so' o cancelamento (item c); carta e os outros nao (item d)
+    assert!(Svc::atende_evento("110111"));
+    for outro in ["110110", "110140", "112110", "110001", "211110"] {
+        assert!(!Svc::atende_evento(outro), "{outro}");
+    }
+}
+
+#[test]
+fn a_montagem_exige_dhcont_e_xjust_na_svc() {
+    use rustnf::nfe::montagem::{montar, nota_de_json};
+    for tp in [6, 7] {
+        let mut p = pedido(80, 2);
+        p["tp_emis"] = serde_json::json!(tp);
+        let e = montar(&nota_de_json(&p).unwrap()).unwrap_err();
+        assert_eq!(e.campo, "dhCont", "{tp}");
+        // o Anexo I nao tem rejeicao para isso nos tpEmis 6 e 7 (557 vale so' para 2, 4, 5 e 9)
+        assert_eq!(e.regra, "", "{tp}");
+        assert!(e.mensagem.contains("Anexo III"), "{e}");
+        // so' um dos dois tambem nao serve
+        p["dh_cont"] = serde_json::json!("2026-10-03T08:30:00-03:00");
+        assert!(montar(&nota_de_json(&p).unwrap()).is_err());
+        p["x_just"] = serde_json::json!("Falha na comunicacao com a SEFAZ de origem");
+        assert!(montar(&nota_de_json(&p).unwrap()).is_ok());
+    }
 }
 
 // ------------------------------------------------------------------------------------------------ a nota na SVC
@@ -201,7 +224,7 @@ async fn o_recibo_da_nota_da_svc_tambem_e_consultado_na_svc() {
 // ------------------------------------------------------------------------------------------------ eventos da nota na SVC
 
 #[tokio::test]
-async fn cancelamento_e_carta_da_nota_da_svc_vao_a_svc_da_chave() {
+async fn cancelamento_da_nota_da_svc_vai_a_svc_e_a_carta_vai_a_sefaz_de_origem() {
     let (_, chave) = nfe_em_contingencia(66, 6);
     let f = Falso::novo(vec![
         (
@@ -253,17 +276,21 @@ async fn cancelamento_e_carta_da_nota_da_svc_vao_a_svc_da_chave() {
         .await
         .unwrap();
     assert!(a.registrado() && b.registrado());
+    // MOC 7.00, Anexo III, 2.1.3.4: cancelamento so' da nota autorizada na SVC; carta nao e' servico da SVC
     assert_eq!(
         (a.autorizador.as_str(), b.autorizador.as_str()),
-        ("SVC-AN", "SVC-AN")
+        ("SVC-AN", "SP")
     );
-    for ch in f.chamadas() {
-        assert_eq!(
-            ch.url,
-            "https://hom.sefazvirtual.fazenda.gov.br/NFeRecepcaoEvento4/NFeRecepcaoEvento4.asmx"
-        );
-    }
-    // a nota normal da mesma UF continua indo a UF
+    let ch = f.chamadas();
+    assert_eq!(
+        ch[0].url,
+        "https://hom.sefazvirtual.fazenda.gov.br/NFeRecepcaoEvento4/NFeRecepcaoEvento4.asmx"
+    );
+    assert_eq!(
+        ch[1].url,
+        "https://homologacao.nfe.fazenda.sp.gov.br/ws/nferecepcaoevento4.asmx"
+    );
+    // a nota normal da mesma UF: os dois vao a UF
     let (_, normal) = nfe(67, 2);
     let f = Falso::novo(vec![(
         EVT,
@@ -280,6 +307,77 @@ async fn cancelamento_e_carta_da_nota_da_svc_vao_a_svc_da_chave() {
         .await
         .unwrap();
     assert_eq!(r.autorizador, "SP");
+    assert!(f.chamadas()[0].url.contains("fazenda.sp.gov.br"));
+}
+
+#[tokio::test]
+async fn carta_da_nota_da_svc_sem_resposta_consulta_na_sefaz_de_origem_onde_ela_foi() {
+    let (_, chave) = nfe_em_contingencia(69, 6);
+    let miolo = format!(
+        "{}{}",
+        prot_ok(&chave),
+        proc_na_consulta(&chave, "110110", 1, "135", NPROT_EVT)
+    );
+    let f = Falso::novo(vec![
+        (EVT, tempo()),
+        (
+            CON,
+            ok(
+                CON,
+                &ret_sit(&chave, "100", "Autorizado o uso da NF-e", &miolo),
+            ),
+        ),
+    ]);
+    let (c, _) = cliente(f.clone());
+    let r = c
+        .corrigir(
+            &certificado(),
+            &chave,
+            "Corrigir o endereco de entrega da nota",
+            1,
+        )
+        .await
+        .unwrap();
+    assert!(r.registrado() && r.recuperado);
+    let ch = f.chamadas();
+    assert!(
+        ch[0].url.contains("fazenda.sp.gov.br") && ch[1].url.contains("fazenda.sp.gov.br"),
+        "{ch:?}"
+    );
+}
+
+#[tokio::test]
+async fn status_da_svc_vai_ao_endereco_da_svc_da_uf() {
+    let f = Falso::novo(vec![(
+        STA,
+        ok(STA, &ret_status("107", "Servico SVC em Operacao", "")),
+    )]);
+    let (c, _) = cliente(f.clone());
+    let s = c.status_svc().await.unwrap();
+    assert!(s.em_operacao());
+    assert_eq!(
+        f.chamadas()[0].url,
+        "https://hom.sefazvirtual.fazenda.gov.br/NFeStatusServico4/NFeStatusServico4.asmx"
+    );
+    // 114: a SEFAZ de origem desabilitou a SVC
+    let f = Falso::novo(vec![(
+        STA,
+        ok(
+            STA,
+            &ret_status("114", "SVC desabilitada pela SEFAZ Origem", ""),
+        ),
+    )]);
+    let (c, _) = cliente(f);
+    let s = c.status_svc().await.unwrap();
+    assert!(!s.em_operacao());
+    assert!(s.frase.contains("114"), "{}", s.frase);
+    // o status comum continua indo a UF
+    let f = Falso::novo(vec![(
+        STA,
+        ok(STA, &ret_status("107", "Servico em Operacao", "")),
+    )]);
+    let (c, _) = cliente(f.clone());
+    c.status().await.unwrap();
     assert!(f.chamadas()[0].url.contains("fazenda.sp.gov.br"));
 }
 
@@ -320,4 +418,15 @@ async fn cancelamento_da_nota_da_svc_sem_resposta_consulta_na_svc_e_acha_o_event
     assert!(ch[1]
         .url
         .contains("nfe-homologacao.svrs.rs.gov.br/ws/NfeConsulta"));
+}
+
+#[test]
+fn a_pagina_de_homologacao_poe_o_pi_na_svc_rs_e_o_ato_na_svc_an() {
+    use rustnf::nfe::sefaz::svc::homologacao_diverge_do_ato;
+    // o Ato (e a pagina de producao) mandam o PI para a SVC-AN; a pagina de homologacao lista o PI na SVC-RS
+    assert_eq!(svc_da_uf("PI").unwrap(), Svc::An);
+    assert!(homologacao_diverge_do_ato("PI", Homologacao, 7));
+    assert!(!homologacao_diverge_do_ato("PI", Producao, 7));
+    assert!(!homologacao_diverge_do_ato("PI", Homologacao, 6));
+    assert!(!homologacao_diverge_do_ato("CE", Homologacao, 7));
 }

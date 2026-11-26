@@ -6,10 +6,40 @@ Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` 
 alguma delas não é lido pela versão 0.4.0** (ela o trata como ilegível); o índice antigo, só com `autorizada` e
 `cancelada`, continua sendo lido por esta versão.
 
+* NF-e (modelo 55), cliente dos webservices da SEFAZ, parte 2: eventos, inutilização e contingência SVC, na mesma
+  feature `nfe_sefaz` (nenhuma crate nova). **O DANFE, as faces (aplicação, linha de comando, API, MCP, interface), a
+  distribuição de DF-e e a manifestação do destinatário não estão nesta parte. Nenhuma chamada a uma SEFAZ real foi
+  feita.**
+  * `nfe::sefaz::evento` (puro): `cancelamento` (110111, `nProt` de 15 ou 17 dígitos, justificativa de 15 a 255),
+    `carta_correcao` (110110, sequência de 1 a 20, texto fixo de `xCondUso` do esquema; a carta nova substitui as
+    anteriores), `epec` (110140, dados tirados da NF-e com `tpEmis` 4, `cOrgao` 91 do Ambiente Nacional) e `evento_rtc`
+    (os 13 eventos de apuração do IBS/CBS da NT 2025.002 v1.53 mais o 110001; o 211120, eliminado pela NT, e os do
+    Fisco ficam de fora). `Montado::assinar` assina o `infEvento` com o A1 e monta o `envEvento`.
+  * `nfe::sefaz::inutilizacao`: o `inutNFe` com as regras da tabela 5-12 (faixa de até 10.000 números, ano de 2006 até o
+    atual) e `disponivel`/`eliminada_em`: AC, BA e SP perderam o serviço em 11/11/2026 nos dois ambientes (NT 2023.002
+    v1.02) e o cliente devolve o erro em palavras sem chamar a rede. O `inutNFe` é só de CNPJ, como o esquema nacional.
+  * `nfe::sefaz::svc`: a SVC de cada UF pelo Ato COTEPE/ICMS 39/12 (SVC-AN: `tpEmis` 6; SVC-RS: `tpEmis` 7) e o que a
+    SVC atende, pelo manual de contingência (MOC 7.00, Anexo III, 2.1.3.4). A nota com `tpEmis` 6 ou 7 vai ao endereço
+    da SVC, e a consulta, o recibo e o cancelamento dela também; a carta de correção de uma nota da SVC vai à SEFAZ de
+    origem (a SVC não a registra) e a inutilização nunca vai à SVC. O `tpEmis` que não é o da SVC da UF é recusado antes
+    da rede (rejeição 713). `status_svc` consulta o status da SVC (107, 113 e 114). A montagem passa a exigir `dhCont`
+    e `xJust` nos `tpEmis` 6 e 7 (Anexo III, 2.1.3.5; o Anexo I não tem rejeição para isso). A página de homologação do
+    Portal lista o PI na SVC-RS e o `NfeInutilizacao` na SVC-AN; o Ato e o manual dizem o contrário.
+  * `ClienteSefaz`: `cancelar`, `corrigir`, `registrar_epec`, `registrar_evento_rtc` e `inutilizar`, com o resultado
+    tipado em palavras (`DesfechoEvento`: registrado, registrado fora do prazo, sem vínculo, prazo vencido, EPEC
+    bloqueado, rejeitado, indisponível, não registrado, sem resposta; `DesfechoInutilizacao`). Evento sem resposta
+    consulta a nota (que devolve os eventos) antes de qualquer reenvio: achou, devolve o registro; a consulta respondeu
+    sem o evento, reenviar o MESMO evento é seguro; sem resposta nem da consulta, manda consultar de novo. A duplicidade
+    573 também se resolve pela consulta. `resposta_evento` lê o `retEnvEvento` e o `retInutNFe` e monta o
+    `procEventoNFe` e o `ProcInutNFe` pelo texto cru.
+  * A resposta com o XML escapado dentro do `nfeResultMsg` (texto em vez de elemento) passa a ser lida, em todos os
+    serviços.
+  * Correção: a frase da consulta que acha só o EPEC (124) saía com uma fileira de espaços no meio.
+  * Os pedidos, a carta de correção, o EPEC, os 14 eventos de apuração, o `inutNFe` e os documentos de distribuição foram
+    validados nos esquemas XSD oficiais fora do repositório. Os eventos, a inutilização e a SVC partiram da `gaialib`;
+    aqui foram reescritos e cobertos por casos novos.
 * NF-e (modelo 55), cliente dos webservices da SEFAZ, parte 1, atrás da nova feature `nfe_sefaz` (= `nfe` + as
-  dependências que a `sefin` já usa; nenhuma crate nova). **Eventos (cancelamento, CC-e, EPEC), inutilização, a
-  contingência SVC, o DANFE e as faces (aplicação, linha de comando, API, MCP, interface) não estão nesta parte.**
-  **Nenhuma chamada a uma SEFAZ real foi feita.**
+  dependências que a `sefin` já usa; nenhuma crate nova). **Nenhuma chamada a uma SEFAZ real foi feita.**
   * `nfe::sefaz::tabela`: endereços dos webservices lidos das páginas oficiais "Relação de Serviços Web" (produção e
     homologação; 15 tabelas, 96 endereços por ambiente), UF -> autorizador e a lista da contingência.
   * `nfe::sefaz::pedidos` e `resposta`: `consStatServ`, `enviNFe` (síncrono e assíncrono), `consReciNFe` e `consSitNFe`;

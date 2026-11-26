@@ -252,6 +252,22 @@ impl<T: Transporte> ClienteSefaz<T> {
     ///
     /// [`ErroSefaz`] so' se o pedido nao monta; falha de rede volta como [`SituacaoServico::SemResposta`].
     pub async fn status(&self) -> Result<StatusServico, ErroSefaz> {
+        self.status_em(self.uf).await
+    }
+
+    /// O status da SVC que atende a UF do cliente (`NfeStatusServico` da SVC-AN ou da SVC-RS). Consulte-o so' quando o
+    /// ambiente normal da SEFAZ estiver fora: a SVC so' serve quando responde 107; 113 e 114 dizem que ela esta sendo
+    /// desativada ou foi desabilitada pela SEFAZ de origem (MOC 7.00, Anexo III, 2.1.3.4, item g).
+    ///
+    /// # Errors
+    ///
+    /// [`ErroSefaz`] so' se o pedido nao monta; falha de rede volta como [`SituacaoServico::SemResposta`].
+    pub async fn status_svc(&self) -> Result<StatusServico, ErroSefaz> {
+        let svc = svc::svc_da_uf(self.uf)?;
+        self.status_em(svc.autorizador()).await
+    }
+
+    async fn status_em(&self, destino: &str) -> Result<StatusServico, ErroSefaz> {
         let pedido = pedidos::cons_stat(self.ambiente, self.uf)?;
         let sem = |detalhe: String| StatusServico {
             situacao: SituacaoServico::SemResposta,
@@ -263,7 +279,7 @@ impl<T: Transporte> ClienteSefaz<T> {
             detalhe,
         };
         let r = match self
-            .chamar(Servico::StatusServico, &pedido, self.uf)
+            .chamar(Servico::StatusServico, &pedido, destino)
             .await?
         {
             Resp::Ok(r) => r,
@@ -403,7 +419,9 @@ impl<T: Transporte> ClienteSefaz<T> {
         // na SVC a nota leva o tpEmis da SVC da UF (rejeicao 713, MOC 7.00, Anexo I, B25-40)
         if matches!(c.chave.tp_emis, 6 | 7) {
             let esperado = svc::svc_da_uf(self.uf)?;
-            if c.chave.tp_emis != esperado.tp_emis() {
+            if c.chave.tp_emis != esperado.tp_emis()
+                && !svc::homologacao_diverge_do_ato(self.uf, self.ambiente, c.chave.tp_emis)
+            {
                 return Err(ErroSefaz::novo(
                     format!(
                         "a UF {} e' atendida pela {} (tpEmis {}), e a nota tem tpEmis {} (rejeicao 713; {})",
