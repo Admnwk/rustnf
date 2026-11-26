@@ -108,6 +108,31 @@ fn recusas() {
     }
 }
 
+/// NT 008 v1.02, item 2.4.5, nota 4: operacao sem incidencia do ISSQN (tribISSQN 4) = bloco so' com a frase; imunidade
+/// e exportacao seguem com o bloco inteiro.
+#[test]
+fn nao_incidencia_reduz_o_bloco_municipal() {
+    let xml = xml_do_caso("minima");
+    assert!(
+        xml.contains("<tribISSQN>1</tribISSQN>"),
+        "caso base tributavel"
+    );
+    for (trib, visivel) in [("1", true), ("2", true), ("3", true), ("4", false)] {
+        let x = xml.replace(
+            "<tribISSQN>1</tribISSQN>",
+            &format!("<tribISSQN>{trib}</tribISSQN>"),
+        );
+        let d = danfse::dados(&x, &Opcoes::default()).expect("dados");
+        assert_eq!(d["municipal"]["visivel"], visivel, "tribISSQN {trib}");
+        if !visivel {
+            assert_eq!(
+                d["municipal"]["mensagem"],
+                "TRIBUTAÇÃO MUNICIPAL (ISSQN) - OPERAÇÃO NÃO SUJEITA AO ISSQN"
+            );
+        }
+    }
+}
+
 #[test]
 fn municipio_resolvido_por_quem_chama() {
     let c = &golden()["casos"][0];

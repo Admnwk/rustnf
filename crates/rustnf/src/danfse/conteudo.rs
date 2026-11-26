@@ -298,7 +298,9 @@ pub(super) fn conteudo(xml: &str, op: &Opcoes) -> Result<Value, ErroDanfse> {
     let uf_inc = achou_inc
         .as_ref()
         .map_or_else(|| g(inf, "xUFIncid"), |a| a.1.clone());
+    // NT 008 v1.02, item 2.4.5, nota 4: sem incidencia do ISSQN (tribISSQN 4) o bloco leva so' a frase
     let tem_mun = tm.is_some()
+        && int(tm, "tribISSQN") != 4
         && (int(tm, "tribISSQN") != 0
             || !x_loc_inc.trim().is_empty()
             || !uf_inc.trim().is_empty()
