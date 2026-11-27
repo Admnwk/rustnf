@@ -80,6 +80,7 @@ Os detalhes de cada passo estão em [Interface de desktop](#interface-de-desktop
 | faces dos documentos recebidos e da manifestação (`rustnf nfe recebidas`, `/nfe/recebidas/` e 4 ferramentas do MCP) | transporte falso (vários lotes até o 137, queda no meio de um lote sem pular NSU, 656 gravado e a chamada seguinte que diz a hora sem ir à rede, documento que não abre e é relido, ciência, confirmação e as recusas antes da rede, baixa por chave com e sem ciência, pasta e configuração da 0.4.0) e um simulador local (fora do repositório) pela linha de comando, pela API e por um cliente MCP mínimo | **nenhuma chamada ao Ambiente Nacional real e nenhum certificado A1 real**; não há interface de desktop para os recebidos |
 | interface de desktop, NF-e (`rustnf-gui`, só Windows: assistente de emissão em cinco passos, cadastro de produtos, nota anterior como modelo, contingência EPEC, configurar, lista, detalhe, DANFE, conferir, cancelar, carta de correção, inutilizar e retomar) | testes do modelo (a tabela das escolhas fiscais com o CFOP conferido na tabela da biblioteca, o pedido que o assistente monta passando pela montagem da aplicação nos casos típicos do Simples e do regime normal, o que a pessoa editou à mão nunca sobrescrito, cadastro com arquivo ruim, rascunho, a nota anterior lida do XML, texto de cada erro e desfecho) e da janela no ambiente de teste do GPUI com uma SEFAZ de mentira (transporte roteirizado, sem rede): o assistente do início ao fim (autorizada, com o produto novo entrando no cadastro), o produto do cadastro, a rejeitada que se corrige e sai com o mesmo número, a nota sem resposta que só o Retomar resolve (um único envio, nenhuma nota gêmea), a SEFAZ fora e o EPEC (que não é oferecido com nota sem resposta na pasta), a produção sem a marcação (nenhuma chamada), o clique duplo, a nota anterior como modelo e a tela de produtos; uso manual pelo exemplo de demonstração | **nenhuma NF-e real, nenhuma SEFAZ real (nem a de homologação), nenhum EPEC real e nenhum certificado real pela interface**; a venda ao exterior, o IPI, a venda por intermediador e o valor unitário com mais de duas casas não passam pelo assistente (vão pela linha de comando); o DANFE aberto no leitor de PDF de outra máquina; o lado Linux só pelo CI |
 | interface de desktop, NFC-e (`rustnf-gui`, só Windows: o Caixa pelo teclado com cupom, desconto, CPF opcional e pagamento com troco, o cupom como arquivo, a contingência off-line, "Fechar o caixa", a seção NFC-e das Configurações com o CSC no cofre, e a NFC-e na lista de Notas com detalhe, conferir, cancelar e retomar) | testes do modelo (o pedido do cupom passando pelo `montar_pedido` estrito da aplicação com o contexto da NFC-e: dinheiro com troco, Pix, cartão, duas formas, desconto rateado, com e sem CPF, Simples e regime normal; troco e totais; o CSC fora de texto de tela e de `Debug`; o texto de cada desfecho; o prazo da off-line e o aviso de fechamento vindos da aplicação) e da janela no ambiente de teste do GPUI com uma SEFAZ de mentira: a venda do início ao fim pelo teclado até o cupom em PDF e ESC/POS, a rejeitada que sai com o mesmo número, a sem resposta que só o Retomar resolve (um único envio), a SEFAZ fora antes de enviar (off-line, Fechar o caixa e Transmitir com a MESMA chave), a produção sem a marcação (nenhuma chamada), o CSC sem cofre e o CSC guardado no cofre sem tocar o arquivo nem a nota, o rascunho que sobrevive, o cancelamento com o aviso do prazo e o Retomar da off-line pela lista; uso manual pelo exemplo de demonstração | **nenhuma NFC-e real, nenhuma SEFAZ real (nem a de homologação), nenhum certificado real e nenhum CSC real pela interface**; a impressão em impressora real (o programa só gera o arquivo do cupom); a inutilização e a carta de correção (a NFC-e não tem carta, e a aplicação não inutiliza o modelo 65) e a via do estabelecimento da off-line não estão na janela; o cupom aberto no leitor de PDF de outra máquina; o lado Linux só pelo CI |
+| interface de desktop, NF-e recebidas (`rustnf-gui`, só Windows: a opção Recebidas (compras) em Notas, buscar notas novas com a última busca e a espera, o detalhe do resumo e da nota completa, baixar com a ciência, o DANFE e as quatro respostas à nota) | testes do modelo (a lista com situação da nota e resposta da empresa separadas, busca e filtro, 2 mil registros; o texto de cada resultado de buscar, baixar e responder; as regras do diálogo conferidas contra a função da biblioteca em todas as combinações) e da janela no ambiente de teste do GPUI com um Ambiente Nacional de mentira: buscar traz as notas novas, a espera desliga o botão com o horário e clicar não chama nada, o resumo baixado com a ciência vira a nota completa com DANFE, cada uma das quatro respostas, o que a aplicação recusa antes de enviar, a produção sem a marcação (nenhuma chamada), a recusa do Ambiente Nacional e a resposta sem retorno; uso manual pelo exemplo de demonstração | **nenhuma chamada real ao Ambiente Nacional (nem a de homologação) e nenhum certificado real pela interface**; o prazo da resposta (o programa não o calcula e nenhuma fonte dele foi usada); a busca de documentos que o Ambiente Nacional guarda há mais de 90 dias; o lado Linux só pelo CI |
 | interface de desktop (`rustnf-gui`, só Windows) | testes do modelo (máscaras, conferência, pedido, prévia, sugestão, rascunho, lista das notas, detalhe, cancelamento, conferência em lote, histórico de eventos, pedido de análise fiscal, confirmação e recusa de nota recebida, consulta pela chave e pela DPS e prévia avulsa), dos fluxos com emissor de demonstração e pasta temporária e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuração e pelo exemplo de demonstração | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, e nenhuma consulta de DPS ou de evento, nenhuma conferência de situação e nenhum evento (análise fiscal, confirmação, recusa) foi feito por ela contra a Sefin; só o emissor de demonstração respondeu**; o DANFSe aberto no leitor de PDF de outra máquina; uma chamada real à Sefin pelo botão "Testar conexão"; exame da janela em outras escalas de tela; o executável de release aberto numa máquina sem as ferramentas de desenvolvimento |
 
 Se você testar a NFS-e, conte como foi: abra um relato pelo modelo **"Relato de emissão"** (aba Issues), mesmo quando der
@@ -143,8 +144,9 @@ diz se a UF ainda tem o serviço). **Envia à contingência SVC**: a nota com `t
 da SVC-RS da UF (Ato COTEPE/ICMS 39/12), e a consulta e o cancelamento dela também (a SVC não registra carta de
 correção nem inutiliza: MOC 7.00, Anexo III). Com a feature `danfe`, **gera o DANFE em PDF**
 (`rustnf::danfe::pdf`, A4 retrato, várias folhas, MOC 7.00 Anexo II e o leiaute da NT 2026.010; veja
-`crates/rustnf/examples/danfe.rs`). A NF-e tem a camada de aplicação (`rustnf-app`), a linha de comando (`rustnf nfe`, veja [NF-e](#nf-e-modelo-55)), a API HTTP (`/nfe/`) e o MCP; **ainda não há
-interface de desktop para a NF-e, e o modelo 65 (NFC-e) é recusado.** A leitura não confere a assinatura XML.
+`crates/rustnf/examples/danfe.rs`). A NF-e tem a camada de aplicação (`rustnf-app`), a linha de comando (`rustnf nfe`, veja [NF-e](#nf-e-modelo-55)), a API HTTP (`/nfe/`) e o MCP, e a
+interface de desktop (veja [Nova NF-e](#nova-nf-e-assistente-de-venda)); o modelo 65 (NFC-e) tem o seu caminho. A leitura não
+confere a assinatura XML.
 
 Com a mesma feature, a biblioteca **baixa os documentos de que um CNPJ ou CPF é interessado** (`rustnf::nfe::sefaz::dfe`, `NFeDistribuicaoDFe` do Ambiente Nacional) e **registra a manifestação do destinatário** (210200 confirmação, 210210 ciência, 210220 desconhecimento e 210240 operação não realizada, `ClienteSefaz::manifestar`). A distribuição devolve cada documento aberto (gzip com limite de tamanho) e lido: resumo da NF-e (`resNFe`), NF-e completa (lida pelo mesmo leitor da NF-e), resumo de evento e evento; o que não é reconhecido ou não abre volta cru, nunca é descartado. O `Cursor` guarda o último NSU, a espera de uma hora (depois do 137, do `ultNSU` igual ao `maxNSU` e do 656) e as lacunas: a biblioteca decide o próximo NSU e quando esperar, nunca pula nem repete um NSU e fecha a lacuna por `consNSU`; a aplicação só persiste o cursor, a cada lote, junto dos documentos (veja `crates/rustnf/examples/nfe_dfe.rs`). A aplicação, a linha de comando (`rustnf nfe recebidas`), a API HTTP e o MCP também as têm: veja [Documentos recebidos](#documentos-recebidos).
 
@@ -626,7 +628,17 @@ As NF-e que OUTRAS empresas emitiram contra o CNPJ do `[emitente]` (a empresa é
 Nacional pela distribuição de DF-e (`NFeDistribuicaoDFe`, NT 2014.002). A mesma camada de aplicação, a mesma pasta de notas
 e o mesmo certificado A1 servem: `rustnf nfe recebidas ...`. **Nenhuma chamada ao Ambiente Nacional real e nenhum
 certificado A1 real foram usados**: o que existe foi conferido com transporte falso e com um simulador local, fora do
-repositório. Não há interface de desktop para os documentos recebidos.
+repositório. A interface de desktop tem a opção **Recebidas (compras)** na tela Notas (veja abaixo).
+
+**Pela interface de desktop (Windows):** em Notas, escolha **Recebidas (compras)**. A lista mostra, para cada nota, a data, o
+fornecedor (nome e CNPJ), o valor, o que aconteceu com a nota (autorizada, cancelada pelo emitente, uso negado) e o que a empresa já
+respondeu (sem resposta, ciência, confirmada, desconhecida, não realizada). **Buscar notas novas** pede ao Ambiente Nacional as
+notas novas e diz em palavras o que veio; se ele mandou esperar, o botão fica desligado e a tela mostra até que horas (a espera é da
+biblioteca: a tela nunca a contorna). Na nota só com o resumo, **Baixar a nota completa** registra a **ciência da operação** (um
+evento fiscal; em produção pede a marcação "Entendo que...") e traz a nota, com o mesmo detalhe e o mesmo DANFE da NF-e emitida.
+**Responder à nota** oferece as quatro respostas ("Recebi a mercadoria, está certo", "Vi a nota, ainda vou conferir", "Não comprei
+isto", "Comprei, mas a venda não aconteceu", esta com justificativa de 15 a 255 caracteres) e já desliga as que o Ambiente Nacional
+recusaria. **O programa não calcula o prazo da resposta**: quem o confere é o Ambiente Nacional.
 
 Passo a passo:
 
@@ -690,8 +702,8 @@ palavras e avisa o que falta enviar ao fechar o caixa.
 
 **Nenhuma NFC-e real foi emitida com este código**, nem em homologação: nenhuma SEFAZ real foi chamada, nenhum certificado A1
 real nem nenhum CSC real foi usado, e nenhum cupom foi impresso em impressora real. O que existe foi conferido com transporte
-falso e com um simulador local, fora do repositório. **A NFC-e ainda não tem tela na
-interface de desktop**; a API HTTP e o MCP estão em [NFC-e pela API](#nfc-e-pela-api).
+falso e com um simulador local, fora do repositório. Na interface de desktop a NFC-e é o
+[Caixa](#caixa-nfc-e); a API HTTP e o MCP estão em [NFC-e pela API](#nfc-e-pela-api).
 
 | | NFS-e | NF-e (55) | NFC-e (65) |
 |---|---|---|---|
@@ -801,7 +813,7 @@ retransmissão corrigida sozinho.**
 * inutilização da NFC-e: o `inutNFe` da biblioteca é só do modelo 55;
 * prazo de cancelamento de cada UF: o aviso usa o prazo nacional (MOC 7.00, Visao Geral, regra 2P12-14); a lista por UF não
   está nas fontes oficiais que o projeto usa;
-* interface de desktop da NFC-e.
+* na interface de desktop, a via do estabelecimento do cupom off-line (a camada de aplicação já a gera).
 
 ## API HTTP
 

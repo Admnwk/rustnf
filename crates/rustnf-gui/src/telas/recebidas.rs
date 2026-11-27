@@ -144,9 +144,17 @@ impl TelaRecebidas {
 
     /// O detalhe da nota escolhida ja foi lido (os testes esperam por ele).
     #[cfg(test)]
-    #[allow(dead_code)]
     pub(super) fn detalhe_pronto(&self) -> bool {
         matches!(self.detalhe, detalhe::Conteudo::Lida(_))
+    }
+
+    /// O que o detalhe leu da nota escolhida (os testes conferem se ja e' a nota completa).
+    #[cfg(test)]
+    pub(super) fn detalhe_leitura(&self) -> Option<crate::modelo::nfe_detalhe::LeituraNfe> {
+        match &self.detalhe {
+            detalhe::Conteudo::Lida(n) => Some(n.leitura.clone()),
+            _ => None,
+        }
     }
 
     /// A janela entrega a configuracao (a efetiva) quando ela chega ou muda. `pronta`: a NF-e pode ser usada.

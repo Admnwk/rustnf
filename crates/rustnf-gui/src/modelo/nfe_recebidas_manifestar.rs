@@ -76,10 +76,10 @@ impl Resposta {
     #[must_use]
     pub fn quando_usar(self) -> &'static str {
         match self {
-            Self::Confirmar => "Use quando a mercadoria chegou (ou o serviço foi feito) e confere com a nota. Chama-se confirmação da operação.",
-            Self::Ciencia => "Use quando você já viu que a nota existe, mas ainda não conferiu a compra. É só um aviso de que você a viu (ciência da operação); depois ainda dá para dar a resposta final. É também o que libera a nota completa para baixar.",
-            Self::Desconhecer => "Use quando a sua empresa não fez esta compra: nota em engano ou indevida (desconhecimento da operação). A SEFAZ não entrega a nota completa depois dessa resposta.",
-            Self::NaoRealizada => "Use quando a compra foi combinada, mas a venda não aconteceu: a mercadoria não chegou ou foi devolvida (operação não realizada). Pede uma justificativa.",
+            Self::Confirmar => "A mercadoria chegou (ou o serviço foi feito) e confere com a nota. É a confirmação da operação.",
+            Self::Ciencia => "Você viu a nota, mas ainda não conferiu a compra. É a ciência da operação: depois dá para dar a resposta final, e ela libera a nota completa.",
+            Self::Desconhecer => "A sua empresa não fez esta compra (nota em engano). É o desconhecimento da operação: a SEFAZ não entrega a nota completa depois dele.",
+            Self::NaoRealizada => "A compra foi combinada, mas a venda não aconteceu (a mercadoria não chegou ou foi devolvida). É a operação não realizada e pede justificativa.",
         }
     }
 
@@ -130,7 +130,7 @@ impl Resposta {
 }
 
 /// O efeito fiscal, em uma frase para quem nao e' contador.
-pub const EFEITO_DA_RESPOSTA: &str = "A resposta fica registrada na SEFAZ, em nome da sua empresa (é um evento fiscal) e não se apaga. Se mudar de ideia, dá para registrar outra resposta final: vale a última.";
+pub const EFEITO_DA_RESPOSTA: &str = "A resposta fica registrada na SEFAZ, em nome da sua empresa (é um evento fiscal) e não se apaga. Mudou de ideia? Dá para registrar outra resposta final: vale a última.";
 
 /// A marcacao que a producao exige antes de habilitar o botao.
 pub const MARCACAO_DE_PRODUCAO: &str = "Entendo que a resposta tem efeito fiscal e não tem volta";

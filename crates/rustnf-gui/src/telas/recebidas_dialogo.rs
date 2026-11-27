@@ -371,7 +371,8 @@ impl DialogoRecebidas {
 
     fn aplicar(&mut self, resultado: Resultado, window: &mut Window, cx: &mut Context<Self>) {
         let mexeu = match &resultado {
-            Resultado::Busca(d) => d.mexeu_na_pasta(),
+            // a busca sempre mexe no cursor da pasta (a ultima busca e a espera), mesmo sem nota nova
+            Resultado::Busca(_) => true,
             Resultado::Baixa(d) => d.mexeu_na_pasta(),
             Resultado::Resposta(d, _) => d.registrado(),
         };
@@ -489,7 +490,12 @@ impl DialogoRecebidas {
                     v_flex()
                         .id("recebidas-corpo-do-dialogo")
                         .gap_3()
-                        .max_h(px(560.))
+                        // as quatro respostas, o resumo e a marcacao cabem sem rolar; os outros dialogos sao menores
+                        .max_h(px(if operacao == OperacaoRecebida::Responder {
+                            760.
+                        } else {
+                            640.
+                        }))
                         .overflow_y_scroll()
                         .child(corpo)
                         .children(motivo.map(|m| {

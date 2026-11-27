@@ -109,8 +109,14 @@
 * Interface de desktop, **NFC-e**: o Caixa (venda pelo teclado, cupom como arquivo, contingência off-line, fechar o caixa), a seção NFC-e das
   Configurações com o CSC no cofre e a NFC-e na lista de Notas (detalhe, conferir, cancelar com o aviso do prazo, retomar). Testada
   com uma SEFAZ de mentira e a janela de teste do GPUI: **nenhuma NFC-e real, nenhuma SEFAZ real, nenhum certificado real e nenhum
-  CSC real pela interface**. **Fica para as próximas entregas:** os documentos recebidos e a manifestação na janela, a via do
-  estabelecimento da off-line e a impressão direta.
+  CSC real pela interface**. **Fica para as próximas entregas:** a via do estabelecimento da off-line e a impressão direta.
+* Interface de desktop, **NF-e recebidas**: a opção Recebidas (compras) em Notas (lista com a situação da nota e a resposta da
+  empresa, busca e filtro), buscar notas novas com a última busca e a espera do Ambiente Nacional, o detalhe do resumo e da nota
+  completa (o mesmo da NF-e emitida, com DANFE), baixar com a ciência e responder à nota (confirmação, ciência, desconhecimento e
+  operação não realizada, com o que o Ambiente Nacional recusaria visível antes de enviar). Testada com um Ambiente Nacional de
+  mentira e a janela de teste do GPUI: **nenhuma chamada real ao Ambiente Nacional e nenhum certificado real pela interface**.
+  **Não feito:** o prazo da resposta (a biblioteca não o confere e não há fonte no projeto: a tela só repete a recusa 596 do
+  Ambiente Nacional).
 * NFC-e, o que ficou sem fazer e por quê: o cancelamento por substituição (110112, NT 2018.004: a biblioteca não tem o
   evento nem o esquema dele no pacote PL_010h v1.03); a inutilização da NFC-e (o `inutNFe` da biblioteca é só do modelo 55);
   o prazo de cancelamento de **cada UF** (só o prazo nacional de 24 horas, MOC 7.00, Visão Geral, regra 2P12-14, tem fonte

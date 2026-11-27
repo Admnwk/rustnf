@@ -12,7 +12,7 @@ use gpui_kit::component::{h_flex, v_flex, ActiveTheme as _, Icon, IconName};
 use gpui_kit::prelude::FluentBuilder as _;
 use gpui_kit::{
     div, AnyElement, App, Entity, InteractiveElement as _, IntoElement, ParentElement as _,
-    SharedString, StatefulInteractiveElement as _, Styled as _,
+    SharedString, StatefulInteractiveElement as _, Styled as _, TestSupportExt as _,
 };
 
 use super::{marcacao_da_operacao, DialogoRecebidas, Etapa, OperacaoRecebida, Resultado};
@@ -82,9 +82,16 @@ impl DialogoRecebidas {
                 },
                 cx,
             ))
-            .child(linha_de_resumo("Emitida em", a.data.clone(), cx))
-            .child(linha_de_resumo("Valor", format!("R$ {}", a.valor), cx))
-            .child(linha_de_resumo("A nota", a.nota.rotulo().to_string(), cx))
+            .child(linha_de_resumo(
+                "Nota",
+                format!(
+                    "R$ {}, emitida em {} ({})",
+                    a.valor,
+                    a.data,
+                    a.nota.rotulo()
+                ),
+                cx,
+            ))
             .child(linha_de_resumo(
                 "Sua resposta até agora",
                 a.resposta_dada.rotulo().to_string(),
@@ -127,6 +134,8 @@ impl DialogoRecebidas {
         let d = dialogo.clone();
         div()
             .id(SharedString::from(format!("recebidas-resposta-{i}")))
+            // com o suporte de teste ligado, a opcao pode ser achada e clicada pelos testes da janela
+            .test_support()
             .w_full()
             .p_3()
             .rounded_md()
