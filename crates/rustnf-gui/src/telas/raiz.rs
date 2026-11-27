@@ -24,9 +24,11 @@ use super::cancelar::{Cancelamento, EventoCancelamento};
 use super::consultar::{EventoConsulta, TelaConsultar};
 use super::nfe::TelaNfe;
 use super::nfe_dialogo::DialogoNfe;
+use super::nfe_nova::{EventoNovaNfe, NovaNfe};
 use super::nota::{EventoNota, Modelo, NovaNota};
 use super::notas::{EventoNotas, TelaNotas};
 use super::previa::{EventoPrevia, TelaPrevia};
+use super::produtos::TelaProdutos;
 use super::raiz_nfe::EntradasNfe;
 use crate::modelo::ambiente::{Ambiente, Tema};
 use crate::modelo::campo::{Campo, CampoAliquota, Erros};
@@ -50,6 +52,8 @@ pub enum Tela {
     Notas,
     /// Consultar uma nota pela chave de acesso.
     Consultar,
+    /// O cadastro de produtos da NF-e.
+    Produtos,
     /// A calculadora avulsa do IBS e da CBS.
     Previa,
     /// Todas as opcoes.
@@ -171,6 +175,8 @@ pub(super) struct Entradas {
 pub struct Raiz {
     pub(super) servicos: Arc<Servicos>,
     pub(super) nova: Entity<NovaNota>,
+    pub(super) nova_nfe: Entity<NovaNfe>,
+    pub(super) produtos: Entity<TelaProdutos>,
     pub(super) cancelamento: Entity<Cancelamento>,
     pub(super) notas: Entity<TelaNotas>,
     pub(super) consultar: Entity<TelaConsultar>,
@@ -256,6 +262,14 @@ impl Raiz {
             let servicos = Arc::clone(&servicos);
             cx.new(|cx| NovaNota::new(servicos, window, cx))
         };
+        let nova_nfe = {
+            let servicos = Arc::clone(&servicos);
+            cx.new(|cx| NovaNfe::new(servicos, window, cx))
+        };
+        let produtos = {
+            let servicos = Arc::clone(&servicos);
+            cx.new(|cx| TelaProdutos::new(servicos, window, cx))
+        };
         let cancelamento = {
             let servicos = Arc::clone(&servicos);
             cx.new(|cx| Cancelamento::new(servicos, window, cx))
@@ -284,6 +298,8 @@ impl Raiz {
         let mut raiz = Self {
             servicos,
             nova,
+            nova_nfe,
+            produtos,
             cancelamento,
             notas,
             consultar,
@@ -377,6 +393,25 @@ impl Raiz {
                     EventoNota::IrParaAliquotas => this.ir_para_aliquotas(),
                     EventoNota::NotaAutorizada => {
                         this.notas.update(cx, |n, cx| n.recarregar(cx));
+                    }
+                }
+                cx.notify();
+            },
+        );
+        self.fixas.push(s);
+        let s = cx.subscribe_in(
+            &self.nova_nfe.clone(),
+            window,
+            |this, _, evento: &EventoNovaNfe, _, cx| {
+                match evento {
+                    EventoNovaNfe::NotaMudou => this.nfe.update(cx, |n, cx| n.recarregar(cx)),
+                    EventoNovaNfe::IrParaConfiguracoes => {
+                        this.tela = Tela::Configuracoes;
+                        this.secao = Secao::Nfe;
+                    }
+                    EventoNovaNfe::IrParaNotas => {
+                        this.escolher_notas(EscolhaDeNotas::Nfe, cx);
+                        this.ir_para(Tela::Notas, cx);
                     }
                 }
                 cx.notify();
@@ -574,6 +609,12 @@ impl Raiz {
             .update(cx, |p, cx| p.definir_config(&efetiva, window, cx));
         let pronta = self.nfe_pronta(&efetiva);
         let e = efetiva.clone();
+        self.produtos
+            .update(cx, |p, cx| p.definir_config(e, completa, cx));
+        let e = efetiva.clone();
+        self.nova_nfe
+            .update(cx, |n, cx| n.definir_config(e, pronta, window, cx));
+        let e = efetiva.clone();
         self.dialogo_nfe.update(cx, |d, cx| d.definir_config(e, cx));
         let e = efetiva.clone();
         self.nfe.update(cx, |n, cx| n.definir_config(e, pronta, cx));
@@ -694,6 +735,9 @@ impl Raiz {
         if tela == Tela::Notas {
             self.notas.update(cx, |n, cx| n.recarregar(cx));
         }
+        if tela == Tela::Produtos {
+            self.produtos.update(cx, |p, cx| p.recarregar(cx));
+        }
         cx.notify();
     }
 
@@ -701,10 +745,13 @@ impl Raiz {
     pub(super) fn rolagem_da_tela(&self, cx: &gpui_kit::App) -> Option<ScrollHandle> {
         match self.tela {
             Tela::Inicio | Tela::Configuracoes => Some(self.rolagem.clone()),
+            Tela::NovaNota if self.escolha_notas == EscolhaDeNotas::Nfe => {
+                Some(self.nova_nfe.read(cx).rolagem.clone())
+            }
             Tela::NovaNota => Some(self.nova.read(cx).rolagem.clone()),
             Tela::Consultar => Some(self.consultar.read(cx).rolagem.clone()),
             Tela::Previa => Some(self.previa.read(cx).rolagem.clone()),
-            Tela::Notas => None,
+            Tela::Notas | Tela::Produtos => None,
         }
     }
 
@@ -721,6 +768,9 @@ impl Raiz {
             return false;
         }
         match self.tela {
+            Tela::NovaNota if self.escolha_notas == EscolhaDeNotas::Nfe => {
+                self.nova_nfe.update(cx, |_, cx| cx.notify());
+            }
             Tela::NovaNota => self.nova.update(cx, |_, cx| cx.notify()),
             Tela::Consultar => self.consultar.update(cx, |_, cx| cx.notify()),
             Tela::Previa => self.previa.update(cx, |_, cx| cx.notify()),
@@ -743,6 +793,8 @@ impl Raiz {
         window: &mut Window,
         cx: &mut Context<Self>,
     ) {
+        // a nota de servico vai para a Nova nota de servico: a escolha volta para NFS-e
+        self.escolher_notas(EscolhaDeNotas::Nfse, cx);
         let resposta = self
             .nova
             .update(cx, |n, cx| n.receber_modelo(dados, window, cx));

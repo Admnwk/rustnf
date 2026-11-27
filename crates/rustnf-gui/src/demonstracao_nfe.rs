@@ -21,6 +21,7 @@ use rustnf_app::nfe::{self as app, Contexto};
 use rustnf_app::notas::nfe::{NotasNfe, Situacao};
 use serde_json::{json, Value};
 
+use crate::modelo::nfe_produtos::{Cadastro, Produto};
 use crate::servicos::{ClienteNfe, ErroTela, FabricaNfe, TransporteDin};
 
 const NS: &str = "http://www.portalfiscal.inf.br/nfe";
@@ -41,6 +42,32 @@ pub enum RoteiroNfe {
     /// A primeira tentativa fica sem resposta (a consulta da nota diz que nada foi registrado) e a segunda registra;
     /// a consulta da nota que esta sem resposta tambem falha na primeira vez.
     SemResposta,
+}
+
+/// O que a SEFAZ de mentira responde ao envio da NF-e (a emissao pela janela).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum RoteiroEmissao {
+    /// Autoriza (o padrao).
+    #[default]
+    Autorizada,
+    /// A primeira tentativa e' recusada com um motivo comum (NCM inexistente, 778); a seguinte autoriza.
+    Rejeitada,
+    /// A primeira tentativa fica sem resposta e a consulta da mesma chave tambem; a retomada acha a nota autorizada.
+    SemResposta,
+    /// O servico esta parado (109): o status e o envio dizem isso e a consulta nao responde; so' o EPEC registra.
+    Fora,
+}
+
+/// O roteiro de `--nfe-emissao`.
+#[must_use]
+pub fn roteiro_emissao_do_nome(nome: &str) -> Option<RoteiroEmissao> {
+    match nome {
+        "autorizada" => Some(RoteiroEmissao::Autorizada),
+        "rejeitada" => Some(RoteiroEmissao::Rejeitada),
+        "sem-resposta" => Some(RoteiroEmissao::SemResposta),
+        "fora" => Some(RoteiroEmissao::Fora),
+        _ => None,
+    }
 }
 
 /// O roteiro de `--nfe-evento`.
@@ -67,6 +94,10 @@ enum Passo {
 
 struct Estado {
     roteiro: RoteiroNfe,
+    emissao: RoteiroEmissao,
+    autorizacoes: u32,
+    perdida: Option<String>,
+    consulta_perdida: bool,
     passo: Passo,
     atraso: Duration,
     chamadas: Vec<&'static str>,
@@ -88,6 +119,10 @@ impl TransporteNfeDemonstracao {
         Self {
             estado: Arc::new(Mutex::new(Estado {
                 roteiro,
+                emissao: RoteiroEmissao::Autorizada,
+                autorizacoes: 0,
+                perdida: None,
+                consulta_perdida: false,
                 passo: Passo::AoVivo,
                 atraso,
                 chamadas: Vec::new(),
@@ -96,6 +131,13 @@ impl TransporteNfeDemonstracao {
                 protocolo: 0,
             })),
         }
+    }
+
+    /// Troca o roteiro do envio da NF-e (a emissao pela janela).
+    #[must_use]
+    pub fn com_emissao(self, emissao: RoteiroEmissao) -> Self {
+        self.com(|e| e.emissao = emissao);
+        self
     }
 
     /// Os servicos chamados ate agora, na ordem (os testes conferem que nada saiu sem a marcacao).
@@ -242,19 +284,57 @@ impl Estado {
             s.roteiro == RoteiroNfe::SemResposta && !semeando && s.primeira_vez(chave)
         };
         match servico {
-            STA => ok(
-                STA,
-                &format!(
-                    "<retConsStatServ versao=\"4.00\" xmlns=\"{NS}\"><tpAmb>2</tpAmb><verAplic>DEMO_NFE_1</verAplic>\
-                     <cStat>107</cStat><xMotivo>Servico em Operacao</xMotivo><cUF>35</cUF>\
-                     <dhRecbto>2026-10-03T09:00:30-03:00</dhRecbto></retConsStatServ>"
-                ),
-            ),
+            STA => {
+                let (cstat, motivo) = if self.emissao == RoteiroEmissao::Fora && !semeando {
+                    ("109", "Servico Paralisado sem Previsao")
+                } else {
+                    ("107", "Servico em Operacao")
+                };
+                ok(
+                    STA,
+                    &format!(
+                        "<retConsStatServ versao=\"4.00\" xmlns=\"{NS}\"><tpAmb>2</tpAmb><verAplic>DEMO_NFE_1</verAplic>\
+                         <cStat>{cstat}</cStat><xMotivo>{motivo}</xMotivo><cUF>35</cUF>\
+                         <dhRecbto>2026-10-03T09:00:30-03:00</dhRecbto></retConsStatServ>"
+                    ),
+                )
+            }
             AUT => {
                 if self.passo == Passo::PerderTudo {
                     return Err(FalhaRede::Tempo);
                 }
                 let chave = entre(corpo, "Id=\"NFe", "\"");
+                if !semeando {
+                    self.autorizacoes += 1;
+                    match self.emissao {
+                        RoteiroEmissao::SemResposta if self.autorizacoes == 1 => {
+                            self.perdida = Some(chave.to_string());
+                            return Err(FalhaRede::Tempo);
+                        }
+                        RoteiroEmissao::Rejeitada if self.autorizacoes == 1 => {
+                            return ok(
+                                AUT,
+                                &format!(
+                                    "<retEnviNFe versao=\"4.00\" xmlns=\"{NS}\"><tpAmb>2</tpAmb><verAplic>DEMO_NFE_1</verAplic>\
+                                     <cStat>104</cStat><xMotivo>Lote processado</xMotivo><cUF>35</cUF>\
+                                     <dhRecbto>2026-10-03T09:00:05-03:00</dhRecbto>{}</retEnviNFe>",
+                                    prot(chave, "778", "Rejeicao: Informado NCM inexistente", "")
+                                ),
+                            );
+                        }
+                        RoteiroEmissao::Fora => {
+                            return ok(
+                                AUT,
+                                &format!(
+                                    "<retEnviNFe versao=\"4.00\" xmlns=\"{NS}\"><tpAmb>2</tpAmb><verAplic>DEMO_NFE_1</verAplic>\
+                                     <cStat>109</cStat><xMotivo>Servico Paralisado sem Previsao</xMotivo><cUF>35</cUF>\
+                                     <dhRecbto>2026-10-03T09:00:05-03:00</dhRecbto></retEnviNFe>"
+                                ),
+                            );
+                        }
+                        _ => {}
+                    }
+                }
                 let nprot = self.novo_protocolo();
                 ok(
                     AUT,
@@ -271,6 +351,17 @@ impl Estado {
                     return Err(FalhaRede::Tempo);
                 }
                 let chave = entre(corpo, "<chNFe>", "</chNFe>");
+                if !semeando && self.emissao == RoteiroEmissao::Fora {
+                    return Err(FalhaRede::Tempo);
+                }
+                if !semeando
+                    && self.emissao == RoteiroEmissao::SemResposta
+                    && self.perdida.as_deref() == Some(chave)
+                    && !self.consulta_perdida
+                {
+                    self.consulta_perdida = true;
+                    return Err(FalhaRede::Tempo);
+                }
                 if self.pendente.as_deref() == Some(chave)
                     && perde_a_primeira(self, &format!("consulta-{chave}"))
                 {
@@ -296,12 +387,26 @@ impl Estado {
                 }
                 if self.roteiro == RoteiroNfe::Rejeitado && !semeando {
                     return if tipo == "110111" {
-                        resposta_do_evento(corpo, "501", "Rejeicao: Prazo de Cancelamento superior ao previsto na Legislacao", "")
+                        resposta_do_evento(
+                            corpo,
+                            "501",
+                            "Rejeicao: Prazo de Cancelamento superior ao previsto na Legislacao",
+                            "",
+                        )
                     } else {
                         resposta_do_evento(corpo, "573", "Rejeicao: Duplicidade de Evento", "")
                     };
                 }
                 let nprot = self.novo_protocolo();
+                if tipo == "110140" {
+                    // o EPEC so' existe sem a NF-e: a SEFAZ responde 136, nunca 135
+                    return resposta_do_evento(
+                        corpo,
+                        "136",
+                        "Evento registrado, mas nao vinculado a NF-e",
+                        &nprot,
+                    );
+                }
                 resposta_do_evento(corpo, "135", "Evento registrado e vinculado a NF-e", &nprot)
             }
             _ => {
@@ -314,7 +419,12 @@ impl Estado {
                     return Err(FalhaRede::Tempo);
                 }
                 if self.roteiro == RoteiroNfe::Rejeitado {
-                    return resposta_da_inutilizacao(corpo, "241", "Rejeicao: Um numero da faixa ja foi utilizado", "");
+                    return resposta_da_inutilizacao(
+                        corpo,
+                        "241",
+                        "Rejeicao: Um numero da faixa ja foi utilizado",
+                        "",
+                    );
                 }
                 let nprot = self.novo_protocolo();
                 resposta_da_inutilizacao(corpo, "102", "Inutilizacao de numero homologada", &nprot)
@@ -419,6 +529,34 @@ fn pedido(dias_atras: i64, destinatario: (&str, &str), item: (&str, u32, u32)) -
     })
 }
 
+/// Poe na pasta de ensaio um cadastro de produtos (tres, com NCM), se ela ainda nao tem o arquivo. Sem pasta ou com o
+/// arquivo ja la, nao faz nada.
+fn semear_produtos(config: &Config) {
+    let pasta = config.notas.pasta.trim();
+    if pasta.is_empty() {
+        return;
+    }
+    let arquivo = std::path::Path::new(pasta).join(crate::modelo::nfe_produtos::ARQUIVO);
+    if arquivo.exists() {
+        return;
+    }
+    let p = |codigo: &str, descricao: &str, valor: &str, ncm: &str| Produto {
+        codigo: codigo.into(),
+        descricao: descricao.into(),
+        valor: valor.into(),
+        ncm: ncm.into(),
+        ..Produto::default()
+    };
+    let cadastro = Cadastro {
+        produtos: vec![
+            p("C1", "Cafe torrado 500g", "15,90", "09012100"),
+            p("C2", "Cafe moido 250g", "12,00", "09012100"),
+            p("F103", "Filtro de papel 103", "8,99", "48119090"),
+        ],
+    };
+    let _ = rustnf_app::atomico::gravar(&arquivo, &cadastro.codificar());
+}
+
 /// Semeia a pasta de ensaio com uma NF-e autorizada, uma cancelada e uma sem resposta, pela mesma camada de aplicacao
 /// que a janela usa (a SEFAZ e' a de mentira e o certificado, um de teste gerado na hora). Pasta que ja tem NF-e fica
 /// como esta. O transporte volta ao roteiro normal e a nota sem resposta fica marcada nele.
@@ -430,9 +568,24 @@ pub fn semear(
     config: &Config,
     transporte: &TransporteNfeDemonstracao,
 ) -> Result<NotasDoEnsaio, String> {
+    semear_com(config, transporte, true)
+}
+
+/// Como [`semear`], escolhendo se a pasta ganha a NF-e sem resposta. Sem ela a pasta nao tem nota pendente, que e' o que a
+/// contingencia EPEC exige (o roteiro `fora` da demonstracao).
+///
+/// # Errors
+///
+/// A frase do que falhou.
+pub fn semear_com(
+    config: &Config,
+    transporte: &TransporteNfeDemonstracao,
+    com_pendente: bool,
+) -> Result<NotasDoEnsaio, String> {
     let notas =
         NotasNfe::abrir(config.notas.pasta.trim()).map_err(|_| "a pasta de notas nao abre")?;
     let existentes = notas.listar().map_err(|_| "a pasta de notas nao le")?;
+    semear_produtos(config);
     let achar = |s: Situacao| {
         existentes
             .iter()
@@ -498,22 +651,29 @@ pub fn semear(
         )
         .await
         .map_err(|e| e.to_string())?;
-        transporte.passo(Passo::PerderTudo);
-        let p = emitir(pedido(
-            0,
-            ("12345678909", "JOAO PEREIRA DE TESTE"),
-            ("Cafe moido 250g", 3, 1200),
-        ))
-        .await?;
+        let pendente = if com_pendente {
+            transporte.passo(Passo::PerderTudo);
+            emitir(pedido(
+                0,
+                ("12345678909", "JOAO PEREIRA DE TESTE"),
+                ("Cafe moido 250g", 3, 1200),
+            ))
+            .await?
+            .chave
+        } else {
+            String::new()
+        };
         Ok::<_, String>(NotasDoEnsaio {
             autorizada: a.chave,
             cancelada: c.chave,
-            pendente: p.chave,
+            pendente,
         })
     });
     transporte.passo(Passo::AoVivo);
     let n = semeou?;
-    transporte.marcar_pendente(&n.pendente);
+    if !n.pendente.is_empty() {
+        transporte.marcar_pendente(&n.pendente);
+    }
     // o que se contou semeando nao e' do uso da janela
     transporte.com(|e| {
         e.chamadas.clear();

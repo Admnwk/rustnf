@@ -19,11 +19,13 @@ mod inicio;
 mod layout;
 mod nfe;
 mod nfe_dialogo;
+mod nfe_nova;
 mod nota;
 mod nota_vazia;
 mod notas;
 mod pecas;
 mod previa;
+mod produtos;
 mod raiz;
 mod raiz_certificado;
 mod raiz_nfe;
@@ -35,6 +37,8 @@ mod testes;
 mod testes_eventos;
 #[cfg(test)]
 mod testes_nfe;
+#[cfg(test)]
+mod testes_nfe_nova;
 #[cfg(test)]
 mod testes_nota;
 #[cfg(test)]

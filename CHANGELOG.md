@@ -2,7 +2,22 @@
 
 ## Próxima versão
 
-* Interface de desktop: a **NF-e (modelo 55)** na janela, em tudo menos a emissão (que vem na entrega seguinte). A tela Notas
+* Interface de desktop: a **emissão da NF-e (modelo 55) pela janela**, num assistente de cinco passos para quem vende (para
+  quem, o que vendeu, como recebeu, como entrega, conferir e enviar). **Nenhuma NF-e real, nenhuma SEFAZ real, nenhum EPEC real e
+  nenhum certificado real foram usados pela interface**: tudo foi testado com uma SEFAZ de mentira (transporte roteirizado, sem
+  rede). A Nova nota passa a perguntar NFS-e ou NF-e (a escolha é a da tela Notas, lembrada de uma vez para outra).
+  * O termo fiscal sai de uma tabela pequena (`modelo/nfe_fiscal.rs`) com a regra e a fonte de cada escolha (destino, origem,
+    ICMS por regime, PIS e COFINS, frete, presença, pagamento) e um teste que confere cada CFOP na tabela da biblioteca. Onde a
+    pergunta simples não decide, a tela mostra as opções; o que a pessoa digita em "Detalhes fiscais" nunca é sobrescrito.
+  * Cadastro de produtos (`produtos.json`, tolerante e atômico), tela **Produtos**, "Usar como modelo" no detalhe da NF-e, "cliente
+    já usado" e rascunho próprio (`rascunho_nfe.json`).
+  * Conferência com os erros e avisos da montagem da aplicação em palavras e com o passo onde se corrige; em produção, sem a
+    marcação "Entendo que a nota tem efeito fiscal", nenhuma chamada. Sem resposta: só o Retomar (mesma chave, nunca outra
+    nota). Contingência EPEC com o motivo de 15 a 255 letras, **não oferecida enquanto há nota sem resposta na pasta**.
+  * Demonstração: `--nfe-emissao autorizada|rejeitada|sem-resposta|fora` e uma pasta de ensaio com três produtos.
+  * Os testes da NFS-e e da lista da NF-e não mudaram de expectativa.
+
+* Interface de desktop: a **NF-e (modelo 55)** na janela, sem a emissão (a emissão está no item acima). A tela Notas
   ganha a escolha "NFS-e | NF-e (venda de mercadoria)", lembrada de uma vez para outra na pasta de notas
   (`preferencias.json`, ignorado se ilegível). **Nenhuma NF-e real, nenhuma SEFAZ real e nenhum certificado real foram usados
   pela interface**: tudo foi testado com uma SEFAZ de mentira (transporte roteirizado, sem rede).

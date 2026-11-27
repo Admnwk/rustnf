@@ -35,10 +35,12 @@ use crate::telas::LARGURA_DA_LATERAL;
 mod detalhe;
 
 /// O que a tela pede a janela.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) enum EventoNfe {
     /// Abrir as Configuracoes, na secao da NF-e (o que falta configurar).
     IrParaConfiguracoes,
+    /// Usar a NF-e da chave como modelo da Nova NF-e.
+    UsarComoModelo(String),
 }
 
 /// A tela das NF-e.
