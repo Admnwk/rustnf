@@ -25,6 +25,7 @@ use gpui_kit::{
 use rustnf_app::config::Config;
 use rustnf_app::segredo::Segredo;
 
+use super::pecas::botao_de_perigo;
 use super::senha::{classificar, Credencial, DialogoSenha, EventoSenha};
 use crate::fora;
 use crate::modelo::ambiente::Ambiente;
@@ -582,7 +583,7 @@ impl DialogoNfe {
                     f.child(
                         Button::new("nfe-dialogo-enviar")
                             .label(rotulo)
-                            .when(producao, |b| b.danger())
+                            .when(producao, |b| botao_de_perigo(b, cx))
                             .when(!producao, |b| b.primary())
                             .disabled(!pode)
                             .on_click(move |_, window, cx| {

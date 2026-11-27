@@ -13,6 +13,7 @@ use gpui_kit::{
 
 use super::pecas::{cabecalho, cartao, cor_da, icone_da, linha_de_resumo, Negrito as _};
 use super::raiz::{Raiz, Tela};
+use super::rolagem::revelar_foco;
 use crate::modelo::ambiente::Ambiente;
 use crate::modelo::formulario::OPCOES_SIMPLES;
 use crate::modelo::mascara::{documento_para_resumo, rotulo_do_municipio, RotuloMunicipio};
@@ -168,26 +169,32 @@ impl Raiz {
             .child(
                 h_flex()
                     .gap_2()
-                    .child(
+                    .child(revelar_foco(
+                        "inicio-emitir-foco",
+                        &self.foco_do_inicio[0],
                         Button::new("emitir-uma-nota")
                             .label("Emitir uma nota")
                             .icon(IconName::FileText)
                             .primary()
+                            .track_focus(&self.foco_do_inicio[0])
                             .on_click(cx.listener(|this, _, _, cx| {
                                 this.tela = Tela::NovaNota;
                                 cx.notify();
                             })),
-                    )
-                    .child(
+                    ))
+                    .child(revelar_foco(
+                        "inicio-configuracoes-foco",
+                        &self.foco_do_inicio[1],
                         Button::new("abrir-configuracoes")
                             .label("Abrir Configurações")
                             .icon(IconName::Settings)
                             .outline()
+                            .track_focus(&self.foco_do_inicio[1])
                             .on_click(cx.listener(|this, _, _, cx| {
                                 this.tela = Tela::Configuracoes;
                                 cx.notify();
                             })),
-                    ),
+                    )),
             );
 
         div()

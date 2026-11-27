@@ -178,7 +178,7 @@ impl DialogoRecebidas {
                     ),
             )
             .on_click(move |_, window, cx| {
-                d.update(cx, |c, cx| c.escolher(r, cx));
+                d.update(cx, |c, cx| c.escolher(r, window, cx));
                 window.refresh();
             })
             .into_any_element()

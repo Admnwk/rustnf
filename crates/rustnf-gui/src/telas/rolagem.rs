@@ -11,8 +11,8 @@
 //!   ficam em `telas::mod`).
 
 use gpui_kit::{
-    px, AnyElement, App, Bounds, Element, ElementId, GlobalElementId, InspectorElementId,
-    IntoElement, LayoutId, Pixels, Point, ScrollHandle, Window,
+    px, AnyElement, App, Bounds, Element, ElementId, FocusHandle, GlobalElementId,
+    InspectorElementId, IntoElement, LayoutId, Pixels, Point, ScrollHandle, SharedString, Window,
 };
 
 /// Quanto uma seta rola.
@@ -174,6 +174,98 @@ impl Element for Revelar {
                 // nao era desta area (ou ja' cabe): devolve o pedido para uma area de fora
                 window.request_autoscroll(pedido);
             }
+        }
+    }
+
+    fn paint(
+        &mut self,
+        _id: Option<&GlobalElementId>,
+        _inspector_id: Option<&InspectorElementId>,
+        _bounds: Bounds<Pixels>,
+        _request_layout: &mut (),
+        _prepaint: &mut (),
+        window: &mut Window,
+        cx: &mut App,
+    ) {
+        if let Some(filho) = self.filho.as_mut() {
+            filho.paint(window, cx);
+        }
+    }
+}
+
+/// Envolve um botao (ou outro elemento que ganha o foco por Tab) para o foco por teclado trazer o elemento para a
+/// vista. So' os campos de texto pedem a rolagem ao ganhar o foco; o botao nao, e o primeiro Tab de uma janela
+/// recem-aberta ia para um botao fora da vista. O pedido sai uma vez, na hora em que o foco CHEGA (nao a cada quadro:
+/// quem rola com o mouse nao e' puxado de volta), e o [`Revelar`] da tela o atende. `foco` e' o mesmo `FocusHandle`
+/// entregue ao botao (`Button::track_focus`).
+pub(super) fn revelar_foco(
+    id: impl Into<SharedString>,
+    foco: &FocusHandle,
+    filho: impl IntoElement,
+) -> RevelarFoco {
+    RevelarFoco {
+        id: ElementId::Name(id.into()),
+        foco: foco.clone(),
+        filho: Some(filho.into_any_element()),
+    }
+}
+
+/// O elemento de [`revelar_foco`].
+pub(super) struct RevelarFoco {
+    id: ElementId,
+    foco: FocusHandle,
+    filho: Option<AnyElement>,
+}
+
+impl Element for RevelarFoco {
+    type RequestLayoutState = ();
+    type PrepaintState = ();
+
+    fn id(&self) -> Option<ElementId> {
+        Some(self.id.clone())
+    }
+
+    fn source_location(&self) -> Option<&'static core::panic::Location<'static>> {
+        None
+    }
+
+    fn request_layout(
+        &mut self,
+        _id: Option<&GlobalElementId>,
+        _inspector_id: Option<&InspectorElementId>,
+        window: &mut Window,
+        cx: &mut App,
+    ) -> (LayoutId, ()) {
+        let layout = self
+            .filho
+            .as_mut()
+            .map(|f| f.request_layout(window, cx))
+            .unwrap_or_else(|| window.request_layout(gpui_kit::Style::default(), [], cx));
+        (layout, ())
+    }
+
+    fn prepaint(
+        &mut self,
+        id: Option<&GlobalElementId>,
+        _inspector_id: Option<&InspectorElementId>,
+        bounds: Bounds<Pixels>,
+        _request_layout: &mut (),
+        window: &mut Window,
+        cx: &mut App,
+    ) {
+        if let Some(filho) = self.filho.as_mut() {
+            filho.prepaint(window, cx);
+        }
+        let Some(id) = id else {
+            return;
+        };
+        let focado = self.foco.is_focused(window);
+        let acabou_de_chegar = window.with_element_state::<bool, bool>(id, |antes, _| {
+            let chegou = focado && !antes.unwrap_or(false);
+            (chegou, focado)
+        });
+        if acabou_de_chegar {
+            window.request_autoscroll(bounds);
         }
     }
 

@@ -324,10 +324,10 @@ impl TelaRecebidas {
         } else {
             l.fornecedor.clone()
         };
-        let (nota, resposta) = (
-            selo_de(l.nota.rotulo(), cor_da(l.nota.gravidade(), cx)),
-            selo_de(l.resposta.rotulo(), cor_da(l.resposta.gravidade(), cx)),
-        );
+        let nota = selo_de(l.nota.rotulo(), cor_da(l.nota.gravidade(), cx));
+        let resposta = l
+            .selo_da_resposta()
+            .map(|(rotulo, g)| selo_de(rotulo, cor_da(g, cx)));
         // `div()` do kit (e nao `h_flex()`): so' ele deixa a linha ser achada pelos testes da janela
         div()
             .flex()
@@ -383,7 +383,7 @@ impl TelaRecebidas {
                     .w(px(116.))
                     .flex_shrink_0()
                     .justify_end()
-                    .child(resposta),
+                    .children(resposta),
             )
             .on_click(cx.listener(move |this, _, window, cx| this.abrir(i, window, cx)))
             .into_any_element()

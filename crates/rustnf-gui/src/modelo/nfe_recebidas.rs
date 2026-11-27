@@ -85,7 +85,7 @@ impl RespostaDada {
     #[must_use]
     pub fn rotulo(self) -> &'static str {
         match self {
-            Self::Nenhuma => "Sem resposta sua",
+            Self::Nenhuma => "Falta responder",
             Self::Ciencia => "Ciência dada",
             Self::Confirmada => "Confirmada",
             Self::Desconhecida => "Desconhecida",
@@ -226,6 +226,17 @@ impl LinhaRecebida {
     #[must_use]
     pub fn dia(&self) -> &str {
         &self.dia
+    }
+
+    /// O selo da resposta: o rotulo e a cor, ou `None` quando nao ha o que mostrar. Nota cancelada pelo emitente ou de
+    /// uso negado, que a empresa nunca respondeu, nao tem selo: nao ha o que responder (o aviso da nota e o filtro
+    /// "Canceladas ou negadas" ja' dizem isso), e um "falta responder" ali pediria uma acao impossivel. Se a empresa
+    /// respondeu antes da nota ser cancelada, a resposta continua sendo um fato e aparece.
+    #[must_use]
+    pub fn selo_da_resposta(&self) -> Option<(&'static str, Gravidade)> {
+        let sem_o_que_responder =
+            self.nota != SituacaoDaNota::Autorizada && self.resposta == RespostaDada::Nenhuma;
+        (!sem_o_que_responder).then(|| (self.resposta.rotulo(), self.resposta.gravidade()))
     }
 
     /// A nota espera uma resposta da empresa: esta autorizada e a empresa ainda nao respondeu nada.
@@ -505,6 +516,55 @@ mod testes {
         assert_eq!(l.linha(2).unwrap().documento, "***.***.***-25");
         assert_eq!(l.linha(2).unwrap().resposta.rotulo(), "Ciência dada");
         assert_eq!(l.linha(1).unwrap().nota.rotulo(), "Cancelada pelo emitente");
+    }
+
+    #[test]
+    fn o_selo_da_resposta_so_aparece_onde_ha_o_que_responder() {
+        let mut denegada = rec(
+            &"5".repeat(44),
+            "Delta Ltda",
+            "11222333000181",
+            "2026-09-29T10:00:00-03:00",
+            "",
+        );
+        denegada.denegada = true;
+        let mut respondida_e_cancelada = rec(
+            &"6".repeat(44),
+            "Épsilon Ltda",
+            "11222333000181",
+            "2026-09-28T10:00:00-03:00",
+            "210200",
+        );
+        respondida_e_cancelada.cancelada = true;
+        let l = ListaRecebidas::nova(&[
+            rec(
+                &"1".repeat(44),
+                "Alfa",
+                "11222333000181",
+                "2026-10-03T09:00:00-03:00",
+                "",
+            ),
+            denegada,
+            respondida_e_cancelada,
+        ]);
+        // autorizada sem resposta: rotulo curto, de acao, amarelo
+        assert_eq!(
+            l.da_chave(&"1".repeat(44)).unwrap().selo_da_resposta(),
+            Some(("Falta responder", Gravidade::Aviso))
+        );
+        // cancelada (lista de teste) e denegada sem resposta: nenhum selo
+        assert_eq!(lista().linha(1).unwrap().selo_da_resposta(), None);
+        assert_eq!(
+            l.da_chave(&"5".repeat(44)).unwrap().selo_da_resposta(),
+            None
+        );
+        // a resposta que a empresa ja deu continua aparecendo, mesmo na nota depois cancelada
+        assert_eq!(
+            l.da_chave(&"6".repeat(44)).unwrap().selo_da_resposta(),
+            Some(("Confirmada", Gravidade::Ok))
+        );
+        // o aviso "N notas esperam resposta" conta so' as autorizadas
+        assert_eq!(l.a_responder(), 1);
     }
 
     #[test]

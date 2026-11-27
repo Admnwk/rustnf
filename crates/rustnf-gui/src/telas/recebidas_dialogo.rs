@@ -20,12 +20,14 @@ use gpui_kit::component::{
 use gpui_kit::prelude::FluentBuilder as _;
 use gpui_kit::{
     div, px, AnyElement, App, AppContext as _, Context, Entity, EventEmitter,
-    InteractiveElement as _, IntoElement, ParentElement as _, StatefulInteractiveElement as _,
-    Styled as _, Subscription, Window,
+    InteractiveElement as _, IntoElement, ParentElement as _, ScrollHandle,
+    StatefulInteractiveElement as _, Styled as _, Subscription, Window,
 };
 use rustnf_app::config::Config;
 use rustnf_app::segredo::Segredo;
 
+use super::pecas::botao_de_perigo;
+use super::rolagem::revelar;
 use super::senha::{classificar, Credencial, DialogoSenha, EventoSenha};
 use crate::fora;
 use crate::modelo::ambiente::Ambiente;
@@ -104,6 +106,8 @@ pub(super) struct DialogoRecebidas {
     tocada: bool,
     pub(super) fase: Fase,
     pub(super) texto: Entity<TextareaState>,
+    /// A rolagem do corpo do dialogo: o campo da justificativa pede para aparecer quando ganha o foco.
+    rolagem: ScrollHandle,
     senha_da_sessao: Option<Segredo>,
     senha_pedida: Option<Entity<DialogoSenha>>,
     sub_senha: Option<Subscription>,
@@ -141,6 +145,7 @@ impl DialogoRecebidas {
             tocada: false,
             fase: Fase::Preenchendo,
             texto,
+            rolagem: ScrollHandle::new(),
             senha_da_sessao: None,
             senha_pedida: None,
             sub_senha: None,
@@ -214,11 +219,16 @@ impl DialogoRecebidas {
     }
 
     /// Escolhe uma das respostas (clique na opcao).
-    pub(super) fn escolher(&mut self, r: Resposta, cx: &mut Context<Self>) {
+    pub(super) fn escolher(&mut self, r: Resposta, window: &mut Window, cx: &mut Context<Self>) {
         if self.alvo.as_ref().is_some_and(|a| a.recusada(r).is_some()) {
             return;
         }
         self.formulario.escolha = Some(r);
+        if r.pede_justificativa() {
+            // o campo da justificativa aparece abaixo das opcoes: o foco o traz para a vista (o campo pede a rolagem
+            // ao ganhar o foco e o `revelar` do corpo atende) e a pessoa ja pode digitar
+            self.texto.update(cx, |e, cx| e.focus(window, cx));
+        }
         cx.notify();
     }
 
@@ -419,8 +429,11 @@ impl DialogoRecebidas {
     /// Abre o dialogo. O conteudo e' refeito a cada desenho a partir do estado.
     pub(super) fn abrir_dialogo(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let ent = cx.entity();
-        window.open_dialog(cx, move |dialog, _, cx| {
+        window.open_dialog(cx, move |dialog, window, cx| {
             let c = ent.read(cx);
+            let rolagem = c.rolagem.clone();
+            // o dialogo nunca passa da janela: titulo, rodape e margens ficam de fora do corpo
+            let cabe = (window.viewport_size().height - px(260.)).max(px(240.));
             let trabalhando = c.ocupado();
             let preenchendo = matches!(c.fase, Fase::Preenchendo);
             let producao = c.producao();
@@ -469,7 +482,7 @@ impl DialogoRecebidas {
                     f.child(
                         Button::new("recebidas-dialogo-enviar")
                             .label(rotulo)
-                            .when(producao, |b| b.danger())
+                            .when(producao, |b| botao_de_perigo(b, cx))
                             .when(!producao, |b| b.primary())
                             .disabled(!pode)
                             .on_click(move |_, window, cx| {
@@ -489,17 +502,23 @@ impl DialogoRecebidas {
                         cx.notify();
                     });
                 })
-                .child(
+                .child(revelar(
+                    &rolagem,
                     v_flex()
                         .id("recebidas-corpo-do-dialogo")
                         .gap_3()
-                        // as quatro respostas, o resumo e a marcacao cabem sem rolar; os outros dialogos sao menores
-                        .max_h(px(if operacao == OperacaoRecebida::Responder {
-                            760.
-                        } else {
-                            640.
-                        }))
+                        // as quatro respostas, o resumo e a marcacao cabem sem rolar numa janela alta; os outros
+                        // dialogos sao menores. Em janela baixa o corpo rola e o campo focado aparece
+                        .max_h(
+                            px(if operacao == OperacaoRecebida::Responder {
+                                760.
+                            } else {
+                                640.
+                            })
+                            .min(cabe),
+                        )
                         .overflow_y_scroll()
+                        .track_scroll(&rolagem)
                         .child(corpo)
                         .children(motivo.map(|m| {
                             div()
@@ -508,7 +527,7 @@ impl DialogoRecebidas {
                                 .text_color(if pode { muted } else { aviso })
                                 .child(m)
                         })),
-                )
+                ))
                 .footer(rodape)
         });
     }
