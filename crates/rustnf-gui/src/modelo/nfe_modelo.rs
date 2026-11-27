@@ -266,6 +266,11 @@ impl ModeloNfe {
         let mut d = DadosNfe::default();
         match ClienteConhecido::da_nfe(n) {
             Some(c) => {
+                if c.nome.trim().is_empty() {
+                    avisos.push(
+                        "O nome do cliente da nota anterior era o texto de teste da homologação: digite o nome.".into(),
+                    );
+                }
                 c.completar(&mut d);
                 d.documento = c.documento;
             }

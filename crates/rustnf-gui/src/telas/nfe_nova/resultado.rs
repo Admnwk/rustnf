@@ -105,7 +105,7 @@ impl NovaNfe {
         };
         faixa(Gravidade::Erro, "", cx)
             .id("nfe-rejeicao")
-            .child(corpo)
+            .child(div().flex_1().min_w_0().child(corpo))
             .child(
                 Button::new("nfe-fechar-rejeicao")
                     .label("Entendi")
@@ -397,7 +397,8 @@ impl NovaNfe {
             for e in &erros {
                 lista = lista.child(self.linha_de_pendencia(e, cx));
             }
-            col = col.child(faixa(Gravidade::Erro, "", cx).child(lista));
+            col = col
+                .child(faixa(Gravidade::Erro, "", cx).child(div().flex_1().min_w_0().child(lista)));
         }
         if !avisos.is_empty() {
             let mut lista = v_flex().gap_1().id("nfe-avisos-da-conferencia").child(
@@ -413,7 +414,9 @@ impl NovaNfe {
                     None => a.texto.clone(),
                 }));
             }
-            col = col.child(faixa(Gravidade::Aviso, "", cx).child(lista));
+            col = col.child(
+                faixa(Gravidade::Aviso, "", cx).child(div().flex_1().min_w_0().child(lista)),
+            );
         }
         let cores = ambiente.cores();
         col = col.child(
@@ -726,7 +729,7 @@ impl NovaNfe {
                             .child(format!("Nota nº {}: {}", l.numero, l.texto)),
                     );
                 }
-                caixa = caixa.child(faixa(g, "", cx).child(col));
+                caixa = caixa.child(faixa(g, "", cx).child(div().flex_1().min_w_0().child(col)));
             }
             if producao {
                 caixa = caixa.children(marcacao);

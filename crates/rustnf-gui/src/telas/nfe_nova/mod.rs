@@ -322,6 +322,9 @@ impl NovaNfe {
                         this.aplicar_dados(r.dados, window, cx);
                         this.recuperado = true;
                         this.rascunho = EstadoDoRascunho::Salvo;
+                        if this.passo == PassoNfe::Conferir {
+                            this.conferir(window, cx);
+                        }
                     }
                 }
                 cx.notify();
@@ -409,8 +412,8 @@ impl NovaNfe {
         }
         self.passo = PassoNfe::ParaQuem;
         self.tentou = false;
-        self.aviso_do_modelo = modelo.avisos;
         self.aplicar_dados(modelo.dados, window, cx);
+        self.aviso_do_modelo = modelo.avisos;
         self.mudou(cx);
     }
 

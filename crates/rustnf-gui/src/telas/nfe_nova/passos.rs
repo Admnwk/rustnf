@@ -114,7 +114,7 @@ impl NovaNfe {
         Some(
             faixa(Gravidade::Erro, "", cx)
                 .id("faixa-de-pendencias")
-                .child(col)
+                .child(div().flex_1().min_w_0().child(col))
                 .into_any_element(),
         )
     }

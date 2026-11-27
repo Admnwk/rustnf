@@ -52,6 +52,11 @@ fn a_nota_anterior_volta_a_ser_o_assistente() {
     assert_eq!(r.documento, d.documento);
     // a biblioteca poe o texto de teste no nome do cliente das notas de homologacao: nao se copia
     assert_eq!(r.nome, "");
+    assert!(
+        m.avisos.iter().any(|a| a.contains("nome do cliente")),
+        "{:?}",
+        m.avisos
+    );
     assert_eq!(r.itens[0].descricao, "Cafe torrado 500g");
     assert_eq!(r.email, d.email);
     assert_eq!(r.logradouro, "Avenida Paulista");

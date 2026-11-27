@@ -342,7 +342,7 @@ impl DesfechoNfeEmissao {
                 let passo = passo_do(motivo);
                 Self::Rejeitada {
                     cstat: cstat.clone(),
-                    motivo: frase(motivo),
+                    motivo: sem_codigo(motivo),
                     o_que_fazer: format!(
                         "A SEFAZ não aceitou a nota. Corrija o que ela apontou (passo \"{}\") e envie de novo: o número {numero} continua livre.",
                         passo.titulo()
