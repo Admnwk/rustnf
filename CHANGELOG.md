@@ -1,5 +1,14 @@
 # Changelog
 
+## Próxima versão
+
+* Montagem da NF-e e da NFC-e: emitente de **GO ou RJ** com CST 20, 30, 40, 41, 50, 70 ou 90 sem o valor e o motivo do
+  ICMS desonerado é recusado antes de assinar, com a rejeição 934 (regra N12-90 da NT 2019.001 v1.70, que as duas UF
+  aplicam pelo quadro 3.6.1). Ficam fora a devolução, a nota de ajuste e o CST 90 sem redução de base. As demais UF não
+  aplicam a regra e nada muda para elas.
+* `nfe::cstat`: os códigos 507, 664, 665 e 666, criados pela NT 2019.001 v1.70 (seção 5) e ausentes do MOC, entram na
+  tabela com a mensagem oficial. Antes, a resposta da SEFAZ com um deles era classificada como código desconhecido.
+
 ## 0.6.0 - 2026-11-27
 
 * Interface de desktop: as **NF-e recebidas (as compras) na janela**: buscar as notas que fornecedores emitiram contra a empresa,

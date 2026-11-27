@@ -123,6 +123,10 @@ name = "nfe_montar"
 required-features = ["nfe"]
 
 [[test]]
+name = "nfe_montar_n1290"
+required-features = ["nfe"]
+
+[[test]]
 name = "nfe_montar_assinatura"
 required-features = ["nfe", "cert_a1_teste"]
 

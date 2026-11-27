@@ -228,7 +228,7 @@ Cada tabela abaixo e' um bloco do pedido; o campo vai pelo caminho (`emit.endere
 | `itens[].icms.p_fcp_dif` | N17d `pFCPDif`. |
 | `itens[].icms.v_fcp_dif` | N17e `vFCPDif`. |
 | `itens[].icms.v_fcp_efet` | N17f `vFCPEfet`. |
-| `itens[].icms.v_icms_deson` | N28a `vICMSDeson`: CST 20, 30, 40, 41, 50, 70 e 90; sai so' com valor maior que zero. |
+| `itens[].icms.v_icms_deson` | N28a `vICMSDeson`: CST 20, 30, 40, 41, 50, 70 e 90; sai so' com valor maior que zero. Emitente de GO ou RJ: obrigatorio com o `mot_des_icms` nesses CST (regra N12-90 da NT 2019.001 v1.70, rejeicao 934; as duas UF a aplicam pelo quadro 3.6.1), salvo devolucao (`fin_nfe` 4), ajuste (`fin_nfe` 3) e CST 90 sem `p_red_bc` e sem `p_red_bc_st`. |
 | `itens[].icms.mot_des_icms` | N28 `motDesICMS`: codigo do motivo, na enumeracao do XSD de cada grupo. |
 | `itens[].icms.ind_deduz_deson` | N28b `indDeduzDeson`: 1 = o `vICMSDeson` sai do `vItem` e do `vNF` (W16-10, excecao 4). |
 | `itens[].icms.v_icms_st_deson` | N33a `vICMSSTDeson`: ICMS-ST desonerado (CST 10, 70 e 90); nao tem total no `ICMSTot`. |
