@@ -112,8 +112,17 @@ pub async fn nfe_com<T: Transporte>(ctx: &Contexto<'_, T>, acao: AcaoNfe) -> Res
             concluir(&e.para_json(), a.json, e.erro())
         }
         AcaoNfe::Epec(a) => {
-            let r = nfe::epec(ctx, ler_pedido(&a.pedido)?, !a.ignorar_desconhecidos).await?;
-            concluir(&r.para_json(), a.json, r.erro())
+            let mut pedido = ler_pedido(&a.emitir.pedido)?;
+            let do_pedido = nfe::separar_substitui(&mut pedido)?;
+            let substitui = a.substitui.or(do_pedido);
+            let r = nfe::epec_substituindo(
+                ctx,
+                pedido,
+                !a.emitir.ignorar_desconhecidos,
+                substitui.as_deref(),
+            )
+            .await?;
+            concluir(&r.para_json(), a.emitir.json, r.erro())
         }
         AcaoNfe::Consultar(a) => {
             let c = nfe::consultar(ctx, &a.chave).await?;
@@ -281,7 +290,7 @@ fn listar_pendentes(json: bool, config: Option<&Path>) -> Result<(), Erro> {
     let efetiva = configuracao::carregar(config)?;
     let lista = notas_exigida(&efetiva)?.a_resolver()?;
     if json {
-        return escrever_json(&serde_json::to_value(&lista)?);
+        return escrever_json(&nfe::pendentes_json(&lista)?);
     }
     if lista.is_empty() {
         eprintln!("nenhuma nota pendente");
@@ -297,11 +306,18 @@ fn listar_pendentes(json: bool, config: Option<&Path>) -> Result<(), Erro> {
 
 fn linha_da_nota(r: &Registro, com_consultas: bool) -> String {
     let data = r.emissao.get(..10).unwrap_or(&r.emissao);
-    let extra = if com_consultas {
+    let mut extra = if com_consultas {
         format!("\tconsultas {}", r.tentativas)
     } else {
         String::new()
     };
+    if com_consultas && !r.substituida_por.is_empty() {
+        extra.push_str(&format!(
+            "\tsubstituida pelo EPEC {}\ta fazer: {}",
+            r.substituida_por,
+            r.a_fazer()
+        ));
+    }
     format!(
         "{data}\tnfe {}\tserie {}\t{}\t{}\t{}{extra}\t{}\n",
         r.numero,

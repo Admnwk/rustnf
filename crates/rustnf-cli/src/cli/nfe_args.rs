@@ -35,10 +35,14 @@ pub enum AcaoNfe {
     /// O estado do servico de autorizacao da SEFAZ (ou da SVC, com `--svc`). Nao altera nada.
     Status(ArgStatusNfe),
     /// Emite em contingencia EPEC: assina a NF-e (`tpEmis` 4), grava como pendente e registra o EPEC no Ambiente
-    /// Nacional. Depois, a MESMA NF-e se transmite a SEFAZ da UF com `pendentes --retomar`.
-    Epec(ArgEmitirNfe),
+    /// Nacional. Depois, a MESMA NF-e se transmite a SEFAZ da UF com `pendentes --retomar`. Se a venda ja tinha uma NF-e
+    /// que ficou sem resposta da SEFAZ, use `--substitui` com a chave dela: o EPEC sai com numero novo e a nota sem resposta
+    /// nunca mais e' reenviada.
+    Epec(ArgEpecNfe),
     /// Lista as notas pendentes e em EPEC da pasta e, com `--retomar`, as retoma: consulta a MESMA chave e, se a SEFAZ
-    /// diz que nao recebeu, reenvia a MESMA NF-e; a nota em EPEC e' transmitida.
+    /// diz que nao recebeu, reenvia a MESMA NF-e; a nota em EPEC e' transmitida. A nota que um EPEC substituiu so' e'
+    /// consultada, e a retomada diz o que fazer com ela: cancelar (se a SEFAZ a autorizou) ou inutilizar o numero (se a
+    /// SEFAZ nao a tem).
     Pendentes(ArgPendentesNfe),
     /// Gera o DANFE em PDF a partir do XML (`nfeProc`, ou a `NFe` solta como previa) ou de uma nota da pasta (`--chave`).
     Danfe(ArgDanfeNfe),
@@ -129,6 +133,19 @@ pub struct ArgEmitirNfe {
     /// Saida em JSON.
     #[arg(long)]
     pub json: bool,
+}
+
+/// `rustnf nfe epec`: o pedido de `emitir` e, se a venda ja tinha uma nota sem resposta, a chave dela.
+#[derive(Debug, Args)]
+pub struct ArgEpecNfe {
+    /// O pedido, o certificado e as opcoes de `emitir`.
+    #[command(flatten)]
+    pub emitir: ArgEmitirNfe,
+    /// Chave da NF-e que ficou SEM RESPOSTA da SEFAZ (esta na lista de `pendentes`) e cuja venda este EPEC registra. O EPEC
+    /// sai com o proximo numero livre, como o Manual de Contingencia manda, e a nota sem resposta passa a ser so'
+    /// consultada: se a SEFAZ a autorizou, cancele-a; se nao a tem, inutilize o numero dela.
+    #[arg(long, value_name = "CHAVE")]
+    pub substitui: Option<String>,
 }
 
 /// `rustnf nfe consultar`.
@@ -334,7 +351,8 @@ impl AcaoNfe {
     #[must_use]
     pub fn cert(&self) -> Option<&ArgCertNfe> {
         match self {
-            Self::Emitir(a) | Self::Epec(a) => Some(&a.cert),
+            Self::Emitir(a) => Some(&a.cert),
+            Self::Epec(a) => Some(&a.emitir.cert),
             Self::Consultar(a) => Some(&a.cert),
             Self::Cancelar(a) => Some(&a.cert),
             Self::Corrigir(a) => Some(&a.cert),
@@ -349,6 +367,10 @@ impl AcaoNfe {
     /// A acao le o pedido do stdin (`-`): a senha nao pode vir do stdin tambem.
     #[must_use]
     pub fn pedido_do_stdin(&self) -> bool {
-        matches!(self, Self::Emitir(a) | Self::Epec(a) if a.pedido == "-")
+        match self {
+            Self::Emitir(a) => a.pedido == "-",
+            Self::Epec(a) => a.emitir.pedido == "-",
+            _ => false,
+        }
     }
 }

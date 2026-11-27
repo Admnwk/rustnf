@@ -369,6 +369,114 @@ async fn status_e_epec() {
 }
 
 #[tokio::test]
+async fn epec_com_substitui_liga_a_nota_sem_resposta_e_a_retomada_so_a_consulta() {
+    let p = Pasta::nova();
+    let (app, falso, notas) = app_nfe(
+        &p,
+        vec![
+            ("NFeAutorizacao4", perdida()),
+            ("NFeConsultaProtocolo4", perdida()),
+        ],
+    );
+    let (st, _, corpo) = enviar(&app, post_json_token("/nfe/emitir", &pedido_nfe())).await;
+    let v = json_do_corpo(&corpo);
+    assert_eq!(st, StatusCode::BAD_GATEWAY, "{v}");
+    let pendente = v["chave"].as_str().unwrap().to_string();
+
+    let mut epec = pedido_nfe();
+    epec["x_just"] = json!("Sem acesso a SEFAZ por queda do link de internet");
+    // chave que nao serve: 422 com o campo, antes de qualquer envio
+    epec["substitui"] = json!("123");
+    let (st, _, corpo) = enviar(&app, post_json_token("/nfe/epec", &epec)).await;
+    let v = json_do_corpo(&corpo);
+    assert_eq!(st, StatusCode::UNPROCESSABLE_ENTITY, "{v}");
+    assert_eq!(v["erro"]["campo"], "substitui");
+    assert_eq!(falso.restantes(), 0, "nada foi enviado");
+    // o campo so' existe no EPEC: na emissao normal o leiaute o recusa
+    let (st, _, corpo) = enviar(&app, post_json_token("/nfe/emitir", &epec)).await;
+    assert_eq!(
+        st,
+        StatusCode::UNPROCESSABLE_ENTITY,
+        "{}",
+        json_do_corpo(&corpo)
+    );
+
+    // a substituicao vale: o EPEC sai com o numero 2, ligado a nota sem resposta
+    falso.empilhar(
+        "NFeRecepcaoEvento4",
+        evento("136", REGISTRADO, "135260000000070"),
+    );
+    epec["substitui"] = json!(pendente);
+    let (st, _, corpo) = enviar(&app, post_json_token("/nfe/epec", &epec)).await;
+    let v = json_do_corpo(&corpo);
+    assert_eq!(st, StatusCode::OK, "{v}");
+    assert_eq!(
+        (v["situacao"].as_str(), v["substitui"].as_str()),
+        (Some("epec"), Some(pendente.as_str()))
+    );
+    let chave_epec = v["chave"].as_str().unwrap().to_string();
+
+    let (_, _, corpo) = enviar(&app, get("/nfe/pendentes", true)).await;
+    let lista = json_do_corpo(&corpo);
+    let da_pendente = lista["notas"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|n| n["chave"] == pendente.as_str())
+        .unwrap();
+    assert_eq!(
+        (
+            da_pendente["substituida_por"].as_str(),
+            da_pendente["a_fazer"].as_str()
+        ),
+        (Some(chave_epec.as_str()), Some("consultar"))
+    );
+
+    // a SEFAZ nao tem a nota sem resposta: a retomada so' a consulta (nenhum reenvio) e manda inutilizar o numero
+    falso.empilhar(
+        "NFeConsultaProtocolo4",
+        consulta(
+            "217",
+            "Rejeicao: NF-e nao consta na base de dados da SEFAZ",
+            "",
+        ),
+    );
+    falso.empilhar("NFeAutorizacao4", envio("100", OK, NPROT));
+    // a retomada so' consulta nota com mais de 1 segundo
+    tokio::time::sleep(std::time::Duration::from_millis(2100)).await;
+    let (st, _, corpo) = enviar(&app, post_vazio("/nfe/pendentes/retomar")).await;
+    let v = json_do_corpo(&corpo);
+    assert_eq!(st, StatusCode::OK, "{v}");
+    let da_pendente = v["notas"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|n| n["chave"] == pendente.as_str())
+        .unwrap();
+    assert_eq!(
+        (
+            da_pendente["acao"].as_str(),
+            da_pendente["a_fazer"].as_str(),
+            da_pendente["substituida_por"].as_str()
+        ),
+        (
+            Some("consultou"),
+            Some("inutilizar"),
+            Some(chave_epec.as_str())
+        )
+    );
+    assert!(
+        da_pendente["aviso"]
+            .as_str()
+            .unwrap()
+            .contains("inutilize o numero 1"),
+        "{da_pendente}"
+    );
+    assert_eq!(falso.restantes(), 0, "so' a consulta e o envio do EPEC");
+    assert_eq!(notas.registro(&pendente).unwrap().cstat, "217");
+}
+
+#[tokio::test]
 async fn sem_permitir_emissao_as_rotas_de_efeito_fiscal_nem_existem() {
     let p = Pasta::nova();
     let app = app_nfe_leitura(&p);

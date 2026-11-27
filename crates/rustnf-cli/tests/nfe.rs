@@ -545,6 +545,65 @@ fn pendentes_lista_sem_rede_e_diz_como_retomar() {
 }
 
 #[test]
+fn pendentes_mostra_a_nota_substituida_e_o_que_falta_fazer_com_ela() {
+    let p = Pasta::nova();
+    let cfg = configurar(&p, "");
+    let notas = NotasNfe::abrir(p.caminho("notas")).unwrap();
+    let (pendente, epec) = (registro(1), registro(2));
+    notas.guardar_pendente(&pendente, "<NFe/>").unwrap();
+    notas.guardar_pendente(&epec, "<NFe/>").unwrap();
+    notas
+        .vincular_substituicao(&pendente.chave, &epec.chave)
+        .unwrap();
+
+    let s = rodar(&p, &["--config", &cfg, "nfe", "pendentes"], None);
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    let linha = s.out.lines().find(|l| l.contains("nfe 1\t")).unwrap();
+    assert!(
+        linha.contains(&format!("substituida pelo EPEC {}", epec.chave))
+            && linha.contains("a fazer: consultar"),
+        "{linha}"
+    );
+    // a SEFAZ confirmou que nao a tem: a lista manda inutilizar
+    notas.anotar_consulta(&pendente.chave, "217").unwrap();
+    let s = rodar(&p, &["--config", &cfg, "nfe", "pendentes", "--json"], None);
+    let v: Value = serde_json::from_str(&s.out).unwrap();
+    let da_substituida = v
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|n| n["numero"] == "1")
+        .unwrap();
+    assert_eq!(
+        (
+            da_substituida["a_fazer"].as_str(),
+            da_substituida["substituida_por"].as_str()
+        ),
+        (Some("inutilizar"), Some(epec.chave.as_str()))
+    );
+    let do_epec = v
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|n| n["numero"] == "2")
+        .unwrap();
+    assert!(do_epec.get("a_fazer").is_none() && do_epec["substitui"] == pendente.chave.as_str());
+}
+
+#[test]
+fn o_help_do_epec_diz_quando_usar_substitui_e_o_emitir_nao_o_tem() {
+    let p = Pasta::nova();
+    let s = rodar(&p, &["nfe", "epec", "--help"], None);
+    assert_eq!(s.codigo, 0, "{}", s.err);
+    assert!(s.out.contains("--substitui <CHAVE>"), "{}", s.out);
+    assert!(s.out.contains("sem resposta"), "{}", s.out);
+    let s = rodar(&p, &["nfe", "emitir", "--help"], None);
+    assert!(!s.out.contains("--substitui"), "{}", s.out);
+    let s = rodar(&p, &["nfe", "pendentes", "--help"], None);
+    assert!(s.out.contains("inutilizar"), "{}", s.out);
+}
+
+#[test]
 fn a_pasta_da_nfse_e_a_da_nfe_convivem_cada_uma_com_os_seus_comandos() {
     let p = Pasta::nova();
     let cfg = configurar(&p, "");
