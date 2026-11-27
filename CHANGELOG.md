@@ -6,6 +6,7 @@
   centrada na tela principal. Uma mudança no teclado: logo ao abrir a janela, antes de qualquer clique, o Tab já leva o
   foco ao próximo controle (e o PageUp/PageDown passa a rolar a tela a partir dele); antes o Tab só andava depois que
   algum campo ou botão tivesse recebido o foco.
+* Dependência `base64` 0.22 -> 0.23 (biblioteca, aplicação e linha de comando); o codificador usado continua o mesmo.
 
 ## 0.5.0 - 2026-11-26
 
