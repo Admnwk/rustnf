@@ -28,7 +28,7 @@ use crate::modelo::nfe_detalhe::{DetalheNfe, LeituraNfe};
 use crate::servicos::{Destino, Documento, NotaNfeDaPasta};
 use crate::telas::nfe_dialogo::{AlvoNfe, Operacao};
 use crate::telas::pecas::{
-    cartao, faixa, linha_de_numero, linha_de_resumo, selo_da_situacao_nfe, titulo_do_bloco,
+    cartao, faixa, linha_de_numero, linha_de_resumo, selo_do_registro_nfe, titulo_do_bloco,
     Negrito as _,
 };
 
@@ -498,7 +498,7 @@ impl TelaNfe {
                         self.documento.nome(),
                         d.numero
                     )))
-                    .child(selo_da_situacao_nfe(n.registro.situacao, cx).id("nfe-selo-da-situacao"))
+                    .child(selo_do_registro_nfe(&n.registro, cx).id("nfe-selo-da-situacao"))
                     .child(
                         div()
                             .id("nfe-selo-do-ambiente")

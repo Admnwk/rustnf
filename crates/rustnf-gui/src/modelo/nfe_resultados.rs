@@ -259,9 +259,15 @@ fn linha(f: &Retomada) -> LinhaDaRetomada {
         ),
         ("cancelada", _) => (Gravidade::Aviso, "a SEFAZ informa que foi cancelada"),
         ("denegada", _) => (Gravidade::Erro, "a SEFAZ negou o uso desta nota"),
-        ("rejeitada" | "numero_ja_usado", _) => (
+        // `situacao` None = a recusa tirou a nota da pasta (`rustnf-app/src/nfe/retomada.rs:34`); a NFC-e off-line
+        // recusada continua na pasta, pendente com a recusa anotada
+        ("rejeitada" | "numero_ja_usado", None) => (
             Gravidade::Erro,
             "a SEFAZ recusou: a nota saiu da lista e o número voltou a ficar livre",
+        ),
+        ("rejeitada" | "numero_ja_usado", Some(_)) => (
+            Gravidade::Erro,
+            "a SEFAZ recusou a transmissão: a nota segue pendente com a mesma chave; corrija o que ela apontou e transmita de novo",
         ),
         (_, Some(Situacao::Pendente | Situacao::Epec)) => (
             Gravidade::Aviso,
@@ -300,6 +306,21 @@ mod testes {
             aviso: None,
             status,
         }
+    }
+
+    #[test]
+    fn recusa_que_deixa_a_nota_na_pasta_nao_diz_que_o_numero_ficou_livre() {
+        let saiu = linha(&feita("rejeitada", "consultou", None));
+        assert!(
+            saiu.texto.contains("número voltou a ficar livre"),
+            "{saiu:?}"
+        );
+        let ficou = linha(&feita("rejeitada", "transmitiu", Some(Situacao::Pendente)));
+        assert!(
+            ficou.texto.contains("segue pendente com a mesma chave"),
+            "{ficou:?}"
+        );
+        assert!(!ficou.texto.contains("livre"), "{ficou:?}");
     }
 
     #[test]

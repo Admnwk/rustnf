@@ -367,6 +367,19 @@ pub(super) fn selo_da_situacao_nfe(situacao: SituacaoNfe, cx: &App) -> Div {
     selo_de(rotulo_da_situacao_nfe(situacao), cor)
 }
 
+/// O selo da nota da pasta: o da situacao, com o rotulo de [`crate::modelo::nfe_lista::rotulo_do_registro`] (a NFC-e
+/// off-line por transmitir diz "Sem internet", nao "Sem resposta").
+pub(super) fn selo_do_registro_nfe(r: &rustnf_app::notas::nfe::Registro, cx: &App) -> Div {
+    if r.situacao == SituacaoNfe::Pendente && r.offline {
+        selo_de(
+            crate::modelo::nfe_lista::rotulo_do_registro(r),
+            cx.theme().warning,
+        )
+    } else {
+        selo_da_situacao_nfe(r.situacao, cx)
+    }
+}
+
 /// Uma mensagem da Sefin: a descricao em destaque, o codigo e o complemento em segundo plano.
 pub(super) fn mensagem_da_sefin(m: &MensagemSefin, gravidade: Gravidade, cx: &App) -> AnyElement {
     let muted = cx.theme().muted_foreground;
