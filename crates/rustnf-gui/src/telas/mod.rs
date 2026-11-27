@@ -121,7 +121,11 @@ pub fn opcoes_da_janela(cx: &App, demonstracao: bool) -> WindowOptions {
             ),
             ..TitleBar::title_bar_options()
         }),
-        window_bounds: Some(WindowBounds::centered(size(px(LARGURA), px(ALTURA)), cx)),
+        window_bounds: Some(WindowBounds::centered(
+            None,
+            size(px(LARGURA), px(ALTURA)),
+            cx,
+        )),
         window_min_size: Some(size(px(LARGURA_MINIMA), px(ALTURA_MINIMA))),
         ..base
     }

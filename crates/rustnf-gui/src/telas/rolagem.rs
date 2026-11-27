@@ -193,14 +193,6 @@ impl Element for Revelar {
     }
 }
 
-impl IntoElement for Revelar {
-    type Element = Self;
-
-    fn into_element(self) -> Self::Element {
-        self
-    }
-}
-
 #[cfg(test)]
 mod testes {
     use super::*;

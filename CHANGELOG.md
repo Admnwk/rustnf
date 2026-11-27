@@ -1,5 +1,10 @@
 # Changelog
 
+## Próxima versão
+
+* Interface de desktop: `gpui-kit` 0.10.0 -> 0.11.0 (GPUI 0.3.12 -> 0.3.14). Nenhuma mudança de tela nem de
+  comportamento; a janela continua centrada na tela principal.
+
 ## 0.5.0 - 2026-11-26
 
 Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` e `analise_fiscal`). **Um índice que tenha
