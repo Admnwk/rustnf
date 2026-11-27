@@ -11,7 +11,8 @@ use super::formato::*;
 use super::icms_mono::{self, CST_MONO};
 use super::icms_regras::{
     cod_benef, conferir_51, conferir_deson, conferir_part, conferir_st, dif_informado,
-    grupo_especial, tem_efet, tem_fcp_ret, tem_st, GRUPOS_ST, ST_OPCIONAL, UF_51_ZERADO,
+    grupo_especial, motivos, tem_efet, tem_fcp_ret, tem_st, CST_N12_90, GRUPOS_ST, MOTIVOS_DESON,
+    ST_OPCIONAL, UF_51_ZERADO, UF_N12_90,
 };
 use super::modelo::*;
 use super::total::{Ac, DESON_DEDUZ};
@@ -139,6 +140,29 @@ pub(crate) fn icms(
         isuf_dest,
         k,
     )?;
+    // N12-90 (NT 2019.001 v1.70, pag. 18, e quadro 3.6.1): em GO e RJ o CST 20/30/40/41/50/70/90 exige o valor e o
+    // motivo da desoneracao. Fora: devolucao (E2, que cobre a E1) e ajuste (E3); excecao 5 = CST 90 com pRedBC e
+    // pRedBCST zero ou ausentes. O repasse (grupo ICMSST do CST 41) nao tem vICMSDeson no XSD e fica fora.
+    if !simples
+        && UF_N12_90.contains(&uf)
+        && CST_N12_90.contains(&cod)
+        && motivos(&MOTIVOS_DESON, grupo).is_some()
+        && fin != 3
+        && fin != 4
+        && ds.v.eh_zero()
+        && !(cod == "90"
+            && dec(&c.p_red_bc, "pRedBC")?.eh_zero()
+            && dec(&c.p_red_bc_st, "pRedBCST")?.eh_zero())
+    {
+        return Err(erro_r(
+            format!(
+                "{k}CST {cod} sem vICMSDeson e motDesICMS: {uf} aplica a regra N12-90 (fora: devolucao, ajuste e \
+                 CST 90 sem reducao de base)"
+            ),
+            "vICMSDeson",
+            "934",
+        ));
+    }
     let cbr = match c.c_benef_rbc.as_deref().filter(|s| !s.trim().is_empty()) {
         None => None,
         Some(v) => {

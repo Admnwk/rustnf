@@ -2,6 +2,7 @@
  "fonte": "MOC 7.00 (novembro de 2020), Anexo I, secao 4.4 (tabelas 4.4.1, 4.4.2 e 4.4.3) e codigos que so' aparecem nas regras de validacao das secoes 4.1 a 4.3; o 155 (retorno do evento de cancelamento aceito fora de prazo) vem da Visao Geral, item 5.9.4. Codigo criado depois por Nota Tecnica traz a NT em `origem`; `outras` guarda a segunda mensagem de um codigo que a regra escreve de dois jeitos.",
  "efeito": "processamento = resultado de processamento (tabela 4.4.1); rejeicao = tabela 4.4.2 e regras; denegacao = tabela 4.4.3 e o 110 (Uso Denegado, da 4.4.1).",
  "notas_tecnicas": [
+  "NT 2019.001 v1.70",
   "NT 2023.002 v1.02",
   "NT 2025.002 v1.53",
   "NT 2026.002 v1.11",
@@ -1267,6 +1268,11 @@
    "efeito": "rejeicao",
    "mensagem": "Rejeição: Data de Saída menor que a Data de Emissão"
   },
+  "507": {
+   "efeito": "rejeicao",
+   "mensagem": "Grupo de informações sobre o Crédito Presumido não permitido",
+   "origem": "NT 2019.001 v1.70"
+  },
   "508": {
    "efeito": "rejeicao",
    "mensagem": "Rejeição: CST incompatível na operação com Não Contribuinte [nItem: 999]"
@@ -1842,6 +1848,21 @@
   "663": {
    "efeito": "rejeicao",
    "mensagem": "Rejeição: Alíquota do ICMS com valor superior a 4 por cento na operação de saída interestadual com produtos importados [nItem: 999]"
+  },
+  "664": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado código de crédito presumido (cCredPresumido) incorreto, inexistente ou incompatível na UF [nItem: nnn]",
+   "origem": "NT 2019.001 v1.70"
+  },
+  "665": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Não informado código de benefício fiscal de redução de BC (cBenefRBC) quando percentual de redução de BC for maior que zero no grupo de tributação de diferimento [nItem: nnn]",
+   "origem": "NT 2019.001 v1.70"
+  },
+  "666": {
+   "efeito": "rejeicao",
+   "mensagem": "Rejeição: Informado código de benefício fiscal de redução de BC (cBenefRBC) incorreto, inexistente ou incompatível na UF [nItem: nnn]",
+   "origem": "NT 2019.001 v1.70"
   },
   "669": {
    "efeito": "rejeicao",

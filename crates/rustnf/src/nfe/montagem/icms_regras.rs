@@ -185,6 +185,12 @@ pub(crate) const MOTIVOS_DESON: [(&str, &[&str]); 6] = [
     ("ICMS70", &["3", "9", "12"]),
     ("ICMS90", &["3", "9", "12"]),
 ];
+/// UF que aplicam a regra N12-90 (rejeicao 934) pelo quadro 3.6.1 da NT 2019.001 v1.70: GO (D5, producao desde
+/// 01/07/2023) e RJ (D2, desde 01/10/2019), modelos 55 e 65, com as excecoes E2 (devolucao) e E3 (ajuste). Nas
+/// demais UF a regra nao e' aplicada (D*).
+pub(crate) const UF_N12_90: [&str; 2] = ["GO", "RJ"];
+/// CST que a N12-90 cobra: sem `vICMSDeson` e `motDesICMS`, rejeicao 934.
+pub(crate) const CST_N12_90: [&str; 7] = ["20", "30", "40", "41", "50", "70", "90"];
 /// Motivos de desoneracao da ST (`motDesICMSST`) por grupo.
 pub(crate) const MOTIVOS_DESON_ST: [(&str, &[&str]); 3] = [
     ("ICMS10", &["3", "9", "12"]),
