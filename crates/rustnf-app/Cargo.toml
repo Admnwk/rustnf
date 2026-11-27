@@ -31,7 +31,7 @@ rustnf = { path = "../rustnf", features = ["sefin", "danfse", "nfe_sefaz", "danf
 tokio = { version = "1", features = ["rt", "time", "macros"] }
 # so' os testes: o gzip e o base64 do docZip dos documentos ficticios (as mesmas crates que a biblioteca ja usa)
 flate2 = "1"
-base64 = "0.22"
+base64 = "0.23"
 
 [target.'cfg(windows)'.dependencies]
 keyring-core = "1"

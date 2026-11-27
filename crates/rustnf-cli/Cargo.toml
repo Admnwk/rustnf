@@ -25,7 +25,7 @@ async-trait = "0.1"
 rustnf = { path = "../rustnf", features = ["sefin", "danfse", "nfe_sefaz", "danfe", "danfce"] }
 rustnf-app = { path = "../rustnf-app" }
 axum = { version = "0.8", default-features = false, features = ["http1", "tokio", "matched-path"] }
-base64 = "0.22"
+base64 = "0.23"
 clap = { version = "4", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
