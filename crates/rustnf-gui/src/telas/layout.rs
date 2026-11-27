@@ -26,6 +26,7 @@ use super::{
 };
 use crate::modelo::ambiente::{Ambiente, CORES_DA_DEMONSTRACAO, SELO_DA_DEMONSTRACAO};
 use crate::modelo::certificado::Gravidade;
+use crate::modelo::nfe_config::selo_do_ambiente_da_nfe;
 
 impl Raiz {
     /// O ambiente em vigor, para o selo.
@@ -40,6 +41,10 @@ impl Raiz {
         let ambiente = self.ambiente_do_selo();
         let (rotulo_do_selo, cores) = if self.servicos.demonstracao() {
             (SELO_DA_DEMONSTRACAO, CORES_DA_DEMONSTRACAO)
+        } else if self.mostrando_a_nfe() {
+            // o selo mostra o ambiente do documento que esta na tela: o da NF-e e' outro campo
+            let a = self.ambiente_da_nfe_em_vigor();
+            (selo_do_ambiente_da_nfe(a), a.cores())
         } else {
             (ambiente.selo(), ambiente.cores())
         };
@@ -53,7 +58,7 @@ impl Raiz {
                         div()
                             .text_xs()
                             .opacity(0.6)
-                            .child("emissor de NFS-e nacional"),
+                            .child("emissor de notas fiscais"),
                     ),
             )
             .child(

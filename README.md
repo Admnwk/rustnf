@@ -12,7 +12,7 @@ executável, e uma **interface de desktop** para Windows (`rustnf-gui`).
 | documento auxiliar | DANFSe (PDF) | DANFE (PDF, A4 retrato) | DANFC-e (PDF de bobina de 80 e 58 mm e bytes ESC/POS, feature `danfce`); o DANFE Simplificado Tipo 2 da NF-e (`tpImp` 6) sai da assinatura com o QR Code, sem o PDF |
 | notas recebidas de terceiros | | distribuição de DF-e e manifestação do destinatário | não se aplica |
 | linha de comando, API HTTP e MCP | sim | sim | sim |
-| interface de desktop | sim | ainda não | ainda não |
+| interface de desktop | sim | tudo menos emitir (configurar, ver, DANFE, conferir, cancelar, carta, inutilizar, retomar) | ainda não |
 
 A NFC-e tem a biblioteca (features `nfe`, `nfe_sefaz` e `danfce`: leitura do modelo 65, montagem, QR Code, envio, contingência
 off-line e o DANFC-e, `rustnf::danfce::{dados, pdf, escpos}`, veja `crates/rustnf/examples/danfce.rs`), a camada de aplicação,
@@ -78,6 +78,7 @@ Os detalhes de cada passo estão em [Interface de desktop](#interface-de-desktop
 | faces da NFC-e (camada `rustnf-app` e `rustnf nfce`: CSC no cofre, pasta `nfce/` de numeração própria, emissão, off-line, retomada, pendentes e fechamento do caixa, cancelamento com aviso de prazo, DANFC-e como arquivo) | transporte falso (autorizada, rejeitada que não gasta número, denegada, resposta perdida com a nota pendente e retomada da mesma chave, off-line com o prazo, transmissão da off-line e a recusa dela anotada, decisão automática antes do envio, cancelamento, pendentes e `--fechar-caixa` com o código de saída, CSC que não vaza para JSON, `Debug` nem arquivo da pasta, numeração do 65 separada do 55 e pasta antiga do 55 lida igual), cofre em memória, DANFC-e gerado da pasta e do XML (PDF e ESC/POS com bytes estáveis) e um simulador local, fora do repositório, pela linha de comando | **nenhuma NFC-e real, nenhuma SEFAZ real (nem a de homologação), nenhum certificado A1 real, nenhum CSC real e nenhuma impressão em impressora real**; o prazo de cancelamento de cada UF (só o nacional de 24 horas tem fonte), o cancelamento por substituição (110112) e a inutilização da NFC-e não foram feitos; não há interface de desktop da NFC-e |
 | API HTTP e MCP da NFC-e (`/nfce/` e as 7 ferramentas `*_nfce`, no mesmo servidor da NF-e) | rotas e ferramentas sobre o transporte falso e uma pasta temporária: um teste por rota e ferramenta e desfecho (autorizada, rejeitada, sem resposta e retomada da mesma chave, off-line e transmissão, cancelamento com aviso de prazo, status, pendentes e fechamento do caixa), 404 sem `--permitir-emissao`, 401 sem o Bearer, `tools/list` com e sem o Bearer, campo desconhecido e CSC recusados sem envio, CSC que não aparece em resposta, no schema nem na pasta de notas, duas NFC-e e uma NFC-e com uma NF-e ao mesmo tempo, NFC-e sem configuração utilizável; e o servidor de verdade contra um simulador local (fora do repositório), por `curl` e por um cliente MCP mínimo | **nenhuma NFC-e real, nenhuma SEFAZ real, nenhum CSC real e nenhum cliente MCP de terceiros** |
 | faces dos documentos recebidos e da manifestação (`rustnf nfe recebidas`, `/nfe/recebidas/` e 4 ferramentas do MCP) | transporte falso (vários lotes até o 137, queda no meio de um lote sem pular NSU, 656 gravado e a chamada seguinte que diz a hora sem ir à rede, documento que não abre e é relido, ciência, confirmação e as recusas antes da rede, baixa por chave com e sem ciência, pasta e configuração da 0.4.0) e um simulador local (fora do repositório) pela linha de comando, pela API e por um cliente MCP mínimo | **nenhuma chamada ao Ambiente Nacional real e nenhum certificado A1 real**; não há interface de desktop para os recebidos |
+| interface de desktop, NF-e (`rustnf-gui`, só Windows: configurar, lista, detalhe, DANFE, conferir, cancelar, carta de correção, inutilizar e retomar; sem emissão) | testes do modelo (campos de `[nfe]`, lista, detalhe, limites e textos dos pedidos, resultado de cada desfecho) e da janela no ambiente de teste do GPUI com uma SEFAZ de mentira (transporte roteirizado, sem rede): testar conexão, alternar para a NF-e, detalhe e DANFE, cancelar (registrado, rejeitado por prazo, sem resposta), carta, inutilização, nota sem resposta retomada e, em produção, nenhuma chamada sem a marcação; uso manual pelo exemplo de demonstração | **nenhuma NF-e real, nenhuma SEFAZ real (nem a de homologação) e nenhum certificado real pela interface**; o DANFE aberto no leitor de PDF de outra máquina; o lado Linux só pelo CI |
 | interface de desktop (`rustnf-gui`, só Windows) | testes do modelo (máscaras, conferência, pedido, prévia, sugestão, rascunho, lista das notas, detalhe, cancelamento, conferência em lote, histórico de eventos, pedido de análise fiscal, confirmação e recusa de nota recebida, consulta pela chave e pela DPS e prévia avulsa), dos fluxos com emissor de demonstração e pasta temporária e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuração e pelo exemplo de demonstração | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, e nenhuma consulta de DPS ou de evento, nenhuma conferência de situação e nenhum evento (análise fiscal, confirmação, recusa) foi feito por ela contra a Sefin; só o emissor de demonstração respondeu**; o DANFSe aberto no leitor de PDF de outra máquina; uma chamada real à Sefin pelo botão "Testar conexão"; exame da janela em outras escalas de tela; o executável de release aberto numa máquina sem as ferramentas de desenvolvimento |
 
 Se você testar a NFS-e, conte como foi: abra um relato pelo modelo **"Relato de emissão"** (aba Issues), mesmo quando der
@@ -479,7 +480,7 @@ pasta, guarda o que a SEFAZ devolve e diz o resultado em palavras.
 
 **Nenhuma NF-e real foi emitida com este código**, nem em homologação, e nenhuma chamada a uma SEFAZ real nem nenhum
 certificado A1 real foram usados: o que existe foi conferido com transporte falso e com um simulador local, fora do
-repositório. A NF-e também tem API HTTP e MCP no mesmo servidor (veja [NF-e pela API](#nf-e-pela-api) e o [MCP](#mcp)); **ainda não há interface de desktop para a NF-e**. A NFC-e (modelo 65) tem a sua seção, [NFC-e (modelo 65)](#nfc-e-modelo-65): o `rustnf nfe` recusa o pedido do modelo 65 e diz que ele se emite por `rustnf nfce`.
+repositório. A NF-e também tem API HTTP e MCP no mesmo servidor (veja [NF-e pela API](#nf-e-pela-api) e o [MCP](#mcp)); **a interface de desktop da NF-e faz tudo menos emitir** (veja [Interface de desktop](#interface-de-desktop)). A NFC-e (modelo 65) tem a sua seção, [NFC-e (modelo 65)](#nfc-e-modelo-65): o `rustnf nfe` recusa o pedido do modelo 65 e diz que ele se emite por `rustnf nfce`.
 
 ### Passo a passo
 
@@ -1157,6 +1158,18 @@ e situação. XML ausente ou ilegível é dito sem derrubar a tela. Dele saem:
 * **Usar como modelo**: leva tomador, serviço, descrição e valor da nota para a Nova nota (o que o XML permite ler; o resto
   fica vazio e a conferência da Nova nota aponta), com a competência de hoje. Se a Nova nota tiver algo digitado, pergunta
   antes de substituir; com uma tentativa de emissão pendente, não substitui.
+
+### NF-e (venda de mercadoria) na janela
+
+A tela Notas tem, no alto, a escolha **NFS-e | NF-e (venda de mercadoria)**; ela é lembrada de uma vez para outra. A NF-e
+**não é emitida pela janela nesta versão** (a emissão por passos vem depois): emita pela linha de comando e as notas aparecem
+na lista. Nas Configurações, a seção **NF-e** tem o ambiente próprio da NF-e, UF, IE, regime, série, endereço, contingência SVC,
+canhoto e tempos, e o botão "Testar conexão com a SEFAZ" (só pergunta o status do serviço); o certificado é o da NFS-e. Na lista:
+busca, filtro e selos; a nota enviada sem resposta fica em destaque com o botão **Retomar** (consulta a mesma chave e só
+reenvia a mesma nota). No detalhe: DANFE (marcado como cancelado quando for o caso), "Conferir na SEFAZ", **Cancelar**,
+**Carta de correção** (a nova substitui as anteriores; até 20) e, na lista, **Inutilizar números**. Em produção, cada pedido
+exige a marcação "Entendo..." antes de o botão habilitar. A janela não conta o prazo de cancelamento: o prazo vencido volta da
+SEFAZ como recusa 501 e a tela explica. Exemplo de demonstração (sem rede): `--nfe-evento registrado|rejeitado|sem-resposta`.
 
 ### Consultar
 

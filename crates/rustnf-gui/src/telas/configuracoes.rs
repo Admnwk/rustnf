@@ -470,8 +470,8 @@ impl Raiz {
 
     fn barra_de_salvar(&self, cx: &mut Context<Self>) -> impl IntoElement {
         let tema = cx.theme();
-        let alterado = self.formulario.alterado();
-        let motivo = self.formulario.motivo_sem_salvar();
+        let alterado = self.alterado();
+        let motivo = self.motivo_sem_salvar();
         let salvando = self.ocupado.salvando;
         let (grav, texto) = match (&motivo, alterado) {
             (None, _) => (Gravidade::Aviso, "Há alterações não salvas.".to_string()),
@@ -540,6 +540,7 @@ impl Raiz {
             Secao::Emitente => self.secao_emitente(cx),
             Secao::Sefin => self.secao_sefin(cx),
             Secao::Notas => self.secao_notas(cx),
+            Secao::Nfe => self.secao_nfe(cx),
             Secao::Aliquotas => self.secao_aliquotas(cx),
             Secao::Aparencia => self.secao_aparencia(cx),
         };

@@ -13,11 +13,13 @@ use gpui_kit::{
     ParentElement as _, SharedString, Styled,
 };
 
+use rustnf_app::notas::nfe::Situacao as SituacaoNfe;
 use rustnf_app::notas::Situacao;
 
 use crate::modelo::certificado::Gravidade;
 use crate::modelo::emissao::MensagemSefin;
 use crate::modelo::lista::rotulo_da_situacao;
+use crate::modelo::nfe_lista::rotulo_da_situacao as rotulo_da_situacao_nfe;
 use crate::modelo::previa::{PreviaIbsCbs, ValoresIbsCbs};
 
 /// Pesos de fonte com nome curto.
@@ -319,16 +321,9 @@ pub(super) fn corpo_da_previa(
     }
 }
 
-/// O selo da situacao de uma nota: autorizada (verde), cancelada (vermelho), substituida (cinza) ou em analise fiscal
-/// (amarelo), com as cores do tema.
-pub(super) fn selo_da_situacao(situacao: Situacao, cx: &App) -> Div {
-    let tema = cx.theme();
-    let cor = match situacao {
-        Situacao::Autorizada => tema.success,
-        Situacao::Cancelada => tema.danger,
-        Situacao::Substituida => tema.muted_foreground,
-        Situacao::AnaliseFiscal => tema.warning,
-    };
+/// Um selo de situacao: o rotulo numa pilula da cor dada (a da gravidade da situacao). E' o que a NFS-e e a NF-e
+/// compartilham; cada uma so' decide o rotulo e a cor.
+pub(super) fn selo_de(rotulo: &'static str, cor: Hsla) -> Div {
     div()
         .px_2()
         .py_0p5()
@@ -339,7 +334,33 @@ pub(super) fn selo_da_situacao(situacao: Situacao, cx: &App) -> Div {
         .border_color(cor.opacity(0.5))
         .bg(cor.opacity(0.12))
         .text_color(cor)
-        .child(rotulo_da_situacao(situacao))
+        .child(rotulo)
+}
+
+/// O selo da situacao de uma nota: autorizada (verde), cancelada (vermelho), substituida (cinza) ou em analise fiscal
+/// (amarelo), com as cores do tema.
+pub(super) fn selo_da_situacao(situacao: Situacao, cx: &App) -> Div {
+    let tema = cx.theme();
+    let cor = match situacao {
+        Situacao::Autorizada => tema.success,
+        Situacao::Cancelada => tema.danger,
+        Situacao::Substituida => tema.muted_foreground,
+        Situacao::AnaliseFiscal => tema.warning,
+    };
+    selo_de(rotulo_da_situacao(situacao), cor)
+}
+
+/// O selo da situacao de uma NF-e: autorizada (verde), cancelada e denegada (vermelho), sem resposta e em contingencia
+/// (amarelo).
+pub(super) fn selo_da_situacao_nfe(situacao: SituacaoNfe, cx: &App) -> Div {
+    let tema = cx.theme();
+    let cor = match situacao {
+        SituacaoNfe::Autorizada => tema.success,
+        SituacaoNfe::Cancelada | SituacaoNfe::Denegada => tema.danger,
+        SituacaoNfe::Pendente | SituacaoNfe::Epec => tema.warning,
+        SituacaoNfe::Inutilizada => tema.muted_foreground,
+    };
+    selo_de(rotulo_da_situacao_nfe(situacao), cor)
 }
 
 /// Uma mensagem da Sefin: a descricao em destaque, o codigo e o complemento em segundo plano.

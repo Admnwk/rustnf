@@ -5,13 +5,15 @@
 //! A mesma janela do `rustnf-gui`, mas com um emissor de demonstracao: nada e' enviado a Sefin Nacional. Serve para
 //! clicar na interface inteira: emitir (autorizada, rejeitada, sem resposta), ver as notas da pasta, consultar pela
 //! chave ou pela DPS, cancelar, conferir a situacao das notas na Sefin, ver o historico de eventos de uma nota, pedir a
-//! analise fiscal do cancelamento e confirmar ou recusar uma nota recebida.
+//! analise fiscal do cancelamento e confirmar ou recusar uma nota recebida; e, para a NF-e (venda de mercadoria), ver as
+//! notas da pasta, abrir o DANFE, conferir na SEFAZ, cancelar, corrigir por carta, inutilizar numeros, retomar a nota
+//! sem resposta e testar a conexao, tudo com uma SEFAZ de mentira.
 //!
 //! ```text
 //! cargo run -p rustnf-gui --features demonstracao --example demonstracao -- \
 //!     --config rustnf.toml [--resultado autorizada|rejeitada|sem-resposta] \
 //!     [--cancelamento registrado|rejeitado|sem-resposta] [--evento registrado|rejeitado|sem-resposta] \
-//!     [--atraso-ms 1200]
+//!     [--nfe-evento registrado|rejeitado|sem-resposta] [--atraso-ms 1200]
 //! ```
 //!
 //! `--resultado` e' o roteiro da emissao: `autorizada` (padrao) autoriza a nota; `rejeitada` devolve duas mensagens de
@@ -24,6 +26,12 @@
 //! Recusar. A consulta devolve as notas que a
 //! demonstracao autorizou e as que estao na pasta de notas do ensaio. A nota autorizada entra de verdade na pasta de
 //! notas do arquivo de configuracao indicado: use uma pasta de ensaio.
+//!
+//! `--nfe-evento` e' o roteiro da SEFAZ de mentira da NF-e para o cancelamento, a carta de correcao e a inutilizacao:
+//! `registrado` (padrao); `rejeitado` recusa (o cancelamento com 501, o prazo; a carta e a inutilizacao com outro
+//! codigo); `sem-resposta` deixa a primeira tentativa sem resposta e registra na segunda. Com a `[nfe]` configurada
+//! (pelo menos a UF), o programa semeia a pasta de ensaio com tres NF-e: uma autorizada, uma cancelada e uma sem
+//! resposta (o "Retomar" a resolve).
 
 use std::process::ExitCode;
 
@@ -36,6 +44,9 @@ fn main() -> ExitCode {
         cancelamento_do_nome, roteiro_do_nome, EmissorDemonstracao, Ensaio, FabricaDemonstracao,
     };
     use rustnf_gui::demonstracao_eventos::evento_do_nome;
+    use rustnf_gui::demonstracao_nfe::{
+        roteiro_nfe_do_nome, semear, FabricaNfeDemonstracao, TransporteNfeDemonstracao,
+    };
     use rustnf_gui::modelo::argumentos::{self, Pedido};
     use rustnf_gui::servicos::Servicos;
 
@@ -43,6 +54,7 @@ fn main() -> ExitCode {
     let mut resultado = "autorizada".to_string();
     let mut cancelamento = "registrado".to_string();
     let mut evento = "registrado".to_string();
+    let mut nfe_evento = "registrado".to_string();
     let mut atraso_ms: u64 = 1200;
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
@@ -59,6 +71,14 @@ fn main() -> ExitCode {
                 Some(v) => cancelamento = v,
                 None => {
                     eprintln!("demonstracao: --cancelamento precisa de um valor");
+                    return ExitCode::from(2);
+                }
+            }
+        } else if a == "--nfe-evento" {
+            match args.next() {
+                Some(v) => nfe_evento = v,
+                None => {
+                    eprintln!("demonstracao: --nfe-evento precisa de um valor");
                     return ExitCode::from(2);
                 }
             }
@@ -92,6 +112,10 @@ fn main() -> ExitCode {
     };
     let Some(roteiro_do_evento) = evento_do_nome(&evento) else {
         eprintln!("demonstracao: --evento aceita registrado, rejeitado ou sem-resposta");
+        return ExitCode::from(2);
+    };
+    let Some(roteiro_da_nfe) = roteiro_nfe_do_nome(&nfe_evento) else {
+        eprintln!("demonstracao: --nfe-evento aceita registrado, rejeitado ou sem-resposta");
         return ExitCode::from(2);
     };
     let config = match argumentos::interpretar(resto) {
@@ -139,7 +163,20 @@ fn main() -> ExitCode {
             "demonstracao: nota recebida de outro emitente, para Confirmar e Recusar em Consultar: {chave}"
         );
     }
-    let servicos = base.com_fabrica(FabricaDemonstracao::nova(emissor));
+    let nfe = TransporteNfeDemonstracao::novo(roteiro_da_nfe, Duration::from_millis(atraso_ms));
+    match base.carregar() {
+        Ok(carga) if !carga.config.nfe.uf.trim().is_empty() => match semear(&carga.config, &nfe) {
+            Ok(n) => println!(
+                "demonstracao: NF-e de ensaio na pasta: autorizada {}, cancelada {}, sem resposta {}",
+                n.autorizada, n.cancelada, n.pendente
+            ),
+            Err(e) => eprintln!("demonstracao: nao foi possivel semear as NF-e de ensaio: {e}"),
+        },
+        _ => println!("demonstracao: sem [nfe].uf no arquivo, as NF-e de ensaio nao foram criadas"),
+    }
+    let servicos = base
+        .com_fabrica(FabricaDemonstracao::nova(emissor))
+        .com_fabrica_nfe(FabricaNfeDemonstracao::nova(nfe));
     rustnf_gui::telas::executar_com(Arc::new(servicos));
     ExitCode::SUCCESS
 }

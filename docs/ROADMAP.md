@@ -46,6 +46,11 @@
   feito pela interface**. O pedido de análise fiscal é oferecido no desfecho do cancelamento recusado por prazo (E0822) e
   como ação do detalhe.
 
+* Interface de desktop, **NF-e (modelo 55) sem a emissão**: configurar a NF-e, ver as notas da pasta, abrir o DANFE, conferir
+  na SEFAZ, cancelar, corrigir por carta, inutilizar números e retomar a nota sem resposta. Testada com uma SEFAZ de mentira e
+  a janela de teste do GPUI: **nenhuma NF-e real, nenhuma SEFAZ real e nenhum certificado real pela interface**. **Fica para as
+  próximas entregas:** a emissão pela janela (assistente por passos, com EPEC), a NFC-e e os documentos recebidos.
+
 * Entrega: interface compilada e testada no Windows pelo CI; fluxo de release que monta os executáveis (Windows sem
   dependência do Visual C++ Redistributable, e Linux só com a linha de comando) e abre a release como rascunho.
 

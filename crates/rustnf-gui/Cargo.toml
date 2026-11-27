@@ -18,8 +18,8 @@ path = "src/main.rs"
 
 [features]
 # O emissor de demonstracao (sem rede) e o exemplo `demonstracao`. Desligada por padrao: o executavel normal nao tem
-# como entrar nesse modo.
-demonstracao = []
+# como entrar nesse modo. Liga o certificado de teste da biblioteca: a demonstracao da NF-e assina as notas do ensaio.
+demonstracao = ["rustnf/cert_a1_teste"]
 
 [[example]]
 name = "demonstracao"
@@ -31,7 +31,7 @@ required-features = ["demonstracao"]
 embed-resource = "3"
 
 [dependencies]
-rustnf = { path = "../rustnf", features = ["sefin", "danfse"] }
+rustnf = { path = "../rustnf", features = ["sefin", "danfse", "nfe_sefaz", "danfe"] }
 rustnf-app = { path = "../rustnf-app" }
 async-trait = "0.1"
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
@@ -43,7 +43,7 @@ tokio = { version = "1", features = ["rt-multi-thread", "time", "net", "sync"] }
 gpui-kit = "=0.11.0"
 
 [dev-dependencies]
-rustnf = { path = "../rustnf", features = ["sefin", "danfse", "cert_a1_teste"] }
+rustnf = { path = "../rustnf", features = ["sefin", "danfse", "nfe_sefaz", "danfe", "cert_a1_teste"] }
 
 [target.'cfg(windows)'.dev-dependencies]
 gpui-kit = { version = "=0.11.0", features = ["test-support"] }
