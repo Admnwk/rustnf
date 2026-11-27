@@ -407,7 +407,8 @@ As duas aceitam `--pfx`, `--senha-env`, `--senha-stdin` e `--json`, com as mesma
 ### Consultar a DPS, eventos e a situação das notas
 
 Mesmas opções de certificado, senha e ambiente de `emitir`, `consultar` e `cancelar`; `--json` onde há saída em texto.
-Nenhum destes comandos foi chamado contra a Sefin Nacional: veja [Estado](#estado).
+Estes comandos foram conferidos com transporte de teste; a chamada à Sefin Nacional real é o que o teste real prova
+(veja [Estado](#estado)).
 
 ```
 # a chave que uma DPS gerou: pelo Id (45 posicoes) ou pela serie e o numero (o Id sai do [emitente] da configuracao)
@@ -496,9 +497,8 @@ certificado A1 e a mesma senha no cofre, a mesma pasta de notas e a mesma grava�
 envia e entende a resposta da SEFAZ; a linha de comando `rustnf nfe` completa o pedido com a configuração, numera pela
 pasta, guarda o que a SEFAZ devolve e diz o resultado em palavras.
 
-**Nenhuma NF-e real foi emitida com este código**, nem em homologação, e nenhuma chamada a uma SEFAZ real nem nenhum
-certificado A1 real foram usados: o que existe foi conferido com transporte falso e com um simulador local, fora do
-repositório. A NF-e também tem API HTTP e MCP no mesmo servidor (veja [NF-e pela API](#nf-e-pela-api) e o [MCP](#mcp)); **a interface de desktop da NF-e emite por um assistente de cinco passos** (veja [Nova NF-e](#nova-nf-e-assistente-de-venda)). A NFC-e (modelo 65) tem a sua seção, [NFC-e (modelo 65)](#nfc-e-modelo-65): o `rustnf nfe` recusa o pedido do modelo 65 e diz que ele se emite por `rustnf nfce`.
+Foi conferida com transporte de teste e com um servidor simulado; a primeira NF-e aceita por uma SEFAZ real é a prova
+que falta, e a homologação é o lugar de tentar (veja [Estado](#estado)). A NF-e também tem API HTTP e MCP no mesmo servidor (veja [NF-e pela API](#nf-e-pela-api) e o [MCP](#mcp)); **a interface de desktop da NF-e emite por um assistente de cinco passos** (veja [Nova NF-e](#nova-nf-e-assistente-de-venda)). A NFC-e (modelo 65) tem a sua seção, [NFC-e (modelo 65)](#nfc-e-modelo-65): o `rustnf nfe` recusa o pedido do modelo 65 e diz que ele se emite por `rustnf nfce`.
 
 ### Passo a passo
 
@@ -641,9 +641,9 @@ chave de acesso conferida.
 
 As NF-e que OUTRAS empresas emitiram contra o CNPJ do `[emitente]` (a empresa é a destinatária) se baixam do Ambiente
 Nacional pela distribuição de DF-e (`NFeDistribuicaoDFe`, NT 2014.002). A mesma camada de aplicação, a mesma pasta de notas
-e o mesmo certificado A1 servem: `rustnf nfe recebidas ...`. **Nenhuma chamada ao Ambiente Nacional real e nenhum
-certificado A1 real foram usados**: o que existe foi conferido com transporte falso e com um simulador local, fora do
-repositório. A interface de desktop tem a opção **Recebidas (compras)** na tela Notas (veja abaixo).
+e o mesmo certificado A1 servem: `rustnf nfe recebidas ...`. Foi conferido com transporte de
+teste e com um servidor simulado; a chamada ao Ambiente Nacional real é o que o teste real prova (veja
+[Estado](#estado)). A interface de desktop tem a opção **Recebidas (compras)** na tela Notas (veja abaixo).
 
 **Pela interface de desktop (Windows):** em Notas, escolha **Recebidas (compras)**. A lista mostra, para cada nota, a data, o
 fornecedor (nome e CNPJ), o valor, o que aconteceu com a nota (autorizada, cancelada pelo emitente, uso negado) e o que a empresa já
@@ -715,9 +715,8 @@ camada de aplicação, o mesmo arquivo de configuração, o mesmo certificado A1
 `rustnf nfce` completa o pedido com a configuração, numera pela pasta, guarda o que a SEFAZ devolve, diz o resultado em
 palavras e avisa o que falta enviar ao fechar o caixa.
 
-**Nenhuma NFC-e real foi emitida com este código**, nem em homologação: nenhuma SEFAZ real foi chamada, nenhum certificado A1
-real nem nenhum CSC real foi usado, e nenhum cupom foi impresso em impressora real. O que existe foi conferido com transporte
-falso e com um simulador local, fora do repositório. Na interface de desktop a NFC-e é o
+Foi conferida com transporte de teste e com um servidor simulado; a NFC-e aceita por uma SEFAZ real, com o CSC de
+verdade, e o cupom numa impressora real são o que o teste real prova (veja [Estado](#estado)). Na interface de desktop a NFC-e é o
 [Caixa](#caixa-nfc-e); a API HTTP e o MCP estão em [NFC-e pela API](#nfc-e-pela-api).
 
 | | NFS-e | NF-e (55) | NFC-e (65) |
@@ -1132,7 +1131,8 @@ avisa quando os dados dela não são os do formulário (que fica como estava, pa
 rejeitar, os dados ficam e as mensagens aparecem no painel. Sem senha no cofre, a tela a pede (só para aquela emissão;
 não é guardada). O que a tela não cobre (tomador no exterior, intermediário, comércio exterior, obra, evento, locação,
 deduções, reembolsos, substituição, benefício municipal, suspensão, imunidade, destinatário diferente do tomador) se emite
-pela linha de comando com o JSON completo. **Nenhuma nota real foi emitida por esta interface.**
+pela linha de comando com o JSON completo. A interface foi conferida com um emissor de demonstração; a primeira nota
+real por ela é a prova que falta (veja [Estado](#estado)).
 
 ### Notas
 
@@ -1247,7 +1247,7 @@ Configurações, a seção **NF-e** tem o ambiente próprio, UF, IE, regime, sé
 botão "Testar conexão com a SEFAZ"; o certificado é o da NFS-e. A janela não conta o prazo de cancelamento: o prazo vencido volta
 da SEFAZ como recusa 501. Exemplo de demonstração (sem rede): `--nfe-evento registrado|rejeitado|sem-resposta` e
 `--nfe-emissao autorizada|rejeitada|sem-resposta|fora`; a pasta de ensaio ganha NF-e de exemplo e um cadastro com três produtos.
-**Nenhuma NF-e real foi emitida por esta interface.** Fora do assistente (vão pela linha de comando): venda ao exterior, IPI,
+A primeira NF-e real pela interface é a prova que falta (veja [Estado](#estado)). Fora do assistente (vão pela linha de comando): venda ao exterior, IPI,
 venda por intermediador, valor unitário com mais de duas casas, ST com cálculo próprio, devolução e nota complementar.
 
 ### Caixa (NFC-e)
