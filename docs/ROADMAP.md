@@ -50,10 +50,20 @@
   corrigir por carta, inutilizar números, retomar a nota sem resposta e **emitir por um assistente de cinco passos** (cadastro de
   produtos, nota anterior como modelo, contingência EPEC). Testada com uma SEFAZ de mentira e a janela de teste do GPUI: nenhuma
   NF-e real, nenhuma SEFAZ real e nenhum certificado real pela interface. **Fica para as próximas entregas:** os
-  documentos recebidos na janela; e, no assistente, a venda ao exterior, o IPI, a venda por intermediador e a transmissão do EPEC
-  que troca a nota sem resposta: hoje a aplicação não tem um caminho para trocar a nota sem resposta por um EPEC.
-  **Pendência:** o EPEC da nota que ficou sem resposta (a mesma chave). Hoje a aplicação numera o EPEC pelo próximo número
-  livre da pasta, e não pelo da nota pendente; por isso a janela só oferece o EPEC quando não há nota sem resposta.
+  documentos recebidos na janela; e, no assistente, a venda ao exterior, o IPI, a venda por intermediador e o EPEC no lugar da
+  nota sem resposta (a aplicação já o faz, veja abaixo; falta oferecê-lo na janela).
+
+* **O EPEC no lugar de uma NF-e que ficou sem resposta** (aplicação, linha de comando, API HTTP e MCP). O EPEC sai com o
+  **próximo número livre**, e não com o da nota sem resposta: é o que o Manual de Contingência da NF-e manda (MOC 7.00, Anexo III,
+  item 2.3.3: toda NF-e pendente de retorno recebe nova numeração para sair em contingência, para o EPEC não ser rejeitado se a
+  primeira tiver sido autorizada; Visão Geral, 3.3.1: o EPEC leva número diferente de qualquer NF-e transmitida com outro
+  `tpEmis`). A nota sem resposta fica **ligada** ao EPEC no índice (`substituida_por` nela, `substitui` nele) e a retomada passa a
+  só **consultá-la**, nunca reenviá-la (reenviar poderia deixar duas notas autorizadas para uma venda). Pelo que a SEFAZ responde,
+  a norma manda: se a autorizou, **cancelar** a nota (o caminho de sempre); se a SEFAZ não a tem (217), **inutilizar** o número
+  dela, e só esse caso entra numa faixa a inutilizar (a nota sai da pasta com a faixa e o XML assinado fica guardado em
+  `nfe/inutilizacao/<ano>/`). A substituição é conferida antes de qualquer rede (nota da pasta, pendente, do mesmo emitente e do
+  mesmo ambiente, ainda não substituída) e o EPEC recusado não deixa vínculo. **Fica para a próxima entrega:** oferecer isso na
+  janela (hoje ela só oferece o EPEC quando não há nota sem resposta) e mostrar o que fazer com a nota substituída.
 
 * Entrega: interface compilada e testada no Windows pelo CI; fluxo de release que monta os executáveis (Windows sem
   dependência do Visual C++ Redistributable, e Linux só com a linha de comando) e abre a release como rascunho.
