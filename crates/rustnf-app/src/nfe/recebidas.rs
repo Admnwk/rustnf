@@ -683,7 +683,7 @@ pub fn fila(
 ///
 /// # Errors
 ///
-/// [`Erro::NaoEncontrada`] se a nota nao esta na pasta; [`Erro::Recusa`] se so' ha o resumo; os de [`danfe_do_xml`].
+/// [`Erro::NaoEncontrada`] se a nota nao esta na pasta; [`Erro::Recusa`] se so' ha o resumo; os de [`super::danfe_do_xml`].
 pub fn danfe_da_recebida(
     notas: &NotasNfe,
     config: &crate::config::Config,
