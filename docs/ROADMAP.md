@@ -29,27 +29,27 @@
 
 * Interface de desktop, **Nova nota**: formulário do caso comum com sugestão pela correlação, conferência ao vivo, prévia do
   IBS/CBS, rascunho, confirmação (explícita em produção) e emissão com pedido congelado e reenvio seguro. Testada com um
-  emissor de demonstração: **nenhuma nota real foi emitida por ela**.
+  emissor de demonstração: nenhuma nota real foi emitida por ela.
 
 * Interface de desktop, **Notas**, **Consultar** e **Prévia**: lista da pasta de notas com busca e filtro, detalhe, DANFSe,
   cancelamento, "usar como modelo", consulta pela chave e calculadora avulsa do IBS/CBS. Testadas com o emissor de
-  demonstração: **nenhuma nota real foi emitida, consultada nem cancelada por elas**.
+  demonstração: nenhuma nota real foi emitida, consultada nem cancelada por elas.
 
 * Consulta de DPS, consulta de evento, registro de eventos do contribuinte (como o pedido de análise fiscal, 101103) e
   conferência em lote da situação das notas contra a Sefin (cancelada, substituída, em análise fiscal), na camada de
-  aplicação, na linha de comando, na API HTTP e no MCP, testadas com transporte falso: **nenhuma consulta nem evento real
-  foi feito**.
+  aplicação, na linha de comando, na API HTTP e no MCP, testadas com transporte falso: nenhuma consulta nem evento real
+  foi feito.
 
 * Interface de desktop, eventos na tela: conferir a situação das notas em lote (com andamento e Parar), histórico de
   eventos de uma nota, pedido de análise fiscal do cancelamento, consulta pela série e número da DPS e, para a nota
-  recebida, confirmar e recusar. Testada com a demonstração e a janela de teste: **nenhuma consulta nem evento real foi
-  feito pela interface**. O pedido de análise fiscal é oferecido no desfecho do cancelamento recusado por prazo (E0822) e
+  recebida, confirmar e recusar. Testada com a demonstração e a janela de teste: nenhuma consulta nem evento real foi
+  feito pela interface. O pedido de análise fiscal é oferecido no desfecho do cancelamento recusado por prazo (E0822) e
   como ação do detalhe.
 
 * Interface de desktop, **NF-e (modelo 55)**: configurar a NF-e, ver as notas da pasta, abrir o DANFE, conferir na SEFAZ, cancelar,
   corrigir por carta, inutilizar números, retomar a nota sem resposta e **emitir por um assistente de cinco passos** (cadastro de
-  produtos, nota anterior como modelo, contingência EPEC). Testada com uma SEFAZ de mentira e a janela de teste do GPUI: **nenhuma
-  NF-e real, nenhuma SEFAZ real e nenhum certificado real pela interface**. **Fica para as próximas entregas:** os
+  produtos, nota anterior como modelo, contingência EPEC). Testada com uma SEFAZ de mentira e a janela de teste do GPUI: nenhuma
+  NF-e real, nenhuma SEFAZ real e nenhum certificado real pela interface. **Fica para as próximas entregas:** os
   documentos recebidos na janela; e, no assistente, a venda ao exterior, o IPI, a venda por intermediador e a transmissão do EPEC
   que troca a nota sem resposta: hoje a aplicação não tem um caminho para trocar a nota sem resposta por um EPEC.
   **Pendência:** o EPEC da nota que ficou sem resposta (a mesma chave). Hoje a aplicação numera o EPEC pelo próximo número
@@ -95,26 +95,26 @@
 * NFC-e, base (features `nfe` e `nfe_sefaz`): montagem do modelo 65 com as regras do MOC e da NT 2026.002, QR Code das
   versões 2 e 3 (tabela de URL por UF com a fonte de cada linha), envio síncrono, consulta e cancelamento, contingência
   off-line (`tpEmis` 9) e a NF-e com `tpImp` 6 assinada com o QR Code. Feita nesta frente, com transporte falso e um simulador
-  local: **nenhum envio a uma SEFAZ real e nenhum CSC real**.
-* Faces, parte 1: aplicação (`rustnf-app`: configuração `[nfe]`, pasta de notas `nfe/`, numeração, emissão com recuperação, eventos, inutilização, EPEC, retomada dos pendentes e DANFE) e linha de comando (`rustnf nfe`). Feita nesta frente, com transporte falso e um simulador local: **nenhuma NF-e real foi emitida e nenhuma SEFAZ real foi chamada**.
-* Faces, parte 2: API HTTP (`/nfe/`) e MCP da NF-e (11 ferramentas), sobre as mesmas funções da aplicação e no mesmo servidor. Feita nesta frente, com transporte falso e um simulador local: **nenhuma NF-e real foi emitida, consultada nem cancelada pela API ou pelo MCP, nenhum certificado A1 real foi usado e nenhuma SEFAZ real foi chamada.** Falta um cliente MCP de terceiros ler as ferramentas.
-* Faces, parte 3: documentos recebidos e manifestação do destinatário na aplicação (pasta `nfe/recebidas` com o cursor de NSU), na linha de comando (`rustnf nfe recebidas`), na API HTTP e no MCP (4 ferramentas), sobre a distribuição de DF-e da biblioteca. Feita nesta frente, com transporte falso e um simulador local: **nenhuma chamada ao Ambiente Nacional real e nenhum certificado A1 real**. **Fica para depois:** interface de desktop dos recebidos, o DANFE de uma NF-e recebida pela linha de comando (`rustnf nfe danfe` lê o XML, mas não a pasta dos recebidos) e a leitura dos eventos de manifestação que a consulta da NF-e devolve para repor a situação de uma pasta nova.
+  local: nenhum envio a uma SEFAZ real e nenhum CSC real.
+* Faces, parte 1: aplicação (`rustnf-app`: configuração `[nfe]`, pasta de notas `nfe/`, numeração, emissão com recuperação, eventos, inutilização, EPEC, retomada dos pendentes e DANFE) e linha de comando (`rustnf nfe`). Feita nesta frente, com transporte falso e um simulador local: nenhuma NF-e real foi emitida e nenhuma SEFAZ real foi chamada.
+* Faces, parte 2: API HTTP (`/nfe/`) e MCP da NF-e (11 ferramentas), sobre as mesmas funções da aplicação e no mesmo servidor. Feita nesta frente, com transporte falso e um simulador local: nenhuma NF-e real foi emitida, consultada nem cancelada pela API ou pelo MCP, nenhum certificado A1 real foi usado e nenhuma SEFAZ real foi chamada. Falta um cliente MCP de terceiros ler as ferramentas.
+* Faces, parte 3: documentos recebidos e manifestação do destinatário na aplicação (pasta `nfe/recebidas` com o cursor de NSU), na linha de comando (`rustnf nfe recebidas`), na API HTTP e no MCP (4 ferramentas), sobre a distribuição de DF-e da biblioteca. Feita nesta frente, com transporte falso e um simulador local: nenhuma chamada ao Ambiente Nacional real e nenhum certificado A1 real. **Fica para depois:** interface de desktop dos recebidos, o DANFE de uma NF-e recebida pela linha de comando (`rustnf nfe danfe` lê o XML, mas não a pasta dos recebidos) e a leitura dos eventos de manifestação que a consulta da NF-e devolve para repor a situação de uma pasta nova.
 * DANFC-e (feature `danfce`): leitura do modelo 65, conteúdo por divisão do Manual, PDF de bobina (80 e 58 mm) e ESC/POS. Feito
   nesta frente. **Fica para depois:** o logotipo do emitente no cupom, o valor de tributos por item, os acréscimos e descontos
   por item (a critério da UF), a mensagem `xMsg` do retorno da autorização e perfis de impressora de fabricante.
 * NFC-e, faces: **feitas a aplicação (`rustnf-app`), a linha de comando (`rustnf nfce`), a API HTTP (`/nfce/`) e o MCP (`*_nfce`)**:
   `[nfce]`, CSC no cofre (que só se guarda pela linha de comando), pasta `nfce/` de numeração própria, emissão normal e off-line,
   retomada, pendentes e fechamento do caixa, cancelamento com aviso de prazo e DANFC-e como arquivo. Feitas com transporte falso
-  e um simulador local: **nenhuma NFC-e real**. A interface (o Caixa) foi feita depois, veja abaixo.
+  e um simulador local: nenhuma NFC-e real. A interface (o Caixa) foi feita depois, veja abaixo.
 * Interface de desktop, **NFC-e**: o Caixa (venda pelo teclado, cupom como arquivo, contingência off-line, fechar o caixa), a seção NFC-e das
   Configurações com o CSC no cofre e a NFC-e na lista de Notas (detalhe, conferir, cancelar com o aviso do prazo, retomar). Testada
-  com uma SEFAZ de mentira e a janela de teste do GPUI: **nenhuma NFC-e real, nenhuma SEFAZ real, nenhum certificado real e nenhum
-  CSC real pela interface**. **Fica para as próximas entregas:** a via do estabelecimento da off-line e a impressão direta.
+  com uma SEFAZ de mentira e a janela de teste do GPUI: nenhuma NFC-e real, nenhuma SEFAZ real, nenhum certificado real e nenhum
+  CSC real pela interface. **Fica para as próximas entregas:** a via do estabelecimento da off-line e a impressão direta.
 * Interface de desktop, **NF-e recebidas**: a opção Recebidas (compras) em Notas (lista com a situação da nota e a resposta da
   empresa, busca e filtro), buscar notas novas com a última busca e a espera do Ambiente Nacional, o detalhe do resumo e da nota
   completa (o mesmo da NF-e emitida, com DANFE), baixar com a ciência e responder à nota (confirmação, ciência, desconhecimento e
   operação não realizada, com o que o Ambiente Nacional recusaria visível antes de enviar). Testada com um Ambiente Nacional de
-  mentira e a janela de teste do GPUI: **nenhuma chamada real ao Ambiente Nacional e nenhum certificado real pela interface**.
+  mentira e a janela de teste do GPUI: nenhuma chamada real ao Ambiente Nacional e nenhum certificado real pela interface.
   **Não feito:** o prazo da resposta (a biblioteca não o confere e não há fonte no projeto: a tela só repete a recusa 596 do
   Ambiente Nacional).
 * NFC-e, o que ficou sem fazer e por quê: o cancelamento por substituição (110112, NT 2018.004: a biblioteca não tem o

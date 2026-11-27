@@ -105,16 +105,16 @@ pub enum Comando {
         acao: AcaoSenha,
     },
     /// NF-e (modelo 55): montar, conferir, emitir, consultar, cancelar, corrigir, inutilizar, status, EPEC, retomar
-    /// pendentes, DANFE e a pasta de notas da NF-e. Nao e' software oficial; a NF-e ainda nao teve nenhuma nota real
-    /// emitida por esta ferramenta.
+    /// pendentes, DANFE e a pasta de notas da NF-e. Nao e' software oficial: o XML e as regras foram conferidos contra a
+    /// documentacao oficial; comece pela homologacao, onde a nota nao tem efeito fiscal (veja "Estado" no README).
     Nfe {
         /// O que fazer.
         #[command(subcommand)]
         acao: AcaoNfe,
     },
     /// NFC-e (modelo 65): o CSC no cofre, emitir (inclusive em contingencia off-line), consultar, cancelar, status, os
-    /// pendentes e o aviso "ao fechar o caixa", e o DANFC-e como arquivo (PDF ou ESC/POS). Nao e' software oficial; nenhuma
-    /// NFC-e real foi emitida por esta ferramenta e ela nao fala com impressora.
+    /// pendentes e o aviso "ao fechar o caixa", e o DANFC-e como arquivo (PDF ou ESC/POS, pronto para a impressora). Nao e'
+    /// software oficial: comece pela homologacao, com o CSC de homologacao da UF (veja "Estado" no README).
     Nfce {
         /// O que fazer.
         #[command(subcommand)]
