@@ -556,8 +556,8 @@ Só depois de tudo certo em homologação troque o ambiente (`--ambiente produca
 | `rustnf nfe corrigir` | registra uma carta de correção (evento 110110), com a sequência tirada da pasta |
 | `rustnf nfe inutilizar` | inutiliza uma faixa de numeração (a UF que acabou com o serviço devolve o erro sem chamar a rede) |
 | `rustnf nfe status` | o estado do serviço da SEFAZ (ou da SVC, com `--svc`) |
-| `rustnf nfe epec` | emite em contingência EPEC: registra o evento no Ambiente Nacional; a mesma NF-e é transmitida depois |
-| `rustnf nfe pendentes` | lista as notas pendentes e em EPEC; com `--retomar`, consulta, reenvia a mesma NF-e ou transmite a do EPEC |
+| `rustnf nfe epec` | emite em contingência EPEC: registra o evento no Ambiente Nacional; a mesma NF-e é transmitida depois. Se a venda tinha uma NF-e que ficou sem resposta, `--substitui <chave>` (a chave dela, da lista de `pendentes`): o EPEC sai com o próximo número livre, como o Manual de Contingência manda, e a nota sem resposta nunca mais é reenviada |
+| `rustnf nfe pendentes` | lista as notas pendentes e em EPEC; com `--retomar`, consulta, reenvia a mesma NF-e ou transmite a do EPEC. A nota que um EPEC substituiu só é consultada, e a retomada diz o que fazer com ela: **cancelar** (se a SEFAZ a autorizou) ou **inutilizar** o número (se a SEFAZ não a tem, e então `rustnf nfe inutilizar` aceita esse número) |
 | `rustnf nfe danfe` | gera o DANFE em PDF do XML ou de uma nota da pasta (`--chave`) |
 | `rustnf nfe recebidas sincronizar` / `listar` / `baixar` / `manifestar` / `cursor` | as NF-e recebidas (distribuição de DF-e) e a manifestação do destinatário; veja [Documentos recebidos](#documentos-recebidos) |
 | `rustnf nfe notas listar` / `exportar` / `reindexar` / `numero` | a pasta de notas da NF-e, como `rustnf notas` na NFS-e; `listar --situacao inutilizada` lista as faixas |
@@ -927,14 +927,14 @@ NFS-e**. O certificado é o mesmo do `--pfx`.
 | `POST /nfe/montar` | o mesmo pedido | `{"xml","assinada":false,"chave",...}`: monta, **nunca assina**, não envia e não reserva o número | `montar_pedido` |
 | `POST /nfe/danfe` | XML da NF-e autorizada, `nfeProc` (`?canhoto=false&cancelada=true`) | `application/pdf` | `danfe_do_xml` |
 | `POST /nfe/emitir` | o pedido | JSON do resultado (só com emissão) | `emitir` |
-| `POST /nfe/epec` | o pedido, com `x_just` ou `[nfe].motivo_contingencia` | JSON do resultado (só com emissão) | `epec` |
+| `POST /nfe/epec` | o pedido, com `x_just` ou `[nfe].motivo_contingencia`; e `"substitui": "<chave>"` se a venda tinha uma NF-e sem resposta (a nota fica ligada ao EPEC e a retomada só a consulta) | JSON do resultado, com `substitui` se houve vínculo (só com emissão) | `epec_substituindo` |
 | `GET /nfe/{chave}` | | JSON da consulta; atualiza a pasta (só com emissão) | `consultar` |
 | `POST /nfe/cancelar` | `{"chave","justificativa","protocolo"?}` | JSON do evento (só com emissão) | `cancelar` |
 | `POST /nfe/corrigir` | `{"chave","texto","sequencia"?}` | JSON do evento (só com emissão) | `corrigir` |
 | `POST /nfe/inutilizar` | `{"serie"?,"inicio","fim","justificativa"}` | JSON da inutilização (só com emissão) | `inutilizar` |
 | `GET /nfe/status` | (`?svc=true` pergunta a SVC) | estado do serviço (só com emissão) | `status` |
-| `GET /nfe/pendentes` | | `{"notas":[...]}` sem rede (só com emissão) | `NotasNfe::a_resolver` |
-| `POST /nfe/pendentes/retomar` | | `{"notas":[...]}`: consulta a MESMA chave de cada pendente (só com emissão) | `retomar` |
+| `GET /nfe/pendentes` | | `{"notas":[...]}` sem rede, com `substituida_por` e `a_fazer` na nota substituída (só com emissão) | `NotasNfe::a_resolver` |
+| `POST /nfe/pendentes/retomar` | | `{"notas":[...]}`: consulta a MESMA chave de cada pendente; a substituída por um EPEC só é consultada e volta com `a_fazer` (`cancelar` ou `inutilizar`) (só com emissão) | `retomar` |
 | `POST /nfe/recebidas/sincronizar` | `{"lotes"?}` (o corpo é opcional) | JSON da sincronização: `status`, `frase`, `documentos`, `tipos`, `cursor` (só com emissão; **rede**) | `sincronizar` |
 | `GET /nfe/recebidas` | (`?situacao=`, `?busca=`) | `{"notas":[...]}` das NF-e recebidas, sem rede (só com emissão) | `listar` |
 | `GET /nfe/recebidas/cursor` | | o cursor da distribuição, sem rede (só com emissão) | `cursor` |
@@ -1044,7 +1044,7 @@ a versão e as capacidades em `_meta` e os cabeçalhos `MCP-Protocol-Version`, `
 | `corrigir_nfe` | carta de correção, como o `POST /nfe/corrigir` (**efeito fiscal**); só com `--permitir-emissao` e o Bearer |
 | `inutilizar_nfe` | inutiliza uma faixa de números (**efeito fiscal**); só com `--permitir-emissao` e o Bearer |
 | `status_sefaz` | estado do serviço da SEFAZ da UF (ou da SVC); só com `--permitir-emissao` e o Bearer |
-| `registrar_epec` | emite em contingência EPEC (**efeito fiscal**); só com `--permitir-emissao` e o Bearer |
+| `registrar_epec` | emite em contingência EPEC (**efeito fiscal**); `substitui` (a chave da NF-e sem resposta cuja venda o EPEC registra) liga as duas notas; só com `--permitir-emissao` e o Bearer |
 | `retomar_pendentes_nfe` | consulta a MESMA chave de cada NF-e pendente (**efeito fiscal**); só com `--permitir-emissao` e o Bearer |
 | `sincronizar_recebidas` | baixa os documentos recebidos (distribuição de DF-e) e grava na pasta; respeita a espera de uma hora e o bloqueio 656; só com `--permitir-emissao` e o Bearer |
 | `listar_recebidas` | lista as NF-e recebidas da pasta (`situacao`, `busca`); **não usa a rede**, mas lê os documentos da empresa e por isso também exige `--permitir-emissao` e o Bearer |

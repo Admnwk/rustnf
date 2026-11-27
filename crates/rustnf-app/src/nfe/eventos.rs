@@ -6,6 +6,7 @@
 //! guardado na pasta ao lado da nota.
 
 use chrono::Datelike;
+use rustnf::chave_dfe;
 use rustnf::nfe::montagem::{self, Aviso};
 use rustnf::nfe::sefaz::evento::{CARTA_CORRECAO, EPEC, MAX_SEQ_CARTA};
 use rustnf::nfe::sefaz::{
@@ -56,6 +57,34 @@ impl Registrado {
     }
 }
 
+/// O EPEC de [`epec_substituindo`]: o que o evento registrou e a NF-e pendente que ele substituiu.
+#[derive(Debug, Clone)]
+pub struct EpecRegistrado {
+    /// O resultado do EPEC e o que ficou na pasta.
+    pub registrado: Registrado,
+    /// A chave da NF-e pendente que o EPEC substituiu e ficou ligada a ele; vazio se o pedido nao substituia nenhuma ou se o
+    /// EPEC foi recusado (nesse caso nao ha vinculo).
+    pub substitui: String,
+}
+
+impl EpecRegistrado {
+    /// O JSON do EPEC ([`Registrado::para_json`]) mais `substitui`, se houve vinculo.
+    #[must_use]
+    pub fn para_json(&self) -> Value {
+        let mut v = self.registrado.para_json();
+        if !self.substitui.is_empty() {
+            v["substitui"] = json!(self.substitui);
+        }
+        v
+    }
+
+    /// O erro do resultado (`None` = registrado).
+    #[must_use]
+    pub fn erro(&self) -> Option<Erro> {
+        self.registrado.erro()
+    }
+}
+
 /// O resultado da inutilizacao e o que ficou na pasta.
 #[derive(Debug, Clone)]
 pub struct Inutilizada {
@@ -63,6 +92,9 @@ pub struct Inutilizada {
     pub resultado: ResultadoInutilizacao,
     /// A faixa foi guardada na pasta de notas.
     pub guardada: bool,
+    /// As chaves das NF-e substituidas que sairam da pasta com a faixa (a NF-e assinada de cada uma fica guardada ao lado
+    /// da faixa, em `inutilizacao/<ano>/`).
+    pub substituidas: Vec<String>,
 }
 
 impl Inutilizada {
@@ -71,6 +103,9 @@ impl Inutilizada {
     pub fn para_json(&self) -> Value {
         let mut v = json_da_inutilizacao(&self.resultado);
         v["guardada"] = json!(self.guardada);
+        if !self.substituidas.is_empty() {
+            v["substituidas"] = json!(self.substituidas);
+        }
         v
     }
 
@@ -227,6 +262,33 @@ pub async fn epec<T: Transporte>(
     pedido: Value,
     estrito: bool,
 ) -> Result<Registrado, Erro> {
+    Ok(epec_substituindo(ctx, pedido, estrito, None)
+        .await?
+        .registrado)
+}
+
+/// Como [`epec`], para a venda de uma NF-e que ficou SEM RESPOSTA: com `substitui` (a chave dessa NF-e pendente), o EPEC
+/// sai com numero NOVO, o proximo livre, como manda o Manual de Contingencia da NF-e (MOC 7.00, Anexo III, item 2.3.3: a
+/// pendente de retorno recebe nova numeracao para a contingencia nao ser rejeitada se a original saiu autorizada), e a
+/// pendente fica ligada a ele. Dai em diante a retomada so' CONSULTA a pendente, nunca a reenvia, e diz o que a norma manda
+/// fazer com ela: cancelar, se saiu autorizada, ou inutilizar o numero, se a SEFAZ nao a tem.
+///
+/// `substitui` e' conferido antes de qualquer rede: a chave tem de ser de uma NF-e (55) da pasta, ainda pendente e nao
+/// substituida, do mesmo emitente e do mesmo ambiente da configuracao. O vinculo so' e' gravado quando o EPEC fica na pasta
+/// (registrado, ou sem resposta e pendente); EPEC recusado nao deixa vinculo.
+///
+/// # Errors
+///
+/// Os de [`epec`] e [`Erro::Recusa`] para a `substitui` que nao serve.
+pub async fn epec_substituindo<T: Transporte>(
+    ctx: &Contexto<'_, T>,
+    pedido: Value,
+    estrito: bool,
+    substitui: Option<&str>,
+) -> Result<EpecRegistrado, Erro> {
+    let substituida = substitui
+        .map(|c| conferir_a_substituida(ctx, &chave_limpa(c)))
+        .transpose()?;
     let (p, assinada, registro) = preparar_e_gravar(ctx, pedido, estrito, true)?;
     let notas = ctx.pasta()?;
     let ver = concat!("rustnf ", env!("CARGO_PKG_VERSION"));
@@ -242,26 +304,103 @@ pub async fn epec<T: Transporte>(
             | DesfechoEvento::PrazoVencido { .. }
     ) {
         notas.descartar_pendente(&registro.chave)?;
-        return Ok(Registrado {
-            chave: registro.chave,
-            resultado: r,
-            guardado: false,
-            situacao: None,
-            avisos: montagem::avisos(&p.nota),
+        return Ok(EpecRegistrado {
+            registrado: Registrado {
+                chave: registro.chave,
+                resultado: r,
+                guardado: false,
+                situacao: None,
+                avisos: montagem::avisos(&p.nota),
+            },
+            substitui: String::new(),
         });
     }
     let (guardado, situacao) = guardar(ctx, &registro.chave, &r)?;
-    Ok(Registrado {
-        chave: registro.chave,
-        resultado: r,
-        guardado,
-        situacao,
-        avisos: montagem::avisos(&p.nota),
+    let mut ligada = String::new();
+    if let (Some(pendente), Some(Situacao::Epec | Situacao::Pendente)) = (substituida, situacao) {
+        notas.vincular_substituicao(&pendente.chave, &registro.chave)?;
+        ligada = pendente.chave;
+    }
+    Ok(EpecRegistrado {
+        registrado: Registrado {
+            chave: registro.chave,
+            resultado: r,
+            guardado,
+            situacao,
+            avisos: montagem::avisos(&p.nota),
+        },
+        substitui: ligada,
     })
 }
 
+/// Tira do pedido o campo `substitui` (a chave da NF-e pendente que o EPEC substitui) e o devolve: ele nao e' campo do
+/// leiaute, entao o pedido que o leva nao passaria na conferencia estrita. E' o que o HTTP e o MCP usam para receber a
+/// substituicao dentro do corpo do pedido do EPEC.
+///
+/// # Errors
+///
+/// [`Erro::Entrada`] se `substitui` nao e' um texto com a chave.
+pub fn separar_substitui(pedido: &mut Value) -> Result<Option<String>, Erro> {
+    let Some(raiz) = pedido.as_object_mut() else {
+        return Ok(None);
+    };
+    match raiz.remove("substitui") {
+        None | Some(Value::Null) => Ok(None),
+        Some(Value::String(c)) if !chave_limpa(&c).is_empty() => Ok(Some(c)),
+        Some(_) => Err(Erro::Entrada(
+            "substitui: informe a chave de acesso (44 digitos) da NF-e pendente que o EPEC substitui".into(),
+        )),
+    }
+}
+
+/// A NF-e que o EPEC substitui, conferida contra a pasta e a configuracao: recusa em palavras, sem rede.
+fn conferir_a_substituida<T: Transporte>(
+    ctx: &Contexto<'_, T>,
+    chave: &str,
+) -> Result<Registro, Erro> {
+    let recusa = |m: String| Erro::recusa("substitui", m);
+    let notas = ctx.pasta()?;
+    let nota = match notas.registro(chave) {
+        Ok(r) => r,
+        Err(_) => {
+            return Err(recusa(format!(
+                "a chave {chave} nao e' de uma NF-e (55) desta pasta de notas: so' se substitui nota pendente que esta nela"
+            )))
+        }
+    };
+    if nota.situacao != Situacao::Pendente {
+        return Err(recusa(format!(
+            "so' se substitui NF-e pendente (sem resposta da SEFAZ), e esta esta {}",
+            nota.situacao.texto()
+        )));
+    }
+    if !nota.substituida_por.is_empty() {
+        return Err(recusa(format!(
+            "esta NF-e ja foi substituida pelo EPEC {}: retome os pendentes para saber o que fazer com ela",
+            nota.substituida_por
+        )));
+    }
+    let e = &ctx.config.emitente;
+    let documento = if e.cnpj.is_empty() { &e.cpf } else { &e.cnpj };
+    let esperado = format!("{documento:0>14}");
+    if !chave_dfe::decompor(chave, true).is_ok_and(|c| c.emitente == esperado) {
+        return Err(recusa(
+            "esta NF-e e' de outro emitente que o da configuracao".into(),
+        ));
+    }
+    if nota.ambiente != ctx.config.nfe.ambiente {
+        return Err(recusa(format!(
+            "esta NF-e e' de {} e a configuracao esta em {}",
+            nota.ambiente, ctx.config.nfe.ambiente
+        )));
+    }
+    Ok(nota)
+}
+
 /// Inutiliza uma faixa de numeracao da serie (`serie` vazia = a de `[nfe].serie`) do emitente da configuracao. A faixa
-/// que tem nota da pasta e' recusada antes da rede (a SEFAZ a recusaria com 241).
+/// que tem nota da pasta e' recusada antes da rede (a SEFAZ a recusaria com 241). A unica excecao e' a NF-e pendente
+/// substituida por um EPEC que a SEFAZ confirmou nao ter (a retomada anotou o `cStat` 217): a norma manda inutilizar o
+/// numero dela (MOC 7.00, Anexo III, item 2.3.3), e ela sai da pasta junto com a faixa, com a NF-e assinada guardada.
 ///
 /// # Errors
 ///
@@ -310,6 +449,7 @@ pub async fn inutilizar<T: Transporte>(
         ano: Some(ano),
     };
     let r = ctx.cliente.inutilizar(ctx.certificado, &faixa).await?;
+    let mut substituidas = Vec::new();
     let guardada = match (ctx.notas, &r.desfecho, r.proc_inut.as_deref()) {
         (
             Some(notas),
@@ -326,7 +466,7 @@ pub async fn inutilizar<T: Transporte>(
                 protocolo: protocolo.clone(),
                 situacao: Situacao::Inutilizada,
             };
-            notas.guardar_inutilizacao(&f, proc)?;
+            substituidas = notas.guardar_inutilizacao(&f, proc)?;
             true
         }
         _ => false,
@@ -334,5 +474,6 @@ pub async fn inutilizar<T: Transporte>(
     Ok(Inutilizada {
         resultado: r,
         guardada,
+        substituidas,
     })
 }

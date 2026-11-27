@@ -2,6 +2,19 @@
 
 ## Próxima versão
 
+* **O EPEC no lugar de uma NF-e que ficou sem resposta**, na aplicação, na linha de comando (`rustnf nfe epec --substitui
+  <chave>`), na API (`substitui` no corpo de `POST /nfe/epec`) e no MCP (`registrar_epec`). Antes de escrever, li o item 2.3.3 do
+  Manual de Contingência da NF-e (MOC 7.00, Anexo III) e o 3.3.1 da Visão Geral: a nota pendente de retorno recebe **nova
+  numeração** para sair em contingência, então o EPEC continua com o próximo número livre (o código de antes já estava certo) e o
+  que faltava era ligar as duas notas. A nota sem resposta passa a ter `substituida_por` no índice (e o EPEC, `substitui`;
+  índice antigo, sem os campos, lê igual) e **a retomada só a consulta, nunca a reenvia**; confirmei no `limbo.rs` da biblioteca
+  que só reenvia quando recebe a NF-e assinada. Quando a SEFAZ responde, a retomada diz o que a norma manda: se **autorizou**, a
+  venda já está no EPEC e a nota se **cancela** (o `cancelar` de sempre); se **não tem** a nota (217), o número se **inutiliza**,
+  e só esse caso, com o 217 anotado no índice, entra numa faixa de `inutilizar` (qualquer outra pendente continua recusada). A
+  nota inutilizada sai da pasta com a faixa e a NF-e assinada dela fica guardada em `nfe/inutilizacao/<ano>/`. A chave do
+  `--substitui` é conferida antes de qualquer rede (da pasta, pendente, do mesmo emitente e ambiente, ainda não substituída) e o
+  EPEC recusado não deixa vínculo. `pendentes` e a retomada trazem `substituida_por` e `a_fazer` (`consultar`, `cancelar` ou
+  `inutilizar`). A janela continua sem oferecer o EPEC com nota sem resposta: fica para a próxima entrega.
 * Montagem da NF-e e da NFC-e: emitente de **GO ou RJ** com CST 20, 30, 40, 41, 50, 70 ou 90 sem o valor e o motivo do
   ICMS desonerado é recusado antes de assinar, com a rejeição 934 (regra N12-90 da NT 2019.001 v1.70, que as duas UF
   aplicam pelo quadro 3.6.1). Ficam fora a devolução, a nota de ajuste e o CST 90 sem redução de base. As demais UF não

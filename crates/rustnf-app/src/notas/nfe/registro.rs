@@ -103,6 +103,13 @@ pub struct Registro {
     /// corrigida; vazio = nada recusado.
     #[serde(skip_serializing_if = "String::is_empty")]
     pub recusa: String,
+    /// Na NF-e pendente: a chave do EPEC que registrou a MESMA operacao (a nota ficou sem resposta e a venda saiu em
+    /// contingencia). Vazio = nao foi substituida.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub substituida_por: String,
+    /// No EPEC: a chave da NF-e pendente que ele substitui. Vazio = nao substitui nenhuma.
+    #[serde(skip_serializing_if = "String::is_empty")]
+    pub substitui: String,
 }
 
 fn is_false(b: &bool) -> bool {
@@ -131,6 +138,8 @@ impl Default for Registro {
             offline: false,
             prazo: None,
             recusa: String::new(),
+            substituida_por: String::new(),
+            substitui: String::new(),
         }
     }
 }
@@ -165,6 +174,33 @@ impl Registro {
             destinatario_documento: documento,
             destinatario_nome: nome,
             ..Self::default()
+        }
+    }
+
+    /// A SEFAZ confirmou, na ultima consulta, que nao tem esta nota (`cStat` 217, MOC 7.00, Anexo I, "NF-e nao consta na base
+    /// de dados da SEFAZ").
+    pub const CSTAT_NAO_CONSTA: &'static str = "217";
+
+    /// A nota e' uma pendente cuja venda ja saiu em EPEC e que a SEFAZ nao tem: o numero dela se inutiliza (MOC 7.00,
+    /// Anexo III, Manual de Contingencia, item 2.3.3). Qualquer outra pendente pode ter sido autorizada e NAO se inutiliza.
+    #[must_use]
+    pub fn inutilizavel_por_substituicao(&self) -> bool {
+        self.situacao == Situacao::Pendente
+            && !self.substituida_por.is_empty()
+            && self.cstat == Self::CSTAT_NAO_CONSTA
+    }
+
+    /// O que falta fazer com a nota que um EPEC substituiu: `consultar` (a retomada ainda nao confirmou o que a SEFAZ fez com
+    /// ela), `inutilizar` (a SEFAZ confirmou que nao a tem) ou `cancelar` (a SEFAZ a autorizou e ela segue autorizada). Vazio
+    /// nas demais notas.
+    #[must_use]
+    pub fn a_fazer(&self) -> &'static str {
+        match self.situacao {
+            _ if self.substituida_por.is_empty() => "",
+            Situacao::Autorizada => "cancelar",
+            Situacao::Pendente if self.inutilizavel_por_substituicao() => "inutilizar",
+            Situacao::Pendente => "consultar",
+            _ => "",
         }
     }
 

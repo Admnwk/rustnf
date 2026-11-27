@@ -85,14 +85,14 @@ pub(super) const FERRAMENTAS: [Ferramenta; 15] = [
     Ferramenta {
         nome: "registrar_epec",
         titulo: "Registrar a NF-e em contingencia EPEC",
-        descricao: "Emite a NF-e em contingencia EPEC: assina, registra o evento na SEFAZ e guarda a nota para a transmissao posterior (retomar_pendentes_nfe). Operacao com efeito fiscal.",
+        descricao: "Emite a NF-e em contingencia EPEC: assina, registra o evento na SEFAZ e guarda a nota para a transmissao posterior (retomar_pendentes_nfe). Se a venda ja tinha uma NF-e sem resposta da SEFAZ, informe a chave dela em `substitui`: o EPEC sai com numero novo e a nota sem resposta passa a ser so' consultada (a retomada diz se cancela ou inutiliza). Operacao com efeito fiscal.",
         emissao: true,
-        schema: schemas::pedido,
+        schema: schemas::pedido_epec,
     },
     Ferramenta {
         nome: "retomar_pendentes_nfe",
         titulo: "Retomar as NF-e pendentes",
-        descricao: "Consulta a SEFAZ pela MESMA chave de cada nota que ficou sem resultado (e transmite as de EPEC); nunca gera outra nota no lugar. Operacao com efeito fiscal.",
+        descricao: "Consulta a SEFAZ pela MESMA chave de cada nota que ficou sem resultado (e transmite as de EPEC); nunca gera outra nota no lugar. A nota que um EPEC substituiu so' e' consultada, nunca reenviada, e volta com `a_fazer`: cancelar (a SEFAZ a autorizou) ou inutilizar (a SEFAZ nao a tem). Operacao com efeito fiscal.",
         emissao: true,
         schema: schemas::sem_argumentos,
     },

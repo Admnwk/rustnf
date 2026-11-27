@@ -86,6 +86,18 @@ pub fn pedido() -> Value {
     })
 }
 
+/// Schema de `registrar_epec`: o pedido da NF-e e, se a venda ja tinha uma nota sem resposta da SEFAZ, `substitui`.
+#[must_use]
+pub fn pedido_epec() -> Value {
+    let mut s = pedido();
+    s["properties"]["substitui"] = texto(
+        "Chave de acesso (44 digitos) da NF-e que ficou SEM RESPOSTA da SEFAZ e cuja venda este EPEC registra. O EPEC sai com \
+         o proximo numero livre (Manual de Contingencia da NF-e, item 2.3.3) e a nota sem resposta passa a ser so' consultada \
+         pela retomada: se a SEFAZ a autorizou, cancele-a; se nao a tem, inutilize o numero dela. Sem o campo, e' um EPEC comum.",
+    );
+    s
+}
+
 /// Schema de `gerar_danfe`.
 #[must_use]
 pub fn danfe() -> Value {

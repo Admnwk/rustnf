@@ -9,6 +9,7 @@
 //! <pasta>/nfe/<AAAA>/<MM>/<chave>-NFe.xml                      a NF-e assinada, gravada ANTES de ir a rede (pendente)
 //! <pasta>/nfe/<AAAA>/<MM>/<chave>-<tipo>-<seq>-procEventoNFe.xml   cada evento registrado (cancelamento, carta, EPEC)
 //! <pasta>/nfe/inutilizacao/<AAAA>/<serie>-<inicio>-<fim>-procInutNFe.xml   cada faixa inutilizada
+//! <pasta>/nfe/inutilizacao/<AAAA>/<serie>-<numero>-<chave>-NFe.xml         a NF-e assinada da substituida inutilizada
 //! <pasta>/nfe/indice.json                                      uma linha por nota e por faixa inutilizada
 //! <pasta>/nfe/estado.json                                      o ultimo numero consumido em cada serie
 //! <pasta>/nfe/recebidas/...                                    os documentos RECEBIDOS (distribuicao de DF-e), em [`recebidas`]
@@ -355,7 +356,7 @@ impl NotasNfe {
         let mut v: Vec<(u64, Ocupante)> = indice
             .notas
             .iter()
-            .filter(|r| r.situacao.consome_numero())
+            .filter(|r| r.situacao.consome_numero() && !r.inutilizavel_por_substituicao())
             .filter_map(|r| {
                 numero_da_serie(r, &serie)
                     .filter(|n| (inicio..=fim).contains(n))
@@ -603,6 +604,44 @@ impl NotasNfe {
         })
     }
 
+    /// Liga a NF-e pendente ao EPEC que registrou a mesma operacao: a pendente passa a ser a SUBSTITUIDA (a retomada deixa de
+    /// reenvia-la) e o EPEC guarda de quem e' o substituto. Grava primeiro a pendente, que e' a que impede o reenvio.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroNotas::NaoEncontrada`] se uma das duas nao esta na pasta, [`ErroNotas::NumeroNfeOcupado`] se a pendente nao e'
+    /// mais pendente ou ja foi substituida, e os de gravacao.
+    pub fn vincular_substituicao(&self, pendente: &str, epec: &str) -> Result<(), ErroNotas> {
+        let (pendente, epec) = (
+            self.chave(pendente)?.to_string(),
+            self.chave(epec)?.to_string(),
+        );
+        self.registro(&epec)?;
+        self.alterar(&pendente, |r, _| {
+            if r.situacao != Situacao::Pendente || !r.substituida_por.is_empty() {
+                return Err(ErroNotas::NumeroNfeOcupado);
+            }
+            r.substituida_por.clone_from(&epec);
+            Ok(())
+        })?;
+        self.alterar(&epec, |r, _| {
+            r.substitui.clone_from(&pendente);
+            Ok(())
+        })
+    }
+
+    /// Anota o `cStat` da ultima consulta da nota (vazio limpa): e' o que mostra que a SEFAZ nao tem a substituida.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroNotas::NaoEncontrada`] e os de gravacao.
+    pub fn anotar_consulta(&self, chave: &str, cstat: &str) -> Result<(), ErroNotas> {
+        self.alterar(chave, |r, _| {
+            r.cstat = cstat.to_string();
+            Ok(())
+        })
+    }
+
     /// Anota o que a SEFAZ recusou na transmissao da NFC-e off-line (vazio limpa a anotacao). A nota segue pendente.
     ///
     /// # Errors
@@ -652,17 +691,20 @@ impl NotasNfe {
         })
     }
 
-    /// Guarda a faixa inutilizada (`ProcInutNFe`) e consome os numeros dela.
+    /// Guarda a faixa inutilizada (`ProcInutNFe`) e consome os numeros dela. A unica nota que pode estar na faixa e' a
+    /// pendente substituida por um EPEC que a SEFAZ nao tem ([`Registro::inutilizavel_por_substituicao`]): ela sai do
+    /// indice (o numero passa a ser o da faixa) e a NF-e assinada dela fica guardada ao lado da faixa, nunca apagada.
+    /// Devolve as chaves das notas que sairam assim.
     ///
     /// # Errors
     ///
-    /// [`ErroNotas::NumeroNfeOcupado`] se algum numero da faixa e' de uma nota; [`ErroNotas::SerieInvalida`],
+    /// [`ErroNotas::NumeroNfeOcupado`] se algum numero da faixa e' de outra nota; [`ErroNotas::SerieInvalida`],
     /// [`ErroNotas::NumeroInvalido`] e os de gravacao.
     pub fn guardar_inutilizacao(
         &self,
         faixa: &Inutilizacao,
         proc_inut: &str,
-    ) -> Result<(), ErroNotas> {
+    ) -> Result<Vec<String>, ErroNotas> {
         let serie = serie_nfe(&faixa.serie)?;
         if faixa.inicio == 0 || faixa.fim < faixa.inicio || faixa.fim > NUMERO_MAXIMO {
             return Err(ErroNotas::NumeroInvalido);
@@ -677,21 +719,51 @@ impl NotasNfe {
         ));
         let _trava = Trava::obter(&self.pasta)?;
         let mut indice = self.indice()?;
-        let nota_na_faixa = indice.notas.iter().any(|r| {
+        let na_faixa = |r: &Registro| {
             numero_da_serie(r, &serie).is_some_and(|n| (faixa.inicio..=faixa.fim).contains(&n))
-        });
-        if nota_na_faixa {
+        };
+        // so' a pendente substituida que a SEFAZ nao tem pode estar na faixa: ela sai da pasta com o numero inutilizado
+        if indice
+            .notas
+            .iter()
+            .any(|r| na_faixa(r) && !r.inutilizavel_por_substituicao())
+        {
             return Err(ErroNotas::NumeroNfeOcupado);
         }
+        let saem: Vec<Registro> = indice
+            .notas
+            .iter()
+            .filter(|r| na_faixa(r))
+            .cloned()
+            .collect();
+        let mut originais = Vec::new();
+        for r in &saem {
+            let original = self.caminho_da_assinada(r)?;
+            if let Ok(xml) = std::fs::read(&original) {
+                // o XML assinado fica guardado ao lado da faixa, fora das pastas por mes que o indice refaz
+                let guardado = self.pasta.join(INUTILIZACAO).join(ano).join(format!(
+                    "{serie}-{}-{}-NFe.xml",
+                    r.numero_inteiro(),
+                    self.chave(&r.chave)?
+                ));
+                atomico::gravar(&guardado, &xml).map_err(|_| ErroNotas::Gravacao)?;
+                originais.push(original);
+            }
+        }
         atomico::gravar(&caminho, proc_inut.as_bytes()).map_err(|_| ErroNotas::Gravacao)?;
+        indice.notas.retain(|r| !na_faixa(r));
         indice.inutilizacoes.retain(|i| i.id != faixa.id);
         indice.inutilizacoes.push(Inutilizacao {
             situacao: Situacao::Inutilizada,
-            serie,
+            serie: serie.clone(),
             ..faixa.clone()
         });
         self.gravar_indice(indice)?;
-        self.consumir_sob_trava(&faixa.serie, faixa.fim)
+        for original in originais {
+            let _ = std::fs::remove_file(original);
+        }
+        self.consumir_sob_trava(&faixa.serie, faixa.fim)?;
+        Ok(saem.into_iter().map(|r| r.chave).collect())
     }
 
     fn consumir_sob_trava(&self, serie: &str, numero: u64) -> Result<(), ErroNotas> {

@@ -205,16 +205,19 @@ impl ServidorNfe {
             .map_err(|_| Erro::Interno)?
     }
 
-    /// Emite a NF-e (ou, com `epec`, a registra em contingencia EPEC).
+    /// Emite a NF-e (ou, com `epec`, a registra em contingencia EPEC). No EPEC o pedido pode trazer `substitui`, a chave da
+    /// NF-e pendente cuja venda ele registra.
     ///
     /// # Errors
     ///
-    /// Os de [`nfe::emitir`] e [`nfe::epec`].
+    /// Os de [`nfe::emitir`] e [`nfe::epec_substituindo`].
     pub async fn emitir(&self, pedido: Value, estrito: bool, epec: bool) -> Result<Saida, Erro> {
         let ctx = self.contexto()?;
         let _vez = self.fila.lock().await;
         if epec {
-            let r = nfe::epec(&ctx, pedido, estrito).await?;
+            let mut pedido = pedido;
+            let substitui = nfe::separar_substitui(&mut pedido)?;
+            let r = nfe::epec_substituindo(&ctx, pedido, estrito, substitui.as_deref()).await?;
             return Ok(Saida {
                 corpo: r.para_json(),
                 erro: r.erro(),
@@ -312,7 +315,7 @@ impl ServidorNfe {
                     .into(),
             )
         })?;
-        Ok(json!({"notas": serde_json::to_value(notas.a_resolver()?)?}))
+        Ok(json!({"notas": nfe::pendentes_json(&notas.a_resolver()?)?}))
     }
 
     /// Retoma as notas pendentes: consulta a SEFAZ pela MESMA chave, nunca gera outra nota.

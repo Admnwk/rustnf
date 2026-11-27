@@ -378,6 +378,76 @@ async fn consultar_cancelar_corrigir_inutilizar_status_epec_e_retomar() {
 }
 
 #[tokio::test]
+async fn registrar_epec_com_substitui_declara_o_campo_e_liga_a_nota_sem_resposta() {
+    let p = Pasta::nova();
+    let (app, falso, notas) = app_nfe(
+        &p,
+        vec![
+            ("NFeAutorizacao4", perdida()),
+            ("NFeConsultaProtocolo4", perdida()),
+        ],
+    );
+    // o schema da ferramenta declara `substitui`, com a descricao; as outras ferramentas do pedido nao
+    let a = auth();
+    let (_, _, corpo) = enviar(
+        &app,
+        requisicao_mcp("tools/list", json!({}), &[("authorization", a.as_str())]),
+    )
+    .await;
+    let v = json_do_corpo(&corpo);
+    let ferramenta = |nome: &str| {
+        v["result"]["tools"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|t| t["name"] == nome)
+            .unwrap()
+            .clone()
+    };
+    let d = ferramenta("registrar_epec")["inputSchema"]["properties"]["substitui"]["description"]
+        .as_str()
+        .unwrap()
+        .to_string();
+    assert!(d.contains("SEM RESPOSTA") && d.contains("inutilize"), "{d}");
+    assert!(ferramenta("emitir_nfe")["inputSchema"]["properties"]["substitui"].is_null());
+
+    let r = chamar(&app, "emitir_nfe", pedido_nfe()).await;
+    assert_eq!(r["isError"], true, "{r}");
+    let pendente = r["structuredContent"]["chave"]
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    let mut epec = pedido_nfe();
+    epec["x_just"] = json!("Sem acesso a SEFAZ por queda do link de internet");
+    epec["substitui"] = json!("123");
+    let r = chamar(&app, "registrar_epec", epec.clone()).await;
+    assert_eq!(r["isError"], true, "{r}");
+    assert!(
+        r["content"][0]["text"]
+            .as_str()
+            .unwrap()
+            .contains("substitui"),
+        "{r}"
+    );
+    assert_eq!(falso.restantes(), 0, "nada foi enviado");
+
+    falso.empilhar(
+        "NFeRecepcaoEvento4",
+        evento(
+            "136",
+            "Evento registrado e vinculado a NF-e",
+            "135260000000070",
+        ),
+    );
+    epec["substitui"] = json!(pendente);
+    let r = chamar(&app, "registrar_epec", epec).await;
+    assert_eq!(r["isError"], false, "{r}");
+    assert_eq!(r["structuredContent"]["substitui"], pendente.as_str());
+    assert_eq!(notas.registro(&pendente).unwrap().substituida_por.len(), 44);
+}
+
+#[tokio::test]
 async fn retomar_pendentes_fecha_a_mesma_chave() {
     let p = Pasta::nova();
     let (app, falso, notas) = app_nfe(
