@@ -29,54 +29,11 @@ impl DialogoNfe {
     // ---------------------------------------------------------------- desenho
 
     pub(super) fn selo(&self) -> AnyElement {
-        let ambiente = ambiente_da_nfe(&self.config.nfe);
-        let cores = ambiente.cores();
-        let demonstracao = self.servicos.demonstracao_nfe();
-        let pedido = self.operacao.pedido();
-        v_flex()
-            .gap_2()
-            .child(
-                h_flex().gap_2().items_center().child(
-                    div()
-                        .id("nfe-selo-do-dialogo")
-                        .px_3()
-                        .py_1()
-                        .rounded_full()
-                        .text_sm()
-                        .font_semibold()
-                        .bg(rgb(cores.fundo))
-                        .text_color(rgb(cores.texto))
-                        .child(selo_do_ambiente_da_nfe(ambiente)),
-                ),
-            )
-            .when(demonstracao, |d| {
-                d.child(
-                    div()
-                        .id("nfe-aviso-de-demonstracao")
-                        .px_3()
-                        .py_1()
-                        .rounded_md()
-                        .text_sm()
-                        .font_semibold()
-                        .bg(rgb(CORES_DA_DEMONSTRACAO.fundo))
-                        .text_color(rgb(CORES_DA_DEMONSTRACAO.texto))
-                        .child(SELO_DA_DEMONSTRACAO),
-                )
-            })
-            .when_some(pedido, |d, p| {
-                d.child(div().text_sm().child(p.efeito())).when(
-                    ambiente == Ambiente::Restrita,
-                    |d| {
-                        d.child(
-                            div()
-                                .text_sm()
-                                .font_semibold()
-                                .child("Homologação: ambiente de testes, sem efeito fiscal."),
-                        )
-                    },
-                )
-            })
-            .into_any_element()
+        selo_do_dialogo(
+            ambiente_da_nfe(&self.config.nfe),
+            self.servicos.demonstracao_nfe(),
+            self.operacao.pedido().map(PedidoNfe::efeito),
+        )
     }
 
     pub(super) fn resumo(&self, cx: &App) -> Option<AnyElement> {
@@ -487,4 +444,56 @@ impl DialogoNfe {
             (Etapa::Enviando, op) => op.pedido().map_or("Enviando...", PedidoNfe::enviando),
         }
     }
+}
+
+/// O alto de um dialogo de pedido fiscal: o ambiente em destaque, o aviso de demonstracao e, se houver, o efeito do pedido
+/// (com a lembranca de que homologacao nao tem efeito fiscal). O da NF-e e o das NF-e recebidas.
+pub(in crate::telas) fn selo_do_dialogo(
+    ambiente: Ambiente,
+    demonstracao: bool,
+    efeito: Option<&'static str>,
+) -> AnyElement {
+    let cores = ambiente.cores();
+    v_flex()
+        .gap_2()
+        .child(
+            h_flex().gap_2().items_center().child(
+                div()
+                    .id("nfe-selo-do-dialogo")
+                    .px_3()
+                    .py_1()
+                    .rounded_full()
+                    .text_sm()
+                    .font_semibold()
+                    .bg(rgb(cores.fundo))
+                    .text_color(rgb(cores.texto))
+                    .child(selo_do_ambiente_da_nfe(ambiente)),
+            ),
+        )
+        .when(demonstracao, |d| {
+            d.child(
+                div()
+                    .id("nfe-aviso-de-demonstracao")
+                    .px_3()
+                    .py_1()
+                    .rounded_md()
+                    .text_sm()
+                    .font_semibold()
+                    .bg(rgb(CORES_DA_DEMONSTRACAO.fundo))
+                    .text_color(rgb(CORES_DA_DEMONSTRACAO.texto))
+                    .child(SELO_DA_DEMONSTRACAO),
+            )
+        })
+        .when_some(efeito, |d, e| {
+            d.child(div().text_sm().child(e))
+                .when(ambiente == Ambiente::Restrita, |d| {
+                    d.child(
+                        div()
+                            .text_sm()
+                            .font_semibold()
+                            .child("Homologação: ambiente de testes, sem efeito fiscal."),
+                    )
+                })
+        })
+        .into_any_element()
 }

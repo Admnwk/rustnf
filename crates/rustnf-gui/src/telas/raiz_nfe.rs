@@ -16,6 +16,8 @@ use gpui_kit::component::WindowExt as _;
 use gpui_kit::{AppContext as _, Context, Entity, IntoElement, ScrollHandle, SharedString, Window};
 use rustnf_app::config::Config;
 
+use super::nfe::TelaNfe;
+use super::nfe_dialogo::DialogoNfe;
 use super::nfe_nova::{EventoNovaNfe, ModeloRecebido, NovaNfe};
 use super::produtos::TelaProdutos;
 use super::raiz::{Raiz, Secao, Tela};
@@ -25,7 +27,7 @@ use crate::modelo::nfe_config::{ambiente_da_nfe, CampoNfe, ResultadoSefaz};
 use crate::modelo::nfe_lista::EscolhaDeNotas;
 use crate::modelo::nfe_modelo::ModeloNfe;
 use crate::modelo::passos::configuracao_completa;
-use crate::servicos::{testar_sefaz, ErroTela, Servicos};
+use crate::servicos::{testar_sefaz, Documento, ErroTela, Servicos};
 
 /// Os campos de texto da secao NF-e.
 pub(super) struct EntradasNfe {
@@ -73,6 +75,19 @@ impl Raiz {
         self.entradas_nfe.por_campo.get(&c)
     }
 
+    /// A lista de NF-e da tela Notas e o dialogo dela.
+    pub(super) fn criar_lista_nfe(
+        servicos: &Arc<Servicos>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> (Entity<DialogoNfe>, Entity<TelaNfe>) {
+        let s = Arc::clone(servicos);
+        let dialogo = cx.new(|cx| DialogoNfe::new(s, Documento::Nfe, window, cx));
+        let (s, d) = (Arc::clone(servicos), dialogo.clone());
+        let lista = cx.new(|cx| TelaNfe::new(s, d, Documento::Nfe, window, cx));
+        (dialogo, lista)
+    }
+
     /// As telas da emissao da NF-e: a Nova NF-e (assistente) e o cadastro de produtos.
     pub(super) fn criar_telas_nfe(
         servicos: &Arc<Servicos>,
@@ -112,19 +127,19 @@ impl Raiz {
 
     /// A rolagem da Nova nota aberta: a do assistente da NF-e ou a da NFS-e, pela escolha lembrada.
     pub(super) fn rolagem_da_nova_nota(&self, cx: &gpui_kit::App) -> ScrollHandle {
-        match self.escolha_notas {
+        match self.escolha_notas.da_emissao() {
             EscolhaDeNotas::Nfe => self.nova_nfe.read(cx).rolagem.clone(),
             EscolhaDeNotas::Nfce => self.caixa.read(cx).rolagem.clone(),
-            EscolhaDeNotas::Nfse => self.nova.read(cx).rolagem.clone(),
+            _ => self.nova.read(cx).rolagem.clone(),
         }
     }
 
     /// Redesenha a Nova nota aberta (depois de rolar pelo teclado).
     pub(super) fn notificar_nova_nota(&mut self, cx: &mut Context<Self>) {
-        match self.escolha_notas {
+        match self.escolha_notas.da_emissao() {
             EscolhaDeNotas::Nfe => self.nova_nfe.update(cx, |_, cx| cx.notify()),
             EscolhaDeNotas::Nfce => self.caixa.update(cx, |_, cx| cx.notify()),
-            EscolhaDeNotas::Nfse => self.nova.update(cx, |_, cx| cx.notify()),
+            _ => self.nova.update(cx, |_, cx| cx.notify()),
         }
     }
 
@@ -247,6 +262,7 @@ impl Raiz {
                 match escolha {
                     EscolhaDeNotas::Nfe => this.nfe.update(cx, |n, cx| n.recarregar(cx)),
                     EscolhaDeNotas::Nfce => this.nfce.update(cx, |n, cx| n.recarregar(cx)),
+                    EscolhaDeNotas::Recebidas => this.recarregar_recebidas(cx),
                     EscolhaDeNotas::Nfse => {}
                 }
                 cx.notify();
@@ -271,28 +287,39 @@ impl Raiz {
         match escolha {
             EscolhaDeNotas::Nfe => self.nfe.update(cx, |n, cx| n.recarregar(cx)),
             EscolhaDeNotas::Nfce => self.nfce.update(cx, |n, cx| n.recarregar(cx)),
+            EscolhaDeNotas::Recebidas => self.recarregar_recebidas(cx),
             EscolhaDeNotas::Nfse => self.notas.update(cx, |n, cx| n.recarregar(cx)),
         }
         cx.notify();
     }
 
-    /// O seletor "NFS-e | NF-e | NFC-e" do alto da tela Notas.
-    pub(super) fn seletor_de_notas(&self, cx: &mut Context<Self>) -> impl IntoElement {
-        let atual = self.escolha_notas;
+    /// O seletor "NFS-e | NF-e | NFC-e | Recebidas" do alto da tela Notas. Na Nova nota (`de_emissao`) so' ha o que se
+    /// emite: as recebidas nao se emitem.
+    pub(super) fn seletor_de_notas(
+        &self,
+        de_emissao: bool,
+        cx: &mut Context<Self>,
+    ) -> impl IntoElement {
+        let opcoes: &'static [EscolhaDeNotas] = if de_emissao {
+            &EscolhaDeNotas::DE_EMISSAO
+        } else {
+            &EscolhaDeNotas::TODAS
+        };
+        let atual = if de_emissao {
+            self.escolha_notas.da_emissao()
+        } else {
+            self.escolha_notas
+        };
         ToggleGroup::new("notas-documento")
             .segmented()
             .single()
-            .children(EscolhaDeNotas::TODAS.iter().enumerate().map(|(i, e)| {
+            .children(opcoes.iter().enumerate().map(|(i, e)| {
                 Toggle::new(SharedString::from(format!("notas-documento-{i}")))
                     .label(e.rotulo())
                     .checked(atual == *e)
             }))
-            .on_click(cx.listener(|this, estados: &Vec<bool>, _, cx| {
-                if let Some(e) = estados
-                    .iter()
-                    .position(|e| *e)
-                    .and_then(|i| EscolhaDeNotas::TODAS.get(i))
-                {
+            .on_click(cx.listener(move |this, estados: &Vec<bool>, _, cx| {
+                if let Some(e) = estados.iter().position(|e| *e).and_then(|i| opcoes.get(i)) {
                     this.escolher_notas(*e, cx);
                 }
             }))
@@ -300,7 +327,12 @@ impl Raiz {
 
     /// A tela Notas esta mostrando a NF-e.
     pub(super) fn mostrando_a_nfe(&self) -> bool {
-        self.tela == Tela::Notas && self.escolha_notas == EscolhaDeNotas::Nfe
+        // as recebidas tem o ambiente da NF-e (`[nfe].ambiente`): a distribuicao e a resposta usam esse
+        self.tela == Tela::Notas
+            && matches!(
+                self.escolha_notas,
+                EscolhaDeNotas::Nfe | EscolhaDeNotas::Recebidas
+            )
     }
 
     /// "Usar como modelo" na NF-e: le a nota guardada fora da tela e leva os dados para a Nova NF-e. Com algo digitado,

@@ -9,7 +9,7 @@ use rustnf::nfe::sefaz::evento::TipoManifestacao;
 
 use super::testes_comuns::*;
 use super::testes_dfe::*;
-use super::{baixar, listar, manifestar, sincronizar, FiltroRecebidas};
+use super::{baixar, danfe_da_recebida, fila, listar, manifestar, sincronizar, FiltroRecebidas};
 use crate::erro::Erro;
 use crate::notas::nfe::SituacaoRecebida;
 
@@ -459,4 +459,60 @@ async fn evento_completo_de_terceiro_e_guardado_ao_lado_da_nota() {
         SituacaoRecebida::Completa,
         "carta de correcao nao muda a situacao"
     );
+}
+
+#[tokio::test]
+async fn a_fila_diz_a_ultima_busca_e_a_espera_so_enquanto_vale() {
+    let c = base();
+    let antes = fila(&c.notas, &c.config, agora()).unwrap();
+    assert!(
+        antes.ultima_busca.is_none(),
+        "quem nunca buscou nao tem ultima busca"
+    );
+    assert!(antes.espera.is_none());
+    let notas = notas_de_teste(&c);
+    c.roteiro(vec![(DIST, lote(1, 1, &[doc_resumo(1, &notas[0].1)]))]);
+    sincronizar(&c.ctx(), None).await.unwrap();
+    let f = fila(&c.notas, &c.config, agora()).unwrap();
+    assert!(f.ultima_busca.is_some());
+    let ate = f.espera.expect("a fila em dia manda esperar").ate;
+    // a espera some quando o instante passa
+    let depois = fila(&c.notas, &c.config, ate + chrono::Duration::seconds(1)).unwrap();
+    assert!(depois.espera.is_none());
+    assert_eq!(depois.ilegiveis, 0);
+}
+
+#[tokio::test]
+async fn o_danfe_da_recebida_so_sai_da_nota_completa_e_fica_ao_lado_dela() {
+    let c = base();
+    let notas = notas_de_teste(&c);
+    c.roteiro(vec![(
+        DIST,
+        lote(
+            2,
+            2,
+            &[doc_resumo(1, &notas[0].1), doc_completa(2, &notas[1].0)],
+        ),
+    )]);
+    sincronizar(&c.ctx(), None).await.unwrap();
+    // o resumo nao e' uma nota: sem DANFE
+    let e = danfe_da_recebida(&c.notas, &c.config, &notas[0].1).unwrap_err();
+    assert!(matches!(e, Erro::Recusa { .. }), "{e:?}");
+    let pasta = c.notas.recebidas().unwrap();
+    assert!(pasta.guardar_danfe(&notas[0].1, b"%PDF").is_err());
+    // a completa gera o PDF e o guarda ao lado do procNFe
+    let pdf = danfe_da_recebida(&c.notas, &c.config, &notas[1].1).unwrap();
+    assert!(pdf.starts_with(b"%PDF"));
+    let onde = pasta.guardar_danfe(&notas[1].1, &pdf).unwrap();
+    assert_eq!(
+        onde,
+        pasta
+            .caminho_do_proc(&notas[1].1)
+            .unwrap()
+            .with_extension("pdf")
+    );
+    assert_eq!(std::fs::read(&onde).unwrap(), pdf);
+    // fora da pasta
+    let outra = "1".repeat(44);
+    assert!(danfe_da_recebida(&c.notas, &c.config, &outra).is_err());
 }

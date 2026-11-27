@@ -16,7 +16,7 @@
 use chrono::{DateTime, FixedOffset, Utc};
 use rustnf::nfe::sefaz::dfe::SituacaoResumo;
 use rustnf::nfe::sefaz::dfe::{
-    Conteudo, Cursor, DesfechoDfe, Doc, ErroSincronizacao, ResultadoDfe,
+    Conteudo, Cursor, DesfechoDfe, Doc, ErroSincronizacao, Espera, ResultadoDfe,
 };
 use rustnf::nfe::sefaz::evento::{Manifestacao, TipoManifestacao};
 use rustnf::nfe::sefaz::{ResultadoEvento, Transporte};
@@ -643,4 +643,65 @@ pub fn cursor(notas: &NotasNfe, config: &crate::config::Config) -> Result<Value,
     v["ambiente"] = json!(ambiente);
     v["documento"] = json!(documento);
     Ok(v)
+}
+
+/// O que a pasta sabe da fila de distribuicao do interessado: quando se buscou pela ultima vez e se o Ambiente Nacional
+/// mandou esperar. So' le a pasta; a biblioteca e' quem decide se uma busca pode sair ([`sincronizar`] nunca a contorna).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Fila {
+    /// A hora em que o cursor foi gravado pela ultima vez; `None` se este interessado nunca buscou.
+    pub ultima_busca: Option<DateTime<Utc>>,
+    /// A espera em vigor (so' se ainda nao passou).
+    pub espera: Option<Espera>,
+    /// Quantos documentos nao abriram e serao relidos.
+    pub ilegiveis: usize,
+}
+
+/// A fila de distribuicao, como esta na pasta. So' le a pasta: nao usa a rede.
+///
+/// # Errors
+///
+/// [`Erro::Uso`] sem `[emitente].cnpj`; [`Erro::Entrada`] se o cursor esta ilegivel.
+pub fn fila(
+    notas: &NotasNfe,
+    config: &crate::config::Config,
+    agora: DateTime<Utc>,
+) -> Result<Fila, Erro> {
+    let documento = interessado(config)?;
+    let (ambiente, _) = ambiente_do(config);
+    let pasta = notas.recebidas()?;
+    let cursor = pasta.cursor(ambiente, &documento)?;
+    Ok(Fila {
+        ultima_busca: pasta.cursor_gravado_em(ambiente, &documento),
+        espera: cursor.espera.filter(|e| e.ate > agora),
+        ilegiveis: pasta.ilegiveis()?.len(),
+    })
+}
+
+/// O DANFE em PDF de uma NF-e recebida, a partir da nota COMPLETA guardada na pasta (com a marca de cancelada quando o
+/// emitente a cancelou). O resumo nao e' uma nota: sem ela completa nao ha DANFE.
+///
+/// # Errors
+///
+/// [`Erro::NaoEncontrada`] se a nota nao esta na pasta; [`Erro::Recusa`] se so' ha o resumo; os de [`danfe_do_xml`].
+pub fn danfe_da_recebida(
+    notas: &NotasNfe,
+    config: &crate::config::Config,
+    chave: &str,
+) -> Result<Vec<u8>, Erro> {
+    let chave = chave_limpa(chave);
+    let pasta = notas.recebidas()?;
+    let r = pasta.registro(&chave)?;
+    if !r.completa {
+        return Err(Erro::recusa(
+            "chNFe",
+            "so' ha o resumo desta nota: baixe a nota completa para ter o DANFE",
+        ));
+    }
+    super::danfe_do_xml(
+        &pasta.ler_xml(&r.chave)?,
+        config.nfe.canhoto,
+        r.cancelada,
+        None,
+    )
 }

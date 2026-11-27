@@ -30,7 +30,7 @@ pub(crate) const CON: &str = "NFeConsultaProtocolo4";
 pub(crate) const STA: &str = "NFeStatusServico4";
 const EVT: &str = "NFeRecepcaoEvento4";
 const INU: &str = "NFeInutilizacao4";
-const SERVICOS: [&str; 5] = [AUT, CON, STA, EVT, INU];
+const SERVICOS: [&str; 6] = [AUT, CON, STA, EVT, INU, crate::demonstracao_recebidas::DIST];
 
 /// O que a SEFAZ de mentira responde aos pedidos de evento e de inutilizacao.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -94,6 +94,7 @@ pub(crate) enum Passo {
 
 struct Estado {
     nfce: crate::demonstracao_nfce::EstadoNfce,
+    recebidas: crate::demonstracao_recebidas::EstadoRecebidas,
     roteiro: RoteiroNfe,
     emissao: RoteiroEmissao,
     autorizacoes: u32,
@@ -120,6 +121,7 @@ impl TransporteNfeDemonstracao {
         Self {
             estado: Arc::new(Mutex::new(Estado {
                 nfce: crate::demonstracao_nfce::EstadoNfce::default(),
+                recebidas: crate::demonstracao_recebidas::EstadoRecebidas::default(),
                 roteiro,
                 emissao: RoteiroEmissao::Autorizada,
                 autorizacoes: 0,
@@ -147,6 +149,21 @@ impl TransporteNfeDemonstracao {
     pub fn com_nfce(self, roteiro: crate::demonstracao_nfce::RoteiroNfce) -> Self {
         self.com(|e| e.nfce.roteiro = roteiro);
         self
+    }
+
+    /// Troca o roteiro da distribuicao das notas recebidas (buscar notas novas).
+    #[must_use]
+    pub fn com_recebidas(self, roteiro: crate::demonstracao_recebidas::RoteiroRecebidas) -> Self {
+        self.com(|e| e.recebidas.roteiro = roteiro);
+        self
+    }
+
+    /// O estado da distribuicao de mentira (a semeadura poe nele os documentos).
+    pub(crate) fn recebidas<R>(
+        &self,
+        f: impl FnOnce(&mut crate::demonstracao_recebidas::EstadoRecebidas) -> R,
+    ) -> Option<R> {
+        self.com(|e| f(&mut e.recebidas))
     }
 
     /// O passo do transporte durante a semeadura da pasta de ensaio da NFC-e.
@@ -318,6 +335,7 @@ impl Estado {
             s.roteiro == RoteiroNfe::SemResposta && !semeando && s.primeira_vez(chave)
         };
         match servico {
+            crate::demonstracao_recebidas::DIST => self.recebidas.responder(corpo, semeando),
             STA => {
                 let (cstat, motivo) = if self.emissao == RoteiroEmissao::Fora && !semeando {
                     ("109", "Servico Paralisado sem Previsao")
@@ -418,6 +436,25 @@ impl Estado {
                 let seq = entre(corpo, "<nSeqEvento>", "</nSeqEvento>");
                 if perde_a_primeira(self, &format!("evento-{tipo}-{chave}-{seq}")) {
                     return Err(FalhaRede::Tempo);
+                }
+                if tipo.starts_with("2102") {
+                    // a resposta do destinatario (manifestacao): o roteiro `rejeitado` a recusa com 596
+                    if self.roteiro == RoteiroNfe::Rejeitado && !semeando {
+                        return resposta_do_evento(
+                            corpo,
+                            "596",
+                            "Rejeicao de demonstracao: o Ambiente Nacional recusou a resposta",
+                            "",
+                        );
+                    }
+                    let nprot = self.novo_protocolo();
+                    self.recebidas.manifestou(chave, tipo);
+                    return resposta_do_evento(
+                        corpo,
+                        "135",
+                        "Evento registrado e vinculado a NF-e",
+                        &nprot,
+                    );
                 }
                 if self.roteiro == RoteiroNfe::Rejeitado && !semeando {
                     return if tipo == "110111" {
@@ -542,7 +579,7 @@ pub struct NotasDoEnsaio {
     pub pendente: String,
 }
 
-fn pedido(dias_atras: i64, destinatario: (&str, &str), item: (&str, u32, u32)) -> Value {
+pub(crate) fn pedido(dias_atras: i64, destinatario: (&str, &str), item: (&str, u32, u32)) -> Value {
     let agora = Utc::now() - chrono::Duration::days(dias_atras) - chrono::Duration::minutes(3);
     let quando = match FixedOffset::west_opt(3 * 3600) {
         Some(brasilia) => agora

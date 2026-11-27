@@ -7,7 +7,7 @@
 //! no DANFE. Sem janela.
 
 use rustnf::nfe::{self, Decimal, Item, Nfe};
-use rustnf_app::notas::nfe::{Registro, Situacao};
+use rustnf_app::notas::nfe::{Recebida, Registro, Situacao};
 
 use super::chave;
 use super::mascara::{decimal_para_dinheiro, formatar_documento, iso_para_data_br};
@@ -156,6 +156,59 @@ fn do_registro(r: &Registro) -> DetalheNfe {
     }
 }
 
+/// O numero (sem zeros a esquerda) e a serie, tirados da chave de acesso: posicoes 22 a 24 (serie) e 25 a 33 (numero) do
+/// leiaute da chave de 44 posicoes. Chave que nao tem o tamanho certo volta vazia.
+fn numero_e_serie_da_chave(chave: &str) -> (String, String) {
+    let (Some(serie), Some(numero)) = (chave.get(22..25), chave.get(25..34)) else {
+        return (String::new(), String::new());
+    };
+    let sem_zeros = |t: &str| {
+        let r = t.trim_start_matches('0');
+        if r.is_empty() { "0" } else { r }.to_string()
+    };
+    (sem_zeros(numero), sem_zeros(serie))
+}
+
+/// Os dados que so' o indice das RECEBIDAS sabe: o fornecedor e o que o resumo traz. O destinatario e' a propria empresa
+/// (so' a nota completa o diz).
+fn da_recebida(r: &Recebida) -> DetalheNfe {
+    let (numero, serie) = numero_e_serie_da_chave(&r.chave);
+    DetalheNfe {
+        chave: r.chave.clone(),
+        chave_em_grupos: em_grupos_de_4(&r.chave),
+        numero: format!("nº {numero}, série {serie}"),
+        situacao: if r.cancelada {
+            Situacao::Cancelada
+        } else if r.denegada {
+            Situacao::Denegada
+        } else {
+            Situacao::Autorizada
+        },
+        emissao: data_e_hora(&r.emissao),
+        natureza: String::new(),
+        emitente: r.emitente_nome.clone(),
+        emitente_documento: formatar_documento(&r.emitente),
+        destinatario: "-".into(),
+        destinatario_documento: String::new(),
+        itens: Vec::new(),
+        itens_a_mais: 0,
+        total_produtos: String::new(),
+        desconto: String::new(),
+        frete: String::new(),
+        total: decimal_para_dinheiro(&r.valor),
+        protocolo: r.protocolo.clone(),
+        protocolo_do_cancelamento: r
+            .eventos
+            .iter()
+            .find(|e| e.tipo == CANCELAMENTO)
+            .map(|e| e.protocolo.clone())
+            .unwrap_or_default(),
+        correcoes: r.eventos.iter().filter(|e| e.tipo == CARTA).count(),
+        producao: r.ambiente == "producao",
+        aviso: None,
+    }
+}
+
 fn em_grupos_de_4(chave: &str) -> String {
     chave
         .as_bytes()
@@ -170,6 +223,20 @@ impl LeituraNfe {
     #[must_use]
     pub fn do_xml(xml: Option<&str>, r: &Registro) -> Self {
         let base = do_registro(r);
+        let Some(xml) = xml else {
+            return Self::Ausente(Box::new(base));
+        };
+        let Ok(n) = nfe::ler(xml.as_bytes()) else {
+            return Self::Ilegivel(Box::new(base));
+        };
+        Self::Lida(Box::new(completar(base, &n)))
+    }
+
+    /// A leitura do `xml` guardado de uma NF-e RECEBIDA (`None`: so' o resumo, ou a nota nao esta na pasta) para a linha do
+    /// indice dela. O detalhe e' o mesmo da NF-e emitida: so' a base muda (o fornecedor vem do indice).
+    #[must_use]
+    pub fn da_recebida(xml: Option<&str>, r: &Recebida) -> Self {
+        let base = da_recebida(r);
         let Some(xml) = xml else {
             return Self::Ausente(Box::new(base));
         };
@@ -264,6 +331,33 @@ mod testes {
         assert_eq!(d.correcoes, 1);
         assert!(d.producao);
         assert!(d.chave_em_grupos.starts_with("3526 1011 2223"));
+    }
+
+    #[test]
+    fn a_recebida_so_com_o_resumo_mostra_o_fornecedor_e_o_numero_da_chave() {
+        let r = Recebida {
+            chave: "35261011222333000181550090000001231000000011".into(),
+            emitente: "11222333000181".into(),
+            emitente_nome: "FORNECEDOR DE ENSAIO LTDA".into(),
+            emissao: "2026-10-03T09:00:00-03:00".into(),
+            valor: "31.80".into(),
+            ambiente: "homologacao".into(),
+            cancelada: true,
+            ..Recebida::default()
+        };
+        let l = LeituraNfe::da_recebida(None, &r);
+        assert!(matches!(l, LeituraNfe::Ausente(_)));
+        let d = l.detalhe();
+        assert_eq!(d.numero, "nº 123, série 9");
+        assert_eq!(d.emitente, "FORNECEDOR DE ENSAIO LTDA");
+        assert_eq!(d.emitente_documento, "11.222.333/0001-81");
+        assert_eq!(d.total, "31,80");
+        assert_eq!(d.situacao, Situacao::Cancelada);
+        assert!(!d.producao);
+        assert!(matches!(
+            LeituraNfe::da_recebida(Some("<nao e nota"), &r),
+            LeituraNfe::Ilegivel(_)
+        ));
     }
 
     #[test]

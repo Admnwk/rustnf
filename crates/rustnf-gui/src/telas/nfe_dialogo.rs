@@ -172,6 +172,8 @@ pub(super) struct DialogoNfe {
 
 mod desenho;
 
+pub(super) use desenho::selo_do_dialogo;
+
 impl EventEmitter<EventoDialogoNfe> for DialogoNfe {}
 
 impl DialogoNfe {

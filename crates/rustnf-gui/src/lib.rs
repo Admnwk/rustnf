@@ -23,6 +23,8 @@ pub mod demonstracao_eventos;
 pub mod demonstracao_nfce;
 #[cfg(any(test, feature = "demonstracao"))]
 pub mod demonstracao_nfe;
+#[cfg(any(test, feature = "demonstracao"))]
+pub mod demonstracao_recebidas;
 pub mod fora;
 pub mod modelo;
 pub mod servicos;

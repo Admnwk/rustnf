@@ -31,6 +31,7 @@ use super::previa::{EventoPrevia, TelaPrevia};
 use super::produtos::TelaProdutos;
 use super::raiz_nfce::EntradasNfce;
 use super::raiz_nfe::EntradasNfe;
+use super::raiz_recebidas::TelasRecebidas;
 use crate::modelo::ambiente::{Ambiente, Tema};
 use crate::modelo::campo::{Campo, CampoAliquota, Erros};
 use crate::modelo::certificado::{EstadoCertificado, InfoCertificado};
@@ -193,6 +194,7 @@ pub struct Raiz {
     pub(super) previa: Entity<TelaPrevia>,
     pub(super) nfe: Entity<TelaNfe>,
     pub(super) dialogo_nfe: Entity<DialogoNfe>,
+    pub(super) recebidas: TelasRecebidas,
     pub(super) caixa: Entity<TelaCaixa>,
     pub(super) nfce: Entity<TelaNfe>,
     pub(super) dialogo_nfce: Entity<DialogoNfe>,
@@ -296,22 +298,8 @@ impl Raiz {
             let servicos = Arc::clone(&servicos);
             cx.new(|cx| TelaPrevia::new(servicos, window, cx))
         };
-        let dialogo_nfe = {
-            let servicos = Arc::clone(&servicos);
-            cx.new(|cx| DialogoNfe::new(servicos, crate::servicos::Documento::Nfe, window, cx))
-        };
-        let nfe = {
-            let (servicos, dialogo) = (Arc::clone(&servicos), dialogo_nfe.clone());
-            cx.new(|cx| {
-                TelaNfe::new(
-                    servicos,
-                    dialogo,
-                    crate::servicos::Documento::Nfe,
-                    window,
-                    cx,
-                )
-            })
-        };
+        let (dialogo_nfe, nfe) = Self::criar_lista_nfe(&servicos, window, cx);
+        let recebidas = Self::criar_telas_recebidas(&servicos, window, cx);
         let entradas_nfe = Self::criar_entradas_nfe(window, cx);
         let telas_nfce = Self::criar_telas_nfce(&servicos, window, cx);
         let entradas_nfce = Self::criar_entradas_nfce(window, cx);
@@ -326,6 +314,7 @@ impl Raiz {
             previa,
             nfe,
             dialogo_nfe,
+            recebidas,
             caixa: telas_nfce.caixa,
             nfce: telas_nfce.lista,
             dialogo_nfce: telas_nfce.dialogo,
@@ -363,6 +352,7 @@ impl Raiz {
         raiz.ligar_tudo(window, cx);
         raiz.ligar_nfe(window, cx);
         raiz.ligar_nfce(window, cx);
+        raiz.ligar_recebidas(window, cx);
         raiz.carregar(window, cx);
         raiz
     }
@@ -625,6 +615,7 @@ impl Raiz {
         let e = efetiva.clone();
         self.nfe.update(cx, |n, cx| n.definir_config(e, pronta, cx));
         self.entregar_config_nfce(&efetiva, pronta, window, cx);
+        self.entregar_config_recebidas(&efetiva, pronta, cx);
         self.carregar_escolha(efetiva.clone(), cx);
         self.atualizar_proximo_dps(efetiva, window, cx);
     }
