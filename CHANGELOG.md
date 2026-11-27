@@ -11,7 +11,7 @@
 * Interface de desktop, polimento das NF-e recebidas: a nota autorizada sem resposta mostra **"Falta responder"** (antes
   "Sem resposta sua"), e a cancelada pelo emitente ou de uso negado não mostra selo de resposta, porque não há o que responder;
   o texto de **"Nada novo"** deixa de repetir o título e diz quando a próxima busca pode ser feita; ao marcar **"Comprei, mas a venda não
-  aconteceu"** o campo da justificativa recebe o foco e aparece, mesmo em janela baixa; o botão de produção (e o de cancelar em
+  aconteceu"** o campo da justificativa recebe o foco e a janela rola até ele; o botão de produção (e o de cancelar em
   produção) passa de 4,5:1 de contraste nos temas claro e escuro; e o Tab no Início leva a vista até o botão focado.
 
 ## 0.6.0 - 2026-11-27
