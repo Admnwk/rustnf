@@ -325,7 +325,7 @@ impl FormularioNfe {
         if !d.uf.is_empty() && uf_valida(&d.uf).map(|s| s != d.uf).unwrap_or(true) {
             erro(
                 CampoNfe::Uf,
-                "Use a sigla de uma UF que emite NF-e, em maiúscula (por exemplo, SP).",
+                "Use a sigla de uma UF, em maiúscula (ex.: SP).",
             );
         }
         if !d.ie.is_empty() && !(2..=14).contains(&d.ie.len()) {

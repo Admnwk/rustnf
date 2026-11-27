@@ -281,7 +281,7 @@ impl TelaNfe {
         };
         let segunda =
             if l.aviso.is_some() && l.situacao != rustnf_app::notas::nfe::Situacao::Denegada {
-                Some(("Sem resposta da SEFAZ: use Retomar".to_string(), aviso))
+                Some(("Sem resposta: use Retomar".to_string(), aviso))
             } else {
                 Some((l.documento.clone(), muted))
             };

@@ -258,7 +258,7 @@ impl Raiz {
                 div()
                     .id("nfe-certificado-compartilhado")
                     .text_sm()
-                    .child(format!("Certificado em uso: {cert}")),
+                    .child(cert),
             )
             .child(
                 h_flex().child(

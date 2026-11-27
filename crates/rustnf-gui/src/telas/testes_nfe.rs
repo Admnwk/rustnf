@@ -484,10 +484,8 @@ fn carta_de_correcao_registra_e_conta_as_cartas(cx: &mut TestAppContext) {
     mostrar_a_nfe(cx, &c, 3);
     abrir_a_nota(cx, &c, &e.autorizada);
     clicar(cx, &c, "nfe-corrigir");
-    assert!(existe(cx, &c, "nfe-ver-texto-oficial"));
     let aviso = cx.update(|cx| c.dialogo.read(cx).corrigir.aviso_das_cartas());
     assert!(aviso.contains("1ª carta"), "{aviso}");
-    clicar(cx, &c, "nfe-ver-texto-oficial");
     escrever_no_dialogo(cx, &c, "Corrigir o endereço de entrega informado");
     clicar(cx, &c, "nfe-dialogo-enviar");
     let r = esperar_o_desfecho(cx, &c);

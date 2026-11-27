@@ -183,6 +183,12 @@ impl DialogoNfe {
                         faixa(Gravidade::Neutro, self.corrigir.aviso_das_cartas(), cx)
                             .id("nfe-aviso-das-cartas"),
                     )
+                    // o campo vem logo depois do aviso: o que a carta nao corrige e o texto oficial ficam abaixo
+                    .child(self.campo_de_texto(
+                        "Correção",
+                        self.corrigir.erro(self.tocada),
+                        self.corrigir.contador(),
+                    ))
                     .child(self.o_que_a_carta_nao_corrige(cx))
                     .child(
                         h_flex().child(
@@ -211,12 +217,7 @@ impl DialogoNfe {
                                 .text_color(cx.theme().muted_foreground)
                                 .child(TEXTO_OFICIAL_DA_CARTA),
                         )
-                    })
-                    .child(self.campo_de_texto(
-                        "Correção",
-                        self.corrigir.erro(self.tocada),
-                        self.corrigir.contador(),
-                    ));
+                    });
             }
             Operacao::Inutilizar => {
                 c = c
