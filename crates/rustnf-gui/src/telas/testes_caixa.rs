@@ -325,6 +325,8 @@ fn sem_resposta_se_retoma_com_a_mesma_chave_sem_nota_gemea(cx: &mut TestAppConte
         (chave.as_str(), Situacao::Pendente)
     );
     // o caminho e' o Retomar, nunca emitir de novo
+    // a retomada so' mexe em nota com mais de 1 segundo de vida (politica da biblioteca)
+    std::thread::sleep(Duration::from_millis(2100));
     clicar(cx, &c, "caixa-retomar");
     clicar(cx, &c, "nfe-dialogo-enviar");
     esperar_o_dialogo(cx, &c);

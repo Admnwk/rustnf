@@ -194,6 +194,9 @@ impl Cupom {
 
     /// Lanca um pagamento. Valor zero lanca o que falta (a pessoa so' escolhe a forma). Devolve `false` se nao ha o que lancar.
     pub fn pagar(&mut self, forma: Pagamento, centavos: i64) -> bool {
+        if self.totais().total <= 0 {
+            return false;
+        }
         let valor = if centavos > 0 { centavos } else { self.falta() };
         if valor <= 0 {
             return false;

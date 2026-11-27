@@ -520,7 +520,7 @@ impl TelaCaixa {
                     .child(t),
             );
         } else if let Some(m) = por_que {
-            if !self.cupom.vazio() || self.por_que_o_caixa_trava() {
+            if !self.cupom.vazio() && !self.por_que_o_caixa_trava() {
                 col = col.child(
                     div()
                         .id("caixa-motivo")

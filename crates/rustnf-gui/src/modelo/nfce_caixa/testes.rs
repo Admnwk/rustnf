@@ -216,3 +216,10 @@ fn quantidade_soma_na_mesma_linha_muda_e_tira() {
     assert_eq!(quantidade_digitada("0"), None);
     assert_eq!(quantidade_digitada("abc"), None);
 }
+
+#[test]
+fn nao_se_lanca_pagamento_em_cupom_sem_total() {
+    let mut c = Cupom::default();
+    assert!(!c.pagar(Pagamento::Dinheiro, 5000));
+    assert_eq!((c.pago(), c.troco()), (0, 0));
+}
