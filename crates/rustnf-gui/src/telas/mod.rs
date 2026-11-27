@@ -6,10 +6,12 @@
 //! em `modelo`; o que mexe em disco, cofre e rede mora em `servicos`.
 
 mod assistente;
+mod caixa;
 mod campos;
 mod cancelar;
 mod conferir;
 mod configuracoes;
+mod configuracoes_nfce;
 mod configuracoes_nfe;
 mod consultar;
 mod detalhe;
@@ -28,12 +30,16 @@ mod previa;
 mod produtos;
 mod raiz;
 mod raiz_certificado;
+mod raiz_nfce;
 mod raiz_nfe;
 mod raiz_numero;
+mod raiz_primeiro_uso;
 mod rolagem;
 mod senha;
 #[cfg(test)]
 mod testes;
+#[cfg(test)]
+mod testes_caixa;
 #[cfg(test)]
 mod testes_eventos;
 #[cfg(test)]
@@ -68,6 +74,7 @@ actions!(
         IrParaConsultar,
         IrParaPrevia,
         EmitirNota,
+        EmitirCupom,
         RolarAcima,
         RolarAbaixo,
         PaginaAcima,
@@ -105,6 +112,7 @@ pub fn registrar_atalhos(cx: &mut App) {
         KeyBinding::new("ctrl-k", IrParaConsultar, Some("Raiz")),
         KeyBinding::new("ctrl-p", IrParaPrevia, Some("Raiz")),
         KeyBinding::new("ctrl-enter", EmitirNota, Some("NovaNota")),
+        KeyBinding::new("ctrl-enter", EmitirCupom, Some("Caixa")),
         KeyBinding::new("up", RolarAcima, Some("Raiz")),
         KeyBinding::new("down", RolarAbaixo, Some("Raiz")),
         KeyBinding::new("pageup", PaginaAcima, Some("Raiz")),

@@ -36,6 +36,7 @@ use crate::modelo::rascunho;
 
 mod emitir;
 mod eventos;
+mod nfce;
 mod nfe;
 mod nfe_emissao;
 mod notas;
@@ -45,10 +46,12 @@ pub use eventos::{
     conferir_evento, conferir_lote, consultar_dps_nota, historico_da_nota, registrar_evento_nota,
     ParadaDoLote,
 };
+pub use nfce::{emitir_nfce, Documento};
 pub use nfe::{
-    cancelar_nfe, conferir_cancelamento_nfe, consultar_nfe, corrigir_nfe, inutilizar_nfe,
-    retomar_nfe, testar_sefaz, ClienteNfe, FabricaNfe, FabricaNfeReal, FabricaNfeSemTransporte,
-    NotaNfeDaPasta, TransporteDin,
+    cancelar_doc, cancelar_nfe, conferir_cancelamento_doc, conferir_cancelamento_nfe,
+    consultar_doc, consultar_nfe, corrigir_nfe, inutilizar_nfe, retomar_doc, retomar_nfe,
+    testar_sefaz, ClienteNfe, FabricaNfe, FabricaNfeReal, FabricaNfeSemTransporte, NotaNfeDaPasta,
+    TransporteDin,
 };
 pub use nfe_emissao::{emitir_nfe, epec_nfe};
 pub use notas::{

@@ -169,6 +169,13 @@ impl DialogoNfe {
         );
         match self.operacao {
             Operacao::Cancelar => {
+                if let Some(a) = &self.aviso_de_prazo {
+                    // o prazo nacional so' avisa: quem decide e' a SEFAZ da UF (MOC 7.00, regra 2P12-14)
+                    c = c.child(
+                        faixa(Gravidade::Aviso, format!("Atenção: {a}."), cx)
+                            .id("nfe-aviso-do-prazo"),
+                    );
+                }
                 c = c.child(self.campo_de_texto(
                     "Justificativa",
                     self.cancelar.erro(self.tocada),

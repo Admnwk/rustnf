@@ -23,11 +23,13 @@ pub enum EscolhaDeNotas {
     Nfse,
     /// A NF-e (venda de mercadoria).
     Nfe,
+    /// A NFC-e (o cupom do caixa).
+    Nfce,
 }
 
 impl EscolhaDeNotas {
-    /// As duas escolhas, na ordem da tela.
-    pub const TODAS: [EscolhaDeNotas; 2] = [Self::Nfse, Self::Nfe];
+    /// As escolhas, na ordem da tela.
+    pub const TODAS: [EscolhaDeNotas; 3] = [Self::Nfse, Self::Nfe, Self::Nfce];
 
     /// O rotulo do botao.
     #[must_use]
@@ -35,6 +37,7 @@ impl EscolhaDeNotas {
         match self {
             Self::Nfse => "NFS-e (serviço)",
             Self::Nfe => "NF-e (venda de mercadoria)",
+            Self::Nfce => "NFC-e (cupom do caixa)",
         }
     }
 }
@@ -132,11 +135,26 @@ pub fn rotulo_da_situacao(s: Situacao) -> &'static str {
     }
 }
 
+/// O rotulo da nota da pasta: o da situacao, menos a NFC-e emitida off-line e ainda por transmitir, que nao e' "sem
+/// resposta" (nunca foi enviada). O mesmo na lista e no detalhe.
+#[must_use]
+pub fn rotulo_do_registro(r: &Registro) -> &'static str {
+    if r.offline && r.situacao == Situacao::Pendente {
+        "Sem internet (off-line)"
+    } else {
+        rotulo_da_situacao(r.situacao)
+    }
+}
+
 /// A frase que explica o que aconteceu com a nota quando ela exige uma acao (so' a pendente, em EPEC ou com
 /// recusa na transmissao); `None` nas demais.
 #[must_use]
 pub fn aviso_da_situacao(r: &Registro) -> Option<String> {
     match r.situacao {
+        Situacao::Pendente if r.offline && r.recusa.is_empty() => Some(
+            "A NFC-e foi emitida sem internet (contingência off-line) e ainda não foi transmitida à SEFAZ. O cupom entregue ao cliente vale, mas a nota tem prazo para ser transmitida: use Retomar (ou Fechar o caixa, no Caixa)."
+                .into(),
+        ),
         Situacao::Pendente if !r.recusa.is_empty() => Some(format!(
             "A SEFAZ recusou esta nota na última transmissão ({}). Ela segue pendente até ser corrigida.",
             r.recusa
@@ -180,6 +198,10 @@ pub struct LinhaNfe {
     pub producao: bool,
     /// O que aconteceu com a nota e o que fazer, quando exige acao.
     pub aviso: Option<String>,
+    /// A NFC-e emitida em contingencia off-line, ainda por transmitir.
+    pub offline: bool,
+    /// O rotulo da situacao: o da tabela, ou "Sem internet" para a off-line pendente.
+    pub rotulo: &'static str,
     nome: String,
     numeros: String,
     doc: String,
@@ -209,6 +231,8 @@ impl LinhaNfe {
             situacao: r.situacao,
             producao: r.ambiente == "producao",
             aviso: aviso_da_situacao(r),
+            offline: r.offline && r.situacao == Situacao::Pendente,
+            rotulo: rotulo_do_registro(r),
             nome: sem_acento(&r.destinatario_nome),
             numeros: so_digitos(&r.numero, 9),
             doc: limpar_documento(&r.destinatario_documento),
@@ -363,6 +387,16 @@ impl ListaNfe {
 #[cfg(test)]
 mod testes {
     use super::*;
+
+    #[test]
+    fn a_nfce_off_line_por_transmitir_nao_e_sem_resposta() {
+        let mut r = reg("k", "3", "2026-11-27", "A", "", Situacao::Pendente);
+        assert_eq!(rotulo_do_registro(&r), "Sem resposta");
+        r.offline = true;
+        assert_eq!(rotulo_do_registro(&r), "Sem internet (off-line)");
+        r.situacao = Situacao::Autorizada;
+        assert_eq!(rotulo_do_registro(&r), "Autorizada");
+    }
 
     fn reg(chave: &str, numero: &str, dia: &str, nome: &str, doc: &str, s: Situacao) -> Registro {
         Registro {

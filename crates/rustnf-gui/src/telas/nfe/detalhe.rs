@@ -25,10 +25,10 @@ use crate::modelo::ambiente::Ambiente;
 use crate::modelo::certificado::Gravidade;
 use crate::modelo::nfe_config::selo_do_ambiente_da_nfe;
 use crate::modelo::nfe_detalhe::{DetalheNfe, LeituraNfe};
-use crate::servicos::{Destino, NotaNfeDaPasta};
+use crate::servicos::{Destino, Documento, NotaNfeDaPasta};
 use crate::telas::nfe_dialogo::{AlvoNfe, Operacao};
 use crate::telas::pecas::{
-    cartao, faixa, linha_de_numero, linha_de_resumo, selo_da_situacao_nfe, titulo_do_bloco,
+    cartao, faixa, linha_de_numero, linha_de_resumo, selo_do_registro_nfe, titulo_do_bloco,
     Negrito as _,
 };
 
@@ -65,14 +65,20 @@ impl TelaNfe {
         self.erro = None;
         self.danfe = EstadoDoDanfe::Parado;
         self.chave_copiada = false;
-        let (servicos, config, chave) = (
+        let (servicos, config, chave, documento) = (
             Arc::clone(&self.servicos),
             self.config.clone(),
             chave.to_string(),
+            self.documento,
         );
         cx.spawn(async move |this, cx| {
             let r = cx
-                .background_spawn(async move { servicos.ler_nfe(&config, &chave) })
+                .background_spawn(async move {
+                    match documento {
+                        Documento::Nfe => servicos.ler_nfe(&config, &chave),
+                        Documento::Nfce => servicos.ler_nfce(&config, &chave),
+                    }
+                })
                 .await;
             this.update(cx, |this, cx| {
                 // a pessoa escolheu outra nota enquanto esta era lida
@@ -159,10 +165,19 @@ impl TelaNfe {
         self.erro = None;
         cx.notify();
         let versao = self.versao_do_detalhe;
-        let (servicos, config) = (Arc::clone(&self.servicos), self.config.clone());
+        let (servicos, config, documento) = (
+            Arc::clone(&self.servicos),
+            self.config.clone(),
+            self.documento,
+        );
         cx.spawn(async move |this, cx| {
             let r = cx
-                .background_spawn(async move { servicos.danfe_da_pasta(&config, &chave) })
+                .background_spawn(async move {
+                    match documento {
+                        Documento::Nfe => servicos.danfe_da_pasta(&config, &chave),
+                        Documento::Nfce => servicos.danfce_da_pasta(&config, &chave),
+                    }
+                })
                 .await;
             this.update(cx, |this, cx| {
                 if this.versao_do_detalhe != versao {
@@ -191,10 +206,19 @@ impl TelaNfe {
         };
         let chave = n.registro.chave.clone();
         self.erro = None;
-        let (servicos, config) = (Arc::clone(&self.servicos), self.config.clone());
+        let (servicos, config, documento) = (
+            Arc::clone(&self.servicos),
+            self.config.clone(),
+            self.documento,
+        );
         cx.spawn(async move |this, cx| {
             let r = cx
-                .background_spawn(async move { servicos.caminho_do_xml_nfe(&config, &chave) })
+                .background_spawn(async move {
+                    match documento {
+                        Documento::Nfe => servicos.caminho_do_xml_nfe(&config, &chave),
+                        Documento::Nfce => servicos.caminho_do_xml_nfce(&config, &chave),
+                    }
+                })
                 .await;
             this.update(cx, |this, cx| {
                 match r {
@@ -218,9 +242,12 @@ impl TelaNfe {
             .flex_wrap()
             .child(
                 Button::new("nfe-abrir-danfe")
-                    .label(match (self.danfe, previa) {
-                        (EstadoDoDanfe::Falhou, _) => "Tentar de novo o DANFE",
-                        (_, true) => "Abrir a prévia do DANFE",
+                    .label(match (self.danfe, previa, self.documento) {
+                        (EstadoDoDanfe::Falhou, _, Documento::Nfce) => "Tentar de novo o cupom",
+                        (_, true, Documento::Nfce) => "Abrir a prévia do cupom",
+                        (_, _, Documento::Nfce) => "Abrir o cupom",
+                        (EstadoDoDanfe::Falhou, _, _) => "Tentar de novo o DANFE",
+                        (_, true, _) => "Abrir a prévia do DANFE",
                         _ => "Abrir o DANFE",
                     })
                     .icon(IconName::FileText)
@@ -248,15 +275,18 @@ impl TelaNfe {
                     })),
             )
             .when(s == Situacao::Autorizada, |d| {
-                d.child(
-                    Button::new("nfe-corrigir")
-                        .label("Carta de correção")
-                        .icon(IconName::File)
-                        .outline()
-                        .on_click(cx.listener(|this, _, window, cx| {
-                            this.pedir(Operacao::Corrigir, window, cx);
-                        })),
-                )
+                // a NFC-e nao tem carta de correcao (o evento 110110 e' so' da NF-e)
+                d.when(self.documento == Documento::Nfe, |d| {
+                    d.child(
+                        Button::new("nfe-corrigir")
+                            .label("Carta de correção")
+                            .icon(IconName::File)
+                            .outline()
+                            .on_click(cx.listener(|this, _, window, cx| {
+                                this.pedir(Operacao::Corrigir, window, cx);
+                            })),
+                    )
+                })
                 .child(
                     Button::new("nfe-cancelar")
                         .label("Cancelar a nota")
@@ -268,7 +298,7 @@ impl TelaNfe {
                         })),
                 )
             })
-            .when(!previa, |d| {
+            .when(!previa && self.documento == Documento::Nfe, |d| {
                 d.child(
                     Button::new("nfe-usar-como-modelo")
                         .label("Usar como modelo")
@@ -463,13 +493,12 @@ impl TelaNfe {
                     .gap_3()
                     .items_center()
                     .flex_wrap()
-                    .child(
-                        div()
-                            .text_xl()
-                            .font_semibold()
-                            .child(format!("NF-e {}", d.numero)),
-                    )
-                    .child(selo_da_situacao_nfe(n.registro.situacao, cx).id("nfe-selo-da-situacao"))
+                    .child(div().text_xl().font_semibold().child(format!(
+                        "{} {}",
+                        self.documento.nome(),
+                        d.numero
+                    )))
+                    .child(selo_do_registro_nfe(&n.registro, cx).id("nfe-selo-da-situacao"))
                     .child(
                         div()
                             .id("nfe-selo-do-ambiente")
@@ -507,10 +536,11 @@ impl TelaNfe {
             coluna = coluna.child(s);
         }
         coluna
-            .child(div().text_xs().text_color(muted).child(if cancelada {
-                "Os dados vêm do XML da nota. O DANFE sai com a marca de nota cancelada."
-            } else {
-                "Os dados vêm do XML da nota. O DANFE é gerado por este programa a partir dele."
+            .child(div().text_xs().text_color(muted).child(match (cancelada, self.documento) {
+                (true, Documento::Nfce) => "Os dados vêm do XML da nota. O cupom sai com a marca de nota cancelada. O programa gera o arquivo do cupom; quem imprime é outro programa.",
+                (false, Documento::Nfce) => "Os dados vêm do XML da nota. O cupom (DANFC-e) é gerado por este programa a partir dele; quem imprime é outro programa.",
+                (true, _) => "Os dados vêm do XML da nota. O DANFE sai com a marca de nota cancelada.",
+                (false, _) => "Os dados vêm do XML da nota. O DANFE é gerado por este programa a partir dele.",
             }))
             .into_any_element()
     }

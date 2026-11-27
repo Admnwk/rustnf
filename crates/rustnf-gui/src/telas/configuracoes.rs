@@ -541,6 +541,7 @@ impl Raiz {
             Secao::Sefin => self.secao_sefin(cx),
             Secao::Notas => self.secao_notas(cx),
             Secao::Nfe => self.secao_nfe(cx),
+            Secao::Nfce => self.secao_nfce(cx),
             Secao::Aliquotas => self.secao_aliquotas(cx),
             Secao::Aparencia => self.secao_aparencia(cx),
         };

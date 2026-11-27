@@ -24,10 +24,10 @@ use serde_json::{json, Value};
 use crate::modelo::nfe_produtos::{Cadastro, Produto};
 use crate::servicos::{ClienteNfe, ErroTela, FabricaNfe, TransporteDin};
 
-const NS: &str = "http://www.portalfiscal.inf.br/nfe";
-const AUT: &str = "NFeAutorizacao4";
-const CON: &str = "NFeConsultaProtocolo4";
-const STA: &str = "NFeStatusServico4";
+pub(crate) const NS: &str = "http://www.portalfiscal.inf.br/nfe";
+pub(crate) const AUT: &str = "NFeAutorizacao4";
+pub(crate) const CON: &str = "NFeConsultaProtocolo4";
+pub(crate) const STA: &str = "NFeStatusServico4";
 const EVT: &str = "NFeRecepcaoEvento4";
 const INU: &str = "NFeInutilizacao4";
 const SERVICOS: [&str; 5] = [AUT, CON, STA, EVT, INU];
@@ -83,7 +83,7 @@ pub fn roteiro_nfe_do_nome(nome: &str) -> Option<RoteiroNfe> {
 
 /// O que o transporte faz neste momento.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Passo {
+pub(crate) enum Passo {
     /// A janela esta em uso: vale o roteiro.
     AoVivo,
     /// Semeando a pasta: tudo da certo.
@@ -93,6 +93,7 @@ enum Passo {
 }
 
 struct Estado {
+    nfce: crate::demonstracao_nfce::EstadoNfce,
     roteiro: RoteiroNfe,
     emissao: RoteiroEmissao,
     autorizacoes: u32,
@@ -118,6 +119,7 @@ impl TransporteNfeDemonstracao {
     pub fn novo(roteiro: RoteiroNfe, atraso: Duration) -> Self {
         Self {
             estado: Arc::new(Mutex::new(Estado {
+                nfce: crate::demonstracao_nfce::EstadoNfce::default(),
                 roteiro,
                 emissao: RoteiroEmissao::Autorizada,
                 autorizacoes: 0,
@@ -138,6 +140,33 @@ impl TransporteNfeDemonstracao {
     pub fn com_emissao(self, emissao: RoteiroEmissao) -> Self {
         self.com(|e| e.emissao = emissao);
         self
+    }
+
+    /// Troca o roteiro do envio da NFC-e (a venda pelo caixa).
+    #[must_use]
+    pub fn com_nfce(self, roteiro: crate::demonstracao_nfce::RoteiroNfce) -> Self {
+        self.com(|e| e.nfce.roteiro = roteiro);
+        self
+    }
+
+    /// O passo do transporte durante a semeadura da pasta de ensaio da NFC-e.
+    pub(crate) fn passo_do_ensaio(&self, p: Passo) {
+        self.passo(p);
+    }
+
+    /// A NFC-e de ensaio sem resposta: a consulta dela falha na primeira vez.
+    pub(crate) fn marcar_pendente_nfce(&self, chave: &str) {
+        self.com(|e| {
+            e.nfce.pendentes.insert(chave.to_string());
+        });
+    }
+
+    /// Zera o que se contou semeando.
+    pub(crate) fn zerar_contagens(&self) {
+        self.com(|e| {
+            e.chamadas.clear();
+            e.tentativas.clear();
+        });
     }
 
     /// Os servicos chamados ate agora, na ordem (os testes conferem que nada saiu sem a marcacao).
@@ -169,7 +198,7 @@ impl TransporteNfeDemonstracao {
     }
 }
 
-fn entre<'a>(texto: &'a str, abre: &str, fecha: &str) -> &'a str {
+pub(crate) fn entre<'a>(texto: &'a str, abre: &str, fecha: &str) -> &'a str {
     texto.find(abre).map_or("", |i| {
         let i = i + abre.len();
         texto[i..].find(fecha).map_or("", |f| &texto[i..i + f])
@@ -186,11 +215,11 @@ fn soap(ns_wsdl: &str, ret: &str) -> Vec<u8> {
     .into_bytes()
 }
 
-fn ok(ns_wsdl: &str, ret: &str) -> Result<(u16, Vec<u8>), FalhaRede> {
+pub(crate) fn ok(ns_wsdl: &str, ret: &str) -> Result<(u16, Vec<u8>), FalhaRede> {
     Ok((200, soap(ns_wsdl, ret)))
 }
 
-fn prot(chave: &str, cstat: &str, motivo: &str, nprot: &str) -> String {
+pub(crate) fn prot(chave: &str, cstat: &str, motivo: &str, nprot: &str) -> String {
     format!(
         "<protNFe versao=\"4.00\"><infProt><tpAmb>2</tpAmb><verAplic>DEMO_NFE_1</verAplic>\
          <chNFe>{chave}</chNFe><dhRecbto>2026-10-03T09:00:05-03:00</dhRecbto><nProt>{nprot}</nProt>\
@@ -278,7 +307,12 @@ impl Estado {
         &mut self,
         servico: &'static str,
         corpo: &str,
+        nfce: bool,
     ) -> Result<(u16, Vec<u8>), FalhaRede> {
+        if nfce && matches!(servico, STA | AUT | CON) {
+            let nprot = self.novo_protocolo();
+            return self.nfce.responder(servico, corpo, self.passo, &nprot);
+        }
         let semeando = self.passo != Passo::AoVivo;
         let perde_a_primeira = |s: &mut Self, chave: &str| {
             s.roteiro == RoteiroNfe::SemResposta && !semeando && s.primeira_vez(chave)
@@ -437,7 +471,7 @@ impl Estado {
 impl Transporte for TransporteNfeDemonstracao {
     async fn enviar(
         &self,
-        _url: &str,
+        url: &str,
         corpo: Vec<u8>,
         _content_type: &str,
     ) -> Result<(u16, Vec<u8>), FalhaRede> {
@@ -453,9 +487,13 @@ impl Transporte for TransporteNfeDemonstracao {
         let Some(servico) = servico else {
             return Err(FalhaRede::Tempo);
         };
+        // a NFC-e e' o modelo 65 da chave (posicoes 20 e 21); o status nao leva chave, so' o endereco
+        let nfce = url.to_lowercase().contains("nfce")
+            || entre(&texto, "Id=\"NFe", "\"").get(20..22) == Some("65")
+            || entre(&texto, "<chNFe>", "</chNFe>").get(20..22) == Some("65");
         self.com(|e| {
             e.chamadas.push(servico);
-            e.responder(servico, &texto)
+            e.responder(servico, &texto, nfce)
         })
         .unwrap_or(Err(FalhaRede::Tempo))
     }
@@ -531,7 +569,7 @@ fn pedido(dias_atras: i64, destinatario: (&str, &str), item: (&str, u32, u32)) -
 
 /// Poe na pasta de ensaio um cadastro de produtos (tres, com NCM), se ela ainda nao tem o arquivo. Sem pasta ou com o
 /// arquivo ja la, nao faz nada.
-fn semear_produtos(config: &Config) {
+pub(crate) fn semear_produtos(config: &Config) {
     let pasta = config.notas.pasta.trim();
     if pasta.is_empty() {
         return;

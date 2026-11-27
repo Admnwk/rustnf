@@ -6,7 +6,6 @@
 //! quando a pessoa digita, escolhe, salva ou testa. Tudo que pode demorar roda fora da linha da tela.
 
 use std::collections::BTreeMap;
-use std::path::PathBuf;
 use std::sync::Arc;
 
 use gpui_kit::component::input::{InputEvent, InputState};
@@ -20,6 +19,7 @@ use rustnf_app::config::Config;
 use rustnf_app::notas::Situacao;
 use rustnf_app::segredo::Segredo;
 
+use super::caixa::TelaCaixa;
 use super::cancelar::{Cancelamento, EventoCancelamento};
 use super::consultar::{EventoConsulta, TelaConsultar};
 use super::nfe::TelaNfe;
@@ -29,12 +29,14 @@ use super::nota::{EventoNota, Modelo, NovaNota};
 use super::notas::{EventoNotas, TelaNotas};
 use super::previa::{EventoPrevia, TelaPrevia};
 use super::produtos::TelaProdutos;
+use super::raiz_nfce::EntradasNfce;
 use super::raiz_nfe::EntradasNfe;
 use crate::modelo::ambiente::{Ambiente, Tema};
 use crate::modelo::campo::{Campo, CampoAliquota, Erros};
 use crate::modelo::certificado::{EstadoCertificado, InfoCertificado};
 use crate::modelo::evento::TipoDeEvento;
 use crate::modelo::formulario::{Formulario, OPCOES_APURACAO, OPCOES_REGIME_ESPECIAL};
+use crate::modelo::nfce_config::{EstadoCsc, FormularioNfce};
 use crate::modelo::nfe_config::{FormularioNfe, ResultadoSefaz};
 use crate::modelo::nfe_lista::EscolhaDeNotas;
 use crate::modelo::nota::DadosNota;
@@ -48,6 +50,8 @@ pub enum Tela {
     Inicio,
     /// Montar e emitir uma nota.
     NovaNota,
+    /// O caixa: a venda rapida (NFC-e).
+    Caixa,
     /// A lista das notas da pasta, com o detalhe.
     Notas,
     /// Consultar uma nota pela chave de acesso.
@@ -71,6 +75,8 @@ pub enum Secao {
     Notas,
     /// NF-e (venda de mercadoria).
     Nfe,
+    /// NFC-e (cupom do caixa).
+    Nfce,
     /// Tabela de aliquotas.
     Aliquotas,
     /// Tema.
@@ -79,11 +85,12 @@ pub enum Secao {
 
 impl Secao {
     /// As secoes, na ordem das abas.
-    pub const TODAS: [Secao; 6] = [
+    pub const TODAS: [Secao; 7] = [
         Secao::Emitente,
         Secao::Sefin,
         Secao::Notas,
         Secao::Nfe,
+        Secao::Nfce,
         Secao::Aliquotas,
         Secao::Aparencia,
     ];
@@ -96,6 +103,7 @@ impl Secao {
             Self::Sefin => "Sefin Nacional",
             Self::Notas => "Notas e DANFSe",
             Self::Nfe => "NF-e",
+            Self::Nfce => "NFC-e",
             Self::Aliquotas => "Alíquotas",
             Self::Aparencia => "Aparência",
         }
@@ -129,6 +137,8 @@ pub(super) struct Ocupado {
     pub(super) numero: bool,
     /// Testando a conexao com a SEFAZ (NF-e).
     pub(super) sefaz: bool,
+    /// Guardando ou apagando o CSC do cofre.
+    pub(super) csc: bool,
 }
 
 /// Aviso de pagina (erro que nao e' de campo, ou confirmacao).
@@ -183,7 +193,14 @@ pub struct Raiz {
     pub(super) previa: Entity<TelaPrevia>,
     pub(super) nfe: Entity<TelaNfe>,
     pub(super) dialogo_nfe: Entity<DialogoNfe>,
-    /// A tela Notas mostra a NFS-e ou a NF-e.
+    pub(super) caixa: Entity<TelaCaixa>,
+    pub(super) nfce: Entity<TelaNfe>,
+    pub(super) dialogo_nfce: Entity<DialogoNfe>,
+    pub(super) form_nfce: FormularioNfce,
+    pub(super) entradas_nfce: EntradasNfce,
+    pub(super) csc: EstadoCsc,
+    pub(super) resultado_csc: Option<(bool, String)>,
+    /// A tela Notas mostra a NFS-e, a NF-e ou a NFC-e.
     pub(super) escolha_notas: EscolhaDeNotas,
     pub(super) form_nfe: FormularioNfe,
     pub(super) entradas_nfe: EntradasNfe,
@@ -281,13 +298,23 @@ impl Raiz {
         };
         let dialogo_nfe = {
             let servicos = Arc::clone(&servicos);
-            cx.new(|cx| DialogoNfe::new(servicos, window, cx))
+            cx.new(|cx| DialogoNfe::new(servicos, crate::servicos::Documento::Nfe, window, cx))
         };
         let nfe = {
             let (servicos, dialogo) = (Arc::clone(&servicos), dialogo_nfe.clone());
-            cx.new(|cx| TelaNfe::new(servicos, dialogo, window, cx))
+            cx.new(|cx| {
+                TelaNfe::new(
+                    servicos,
+                    dialogo,
+                    crate::servicos::Documento::Nfe,
+                    window,
+                    cx,
+                )
+            })
         };
         let entradas_nfe = Self::criar_entradas_nfe(window, cx);
+        let telas_nfce = Self::criar_telas_nfce(&servicos, window, cx);
+        let entradas_nfce = Self::criar_entradas_nfce(window, cx);
         let mut raiz = Self {
             servicos,
             nova,
@@ -299,6 +326,13 @@ impl Raiz {
             previa,
             nfe,
             dialogo_nfe,
+            caixa: telas_nfce.caixa,
+            nfce: telas_nfce.lista,
+            dialogo_nfce: telas_nfce.dialogo,
+            form_nfce: FormularioNfce::de_config(&Config::default()),
+            entradas_nfce,
+            csc: EstadoCsc::Verificando,
+            resultado_csc: None,
             escolha_notas: EscolhaDeNotas::default(),
             form_nfe: FormularioNfe::de_config(&Config::default()),
             entradas_nfe,
@@ -328,6 +362,7 @@ impl Raiz {
         };
         raiz.ligar_tudo(window, cx);
         raiz.ligar_nfe(window, cx);
+        raiz.ligar_nfce(window, cx);
         raiz.carregar(window, cx);
         raiz
     }
@@ -549,6 +584,7 @@ impl Raiz {
         });
         self.formulario = Formulario::de_config(&carga.config);
         self.form_nfe = FormularioNfe::de_config(&carga.config);
+        self.form_nfce = FormularioNfce::de_config(&carga.config);
         self.salvo = carga.config;
         self.estado = Estado::Pronto;
         self.passo = pendentes(&self.salvo)
@@ -557,6 +593,7 @@ impl Raiz {
             .unwrap_or(Passo::Emitente);
         self.sincronizar(window, cx);
         self.sincronizar_nfe(window, cx);
+        self.sincronizar_nfce(window, cx);
         self.aplicar_tema(window, cx);
         self.atualizar_certificado(cx);
         self.entregar_config(window, cx);
@@ -587,6 +624,7 @@ impl Raiz {
         self.dialogo_nfe.update(cx, |d, cx| d.definir_config(e, cx));
         let e = efetiva.clone();
         self.nfe.update(cx, |n, cx| n.definir_config(e, pronta, cx));
+        self.entregar_config_nfce(&efetiva, pronta, window, cx);
         self.carregar_escolha(efetiva.clone(), cx);
         self.atualizar_proximo_dps(efetiva, window, cx);
     }
@@ -603,6 +641,7 @@ impl Raiz {
             self.notas.update(cx, |n, cx| n.recarregar(cx));
         }
         self.ao_abrir_tela_nfe(tela, cx);
+        self.ao_abrir_tela_nfce(tela, cx);
         cx.notify();
     }
 
@@ -611,6 +650,7 @@ impl Raiz {
         match self.tela {
             Tela::Inicio | Tela::Configuracoes => Some(self.rolagem.clone()),
             Tela::NovaNota => Some(self.rolagem_da_nova_nota(cx)),
+            Tela::Caixa => Some(self.caixa.read(cx).rolagem.clone()),
             Tela::Consultar => Some(self.consultar.read(cx).rolagem.clone()),
             Tela::Previa => Some(self.previa.read(cx).rolagem.clone()),
             Tela::Notas | Tela::Produtos => None,
@@ -631,6 +671,7 @@ impl Raiz {
         }
         match self.tela {
             Tela::NovaNota => self.notificar_nova_nota(cx),
+            Tela::Caixa => self.caixa.update(cx, |_, cx| cx.notify()),
             Tela::Consultar => self.consultar.update(cx, |_, cx| cx.notify()),
             Tela::Previa => self.previa.update(cx, |_, cx| cx.notify()),
             _ => {}
@@ -902,6 +943,7 @@ impl Raiz {
                     Ok(()) => {
                         this.formulario.marcar_salvo(&config);
                         this.form_nfe.marcar_salvo();
+                        this.form_nfce.marcar_salvo();
                         this.salvo = config;
                         this.aviso = None;
                         window.push_notification(
@@ -936,162 +978,14 @@ impl Raiz {
         }
         self.formulario.descartar();
         self.form_nfe.descartar();
+        self.form_nfce.descartar();
         self.sincronizar(window, cx);
         self.sincronizar_nfe(window, cx);
+        self.sincronizar_nfce(window, cx);
         self.aplicar_tema(window, cx);
         self.aviso = None;
         self.atualizar_certificado(cx);
         window.push_notification(Notification::info("As alterações foram descartadas."), cx);
         cx.notify();
-    }
-
-    // ---------------------------------------------------------------- primeiro uso
-
-    pub(super) fn voltar(&mut self, cx: &mut Context<Self>) {
-        if let Some(anterior) = self.passo.anterior() {
-            self.passo = anterior;
-            self.tentou_continuar = false;
-            self.aviso = None;
-            cx.notify();
-        }
-    }
-
-    /// "Continuar" (ou "Concluir", no ultimo passo): confere o passo e segue.
-    pub(super) fn continuar(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        if self.ocupado.passo {
-            return;
-        }
-        self.tentou_continuar = true;
-        self.aviso = None;
-        if !self.formulario.erros_do_passo(self.passo).vazio() || !self.erros_externos.is_empty() {
-            cx.notify();
-            return;
-        }
-        match self.passo {
-            Passo::Emitente => self.seguir(cx),
-            Passo::Certificado => self.conferir_certificado_do_passo(window, cx),
-            Passo::Notas => self.concluir(window, cx),
-        }
-    }
-
-    fn seguir(&mut self, cx: &mut Context<Self>) {
-        if let Some(proximo) = self.passo.proximo() {
-            self.passo = proximo;
-            self.tentou_continuar = false;
-        }
-        cx.notify();
-    }
-
-    /// Passo 2: a senha tem de abrir o certificado; e vai para o cofre.
-    fn conferir_certificado_do_passo(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let config = self.formulario.para_config();
-        let digitada = self.senha_digitada(cx);
-        let servicos = Arc::clone(&self.servicos);
-        self.ocupado.passo = true;
-        self.erros_externos.remove(&Campo::Pfx);
-        self.erros_externos.remove(&Campo::Senha);
-        cx.notify();
-        cx.spawn_in(window, async move |this, cx| {
-            let r: Result<Option<ErroTela>, ErroTela> = cx
-                .background_spawn(async move {
-                    match digitada {
-                        Some(senha) => {
-                            // so' guarda a senha que de fato abre o certificado
-                            servicos.testar_certificado(&config, Some(&senha))?;
-                            if servicos.cofre_desligado() {
-                                Ok(Some(ErroTela::Cofre(
-                                    rustnf_app::cofre::ErroCofre::Desligado,
-                                )))
-                            } else {
-                                servicos.guardar_senha(&config, &senha)?;
-                                Ok(None)
-                            }
-                        }
-                        None => {
-                            servicos.testar_certificado(&config, None)?;
-                            Ok(None)
-                        }
-                    }
-                })
-                .await;
-            this.update_in(cx, |this, window, cx| {
-                this.ocupado.passo = false;
-                match r {
-                    Ok(aviso) => {
-                        if let Some(a) = aviso {
-                            window.push_notification(
-                                Notification::warning(a.texto()).title("Senha não guardada"),
-                                cx,
-                            );
-                        }
-                        this.entradas
-                            .senha
-                            .update(cx, |e, cx| e.set_value("", window, cx));
-                        this.atualizar_certificado(cx);
-                        this.seguir(cx);
-                    }
-                    Err(erro) => {
-                        this.erro_no_campo(&erro);
-                        cx.notify();
-                    }
-                }
-            })
-            .ok();
-        })
-        .detach();
-    }
-
-    /// Passo 3: confere a pasta, grava o arquivo e termina.
-    fn concluir(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let erros = self.formulario.erros();
-        if let Some(primeiro) = erros.primeira() {
-            self.aviso = Some(Aviso {
-                erro: true,
-                texto: format!("Corrija antes de concluir: {primeiro}"),
-            });
-            cx.notify();
-            return;
-        }
-        let config = self.formulario.para_config();
-        let servicos = Arc::clone(&self.servicos);
-        let pasta = config.notas.pasta.clone();
-        let a_gravar = config.clone();
-        self.ocupado.passo = true;
-        cx.notify();
-        cx.spawn_in(window, async move |this, cx| {
-            let r = cx
-                .background_spawn(async move {
-                    servicos.conferir_pasta(&pasta)?;
-                    servicos.salvar(&a_gravar)
-                })
-                .await;
-            this.update_in(cx, |this, window, cx| {
-                this.ocupado.passo = false;
-                match r {
-                    Ok(()) => {
-                        this.formulario.marcar_salvo(&config);
-                        this.salvo = config;
-                        window.push_notification(
-                            Notification::success("O rustnf está configurado e pronto para uso.")
-                                .title("Configuração salva"),
-                            cx,
-                        );
-                        this.atualizar_certificado(cx);
-                        this.entregar_config(window, cx);
-                    }
-                    Err(erro) => this.erro_no_campo(&erro),
-                }
-                cx.notify();
-            })
-            .ok();
-        })
-        .detach();
-    }
-
-    /// Caminho sugerido para as notas: uma pasta `notas` ao lado do arquivo de configuracao.
-    pub(super) fn pasta_sugerida(&self) -> Option<PathBuf> {
-        self.servicos
-            .local_do_arquivo()
-            .and_then(|p| p.parent().map(|d| d.join("notas")))
     }
 }

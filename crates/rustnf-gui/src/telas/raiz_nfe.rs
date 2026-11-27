@@ -112,19 +112,19 @@ impl Raiz {
 
     /// A rolagem da Nova nota aberta: a do assistente da NF-e ou a da NFS-e, pela escolha lembrada.
     pub(super) fn rolagem_da_nova_nota(&self, cx: &gpui_kit::App) -> ScrollHandle {
-        if self.escolha_notas == EscolhaDeNotas::Nfe {
-            self.nova_nfe.read(cx).rolagem.clone()
-        } else {
-            self.nova.read(cx).rolagem.clone()
+        match self.escolha_notas {
+            EscolhaDeNotas::Nfe => self.nova_nfe.read(cx).rolagem.clone(),
+            EscolhaDeNotas::Nfce => self.caixa.read(cx).rolagem.clone(),
+            EscolhaDeNotas::Nfse => self.nova.read(cx).rolagem.clone(),
         }
     }
 
     /// Redesenha a Nova nota aberta (depois de rolar pelo teclado).
     pub(super) fn notificar_nova_nota(&mut self, cx: &mut Context<Self>) {
-        if self.escolha_notas == EscolhaDeNotas::Nfe {
-            self.nova_nfe.update(cx, |_, cx| cx.notify());
-        } else {
-            self.nova.update(cx, |_, cx| cx.notify());
+        match self.escolha_notas {
+            EscolhaDeNotas::Nfe => self.nova_nfe.update(cx, |_, cx| cx.notify()),
+            EscolhaDeNotas::Nfce => self.caixa.update(cx, |_, cx| cx.notify()),
+            EscolhaDeNotas::Nfse => self.nova.update(cx, |_, cx| cx.notify()),
         }
     }
 
@@ -207,12 +207,13 @@ impl Raiz {
     pub(super) fn config_para_gravar(&self) -> Config {
         let mut c = self.formulario.para_config();
         self.form_nfe.aplicar(&mut c);
+        self.form_nfce.aplicar(&mut c);
         c
     }
 
     /// Mudou alguma coisa (na NFS-e ou na NF-e) desde que foi carregado ou gravado.
     pub(super) fn alterado(&self) -> bool {
-        self.formulario.alterado() || self.form_nfe.alterado()
+        self.formulario.alterado() || self.form_nfe.alterado() || self.form_nfce.alterado()
     }
 
     /// Por que o arquivo nao pode ser gravado agora, ou `None`.
@@ -221,6 +222,9 @@ impl Raiz {
             return Some("Nenhuma alteração para salvar.".into());
         }
         if let Some(m) = self.form_nfe.motivo_sem_salvar(&self.config_para_gravar()) {
+            return Some(m);
+        }
+        if let Some(m) = self.form_nfce.motivo_sem_salvar(&self.config_para_gravar()) {
             return Some(m);
         }
         if self.formulario.alterado() {
@@ -240,8 +244,10 @@ impl Raiz {
                 .await;
             this.update(cx, |this, cx| {
                 this.escolha_notas = escolha;
-                if escolha == EscolhaDeNotas::Nfe {
-                    this.nfe.update(cx, |n, cx| n.recarregar(cx));
+                match escolha {
+                    EscolhaDeNotas::Nfe => this.nfe.update(cx, |n, cx| n.recarregar(cx)),
+                    EscolhaDeNotas::Nfce => this.nfce.update(cx, |n, cx| n.recarregar(cx)),
+                    EscolhaDeNotas::Nfse => {}
                 }
                 cx.notify();
             })
@@ -262,20 +268,15 @@ impl Raiz {
         );
         cx.background_spawn(async move { servicos.gravar_escolha_de_notas(&efetiva, escolha) })
             .detach();
-        let alvo = if escolha == EscolhaDeNotas::Nfe {
-            Some(self.nfe.clone())
-        } else {
-            None
-        };
-        if let Some(nfe) = alvo {
-            nfe.update(cx, |n, cx| n.recarregar(cx));
-        } else {
-            self.notas.update(cx, |n, cx| n.recarregar(cx));
+        match escolha {
+            EscolhaDeNotas::Nfe => self.nfe.update(cx, |n, cx| n.recarregar(cx)),
+            EscolhaDeNotas::Nfce => self.nfce.update(cx, |n, cx| n.recarregar(cx)),
+            EscolhaDeNotas::Nfse => self.notas.update(cx, |n, cx| n.recarregar(cx)),
         }
         cx.notify();
     }
 
-    /// O seletor "NFS-e | NF-e" do alto da tela Notas.
+    /// O seletor "NFS-e | NF-e | NFC-e" do alto da tela Notas.
     pub(super) fn seletor_de_notas(&self, cx: &mut Context<Self>) -> impl IntoElement {
         let atual = self.escolha_notas;
         ToggleGroup::new("notas-documento")
