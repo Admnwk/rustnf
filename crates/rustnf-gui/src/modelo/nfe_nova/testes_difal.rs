@@ -23,9 +23,11 @@ use crate::testes_comuns::PastaTemporaria;
 /// Salvador (BA): de Sao Paulo a aliquota interestadual e' 7 % (SP esta entre os estados de Sul e Sudeste, BA nao).
 const BA: &str = "2927408";
 
-/// Um consumidor final pessoa fisica da Bahia, que nao tem inscricao, com um cafe de R$ 31,80.
+/// Um consumidor final pessoa fisica da Bahia, que nao tem inscricao, com um cafe de R$ 31,80, entregue em BA pelo
+/// proprio vendedor (se o cliente levasse do balcao, a venda seria interna: ver `retirada_*`).
 fn cliente_da_bahia() -> DadosNfe {
     let mut d = dados_basicos();
+    d.entrega = Entrega::Propria;
     d.cod_municipio = BA.into();
     d.cep = "40020000".into();
     d.logradouro = "Rua Chile".into();
@@ -186,6 +188,50 @@ fn contribuinte_com_ie_fora_da_uf_continua_6102_sem_o_grupo() {
 }
 
 #[test]
+fn retirada_pelo_nao_contribuinte_de_outro_estado_e_venda_interna_sem_difal() {
+    // SEFAZ-SP RC 26844/2022 e SEFAZ-RS: o cliente de outra UF que leva a mercadoria daqui faz operacao interna
+    for entrega in [Entrega::Balcao, Entrega::ClienteBusca] {
+        let mut d = cliente_da_bahia();
+        d.entrega = entrega;
+        d.itens[0].aliquota_icms = "18".into();
+        let c = ctx(3);
+        assert_eq!(d.destino(&c), Some(Destino::DentroDoEstado), "{entrega:?}");
+        assert!(!nota_exige_o_grupo(&d, &c), "{entrega:?}");
+        let frase = d.frase_do_destino(&c).unwrap();
+        assert!(frase.contains("cliente de BA que leva"), "{frase}");
+        let p = pedido(&d, &c).unwrap();
+        assert_eq!(p["id_dest"], 1, "{entrega:?}");
+        assert_eq!(p["itens"][0]["cfop"], "5102", "{entrega:?}");
+        assert!(p["itens"][0].get("icms_uf_dest").is_none());
+        // a biblioteca aceita o endereco de BA numa operacao interna a consumidor final (a 773 o exclui)
+        let m = Banca::nova(3)
+            .montar(p)
+            .unwrap_or_else(|e| panic!("{entrega:?}: {e}"));
+        assert!(m.xml.contains("<idDest>1</idDest>"), "{}", m.xml);
+        assert!(m.xml.contains("<CFOP>5102</CFOP>"), "{}", m.xml);
+        assert!(!m.xml.contains("<ICMSUFDest>"));
+    }
+}
+
+#[test]
+fn retirada_por_contribuinte_ou_entrega_em_outro_estado_segue_interestadual() {
+    let c = ctx(3);
+    let mut d = cliente_da_bahia();
+    for entrega in [
+        Entrega::Propria,
+        Entrega::TransportadoraPorMinhaConta,
+        Entrega::TransportadoraPorContaDoCliente,
+    ] {
+        d.entrega = entrega;
+        assert_eq!(d.destino(&c), Some(Destino::OutroEstado), "{entrega:?}");
+    }
+    d.entrega = Entrega::Balcao;
+    d.contribuinte = Some(Contribuinte::ComIe);
+    assert_eq!(d.destino(&c), Some(Destino::OutroEstado));
+    assert_eq!(d.frase_do_destino(&c).unwrap(), "para outro estado");
+}
+
+#[test]
 fn dentro_do_estado_nao_ha_difal() {
     let mut d = dados_basicos();
     d.itens[0].aliquota_icms = "18".into();
@@ -317,7 +363,11 @@ fn o_espelho_da_condicao_bate_com_a_biblioteca_em_todas_as_combinacoes() {
         for icms in opcoes_de_icms(crt) {
             for cliente in Contribuinte::TODOS {
                 for consumo in Consumo::TODOS {
-                    for municipio in [BA, "3550308"] {
+                    for (municipio, entrega) in [
+                        (BA, Entrega::Propria),
+                        (BA, Entrega::Balcao),
+                        ("3550308", Entrega::Propria),
+                    ] {
                         let comb = Combinacao {
                             crt,
                             icms: *icms,
@@ -326,11 +376,12 @@ fn o_espelho_da_condicao_bate_com_a_biblioteca_em_todas_as_combinacoes() {
                             municipio,
                         };
                         let mut d = comb.dados();
+                        d.entrega = entrega;
                         let destino = d.destino(&c).unwrap();
                         for cfop in d.itens[0].cfops_da_tabela(destino, crt, d.contribuinte) {
                             d.itens[0].cfop_escolhido = Some((*cfop).to_string());
                             let rotulo = format!(
-                                "crt {} {:?} {cliente:?} {consumo:?} {municipio} cfop {cfop}",
+                                "crt {} {:?} {cliente:?} {consumo:?} {municipio} {entrega:?} cfop {cfop}",
                                 comb.crt, comb.icms
                             );
                             let exige = exige_o_grupo(&d, &d.itens[0], &c);

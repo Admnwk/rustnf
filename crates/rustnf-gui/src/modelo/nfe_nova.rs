@@ -581,12 +581,52 @@ impl DadosNfe {
     }
 
     /// O destino da venda pelas UFs; `None` = falta o municipio do cliente.
+    ///
+    /// Excecao: o cliente NAO contribuinte de outra UF que leva a mercadoria do estabelecimento (balcao ou veiculo
+    /// dele) faz operacao INTERNA (`idDest` 1, CFOP 5.xxx, sem DIFAL): a operacao so' e' interestadual quando o
+    /// remetente entrega em outra UF. Fontes: SEFAZ-SP, Resposta a Consulta 26844/2022 (RICMS/2000 art. 52 par. 3o);
+    /// SEFAZ-RS, atendimento "venda presencial ... a consumidor final nao contribuinte de outro estado"; o MOC 7.0 nao
+    /// barra (a rejeicao 773 exclui o consumidor final). A regra e' da legislacao de cada UF; SP e RS a confirmam.
     #[must_use]
     pub fn destino(&self, c: &ContextoNfe) -> Option<Destino> {
         let uf = municipio_do_codigo(&self.cod_municipio)
             .map(|(_, uf)| uf)
             .unwrap_or_default();
-        Destino::pelas_ufs(&c.uf_emitente, &uf, self.exterior)
+        let d = Destino::pelas_ufs(&c.uf_emitente, &uf, self.exterior)?;
+        Some(
+            if d == Destino::OutroEstado && self.cliente_retira_nao_contribuinte() {
+                Destino::DentroDoEstado
+            } else {
+                d
+            },
+        )
+    }
+
+    /// Como a tela diz o destino: a frase de [`Destino::frase`] e, quando o cliente de outra UF leva a mercadoria
+    /// daqui, o porque da operacao interna.
+    #[must_use]
+    pub fn frase_do_destino(&self, c: &ContextoNfe) -> Option<String> {
+        let d = self.destino(c)?;
+        let uf = municipio_do_codigo(&self.cod_municipio)
+            .map(|(_, uf)| uf)
+            .unwrap_or_default();
+        let de_fora =
+            Destino::pelas_ufs(&c.uf_emitente, &uf, self.exterior) == Some(Destino::OutroEstado);
+        Some(if de_fora && d == Destino::DentroDoEstado {
+            format!(
+                "{} (cliente de {uf} que leva a mercadoria daqui; se você entregar em {uf}, vira venda para outro estado)",
+                d.frase()
+            )
+        } else {
+            d.frase().to_string()
+        })
+    }
+
+    /// Cliente nao contribuinte que leva a mercadoria do estabelecimento (ver [`Self::destino`]).
+    #[must_use]
+    pub fn cliente_retira_nao_contribuinte(&self) -> bool {
+        self.contribuinte == Some(Contribuinte::Nao)
+            && matches!(self.entrega, Entrega::Balcao | Entrega::ClienteBusca)
     }
 
     /// Os totais da nota (itens que ainda nao estao completos nao entram).

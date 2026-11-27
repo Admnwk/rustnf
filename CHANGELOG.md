@@ -19,6 +19,10 @@
     alíquota interna do ICMS do estado do cliente e o fundo de combate à pobreza (não há tabela de alíquotas dos estados no
     programa), calcula o resto pela biblioteca e mostra "ICMS para o estado do cliente (DIFAL)" na conferência. Cliente isento
     de inscrição e ICMS já cobrado antes a quem não é contribuinte: a tela mostra os CFOP possíveis e a pessoa escolhe.
+  * O cliente sem inscrição estadual de outro estado que leva a mercadoria do estabelecimento (no balcão ou com veículo dele)
+    faz venda interna: CFOP 5.xxx, sem DIFAL. Só é venda para outro estado quando quem vende entrega lá. É o entendimento das
+    Secretarias da Fazenda de SP (Resposta à Consulta 26844/2022) e do RS; a regra é da legislação de cada estado, e a tela
+    diz o porquê no resumo.
   * Demonstração: `--nfe-emissao autorizada|rejeitada|sem-resposta|fora` e uma pasta de ensaio com três produtos.
   * Os testes da NFS-e e da lista da NF-e não mudaram de expectativa.
 

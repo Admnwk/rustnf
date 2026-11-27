@@ -296,13 +296,10 @@ impl NovaNfe {
         let buscando = self.buscando_cep;
         let aviso_cep = self.aviso_cep.clone();
         let preenchido = self.cliente_preenchido.clone();
-        let destino = d.destino(&self.ctx).map(|x| {
-            format!(
-                "Venda {}: CFOP {}xxx na tabela.",
-                x.frase(),
-                x.digito_do_cfop()
-            )
-        });
+        let destino = d
+            .destino(&self.ctx)
+            .zip(d.frase_do_destino(&self.ctx))
+            .map(|(x, frase)| format!("Venda {frase}: CFOP {}xxx na tabela.", x.digito_do_cfop()));
         let mut coluna = v_flex().gap_4().child(grupo(
             "Quem compra",
             Some("Digite o CPF ou o CNPJ: se este cliente já recebeu uma NF-e, o cadastro dele é completado."),

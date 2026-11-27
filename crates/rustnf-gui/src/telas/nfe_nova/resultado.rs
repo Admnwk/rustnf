@@ -164,8 +164,8 @@ impl NovaNfe {
         let d = &self.dados;
         let t = d.totais();
         let destino = d
-            .destino(&self.ctx)
-            .map_or_else(String::new, |x| format!(" · venda {}", x.frase()));
+            .frase_do_destino(&self.ctx)
+            .map_or_else(String::new, |x| format!(" · venda {x}"));
         let mut col = v_flex()
             .gap_2()
             .id("nfe-resumo")
