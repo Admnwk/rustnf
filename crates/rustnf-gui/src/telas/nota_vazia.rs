@@ -14,6 +14,7 @@ use gpui_kit::{
 
 use super::pecas::{cabecalho, cartao, Negrito as _};
 use super::raiz::{Raiz, Tela};
+use crate::modelo::nfe_lista::EscolhaDeNotas;
 use crate::modelo::passos::{configuracao_completa, o_que_falta};
 
 impl Raiz {
@@ -29,16 +30,34 @@ impl Raiz {
         )
     }
 
-    /// O conteudo da tela Notas: a lista, ou o que falta configurar.
+    /// O conteudo da tela Notas: o seletor NFS-e | NF-e e a lista do documento escolhido, ou o que falta configurar.
     pub(super) fn tela_notas(&mut self, cx: &mut Context<Self>) -> AnyElement {
-        let filho = self.notas.clone().into_any_element();
-        self.exigindo_configuracao(
+        let filho = if self.escolha_notas == EscolhaDeNotas::Nfe {
+            self.nfe.clone().into_any_element()
+        } else {
+            self.notas.clone().into_any_element()
+        };
+        let corpo = self.exigindo_configuracao(
             "Notas",
             "Antes de listar as notas, o rustnf precisa de alguns dados.",
             "A lista usa a pasta das notas, e cancelar usa o certificado digital. Ainda falta:",
             filho,
             cx,
-        )
+        );
+        if !configuracao_completa(&self.salvo) {
+            return corpo;
+        }
+        v_flex()
+            .size_full()
+            .child(
+                h_flex()
+                    .id("notas-seletor")
+                    .px_6()
+                    .pt_4()
+                    .child(self.seletor_de_notas(cx)),
+            )
+            .child(div().flex_1().min_h_0().child(corpo))
+            .into_any_element()
     }
 
     /// O conteudo da tela Consultar: o campo da chave, ou o que falta configurar.

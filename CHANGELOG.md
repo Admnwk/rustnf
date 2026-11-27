@@ -2,6 +2,26 @@
 
 ## Próxima versão
 
+* Interface de desktop: a **NF-e (modelo 55)** na janela, em tudo menos a emissão (que vem na entrega seguinte). A tela Notas
+  ganha a escolha "NFS-e | NF-e (venda de mercadoria)", lembrada de uma vez para outra na pasta de notas
+  (`preferencias.json`, ignorado se ilegível). **Nenhuma NF-e real, nenhuma SEFAZ real e nenhum certificado real foram usados
+  pela interface**: tudo foi testado com uma SEFAZ de mentira (transporte roteirizado, sem rede).
+  * Configurações, seção "NF-e": ambiente próprio (homologação ou produção, separado do da NFS-e), UF, IE, regime em
+    palavras, série, fantasia, endereço, contingência SVC (motivo de 15 a 255 caracteres), canhoto do DANFE e tempos. Grava
+    pelo mesmo Salvar e no mesmo arquivo da NFS-e; `ca_pem` e `[nfe.urls]` seguem como estão no arquivo. O certificado é o
+    da NFS-e. "Testar conexão com a SEFAZ" só pergunta o status do serviço.
+  * Lista e detalhe da NF-e (busca, filtro, selos), com a nota sem resposta em destaque e o botão Retomar; abrir o DANFE
+    (com a marca de cancelada), mostrar na pasta, copiar a chave e "Conferir na SEFAZ".
+  * Cancelar, carta de correção (limites, quantas já foram feitas, aviso de que a nova substitui as anteriores, o que a
+    carta não corrige e o texto oficial) e inutilizar números, no desenho do cancelamento da NFS-e: ambiente em destaque,
+    justificativa com contador, marcação explícita em produção (sem ela, nenhuma chamada), desfecho com o que fazer.
+    O cancelamento recusado com 501 diz em palavras que o prazo é o da legislação de cada estado; a interface não conta prazo.
+  * O selo do ambiente da barra de título mostra o ambiente do documento que está na tela.
+  * Demonstração: `--nfe-evento registrado|rejeitado|sem-resposta` e uma pasta de ensaio com NF-e autorizada, cancelada e
+    sem resposta. A feature `demonstracao` passa a ligar o certificado de teste da biblioteca.
+  * Os testes da NFS-e não mudaram de expectativa. Os textos da barra de título mudaram de "emissor de NFS-e nacional" para
+    "emissor de notas fiscais".
+
 * Interface de desktop: `gpui-kit` 0.10.0 -> 0.11.0 (GPUI 0.3.12 -> 0.3.14). As telas saem iguais e a janela continua
   centrada na tela principal. Uma mudança no teclado: logo ao abrir a janela, antes de qualquer clique, o Tab já leva o
   foco ao próximo controle (e o PageUp/PageDown passa a rolar a tela a partir dele); antes o Tab só andava depois que

@@ -36,12 +36,18 @@ use crate::modelo::rascunho;
 
 mod emitir;
 mod eventos;
+mod nfe;
 mod notas;
 
 pub use emitir::{emitir, FabricaDeEmissor, FabricaReal, FabricaSemEmissor};
 pub use eventos::{
     conferir_evento, conferir_lote, consultar_dps_nota, historico_da_nota, registrar_evento_nota,
     ParadaDoLote,
+};
+pub use nfe::{
+    cancelar_nfe, conferir_cancelamento_nfe, consultar_nfe, corrigir_nfe, inutilizar_nfe,
+    retomar_nfe, testar_sefaz, ClienteNfe, FabricaNfe, FabricaNfeReal, FabricaNfeSemTransporte,
+    NotaNfeDaPasta, TransporteDin,
 };
 pub use notas::{
     cancelar_nota, conferir_cancelamento, consultar_nota, AbrirArquivos, Destino, DoSistema,
@@ -296,6 +302,7 @@ pub struct Servicos {
     conexao: Arc<dyn Conexao>,
     relogio: Relogio,
     fabrica: Arc<dyn FabricaDeEmissor>,
+    fabrica_nfe: Arc<dyn FabricaNfe>,
     abridor: Arc<dyn AbrirArquivos>,
     cep: Arc<dyn BuscaCep>,
     intervalo: Duration,
@@ -315,6 +322,7 @@ impl Servicos {
             conexao: Arc::new(ConexaoReal),
             relogio: Arc::new(Utc::now),
             fabrica: Arc::new(FabricaReal),
+            fabrica_nfe: Arc::new(FabricaNfeReal),
             abridor: Arc::new(DoSistema),
             cep: Arc::new(CepReal),
             intervalo: INTERVALO_PADRAO,
@@ -352,6 +360,7 @@ impl Servicos {
             conexao,
             relogio,
             fabrica: Arc::new(FabricaSemEmissor),
+            fabrica_nfe: Arc::new(FabricaNfeSemTransporte),
             abridor: Arc::new(DoSistema),
             cep: Arc::new(CepReal),
             intervalo: INTERVALO_PADRAO,

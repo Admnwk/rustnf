@@ -37,13 +37,13 @@ use crate::telas::LARGURA_DA_LATERAL;
 mod exportar;
 
 /// Largura minima da area de conteudo para o detalhe ficar ao lado da lista; abaixo disso ele e' uma pagina.
-const LARGURA_PARA_DETALHE_AO_LADO: f32 = 1060.0;
+pub(super) const LARGURA_PARA_DETALHE_AO_LADO: f32 = 1060.0;
 
 /// Largura do detalhe quando fica ao lado da lista.
-const LARGURA_DO_DETALHE: f32 = 480.0;
+pub(super) const LARGURA_DO_DETALHE: f32 = 480.0;
 
 /// Altura de cada linha da lista (todas iguais: a lista so' desenha as que aparecem).
-const ALTURA_DA_LINHA: f32 = 56.0;
+pub(super) const ALTURA_DA_LINHA: f32 = 56.0;
 
 /// O que a tela pede a janela.
 #[derive(Debug, Clone, PartialEq)]

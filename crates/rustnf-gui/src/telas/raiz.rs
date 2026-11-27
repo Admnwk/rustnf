@@ -22,15 +22,19 @@ use rustnf_app::segredo::Segredo;
 
 use super::cancelar::{Cancelamento, EventoCancelamento};
 use super::consultar::{EventoConsulta, TelaConsultar};
+use super::nfe::TelaNfe;
+use super::nfe_dialogo::DialogoNfe;
 use super::nota::{EventoNota, Modelo, NovaNota};
 use super::notas::{EventoNotas, TelaNotas};
 use super::previa::{EventoPrevia, TelaPrevia};
-use crate::fora;
+use super::raiz_nfe::EntradasNfe;
 use crate::modelo::ambiente::{Ambiente, Tema};
 use crate::modelo::campo::{Campo, CampoAliquota, Erros};
 use crate::modelo::certificado::{EstadoCertificado, InfoCertificado};
 use crate::modelo::evento::TipoDeEvento;
 use crate::modelo::formulario::{Formulario, OPCOES_APURACAO, OPCOES_REGIME_ESPECIAL};
+use crate::modelo::nfe_config::{FormularioNfe, ResultadoSefaz};
+use crate::modelo::nfe_lista::EscolhaDeNotas;
 use crate::modelo::nota::DadosNota;
 use crate::modelo::passos::{configuracao_completa, pendentes, Passo};
 use crate::servicos::{Carga, ErroTela, Servicos};
@@ -61,6 +65,8 @@ pub enum Secao {
     Sefin,
     /// Pasta das notas e DANFSe.
     Notas,
+    /// NF-e (venda de mercadoria).
+    Nfe,
     /// Tabela de aliquotas.
     Aliquotas,
     /// Tema.
@@ -69,10 +75,11 @@ pub enum Secao {
 
 impl Secao {
     /// As secoes, na ordem das abas.
-    pub const TODAS: [Secao; 5] = [
+    pub const TODAS: [Secao; 6] = [
         Secao::Emitente,
         Secao::Sefin,
         Secao::Notas,
+        Secao::Nfe,
         Secao::Aliquotas,
         Secao::Aparencia,
     ];
@@ -84,6 +91,7 @@ impl Secao {
             Self::Emitente => "Emitente",
             Self::Sefin => "Sefin Nacional",
             Self::Notas => "Notas e DANFSe",
+            Self::Nfe => "NF-e",
             Self::Aliquotas => "Alíquotas",
             Self::Aparencia => "Aparência",
         }
@@ -115,6 +123,8 @@ pub(super) struct Ocupado {
     pub(super) passo: bool,
     /// Mudando o proximo numero da DPS.
     pub(super) numero: bool,
+    /// Testando a conexao com a SEFAZ (NF-e).
+    pub(super) sefaz: bool,
 }
 
 /// Aviso de pagina (erro que nao e' de campo, ou confirmacao).
@@ -165,6 +175,13 @@ pub struct Raiz {
     pub(super) notas: Entity<TelaNotas>,
     pub(super) consultar: Entity<TelaConsultar>,
     pub(super) previa: Entity<TelaPrevia>,
+    pub(super) nfe: Entity<TelaNfe>,
+    pub(super) dialogo_nfe: Entity<DialogoNfe>,
+    /// A tela Notas mostra a NFS-e ou a NF-e.
+    pub(super) escolha_notas: EscolhaDeNotas,
+    pub(super) form_nfe: FormularioNfe,
+    pub(super) entradas_nfe: EntradasNfe,
+    pub(super) resultado_sefaz: Option<ResultadoSefaz>,
     pub(super) estado: Estado,
     pub(super) tela: Tela,
     pub(super) secao: Secao,
@@ -187,7 +204,7 @@ pub struct Raiz {
     pub(super) proximo_dps: Option<u64>,
     /// A rolagem das telas da propria janela (Inicio, primeiro uso, Configuracoes, nota sem configuracao).
     pub(super) rolagem: ScrollHandle,
-    fixas: Vec<Subscription>,
+    pub(super) fixas: Vec<Subscription>,
     das_aliquotas: Vec<Subscription>,
 }
 
@@ -255,6 +272,15 @@ impl Raiz {
             let servicos = Arc::clone(&servicos);
             cx.new(|cx| TelaPrevia::new(servicos, window, cx))
         };
+        let dialogo_nfe = {
+            let servicos = Arc::clone(&servicos);
+            cx.new(|cx| DialogoNfe::new(servicos, window, cx))
+        };
+        let nfe = {
+            let (servicos, dialogo) = (Arc::clone(&servicos), dialogo_nfe.clone());
+            cx.new(|cx| TelaNfe::new(servicos, dialogo, window, cx))
+        };
+        let entradas_nfe = Self::criar_entradas_nfe(window, cx);
         let mut raiz = Self {
             servicos,
             nova,
@@ -262,6 +288,12 @@ impl Raiz {
             notas,
             consultar,
             previa,
+            nfe,
+            dialogo_nfe,
+            escolha_notas: EscolhaDeNotas::default(),
+            form_nfe: FormularioNfe::de_config(&Config::default()),
+            entradas_nfe,
+            resultado_sefaz: None,
             estado: Estado::Carregando,
             tela: Tela::Inicio,
             secao: Secao::Emitente,
@@ -286,6 +318,7 @@ impl Raiz {
             das_aliquotas: Vec::new(),
         };
         raiz.ligar_tudo(window, cx);
+        raiz.ligar_nfe(window, cx);
         raiz.carregar(window, cx);
         raiz
     }
@@ -506,6 +539,7 @@ impl Raiz {
             ambiente: carga.ambiente,
         });
         self.formulario = Formulario::de_config(&carga.config);
+        self.form_nfe = FormularioNfe::de_config(&carga.config);
         self.salvo = carga.config;
         self.estado = Estado::Pronto;
         self.passo = pendentes(&self.salvo)
@@ -513,6 +547,7 @@ impl Raiz {
             .copied()
             .unwrap_or(Passo::Emitente);
         self.sincronizar(window, cx);
+        self.sincronizar_nfe(window, cx);
         self.aplicar_tema(window, cx);
         self.atualizar_certificado(cx);
         self.entregar_config(window, cx);
@@ -537,6 +572,12 @@ impl Raiz {
         self.consultar.update(cx, |c, cx| c.definir_config(e, cx));
         self.previa
             .update(cx, |p, cx| p.definir_config(&efetiva, window, cx));
+        let pronta = self.nfe_pronta(&efetiva);
+        let e = efetiva.clone();
+        self.dialogo_nfe.update(cx, |d, cx| d.definir_config(e, cx));
+        let e = efetiva.clone();
+        self.nfe.update(cx, |n, cx| n.definir_config(e, pronta, cx));
+        self.carregar_escolha(efetiva.clone(), cx);
         self.atualizar_proximo_dps(efetiva, window, cx);
     }
 
@@ -924,209 +965,13 @@ impl Raiz {
         cx.notify();
     }
 
-    // ---------------------------------------------------------------- certificado e cofre
-
-    /// Confere o estado do certificado fora da tela e atualiza o rodape.
-    pub(super) fn atualizar_certificado(&mut self, cx: &mut Context<Self>) {
-        let config = self.formulario.para_config();
-        let servicos = Arc::clone(&self.servicos);
-        let servicos2 = Arc::clone(&self.servicos);
-        let config2 = config.clone();
-        cx.spawn(async move |this, cx| {
-            let (estado, guardada) = cx
-                .background_spawn(async move {
-                    (
-                        servicos.estado_do_certificado(&config),
-                        servicos2.senha_guardada(&config2),
-                    )
-                })
-                .await;
-            this.update(cx, |this, cx| {
-                this.cert = estado;
-                this.senha_guardada = guardada;
-                cx.notify();
-            })
-            .ok();
-        })
-        .detach();
-    }
-
-    pub(super) fn testar_certificado(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        if self.ocupado.certificado {
-            return;
-        }
-        let config = self.formulario.para_config();
-        let senha = self.senha_digitada(cx);
-        let servicos = Arc::clone(&self.servicos);
-        self.ocupado.certificado = true;
-        self.resultado_cert = None;
-        self.erros_externos.remove(&Campo::Pfx);
-        self.erros_externos.remove(&Campo::Senha);
-        cx.notify();
-        cx.spawn_in(window, async move |this, cx| {
-            let r = cx
-                .background_spawn(
-                    async move { servicos.testar_certificado(&config, senha.as_ref()) },
-                )
-                .await;
-            this.update_in(cx, |this, _, cx| {
-                this.ocupado.certificado = false;
-                if let Err(erro) = &r {
-                    this.erro_no_campo(erro);
-                }
-                this.resultado_cert = Some(r);
-                cx.notify();
-            })
-            .ok();
-        })
-        .detach();
-    }
-
-    /// Mostra o erro embaixo do campo que o originou (ou como aviso, se nao for de campo nenhum).
-    pub(super) fn erro_no_campo(&mut self, erro: &ErroTela) {
-        match erro.campo() {
-            Some(campo) => {
-                self.erros_externos.insert(campo, erro.texto());
-            }
-            None => {
-                self.aviso = Some(Aviso {
-                    erro: true,
-                    texto: erro.texto(),
-                });
-            }
-        }
-    }
-
-    pub(super) fn guardar_senha(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        if self.ocupado.senha {
-            return;
-        }
-        let Some(senha) = self.senha_digitada(cx) else {
-            self.erros_externos
-                .insert(Campo::Senha, ErroTela::SemSenha.texto());
-            cx.notify();
-            return;
-        };
-        let config = self.formulario.para_config();
-        let servicos = Arc::clone(&self.servicos);
-        self.ocupado.senha = true;
-        self.erros_externos.remove(&Campo::Senha);
-        cx.notify();
-        cx.spawn_in(window, async move |this, cx| {
-            let r = cx
-                .background_spawn(async move { servicos.guardar_senha(&config, &senha) })
-                .await;
-            this.update_in(cx, |this, window, cx| {
-                this.ocupado.senha = false;
-                match r {
-                    Ok(()) => {
-                        this.entradas
-                            .senha
-                            .update(cx, |e, cx| e.set_value("", window, cx));
-                        this.aviso = None;
-                        window.push_notification(
-                            Notification::success("Senha guardada no cofre do Windows.")
-                                .title("Senha guardada"),
-                            cx,
-                        );
-                        this.atualizar_certificado(cx);
-                    }
-                    Err(erro) => this.erro_no_campo(&erro),
-                }
-                cx.notify();
-            })
-            .ok();
-        })
-        .detach();
-    }
-
-    pub(super) fn apagar_senha(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        if self.ocupado.senha {
-            return;
-        }
-        let config = self.formulario.para_config();
-        let servicos = Arc::clone(&self.servicos);
-        self.ocupado.senha = true;
-        cx.notify();
-        cx.spawn_in(window, async move |this, cx| {
-            let r = cx
-                .background_spawn(async move { servicos.apagar_senha(&config) })
-                .await;
-            this.update_in(cx, |this, window, cx| {
-                this.ocupado.senha = false;
-                match r {
-                    Ok(()) => {
-                        window.push_notification(
-                            Notification::success("A senha foi apagada do cofre do Windows.")
-                                .title("Senha apagada"),
-                            cx,
-                        );
-                        this.resultado_cert = None;
-                        this.atualizar_certificado(cx);
-                    }
-                    Err(erro) => this.erro_no_campo(&erro),
-                }
-                cx.notify();
-            })
-            .ok();
-        })
-        .detach();
-    }
-
-    /// O botao "Testar conexao com a Sefin": uma chamada de rede de verdade, feita so' quando a pessoa clica.
-    pub(super) fn testar_conexao(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        if self.ocupado.conexao {
-            return;
-        }
-        let config = self.formulario.para_config();
-        let senha = self.senha_digitada(cx);
-        let servicos = Arc::clone(&self.servicos);
-        let conexao = servicos.conexao();
-        self.ocupado.conexao = true;
-        self.resultado_conexao = None;
-        self.erros_externos.remove(&Campo::Pfx);
-        self.erros_externos.remove(&Campo::Senha);
-        cx.notify();
-        cx.spawn_in(window, async move |this, cx| {
-            // 1) abre o certificado (calculo e disco) no pool de segundo plano
-            let preparo = cx
-                .background_spawn(async move { servicos.preparar_conexao(&config, senha.as_ref()) })
-                .await;
-            // 2) a chamada de rede roda no runtime proprio; aqui so' se espera o resultado
-            let resultado: Result<(bool, String), ErroTela> = match preparo {
-                Ok(p) => match fora::rede(conexao.testar(p)) {
-                    Some(tarefa) => tarefa
-                        .await
-                        .map_err(|_| ErroTela::Rede("A chamada à Sefin foi interrompida.".into())),
-                    None => Err(ErroTela::Rede(
-                        "Não foi possível preparar a chamada de rede.".into(),
-                    )),
-                },
-                Err(e) => Err(e),
-            };
-            this.update_in(cx, |this, _, cx| {
-                this.ocupado.conexao = false;
-                match resultado {
-                    Ok(r) => this.resultado_conexao = Some(r),
-                    Err(erro) => {
-                        this.erro_no_campo(&erro);
-                        this.resultado_conexao = Some((false, erro.texto()));
-                    }
-                }
-                cx.notify();
-            })
-            .ok();
-        })
-        .detach();
-    }
-
     // ---------------------------------------------------------------- salvar e descartar
 
     pub(super) fn salvar(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        if self.ocupado.salvando || self.formulario.motivo_sem_salvar().is_some() {
+        if self.ocupado.salvando || self.motivo_sem_salvar().is_some() {
             return;
         }
-        let config = self.formulario.para_config();
+        let config = self.config_para_gravar();
         self.gravar(config, window, cx);
     }
 
@@ -1145,6 +990,7 @@ impl Raiz {
                 match r {
                     Ok(()) => {
                         this.formulario.marcar_salvo(&config);
+                        this.form_nfe.marcar_salvo();
                         this.salvo = config;
                         this.aviso = None;
                         window.push_notification(
@@ -1174,11 +1020,13 @@ impl Raiz {
     }
 
     pub(super) fn descartar(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        if !self.formulario.alterado() {
+        if !self.alterado() {
             return;
         }
         self.formulario.descartar();
+        self.form_nfe.descartar();
         self.sincronizar(window, cx);
+        self.sincronizar_nfe(window, cx);
         self.aplicar_tema(window, cx);
         self.aviso = None;
         self.atualizar_certificado(cx);

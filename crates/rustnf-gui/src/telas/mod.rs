@@ -10,24 +10,31 @@ mod campos;
 mod cancelar;
 mod conferir;
 mod configuracoes;
+mod configuracoes_nfe;
 mod consultar;
 mod detalhe;
 mod detalhe_blocos;
 mod historico;
 mod inicio;
 mod layout;
+mod nfe;
+mod nfe_dialogo;
 mod nota;
 mod nota_vazia;
 mod notas;
 mod pecas;
 mod previa;
 mod raiz;
+mod raiz_certificado;
+mod raiz_nfe;
 mod rolagem;
 mod senha;
 #[cfg(test)]
 mod testes;
 #[cfg(test)]
 mod testes_eventos;
+#[cfg(test)]
+mod testes_nfe;
 #[cfg(test)]
 mod testes_nota;
 #[cfg(test)]
