@@ -34,6 +34,9 @@ mod raiz_nfce;
 mod raiz_nfe;
 mod raiz_numero;
 mod raiz_primeiro_uso;
+mod raiz_recebidas;
+mod recebidas;
+mod recebidas_dialogo;
 mod rolagem;
 mod senha;
 #[cfg(test)]
@@ -50,6 +53,8 @@ mod testes_nfe_nova;
 mod testes_nota;
 #[cfg(test)]
 mod testes_notas;
+#[cfg(test)]
+mod testes_recebidas;
 
 use std::path::PathBuf;
 use std::sync::Arc;

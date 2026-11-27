@@ -25,7 +25,7 @@ use crate::modelo::ambiente::Ambiente;
 use crate::modelo::certificado::Gravidade;
 use crate::modelo::nfe_config::selo_do_ambiente_da_nfe;
 use crate::modelo::nfe_detalhe::{DetalheNfe, LeituraNfe};
-use crate::servicos::{Destino, Documento, NotaNfeDaPasta};
+use crate::servicos::{Destino, Documento, NotaNfeDaPasta, Servicos};
 use crate::telas::nfe_dialogo::{AlvoNfe, Operacao};
 use crate::telas::pecas::{
     cartao, faixa, linha_de_numero, linha_de_resumo, selo_do_registro_nfe, titulo_do_bloco,
@@ -145,12 +145,7 @@ impl TelaNfe {
 
     /// Pede ao sistema que abra (ou mostre) o arquivo, se o servico de abrir arquivos deixar.
     fn pedir_ao_sistema(&self, destino: Destino, caminho: &Path, cx: &mut App) {
-        if self.servicos.abridor().pedir(destino, caminho) {
-            match destino {
-                Destino::Abrir => cx.open_with_system(caminho),
-                Destino::Mostrar => cx.reveal_path(caminho),
-            }
-        }
+        pedir_ao_sistema(&self.servicos, destino, caminho, cx);
     }
 
     pub(super) fn abrir_danfe(&mut self, cx: &mut Context<Self>) {
@@ -322,149 +317,9 @@ impl TelaNfe {
     }
 
     fn bloco_da_chave(&self, d: &DetalheNfe, cx: &mut Context<Self>) -> AnyElement {
-        let copiada = self.chave_copiada;
-        cartao(cx)
-            .id("nfe-chave")
-            .child(titulo_do_bloco("Chave de acesso", cx))
-            .child(div().text_sm().child(d.chave_em_grupos.clone()))
-            .child(
-                h_flex().child(
-                    Button::new("nfe-copiar-chave")
-                        .label(if copiada {
-                            "Chave copiada"
-                        } else {
-                            "Copiar a chave"
-                        })
-                        .icon(if copiada {
-                            IconName::Check
-                        } else {
-                            IconName::Copy
-                        })
-                        .outline()
-                        .small()
-                        .on_click(cx.listener(|this, _, _, cx| this.copiar_chave(cx))),
-                ),
-            )
-            .into_any_element()
-    }
-
-    fn secoes(d: &DetalheNfe, cx: &App) -> Vec<AnyElement> {
-        let sem = |t: &str| {
-            if t.is_empty() {
-                "-".to_string()
-            } else {
-                t.to_string()
-            }
-        };
-        let muted = cx.theme().muted_foreground;
-        let destinatario = cartao(cx)
-            .id("nfe-detalhe-destinatario")
-            .child(titulo_do_bloco("Destinatário", cx))
-            .child(linha_de_resumo("Nome", sem(&d.destinatario), cx))
-            .child(linha_de_resumo(
-                "Documento",
-                sem(&d.destinatario_documento),
-                cx,
-            ));
-        let mut itens = cartao(cx)
-            .id("nfe-detalhe-itens")
-            .child(titulo_do_bloco("Itens", cx));
-        if d.itens.is_empty() {
-            itens = itens.child(
-                div()
-                    .text_sm()
-                    .text_color(muted)
-                    .child("O arquivo da nota não está legível: sem itens para mostrar."),
-            );
-        }
-        for i in &d.itens {
-            itens = itens.child(linha_de_numero(
-                &format!("{} ({})", i.descricao, i.quantidade),
-                format!("R$ {}", i.valor),
-                false,
-                cx,
-            ));
-        }
-        if d.itens_a_mais > 0 {
-            itens = itens.child(div().text_xs().text_color(muted).child(format!(
-                "e mais {} item(ns): o DANFE traz todos.",
-                d.itens_a_mais
-            )));
-        }
-        let mut totais = cartao(cx)
-            .id("nfe-detalhe-totais")
-            .child(titulo_do_bloco("Totais", cx));
-        if !d.total_produtos.is_empty() {
-            totais = totais.child(linha_de_numero(
-                "Produtos",
-                format!("R$ {}", d.total_produtos),
-                false,
-                cx,
-            ));
-        }
-        if !d.desconto.is_empty() {
-            totais = totais.child(linha_de_numero(
-                "Desconto",
-                format!("R$ {}", d.desconto),
-                false,
-                cx,
-            ));
-        }
-        if !d.frete.is_empty() {
-            totais = totais.child(linha_de_numero(
-                "Frete",
-                format!("R$ {}", d.frete),
-                false,
-                cx,
-            ));
-        }
-        totais = totais
-            .child(div().h(px(1.)).w_full().bg(cx.theme().border).my_1())
-            .child(linha_de_numero(
-                "Total da nota",
-                format!("R$ {}", d.total),
-                true,
-                cx,
-            ));
-        let mut emissao = cartao(cx)
-            .id("nfe-detalhe-emissao")
-            .child(titulo_do_bloco("Emissão", cx))
-            .child(linha_de_resumo("Emitida em", sem(&d.emissao), cx))
-            .child(linha_de_resumo("Operação", sem(&d.natureza), cx))
-            .child(linha_de_resumo(
-                "Emitente",
-                if d.emitente_documento.is_empty() {
-                    sem(&d.emitente)
-                } else {
-                    format!("{} ({})", d.emitente, d.emitente_documento)
-                },
-                cx,
-            ))
-            .child(linha_de_resumo("Protocolo", sem(&d.protocolo), cx));
-        if !d.protocolo_do_cancelamento.is_empty() {
-            emissao = emissao.child(linha_de_resumo(
-                "Cancelamento",
-                format!("protocolo {}", d.protocolo_do_cancelamento),
-                cx,
-            ));
-        }
-        if d.correcoes > 0 {
-            emissao = emissao.child(linha_de_resumo(
-                "Correções",
-                crate::modelo::nfe_resultados::contagem(
-                    d.correcoes,
-                    "carta de correção",
-                    "cartas de correção",
-                ),
-                cx,
-            ));
-        }
-        vec![
-            destinatario.into_any_element(),
-            itens.into_any_element(),
-            totais.into_any_element(),
-            emissao.into_any_element(),
-        ]
+        let botao = botao_de_copiar_a_chave(self.chave_copiada)
+            .on_click(cx.listener(|this, _, _, cx| this.copiar_chave(cx)));
+        cartao_da_chave(&d.chave_em_grupos, botao, cx)
     }
 
     fn corpo_da_nota(&mut self, n: &NotaNfeDaPasta, cx: &mut Context<Self>) -> AnyElement {
@@ -532,7 +387,7 @@ impl TelaNfe {
                     .map(|e| faixa(Gravidade::Erro, e, cx).id("nfe-erro-do-detalhe")),
             )
             .child(self.bloco_da_chave(&d, cx));
-        for s in Self::secoes(&d, cx) {
+        for s in secoes_da_nota(&d, cx) {
             coluna = coluna.child(s);
         }
         coluna
@@ -578,5 +433,171 @@ impl TelaNfe {
             .gap_4()
             .child(corpo)
             .into_any_element()
+    }
+}
+
+/// As secoes do detalhe de uma NF-e (destinatario, itens, totais e emissao): as da emitida e as da recebida.
+pub(in crate::telas) fn secoes_da_nota(d: &DetalheNfe, cx: &App) -> Vec<AnyElement> {
+    let sem = |t: &str| {
+        if t.is_empty() {
+            "-".to_string()
+        } else {
+            t.to_string()
+        }
+    };
+    let muted = cx.theme().muted_foreground;
+    let destinatario = cartao(cx)
+        .id("nfe-detalhe-destinatario")
+        .child(titulo_do_bloco("Destinatário", cx))
+        .child(linha_de_resumo("Nome", sem(&d.destinatario), cx))
+        .child(linha_de_resumo(
+            "Documento",
+            sem(&d.destinatario_documento),
+            cx,
+        ));
+    let mut itens = cartao(cx)
+        .id("nfe-detalhe-itens")
+        .child(titulo_do_bloco("Itens", cx));
+    if d.itens.is_empty() {
+        itens = itens.child(
+            div()
+                .text_sm()
+                .text_color(muted)
+                .child("O arquivo da nota não está legível: sem itens para mostrar."),
+        );
+    }
+    for i in &d.itens {
+        itens = itens.child(linha_de_numero(
+            &format!("{} ({})", i.descricao, i.quantidade),
+            format!("R$ {}", i.valor),
+            false,
+            cx,
+        ));
+    }
+    if d.itens_a_mais > 0 {
+        itens = itens.child(div().text_xs().text_color(muted).child(format!(
+            "e mais {} item(ns): o DANFE traz todos.",
+            d.itens_a_mais
+        )));
+    }
+    let mut totais = cartao(cx)
+        .id("nfe-detalhe-totais")
+        .child(titulo_do_bloco("Totais", cx));
+    if !d.total_produtos.is_empty() {
+        totais = totais.child(linha_de_numero(
+            "Produtos",
+            format!("R$ {}", d.total_produtos),
+            false,
+            cx,
+        ));
+    }
+    if !d.desconto.is_empty() {
+        totais = totais.child(linha_de_numero(
+            "Desconto",
+            format!("R$ {}", d.desconto),
+            false,
+            cx,
+        ));
+    }
+    if !d.frete.is_empty() {
+        totais = totais.child(linha_de_numero(
+            "Frete",
+            format!("R$ {}", d.frete),
+            false,
+            cx,
+        ));
+    }
+    totais = totais
+        .child(div().h(px(1.)).w_full().bg(cx.theme().border).my_1())
+        .child(linha_de_numero(
+            "Total da nota",
+            format!("R$ {}", d.total),
+            true,
+            cx,
+        ));
+    let mut emissao = cartao(cx)
+        .id("nfe-detalhe-emissao")
+        .child(titulo_do_bloco("Emissão", cx))
+        .child(linha_de_resumo("Emitida em", sem(&d.emissao), cx))
+        .child(linha_de_resumo("Operação", sem(&d.natureza), cx))
+        .child(linha_de_resumo(
+            "Emitente",
+            if d.emitente_documento.is_empty() {
+                sem(&d.emitente)
+            } else {
+                format!("{} ({})", d.emitente, d.emitente_documento)
+            },
+            cx,
+        ))
+        .child(linha_de_resumo("Protocolo", sem(&d.protocolo), cx));
+    if !d.protocolo_do_cancelamento.is_empty() {
+        emissao = emissao.child(linha_de_resumo(
+            "Cancelamento",
+            format!("protocolo {}", d.protocolo_do_cancelamento),
+            cx,
+        ));
+    }
+    if d.correcoes > 0 {
+        emissao = emissao.child(linha_de_resumo(
+            "Correções",
+            crate::modelo::nfe_resultados::contagem(
+                d.correcoes,
+                "carta de correção",
+                "cartas de correção",
+            ),
+            cx,
+        ));
+    }
+    vec![
+        destinatario.into_any_element(),
+        itens.into_any_element(),
+        totais.into_any_element(),
+        emissao.into_any_element(),
+    ]
+}
+
+/// O botao "Copiar a chave" (o que ele faz e' de quem o desenha).
+pub(in crate::telas) fn botao_de_copiar_a_chave(copiada: bool) -> Button {
+    Button::new("nfe-copiar-chave")
+        .label(if copiada {
+            "Chave copiada"
+        } else {
+            "Copiar a chave"
+        })
+        .icon(if copiada {
+            IconName::Check
+        } else {
+            IconName::Copy
+        })
+        .outline()
+        .small()
+}
+
+/// O cartao da chave de acesso em grupos, com o botao de copiar.
+pub(in crate::telas) fn cartao_da_chave(
+    chave_em_grupos: &str,
+    botao: Button,
+    cx: &App,
+) -> AnyElement {
+    cartao(cx)
+        .id("nfe-chave")
+        .child(titulo_do_bloco("Chave de acesso", cx))
+        .child(div().text_sm().child(chave_em_grupos.to_string()))
+        .child(h_flex().child(botao))
+        .into_any_element()
+}
+
+/// Pede ao sistema que abra (ou mostre) o arquivo, se o servico de abrir arquivos deixar.
+pub(in crate::telas) fn pedir_ao_sistema(
+    servicos: &Servicos,
+    destino: Destino,
+    caminho: &Path,
+    cx: &mut App,
+) {
+    if servicos.abridor().pedir(destino, caminho) {
+        match destino {
+            Destino::Abrir => cx.open_with_system(caminho),
+            Destino::Mostrar => cx.reveal_path(caminho),
+        }
     }
 }

@@ -25,11 +25,25 @@ pub enum EscolhaDeNotas {
     Nfe,
     /// A NFC-e (o cupom do caixa).
     Nfce,
+    /// As NF-e recebidas (as compras: notas de fornecedor).
+    Recebidas,
 }
 
 impl EscolhaDeNotas {
     /// As escolhas, na ordem da tela.
-    pub const TODAS: [EscolhaDeNotas; 3] = [Self::Nfse, Self::Nfe, Self::Nfce];
+    pub const TODAS: [EscolhaDeNotas; 4] = [Self::Nfse, Self::Nfe, Self::Nfce, Self::Recebidas];
+
+    /// As escolhas que EMITEM nota (a Nova nota nao tem o que fazer com as recebidas).
+    pub const DE_EMISSAO: [EscolhaDeNotas; 3] = [Self::Nfse, Self::Nfe, Self::Nfce];
+
+    /// A escolha que a Nova nota mostra: as recebidas nao se emitem, entao a Nova nota cai na NFS-e (o padrao).
+    #[must_use]
+    pub fn da_emissao(self) -> Self {
+        match self {
+            Self::Recebidas => Self::Nfse,
+            outra => outra,
+        }
+    }
 
     /// O rotulo do botao.
     #[must_use]
@@ -38,6 +52,7 @@ impl EscolhaDeNotas {
             Self::Nfse => "NFS-e (serviço)",
             Self::Nfe => "NF-e (venda de mercadoria)",
             Self::Nfce => "NFC-e (cupom do caixa)",
+            Self::Recebidas => "Recebidas (compras)",
         }
     }
 }
@@ -504,5 +519,21 @@ mod testes {
             None,
             "versao desconhecida"
         );
+    }
+
+    #[test]
+    fn as_recebidas_sao_lembradas_e_a_nova_nota_cai_na_nfse() {
+        let b = codificar_escolha(EscolhaDeNotas::Recebidas);
+        assert_eq!(decodificar_escolha(&b), Some(EscolhaDeNotas::Recebidas));
+        assert!(String::from_utf8(b).unwrap().contains("\"recebidas\""));
+        assert_eq!(EscolhaDeNotas::Recebidas.rotulo(), "Recebidas (compras)");
+        assert_eq!(EscolhaDeNotas::Recebidas.da_emissao(), EscolhaDeNotas::Nfse);
+        assert_eq!(EscolhaDeNotas::Nfce.da_emissao(), EscolhaDeNotas::Nfce);
+        assert!(!EscolhaDeNotas::DE_EMISSAO.contains(&EscolhaDeNotas::Recebidas));
+        // o arquivo das tres escolhas antigas continua valendo
+        for antiga in ["nfse", "nfe", "nfce"] {
+            let texto = format!(r#"{{"versao":1,"notas":"{antiga}"}}"#);
+            assert!(decodificar_escolha(texto.as_bytes()).is_some(), "{antiga}");
+        }
     }
 }

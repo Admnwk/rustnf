@@ -19,7 +19,7 @@ path = "src/main.rs"
 [features]
 # O emissor de demonstracao (sem rede) e o exemplo `demonstracao`. Desligada por padrao: o executavel normal nao tem
 # como entrar nesse modo. Liga o certificado de teste da biblioteca: a demonstracao da NF-e assina as notas do ensaio.
-demonstracao = ["rustnf/cert_a1_teste"]
+demonstracao = ["rustnf/cert_a1_teste", "dep:flate2", "dep:base64"]
 
 [[example]]
 name = "demonstracao"
@@ -38,12 +38,18 @@ chrono = { version = "0.4", default-features = false, features = ["clock"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["rt-multi-thread", "time", "net", "sync"] }
+# so' a demonstracao e os testes: o gzip e o base64 do docZip dos documentos ficticios da distribuicao (as mesmas crates e
+# versoes que a biblioteca ja usa; nenhuma crate nova na arvore)
+flate2 = { version = "1", optional = true }
+base64 = { version = "0.23", optional = true }
 
 [target.'cfg(windows)'.dependencies]
 gpui-kit = "=0.11.0"
 
 [dev-dependencies]
 rustnf = { path = "../rustnf", features = ["sefin", "danfse", "nfe_sefaz", "danfe", "cert_a1_teste"] }
+flate2 = "1"
+base64 = "0.23"
 
 [target.'cfg(windows)'.dev-dependencies]
 gpui-kit = { version = "=0.11.0", features = ["test-support"] }

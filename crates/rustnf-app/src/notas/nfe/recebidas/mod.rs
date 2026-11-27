@@ -197,6 +197,47 @@ impl NotasRecebidas {
         std::fs::read_to_string(caminho).map_err(|_| ErroNotas::Leitura)
     }
 
+    /// Onde esta (ou estaria) o `procNFe` da NF-e recebida: o arquivo da nota completa, que o resumo nao e'.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroNotas::ChaveInvalida`] ou [`ErroNotas::NaoEncontrada`].
+    pub fn caminho_do_proc(&self, chave: &str) -> Result<PathBuf, ErroNotas> {
+        let r = self.registro(chave)?;
+        Ok(self
+            .do_mes(&r.chave)?
+            .join(format!("{}-procNFe.xml", r.chave)))
+    }
+
+    /// Guarda o DANFE em PDF ao lado do `procNFe` (gravacao atomica). So' a NF-e completa tem DANFE: o resumo nao e' uma
+    /// nota.
+    ///
+    /// # Errors
+    ///
+    /// [`ErroNotas::NaoEncontrada`] se a nota completa nao esta na pasta; [`ErroNotas::Gravacao`].
+    pub fn guardar_danfe(&self, chave: &str, pdf: &[u8]) -> Result<PathBuf, ErroNotas> {
+        let proc = self.caminho_do_proc(chave)?;
+        if !proc.is_file() {
+            return Err(ErroNotas::NaoEncontrada);
+        }
+        let destino = proc.with_extension("pdf");
+        atomico::gravar(&destino, pdf).map_err(|_| ErroNotas::Gravacao)?;
+        Ok(destino)
+    }
+
+    /// Quando o cursor foi gravado pela ultima vez (a hora do arquivo): e' a ultima vez que uma busca andou ou parou na
+    /// espera. `None` se o interessado nunca buscou neste ambiente.
+    #[must_use]
+    pub fn cursor_gravado_em(
+        &self,
+        ambiente: &str,
+        documento: &str,
+    ) -> Option<chrono::DateTime<chrono::Utc>> {
+        let caminho = self.arquivo_do_cursor(ambiente, documento).ok()?;
+        let feita = std::fs::metadata(caminho).and_then(|m| m.modified()).ok()?;
+        Some(feita.into())
+    }
+
     // ------------------------------------------------------------------------------------------------- gravacao
 
     /// Grava os documentos do lote e o indice e, so' depois, o cursor (veja o inicio deste modulo). Chamar de novo com o

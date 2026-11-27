@@ -32,7 +32,7 @@ use crate::modelo::nfe_lista::{FiltroNfe, ListaNfe};
 use crate::servicos::{Documento, Servicos};
 use crate::telas::LARGURA_DA_LATERAL;
 
-mod detalhe;
+pub(super) mod detalhe;
 
 /// O que a tela pede a janela.
 #[derive(Debug, Clone, PartialEq, Eq)]

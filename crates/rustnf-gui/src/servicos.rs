@@ -39,6 +39,7 @@ mod eventos;
 mod nfce;
 mod nfe;
 mod nfe_emissao;
+mod nfe_recebidas;
 mod notas;
 
 pub use emitir::{emitir, FabricaDeEmissor, FabricaReal, FabricaSemEmissor};
@@ -54,6 +55,7 @@ pub use nfe::{
     TransporteDin,
 };
 pub use nfe_emissao::{emitir_nfe, epec_nfe};
+pub use nfe_recebidas::{baixar_nota, buscar_notas, responder_nota, RecebidaDaPasta};
 pub use notas::{
     cancelar_nota, conferir_cancelamento, consultar_nota, AbrirArquivos, Destino, DoSistema,
     NotaDaPasta,
@@ -658,3 +660,5 @@ fn texto_da_configuracao(e: &ErroConfig) -> String {
 mod testes;
 #[cfg(test)]
 mod testes_emissao;
+#[cfg(test)]
+mod testes_recebidas;

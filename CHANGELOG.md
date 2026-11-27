@@ -2,6 +2,32 @@
 
 ## Próxima versão
 
+* Interface de desktop: as **NF-e recebidas (as compras) na janela**: buscar as notas que fornecedores emitiram contra a empresa,
+  ver a lista e o detalhe, baixar a nota completa, abrir o DANFE e **responder à nota** (a manifestação do destinatário).
+  **Nenhuma chamada real ao Ambiente Nacional e nenhum certificado real foram usados pela interface**: tudo foi testado com um
+  Ambiente Nacional de mentira (transporte roteirizado, sem rede) e o cofre em memória.
+  * Notas ganha a opção **Recebidas (compras)** ao lado de NFS-e, NF-e e NFC-e (lembrada como as outras; a Nova nota continua
+    oferecendo só o que se emite). A lista mostra data, fornecedor (nome e CNPJ), valor, a situação da NOTA (autorizada, cancelada
+    pelo emitente, uso negado) e a resposta da EMPRESA ("sem resposta sua", ciência, confirmada, desconhecida, não realizada), com
+    busca e filtro; um aviso diz quantas notas esperam resposta.
+  * **Buscar notas novas** pede a distribuição ao Ambiente Nacional e diz o resultado em palavras ("3 notas novas", "nada novo", "o
+    Ambiente Nacional pediu para esperar até HH:MM"). A espera e o bloqueio por consultar demais são da biblioteca: a tela mostra
+    a última busca e o horário, o botão fica desligado até lá, e clicar não chama nada.
+  * Detalhe: com a nota completa, o **mesmo detalhe e DANFE da NF-e emitida** (as seções foram generalizadas, não copiadas); com só
+    o resumo, o que ele traz e "Baixar a nota completa", que explica que isso registra a **ciência da operação** (evento fiscal) e
+    pede a confirmação. O desconhecimento não libera a nota completa, e a nota cancelada não oferece resposta.
+  * **Responder à nota**: um diálogo com as quatro respostas em palavras de quem compra ("Recebi a mercadoria, está certo", "Vi a
+    nota, ainda vou conferir", "Não comprei isto", "Comprei, mas a venda não aconteceu", esta com justificativa de 15 a 255). O que
+    o Ambiente Nacional recusaria (ciência ou desconhecimento de nota cancelada, ciência depois da resposta final, a mesma resposta
+    duas vezes) aparece ANTES de enviar, pela mesma função da biblioteca. Ambiente em destaque, marcação "Entendo que..." em
+    produção (sem ela, nenhuma chamada), sem clique duplo e desfecho com o que fazer. **O prazo da resposta não é calculado pelo
+    programa** (a biblioteca não o confere: quem decide é o Ambiente Nacional, que recusa com 596): a tela só repete a recusa.
+  * Na aplicação: `rustnf_app::nfe::fila` (última busca e espera), `danfe_da_recebida` e, na pasta dos recebidos, onde guardar o
+    DANFE. A SEFAZ de mentira da demonstração ganhou a distribuição e a resposta do destinatário (`gzip` e `base64` só na
+    demonstração e nos testes, as mesmas versões que a biblioteca já usa).
+  * Demonstração: `--nfe-recebidas normal|espera|vazio` e a pasta de ensaio com três notas recebidas (só o resumo, completa com
+    ciência e cancelada pelo emitente), mais três para a janela buscar.
+
 * Interface de desktop: a **NFC-e (modelo 65) na janela, como um caixa**. **Nenhuma NFC-e real, nenhuma SEFAZ real, nenhum
   certificado real e nenhum CSC real foram usados pela interface**: tudo foi testado com uma SEFAZ de mentira (transporte
   roteirizado, sem rede) e o cofre em memória.
@@ -21,8 +47,7 @@
     inutilização da NFC-e (a aplicação não as tem). O diálogo e a lista da NF-e foram generalizados para o modelo 65, não copiados.
   * Demonstração: `--nfce-emissao autorizada|rejeitada|sem-resposta|fora` e a pasta de ensaio com NFC-e autorizada, cancelada,
     off-line dentro do prazo e sem resposta.
-  * **Fica para depois:** as notas recebidas e a manifestação na janela, a via do estabelecimento da off-line e a impressão
-    direta em impressora.
+  * **Fica para depois:** a via do estabelecimento da off-line e a impressão direta em impressora.
 
 * Interface de desktop: a **emissão da NF-e (modelo 55) pela janela**, num assistente de cinco passos para quem vende (para
   quem, o que vendeu, como recebeu, como entrega, conferir e enviar). **Nenhuma NF-e real, nenhuma SEFAZ real, nenhum EPEC real e

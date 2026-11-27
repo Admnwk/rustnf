@@ -57,8 +57,8 @@ pub use pedido::{
     avisos_json, completar_pedido, conferencia_json, montar_pedido, preparar, Montado, Preparada,
 };
 pub use recebidas::{
-    baixar, cursor, listar, manifestar, sincronizar, Baixada, Contagem, FiltroRecebidas,
-    Manifestada, Sincronizada, LOTES_MAXIMO, LOTES_PADRAO,
+    baixar, cursor, danfe_da_recebida, fila, listar, manifestar, sincronizar, Baixada, Contagem,
+    Fila, FiltroRecebidas, Manifestada, Sincronizada, LOTES_MAXIMO, LOTES_PADRAO,
 };
 pub use resposta::{erro_do_evento, erro_do_resultado, json_do_resultado};
 pub use retomada::{erro_da_retomada, retomar, Retomada};

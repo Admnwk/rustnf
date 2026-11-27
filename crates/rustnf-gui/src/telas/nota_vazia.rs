@@ -20,11 +20,11 @@ use crate::modelo::passos::{configuracao_completa, o_que_falta};
 impl Raiz {
     /// O conteudo da tela Nova nota: o formulario, ou o que falta configurar.
     pub(super) fn tela_nova_nota(&mut self, cx: &mut Context<Self>) -> AnyElement {
-        let filho = match self.escolha_notas {
+        let filho = match self.escolha_notas.da_emissao() {
             EscolhaDeNotas::Nfe => self.nova_nfe.clone().into_any_element(),
             // a NFC-e se emite no Caixa: a mesma tela
             EscolhaDeNotas::Nfce => self.caixa.clone().into_any_element(),
-            EscolhaDeNotas::Nfse => self.nova.clone().into_any_element(),
+            _ => self.nova.clone().into_any_element(),
         };
         let corpo = self.exigindo_configuracao(
             "Nova nota",
@@ -43,7 +43,7 @@ impl Raiz {
                     .id("nova-seletor")
                     .px_6()
                     .pt_4()
-                    .child(self.seletor_de_notas(cx)),
+                    .child(self.seletor_de_notas(true, cx)),
             )
             .child(div().flex_1().min_h_0().child(corpo))
             .into_any_element()
@@ -54,6 +54,7 @@ impl Raiz {
         let filho = match self.escolha_notas {
             EscolhaDeNotas::Nfe => self.nfe.clone().into_any_element(),
             EscolhaDeNotas::Nfce => self.nfce.clone().into_any_element(),
+            EscolhaDeNotas::Recebidas => self.recebidas.lista.clone().into_any_element(),
             EscolhaDeNotas::Nfse => self.notas.clone().into_any_element(),
         };
         let corpo = self.exigindo_configuracao(
@@ -73,7 +74,7 @@ impl Raiz {
                     .id("notas-seletor")
                     .px_6()
                     .pt_4()
-                    .child(self.seletor_de_notas(cx)),
+                    .child(self.seletor_de_notas(false, cx)),
             )
             .child(div().flex_1().min_h_0().child(corpo))
             .into_any_element()
