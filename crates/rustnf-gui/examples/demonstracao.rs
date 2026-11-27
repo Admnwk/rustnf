@@ -14,7 +14,7 @@
 //!     --config rustnf.toml [--resultado autorizada|rejeitada|sem-resposta] \
 //!     [--cancelamento registrado|rejeitado|sem-resposta] [--evento registrado|rejeitado|sem-resposta] \
 //!     [--nfe-evento registrado|rejeitado|sem-resposta] [--nfe-emissao autorizada|rejeitada|sem-resposta|fora] \
-//!     [--atraso-ms 1200]
+//!     [--nfce-emissao autorizada|rejeitada|sem-resposta|fora] [--atraso-ms 1200]
 //! ```
 //!
 //! `--resultado` e' o roteiro da emissao: `autorizada` (padrao) autoriza a nota; `rejeitada` devolve duas mensagens de
@@ -34,6 +34,14 @@
 //! esta parado (a pasta nao ganha a NF-e sem resposta, para a contingencia EPEC poder ser oferecida). A pasta de ensaio
 //! tambem ganha um cadastro com tres produtos.
 //!
+//! `--nfce-emissao` e' o mesmo roteiro para a venda do Caixa (NFC-e, modelo 65): `autorizada` (padrao); `rejeitada` recusa a
+//! primeira tentativa e autoriza a seguinte com o mesmo numero; `sem-resposta` deixa a primeira sem resposta e o Retomar acha a
+//! mesma chave autorizada; `fora` faz o status do servico nao responder na primeira vez, e a venda sai em contingencia off-line
+//! (depois a SEFAZ volta e "Fechar o caixa" transmite a mesma nota). Com a `[nfe].uf` configurada, a pasta de ensaio ganha a
+//! pasta `nfce/` com uma NFC-e autorizada, uma cancelada, uma off-line dentro do prazo e uma sem resposta. O CSC de ensaio: a
+//! demonstracao nao usa o cofre do sistema (o QR Code padrao, versao 3, nao leva CSC); a senha do certificado e' a que a janela
+//! pede, como na NF-e.
+//!
 //! `--nfe-evento` e' o roteiro da SEFAZ de mentira da NF-e para o cancelamento, a carta de correcao e a inutilizacao:
 //! `registrado` (padrao); `rejeitado` recusa (o cancelamento com 501, o prazo; a carta e a inutilizacao com outro
 //! codigo); `sem-resposta` deixa a primeira tentativa sem resposta e registra na segunda. Com a `[nfe]` configurada
@@ -51,6 +59,7 @@ fn main() -> ExitCode {
         cancelamento_do_nome, roteiro_do_nome, EmissorDemonstracao, Ensaio, FabricaDemonstracao,
     };
     use rustnf_gui::demonstracao_eventos::evento_do_nome;
+    use rustnf_gui::demonstracao_nfce::{roteiro_nfce_do_nome, semear_nfce};
     use rustnf_gui::demonstracao_nfe::{
         roteiro_emissao_do_nome, roteiro_nfe_do_nome, semear_com, FabricaNfeDemonstracao,
         RoteiroEmissao, TransporteNfeDemonstracao,
@@ -64,6 +73,7 @@ fn main() -> ExitCode {
     let mut evento = "registrado".to_string();
     let mut nfe_evento = "registrado".to_string();
     let mut nfe_emissao = "autorizada".to_string();
+    let mut nfce_emissao = "autorizada".to_string();
     let mut atraso_ms: u64 = 1200;
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
@@ -96,6 +106,14 @@ fn main() -> ExitCode {
                 Some(v) => nfe_emissao = v,
                 None => {
                     eprintln!("demonstracao: --nfe-emissao precisa de um valor");
+                    return ExitCode::from(2);
+                }
+            }
+        } else if a == "--nfce-emissao" {
+            match args.next() {
+                Some(v) => nfce_emissao = v,
+                None => {
+                    eprintln!("demonstracao: --nfce-emissao precisa de um valor");
                     return ExitCode::from(2);
                 }
             }
@@ -137,6 +155,12 @@ fn main() -> ExitCode {
     };
     let Some(roteiro_da_emissao) = roteiro_emissao_do_nome(&nfe_emissao) else {
         eprintln!("demonstracao: --nfe-emissao aceita autorizada, rejeitada, sem-resposta ou fora");
+        return ExitCode::from(2);
+    };
+    let Some(roteiro_da_nfce) = roteiro_nfce_do_nome(&nfce_emissao) else {
+        eprintln!(
+            "demonstracao: --nfce-emissao aceita autorizada, rejeitada, sem-resposta ou fora"
+        );
         return ExitCode::from(2);
     };
     let config = match argumentos::interpretar(resto) {
@@ -185,7 +209,21 @@ fn main() -> ExitCode {
         );
     }
     let nfe = TransporteNfeDemonstracao::novo(roteiro_da_nfe, Duration::from_millis(atraso_ms))
-        .com_emissao(roteiro_da_emissao);
+        .com_emissao(roteiro_da_emissao)
+        .com_nfce(roteiro_da_nfce);
+    if let Ok(carga) = base.carregar() {
+        if !carga.config.nfe.uf.trim().is_empty() {
+            match semear_nfce(&carga.config, &nfe) {
+                Ok(n) => println!(
+                    "demonstracao: NFC-e de ensaio na pasta: autorizada {}, cancelada {}, off-line {}, sem resposta {}",
+                    n.autorizada, n.cancelada, n.offline, n.pendente
+                ),
+                Err(e) => {
+                    eprintln!("demonstracao: nao foi possivel semear as NFC-e de ensaio: {e}");
+                }
+            }
+        }
+    }
     match base.carregar() {
         Ok(carga) if !carga.config.nfe.uf.trim().is_empty() => match semear_com(
             &carga.config,

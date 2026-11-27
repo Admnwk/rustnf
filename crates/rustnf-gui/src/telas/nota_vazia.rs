@@ -20,10 +20,11 @@ use crate::modelo::passos::{configuracao_completa, o_que_falta};
 impl Raiz {
     /// O conteudo da tela Nova nota: o formulario, ou o que falta configurar.
     pub(super) fn tela_nova_nota(&mut self, cx: &mut Context<Self>) -> AnyElement {
-        let filho = if self.escolha_notas == EscolhaDeNotas::Nfe {
-            self.nova_nfe.clone().into_any_element()
-        } else {
-            self.nova.clone().into_any_element()
+        let filho = match self.escolha_notas {
+            EscolhaDeNotas::Nfe => self.nova_nfe.clone().into_any_element(),
+            // a NFC-e se emite no Caixa: a mesma tela
+            EscolhaDeNotas::Nfce => self.caixa.clone().into_any_element(),
+            EscolhaDeNotas::Nfse => self.nova.clone().into_any_element(),
         };
         let corpo = self.exigindo_configuracao(
             "Nova nota",
@@ -50,10 +51,10 @@ impl Raiz {
 
     /// O conteudo da tela Notas: o seletor NFS-e | NF-e e a lista do documento escolhido, ou o que falta configurar.
     pub(super) fn tela_notas(&mut self, cx: &mut Context<Self>) -> AnyElement {
-        let filho = if self.escolha_notas == EscolhaDeNotas::Nfe {
-            self.nfe.clone().into_any_element()
-        } else {
-            self.notas.clone().into_any_element()
+        let filho = match self.escolha_notas {
+            EscolhaDeNotas::Nfe => self.nfe.clone().into_any_element(),
+            EscolhaDeNotas::Nfce => self.nfce.clone().into_any_element(),
+            EscolhaDeNotas::Nfse => self.notas.clone().into_any_element(),
         };
         let corpo = self.exigindo_configuracao(
             "Notas",
@@ -76,6 +77,18 @@ impl Raiz {
             )
             .child(div().flex_1().min_h_0().child(corpo))
             .into_any_element()
+    }
+
+    /// O conteudo da tela Caixa: a venda rapida (NFC-e), ou o que falta configurar.
+    pub(super) fn tela_caixa(&mut self, cx: &mut Context<Self>) -> AnyElement {
+        let filho = self.caixa.clone().into_any_element();
+        self.exigindo_configuracao(
+            "Caixa",
+            "Antes de vender, o rustnf precisa de alguns dados.",
+            "O caixa usa os dados do emitente, o certificado digital e a pasta das notas. Ainda falta:",
+            filho,
+            cx,
+        )
     }
 
     /// O conteudo da tela Consultar: o campo da chave, ou o que falta configurar.

@@ -41,6 +41,10 @@ impl Raiz {
         let ambiente = self.ambiente_do_selo();
         let (rotulo_do_selo, cores) = if self.servicos.demonstracao() {
             (SELO_DA_DEMONSTRACAO, CORES_DA_DEMONSTRACAO)
+        } else if self.mostrando_a_nfce() {
+            // o cupom tem o ambiente dele: o selo mostra o do documento que esta na tela
+            let a = self.ambiente_da_nfce_em_vigor();
+            (selo_do_ambiente_da_nfe(a), a.cores())
         } else if self.mostrando_a_nfe() {
             // o selo mostra o ambiente do documento que esta na tela: o da NF-e e' outro campo
             let a = self.ambiente_da_nfe_em_vigor();
@@ -98,6 +102,14 @@ impl Raiz {
                                 .active(tela == Tela::NovaNota)
                                 .on_click(cx.listener(|this, _, _, cx| {
                                     this.ir_para(Tela::NovaNota, cx);
+                                })),
+                        )
+                        .child(
+                            SidebarMenuItem::new("Caixa")
+                                .icon(IconName::Building2)
+                                .active(tela == Tela::Caixa)
+                                .on_click(cx.listener(|this, _, _, cx| {
+                                    this.ir_para(Tela::Caixa, cx);
                                 })),
                         )
                         .child(
@@ -229,6 +241,7 @@ impl Raiz {
             Estado::Pronto => match self.tela {
                 Tela::Inicio => self.tela_inicio(window, cx),
                 Tela::NovaNota => self.tela_nova_nota(cx),
+                Tela::Caixa => self.tela_caixa(cx),
                 Tela::Notas => self.tela_notas(cx),
                 Tela::Consultar => self.tela_consultar(cx),
                 Tela::Produtos => self.produtos.clone().into_any_element(),

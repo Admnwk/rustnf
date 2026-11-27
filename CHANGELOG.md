@@ -2,6 +2,28 @@
 
 ## Próxima versão
 
+* Interface de desktop: a **NFC-e (modelo 65) na janela, como um caixa**. **Nenhuma NFC-e real, nenhuma SEFAZ real, nenhum
+  certificado real e nenhum CSC real foram usados pela interface**: tudo foi testado com uma SEFAZ de mentira (transporte
+  roteirizado, sem rede) e o cofre em memória.
+  * Tela **Caixa** (barra lateral e seletor "NFC-e" da Nova nota): busca do produto pelo código ou nome no cadastro da NF-e,
+    quantidade, cupom com o total grande, desconto, CPF opcional, pagamento (dinheiro com troco, Pix, cartão, mais de uma forma),
+    produto novo com o NCM obrigatório, rascunho que sobrevive e **Enter, Enter, Ctrl+Enter** como caminho inteiro. Depois de
+    autorizada, "Abrir o cupom" (PDF) e "Salvar para a impressora (ESC/POS)": o programa só gera o arquivo.
+  * Desfechos: rejeitada (o número volta livre), sem resposta (só o Retomar; nunca uma segunda NFC-e para o mesmo cupom) e a
+    SEFAZ fora antes de enviar, que emite em **contingência off-line** sozinha e diz o prazo para transmitir. **Fechar o caixa**
+    lista o que falta transmitir e "Transmitir agora" reenvia a mesma nota, com a mesma chave.
+  * Produção: a primeira venda da sessão pede "Entendo que a nota tem efeito fiscal" e a marcação vale por sessão do caixa, não
+    por cupom (o caixa ficaria lento; o selo do ambiente fica à vista). Sem a marcação, nenhuma chamada.
+  * Configurações, **NFC-e**: ambiente, série, `idCSC`, versão do QR Code, cupom e motivo da off-line; o **CSC** vai ao cofre e a
+    tela só diz guardado ou não (com o cofre desligado ela explica e o caixa não emite com o QR Code versão 2).
+  * Notas ganha o seletor **NFS-e | NF-e | NFC-e**; a lista da NFC-e reusa a da NF-e, com o detalhe, o cupom, "Conferir na
+    SEFAZ", cancelar (com o aviso do prazo nacional ANTES de enviar, sem bloquear) e Retomar. Não há carta de correção nem
+    inutilização da NFC-e (a aplicação não as tem). O diálogo e a lista da NF-e foram generalizados para o modelo 65, não copiados.
+  * Demonstração: `--nfce-emissao autorizada|rejeitada|sem-resposta|fora` e a pasta de ensaio com NFC-e autorizada, cancelada,
+    off-line dentro do prazo e sem resposta.
+  * **Fica para depois:** as notas recebidas e a manifestação na janela, a via do estabelecimento da off-line e a impressão
+    direta em impressora.
+
 * Interface de desktop: a **emissão da NF-e (modelo 55) pela janela**, num assistente de cinco passos para quem vende (para
   quem, o que vendeu, como recebeu, como entrega, conferir e enviar). **Nenhuma NF-e real, nenhuma SEFAZ real, nenhum EPEC real e
   nenhum certificado real foram usados pela interface**: tudo foi testado com uma SEFAZ de mentira (transporte roteirizado, sem

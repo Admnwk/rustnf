@@ -49,7 +49,7 @@
 * Interface de desktop, **NF-e (modelo 55)**: configurar a NF-e, ver as notas da pasta, abrir o DANFE, conferir na SEFAZ, cancelar,
   corrigir por carta, inutilizar números, retomar a nota sem resposta e **emitir por um assistente de cinco passos** (cadastro de
   produtos, nota anterior como modelo, contingência EPEC). Testada com uma SEFAZ de mentira e a janela de teste do GPUI: **nenhuma
-  NF-e real, nenhuma SEFAZ real e nenhum certificado real pela interface**. **Fica para as próximas entregas:** a NFC-e e os
+  NF-e real, nenhuma SEFAZ real e nenhum certificado real pela interface**. **Fica para as próximas entregas:** os
   documentos recebidos na janela; e, no assistente, a venda ao exterior, o IPI, a venda por intermediador e a transmissão do EPEC
   que troca a nota sem resposta: hoje a aplicação não tem um caminho para trocar a nota sem resposta por um EPEC.
   **Pendência:** o EPEC da nota que ficou sem resposta (a mesma chave). Hoje a aplicação numera o EPEC pelo próximo número
@@ -105,7 +105,12 @@
 * NFC-e, faces: **feitas a aplicação (`rustnf-app`), a linha de comando (`rustnf nfce`), a API HTTP (`/nfce/`) e o MCP (`*_nfce`)**:
   `[nfce]`, CSC no cofre (que só se guarda pela linha de comando), pasta `nfce/` de numeração própria, emissão normal e off-line,
   retomada, pendentes e fechamento do caixa, cancelamento com aviso de prazo e DANFC-e como arquivo. Feitas com transporte falso
-  e um simulador local: **nenhuma NFC-e real**. **Fica para a interface:** a tela da NFC-e.
+  e um simulador local: **nenhuma NFC-e real**. A interface (o Caixa) foi feita depois, veja abaixo.
+* Interface de desktop, **NFC-e**: o Caixa (venda pelo teclado, cupom como arquivo, contingência off-line, fechar o caixa), a seção NFC-e das
+  Configurações com o CSC no cofre e a NFC-e na lista de Notas (detalhe, conferir, cancelar com o aviso do prazo, retomar). Testada
+  com uma SEFAZ de mentira e a janela de teste do GPUI: **nenhuma NFC-e real, nenhuma SEFAZ real, nenhum certificado real e nenhum
+  CSC real pela interface**. **Fica para as próximas entregas:** os documentos recebidos e a manifestação na janela, a via do
+  estabelecimento da off-line e a impressão direta.
 * NFC-e, o que ficou sem fazer e por quê: o cancelamento por substituição (110112, NT 2018.004: a biblioteca não tem o
   evento nem o esquema dele no pacote PL_010h v1.03); a inutilização da NFC-e (o `inutNFe` da biblioteca é só do modelo 55);
   o prazo de cancelamento de **cada UF** (só o prazo nacional de 24 horas, MOC 7.00, Visão Geral, regra 2P12-14, tem fonte

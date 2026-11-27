@@ -36,8 +36,8 @@ use crate::modelo::nfe_eventos::{
 };
 use crate::modelo::nfe_resultados::{ConsultaNfe, ResumoDaRetomada};
 use crate::servicos::{
-    cancelar_nfe, conferir_cancelamento_nfe, consultar_nfe, corrigir_nfe, inutilizar_nfe,
-    retomar_nfe, Servicos,
+    cancelar_doc, conferir_cancelamento_doc, consultar_doc, corrigir_nfe, inutilizar_nfe,
+    retomar_doc, Documento, Servicos,
 };
 
 /// A nota de que o dialogo trata, com o que ele mostra dela.
@@ -73,13 +73,15 @@ pub(super) enum Operacao {
 }
 
 impl Operacao {
-    fn titulo(self, numero: &str) -> String {
+    fn titulo(self, numero: &str, doc: Documento) -> String {
+        let nome = doc.nome();
         match self {
-            Self::Cancelar => format!("Cancelar a NF-e nº {numero}"),
-            Self::Corrigir => format!("Carta de correção da NF-e nº {numero}"),
+            Self::Cancelar => format!("Cancelar a {nome} nº {numero}"),
+            Self::Corrigir => format!("Carta de correção da {nome} nº {numero}"),
             Self::Inutilizar => PedidoNfe::Inutilizar.titulo().into(),
+            Self::Retomar if doc == Documento::Nfce => "Transmitir as NFC-e pendentes".into(),
             Self::Retomar => "Retomar as notas sem resposta".into(),
-            Self::Conferir => format!("Conferir a NF-e nº {numero} na SEFAZ"),
+            Self::Conferir => format!("Conferir a {nome} nº {numero} na SEFAZ"),
         }
     }
 
@@ -140,7 +142,11 @@ enum Passo {
 /// O dialogo da NF-e.
 pub(super) struct DialogoNfe {
     servicos: Arc<Servicos>,
+    /// A NF-e ou a NFC-e: a NFC-e usa a pasta `nfce/` e a configuracao de `[nfce]`.
+    pub(super) documento: Documento,
     config: Config,
+    /// O aviso do prazo nacional de cancelamento da NFC-e (so' a NFC-e cancelada fora das 24 horas): nunca bloqueia.
+    pub(super) aviso_de_prazo: Option<String>,
     /// A nota; `None` em inutilizar e retomar.
     pub(super) alvo: Option<AlvoNfe>,
     pub(super) operacao: Operacao,
@@ -171,6 +177,7 @@ impl EventEmitter<EventoDialogoNfe> for DialogoNfe {}
 impl DialogoNfe {
     pub(super) fn new(
         servicos: Arc<Servicos>,
+        documento: Documento,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Self {
@@ -221,6 +228,8 @@ impl DialogoNfe {
         }
         Self {
             servicos,
+            documento,
+            aviso_de_prazo: None,
             config: Config::default(),
             alvo: None,
             operacao: Operacao::Cancelar,
@@ -245,7 +254,11 @@ impl DialogoNfe {
 
     /// A configuracao que vale (a efetiva) chegou ou mudou.
     pub(super) fn definir_config(&mut self, config: Config, cx: &mut Context<Self>) {
-        self.config = config;
+        // a NFC-e enxerga o ambiente e a serie dela como se fossem os da NF-e: o resto do dialogo nao precisa saber
+        self.config = match self.documento {
+            Documento::Nfe => config,
+            Documento::Nfce => config.como_nfce(),
+        };
         cx.notify();
     }
 
@@ -260,6 +273,12 @@ impl DialogoNfe {
         self.inutilizar = FormularioDeInutilizacao::default();
         self.retomar_entendido = false;
         self.texto_oficial_aberto = false;
+        self.aviso_de_prazo = match (&alvo, op, self.documento) {
+            (Some(a), Operacao::Cancelar, Documento::Nfce) => {
+                self.servicos.aviso_do_prazo_nfce(&self.config, &a.chave)
+            }
+            _ => None,
+        };
         self.alvo = alvo;
         self.tocada = false;
         self.fase = Fase::Preenchendo;
@@ -354,6 +373,7 @@ impl DialogoNfe {
         let servicos = Arc::clone(&self.servicos);
         let fabrica = servicos.fabrica_nfe();
         let config = self.config.clone();
+        let doc = self.documento;
         let op = self.operacao;
         let alvo = self.alvo.clone();
         let (cancelar, corrigir, inutilizar) = (
@@ -405,7 +425,7 @@ impl DialogoNfe {
             let trabalho = async move {
                 match (op, passo) {
                     (Operacao::Cancelar, Passo::Enviar) => Resposta::Pedido(
-                        cancelar_nfe(fabrica, preparo, config, chave, cancelar).await,
+                        cancelar_doc(doc, fabrica, preparo, config, chave, cancelar).await,
                     ),
                     (Operacao::Corrigir, Passo::Enviar) => Resposta::Pedido(
                         corrigir_nfe(fabrica, preparo, config, chave, corrigir).await,
@@ -424,17 +444,19 @@ impl DialogoNfe {
                         Err(texto) => Resposta::Pedido(DesfechoNfe::Recusado { texto }),
                     },
                     (Operacao::Retomar, _) => {
-                        Resposta::Retomada(retomar_nfe(fabrica, preparo, config).await)
+                        Resposta::Retomada(retomar_doc(doc, fabrica, preparo, config).await)
                     }
-                    (Operacao::Conferir, _) => {
-                        Resposta::Consulta(consultar_nfe(fabrica, preparo, config, chave).await)
-                    }
+                    (Operacao::Conferir, _) => Resposta::Consulta(
+                        consultar_doc(doc, fabrica, preparo, config, chave).await,
+                    ),
                     // so' o cancelamento tem resposta definitiva na consulta; a carta nao aparece nela
                     (Operacao::Corrigir | Operacao::Inutilizar, Passo::ConferirCancelamento) => {
-                        Resposta::Consulta(consultar_nfe(fabrica, preparo, config, chave).await)
+                        Resposta::Consulta(
+                            consultar_doc(doc, fabrica, preparo, config, chave).await,
+                        )
                     }
                     (Operacao::Cancelar, Passo::ConferirCancelamento) => Resposta::Pedido(
-                        conferir_cancelamento_nfe(fabrica, preparo, config, chave).await,
+                        conferir_cancelamento_doc(doc, fabrica, preparo, config, chave).await,
                     ),
                 }
             };
@@ -511,9 +533,10 @@ impl DialogoNfe {
             let trabalhando = c.ocupado();
             let preenchendo = matches!(c.fase, Fase::Preenchendo);
             let producao = c.producao();
-            let titulo = c
-                .operacao
-                .titulo(c.alvo.as_ref().map_or("", |a| a.numero.as_str()));
+            let titulo = c.operacao.titulo(
+                c.alvo.as_ref().map_or("", |a| a.numero.as_str()),
+                c.documento,
+            );
             let operacao = c.operacao;
             let pode = c.pode_enviar();
             let motivo = if preenchendo && operacao != Operacao::Conferir {

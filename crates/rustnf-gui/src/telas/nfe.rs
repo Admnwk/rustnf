@@ -26,10 +26,10 @@ use rustnf_app::config::Config;
 
 use super::nfe_dialogo::{DialogoNfe, EventoDialogoNfe, Operacao};
 use super::notas::{Carga, ALTURA_DA_LINHA, LARGURA_DO_DETALHE, LARGURA_PARA_DETALHE_AO_LADO};
-use super::pecas::{cabecalho, estado_vazio, faixa, selo_da_situacao_nfe, Negrito as _};
+use super::pecas::{cabecalho, estado_vazio, faixa, selo_da_situacao_nfe, selo_de, Negrito as _};
 use crate::modelo::certificado::Gravidade;
 use crate::modelo::nfe_lista::{FiltroNfe, ListaNfe};
-use crate::servicos::Servicos;
+use crate::servicos::{Documento, Servicos};
 use crate::telas::LARGURA_DA_LATERAL;
 
 mod detalhe;
@@ -46,6 +46,8 @@ pub(super) enum EventoNfe {
 /// A tela das NF-e.
 pub(super) struct TelaNfe {
     servicos: Arc<Servicos>,
+    /// A NF-e (pasta `nfe/`) ou a NFC-e (pasta `nfce/`): e' o mesmo desenho, com o que muda no modelo 65.
+    documento: Documento,
     config: Config,
     /// A configuracao da NF-e esta completa (a comum mais a UF): sem isso a tela explica o que falta.
     pronta: bool,
@@ -76,6 +78,7 @@ impl TelaNfe {
     pub(super) fn new(
         servicos: Arc<Servicos>,
         dialogo: Entity<DialogoNfe>,
+        documento: Documento,
         window: &mut Window,
         cx: &mut Context<Self>,
     ) -> Self {
@@ -103,6 +106,7 @@ impl TelaNfe {
         });
         Self {
             servicos,
+            documento,
             config: Config::default(),
             pronta: false,
             carga: Carga::Nova,
@@ -164,9 +168,15 @@ impl TelaNfe {
         let versao = self.versao;
         let servicos = Arc::clone(&self.servicos);
         let config = self.config.clone();
+        let documento = self.documento;
         cx.spawn(async move |this, cx| {
             let r = cx
-                .background_spawn(async move { servicos.listar_nfe(&config) })
+                .background_spawn(async move {
+                    match documento {
+                        Documento::Nfe => servicos.listar_nfe(&config),
+                        Documento::Nfce => servicos.listar_nfce(&config),
+                    }
+                })
                 .await;
             this.update(cx, |this, cx| {
                 this.atualizando = false;
@@ -277,13 +287,24 @@ impl TelaNfe {
         let escolhida = self.escolhida.as_deref() == Some(l.chave.as_str());
         let em_foco = self.em_foco == Some(i);
         let nome = if l.destinatario.is_empty() {
-            "(destinatário não identificado)".to_string()
+            if self.documento == Documento::Nfce {
+                "Consumidor não identificado".to_string()
+            } else {
+                "(destinatário não identificado)".to_string()
+            }
         } else {
             l.destinatario.clone()
         };
         let segunda =
             if l.aviso.is_some() && l.situacao != rustnf_app::notas::nfe::Situacao::Denegada {
-                Some(("Sem resposta: use Retomar".to_string(), aviso))
+                Some((
+                    if l.offline {
+                        "Emitida sem internet: use Retomar".to_string()
+                    } else {
+                        "Sem resposta: use Retomar".to_string()
+                    },
+                    aviso,
+                ))
             } else {
                 Some((l.documento.clone(), muted))
             };
@@ -348,7 +369,11 @@ impl TelaNfe {
                     .w(px(136.))
                     .flex_shrink_0()
                     .justify_end()
-                    .child(selo_da_situacao_nfe(l.situacao, cx)),
+                    .child(if l.offline {
+                        selo_de(l.rotulo, cx.theme().warning)
+                    } else {
+                        selo_da_situacao_nfe(l.situacao, cx)
+                    }),
             )
             .on_click(cx.listener(move |this, _, window, cx| this.abrir(i, window, cx)))
             .into_any_element()
@@ -429,15 +454,18 @@ impl TelaNfe {
                     .child(contagem),
             )
             .child(div().flex_1())
-            .child(
-                Button::new("nfe-inutilizar")
-                    .label("Inutilizar números")
-                    .icon(IconName::Ban)
-                    .outline()
-                    .small()
-                    .disabled(!self.pronta)
-                    .on_click(cx.listener(|this, _, window, cx| this.inutilizar(window, cx))),
-            )
+            // a aplicacao so' inutiliza numeros da NF-e (o `inutNFe` que ela monta e' do modelo 55): a NFC-e nao oferece
+            .when(self.documento == Documento::Nfe, |d| {
+                d.child(
+                    Button::new("nfe-inutilizar")
+                        .label("Inutilizar números")
+                        .icon(IconName::Ban)
+                        .outline()
+                        .small()
+                        .disabled(!self.pronta)
+                        .on_click(cx.listener(|this, _, window, cx| this.inutilizar(window, cx))),
+                )
+            })
             .child(
                 Button::new("nfe-atualizar")
                     .label("Atualizar")
@@ -464,8 +492,12 @@ impl TelaNfe {
                 .child(faixa(
                     Gravidade::Aviso,
                     format!(
-                        "{} sem resposta da SEFAZ. {} Retomar consulta cada uma pela mesma chave e, só se a SEFAZ não a recebeu, reenvia a mesma nota: nunca cria uma nota nova no lugar.",
-                        crate::modelo::nfe_resultados::contagem(n, "nota enviada", "notas enviadas"),
+                        "{} {} Retomar consulta cada uma pela mesma chave e, só se a SEFAZ não a recebeu, reenvia a mesma nota: nunca cria uma nota nova no lugar.",
+                        if self.documento == Documento::Nfce {
+                            crate::modelo::nfe_resultados::contagem(n, "NFC-e aguarda a SEFAZ (sem resposta ou emitida sem internet).", "NFC-e aguardam a SEFAZ (sem resposta ou emitidas sem internet).")
+                        } else {
+                            crate::modelo::nfe_resultados::contagem(n, "nota enviada sem resposta da SEFAZ.", "notas enviadas sem resposta da SEFAZ.")
+                        },
                         if n == 1 {
                             "Ela pode ou não ter sido autorizada."
                         } else {
@@ -519,8 +551,16 @@ impl TelaNfe {
                 .into_any_element(),
             Carga::Pronta if self.lista.vazia() => estado_vazio(
                 IconName::Inbox,
-                "Nenhuma NF-e na pasta ainda",
-                "As NF-e autorizadas pela SEFAZ aparecem aqui. A emissão pela janela chega na próxima versão; por enquanto, emita pela linha de comando (rustnf nfe emitir) e as notas aparecem nesta lista.",
+                if self.documento == Documento::Nfce {
+                    "Nenhuma NFC-e na pasta ainda"
+                } else {
+                    "Nenhuma NF-e na pasta ainda"
+                },
+                if self.documento == Documento::Nfce {
+                    "Os cupons emitidos no Caixa aparecem aqui, com o cupom para abrir, conferir na SEFAZ e cancelar."
+                } else {
+                    "As NF-e autorizadas pela SEFAZ aparecem aqui. Emita pela Nova nota (NF-e) ou pela linha de comando (rustnf nfe emitir) e as notas aparecem nesta lista."
+                },
                 Vec::new(),
                 cx,
             )
@@ -529,7 +569,7 @@ impl TelaNfe {
             Carga::Pronta if self.lista.sem_resultado() => estado_vazio(
                 IconName::Search,
                 "Nenhuma nota encontrada",
-                "Nenhuma NF-e da pasta bate com a busca e o filtro. Confira o texto ou limpe a busca.",
+                "Nenhuma nota da pasta bate com a busca e o filtro. Confira o texto ou limpe a busca.",
                 vec![Button::new("nfe-limpar-busca")
                     .label("Limpar a busca")
                     .outline()
@@ -572,11 +612,19 @@ impl TelaNfe {
             .gap_3()
             .px_6()
             .py_4()
-            .child(cabecalho(
-                "NF-e (venda de mercadoria)",
-                "As NF-e da pasta de notas, da mais recente para a mais antiga. Enter abre o detalhe.",
-                cx,
-            ))
+            .child(if self.documento == Documento::Nfce {
+                cabecalho(
+                    "NFC-e (cupom do caixa)",
+                    "Os cupons da pasta de notas, do mais recente para o mais antigo. Enter abre o detalhe.",
+                    cx,
+                )
+            } else {
+                cabecalho(
+                    "NF-e (venda de mercadoria)",
+                    "As NF-e da pasta de notas, da mais recente para a mais antiga. Enter abre o detalhe.",
+                    cx,
+                )
+            })
             .child(self.barra(cx))
             .children(pendentes)
             .child(div().flex_1().min_h_0().child(corpo))
@@ -626,8 +674,12 @@ impl TelaNfe {
     fn falta_configurar(&mut self, cx: &mut Context<Self>) -> AnyElement {
         estado_vazio(
             IconName::Settings,
-            "Falta configurar a NF-e",
-            "Para ver e mexer nas NF-e, informe nas Configurações, na seção NF-e, a UF do emitente. Os dados do emitente, o certificado e a pasta de notas são os mesmos da NFS-e.",
+            if self.documento == Documento::Nfce {
+                "Falta configurar a NFC-e"
+            } else {
+                "Falta configurar a NF-e"
+            },
+            "Para ver e mexer nas notas, informe nas Configurações, na seção NF-e, a UF do emitente. Os dados do emitente, o certificado e a pasta de notas são os mesmos da NFS-e.",
             vec![Button::new("nfe-ir-para-configuracoes")
                 .label("Abrir as configurações da NF-e")
                 .icon(IconName::Settings)

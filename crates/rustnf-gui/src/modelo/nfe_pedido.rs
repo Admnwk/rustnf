@@ -24,7 +24,7 @@ fn percentual_texto(c: i64) -> Value {
     json!(decimal_de_percentual(c))
 }
 
-fn item_json(
+pub(super) fn item_json(
     d: &DadosNfe,
     i: &ItemNfe,
     destino: Destino,

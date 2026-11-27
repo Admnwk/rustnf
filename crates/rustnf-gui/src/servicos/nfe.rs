@@ -15,12 +15,13 @@ use std::time::Duration;
 
 use async_trait::async_trait;
 use rustnf::assinatura::cert_a1::Certificado;
+use rustnf::nfe::montagem::OpcoesQr;
 use rustnf::nfe::sefaz::{ClienteSefaz, FalhaRede, Transporte, TransporteReqwest};
 use rustnf_app::config::Config;
 use rustnf_app::nfe::{self as app, Contexto};
 use rustnf_app::notas::nfe::{NotasNfe, Registro};
 
-use super::{ErroTela, Preparo, Servicos};
+use super::{Documento, ErroTela, Preparo, Servicos};
 use crate::modelo::mascara::frase;
 use crate::modelo::nfe_config::ResultadoSefaz;
 use crate::modelo::nfe_detalhe::LeituraNfe;
@@ -268,6 +269,7 @@ pub(super) struct Sessao {
     pub(super) certificado: Certificado,
     pub(super) config: Config,
     pub(super) notas: Option<NotasNfe>,
+    pub(super) qr: OpcoesQr,
 }
 
 impl Sessao {
@@ -278,6 +280,7 @@ impl Sessao {
             &self.config,
             self.notas.as_ref(),
         )
+        .com_qr(self.qr.clone())
     }
 }
 
@@ -286,17 +289,39 @@ pub(super) fn montar(
     preparo: Preparo,
     config: Config,
 ) -> Result<Sessao, ErroTela> {
+    montar_doc(Documento::Nfe, fabrica, preparo, config, None)
+}
+
+/// A sessao do documento: a NFC-e usa a configuracao de `Config::como_nfce` (ambiente e serie dela), a pasta `nfce/` e,
+/// na emissao, as opcoes do QR Code (versao e CSC).
+pub(super) fn montar_doc(
+    doc: Documento,
+    fabrica: &Arc<dyn FabricaNfe>,
+    preparo: Preparo,
+    config: Config,
+    qr: Option<OpcoesQr>,
+) -> Result<Sessao, ErroTela> {
+    let config = match doc {
+        Documento::Nfe => config,
+        Documento::Nfce => config.como_nfce(),
+    };
     let certificado = preparo.into_certificado();
     let transporte = fabrica.transporte(&certificado, &config)?;
     let sefaz = app::config_sefaz(&config).map_err(|e| ErroTela::Valor(frase(&e.to_string())))?;
     let cliente = ClienteSefaz::com_transporte(sefaz, TransporteDin(transporte))
         .map_err(|e| ErroTela::Rede(frase(&e.to_string())))?;
-    let notas = NotasNfe::abrir(config.notas.pasta.trim()).ok();
+    let pasta = config.notas.pasta.trim();
+    let notas = match doc {
+        Documento::Nfe => NotasNfe::abrir(pasta),
+        Documento::Nfce => NotasNfe::abrir_nfce(pasta),
+    }
+    .ok();
     Ok(Sessao {
         cliente: fabrica.ajustar(cliente),
         certificado,
         config,
         notas,
+        qr: qr.unwrap_or_default(),
     })
 }
 
@@ -329,7 +354,18 @@ pub async fn consultar_nfe(
     config: Config,
     chave: String,
 ) -> ConsultaNfe {
-    let s = match montar(&fabrica, preparo, config) {
+    consultar_doc(Documento::Nfe, fabrica, preparo, config, chave).await
+}
+
+/// "Conferir na SEFAZ" da NF-e ou da NFC-e.
+pub async fn consultar_doc(
+    doc: Documento,
+    fabrica: Arc<dyn FabricaNfe>,
+    preparo: Preparo,
+    config: Config,
+    chave: String,
+) -> ConsultaNfe {
+    let s = match montar_doc(doc, &fabrica, preparo, config, None) {
         Ok(s) => s,
         Err(e) => {
             return ConsultaNfe::do_resultado(Err(rustnf_app::erro::Erro::Uso(e.texto())));
@@ -346,7 +382,27 @@ pub async fn cancelar_nfe(
     chave: String,
     justificativa: String,
 ) -> DesfechoNfe {
-    let s = match montar(&fabrica, preparo, config) {
+    cancelar_doc(
+        Documento::Nfe,
+        fabrica,
+        preparo,
+        config,
+        chave,
+        justificativa,
+    )
+    .await
+}
+
+/// Cancela a NF-e ou a NFC-e (o aviso do prazo da NFC-e e' dado pela tela ANTES de chamar, sem bloquear).
+pub async fn cancelar_doc(
+    doc: Documento,
+    fabrica: Arc<dyn FabricaNfe>,
+    preparo: Preparo,
+    config: Config,
+    chave: String,
+    justificativa: String,
+) -> DesfechoNfe {
+    let s = match montar_doc(doc, &fabrica, preparo, config, None) {
         Ok(s) => s,
         Err(e) => return recusado(&e),
     };
@@ -406,7 +462,18 @@ pub async fn conferir_cancelamento_nfe(
     config: Config,
     chave: String,
 ) -> DesfechoNfe {
-    let s = match montar(&fabrica, preparo, config) {
+    conferir_cancelamento_doc(Documento::Nfe, fabrica, preparo, config, chave).await
+}
+
+/// Confere o cancelamento sem resposta da NF-e ou da NFC-e.
+pub async fn conferir_cancelamento_doc(
+    doc: Documento,
+    fabrica: Arc<dyn FabricaNfe>,
+    preparo: Preparo,
+    config: Config,
+    chave: String,
+) -> DesfechoNfe {
+    let s = match montar_doc(doc, &fabrica, preparo, config, None) {
         Ok(s) => s,
         Err(e) => return recusado(&e),
     };
@@ -430,7 +497,17 @@ pub async fn retomar_nfe(
     preparo: Preparo,
     config: Config,
 ) -> ResumoDaRetomada {
-    let s = match montar(&fabrica, preparo, config) {
+    retomar_doc(Documento::Nfe, fabrica, preparo, config).await
+}
+
+/// "Retomar" da NF-e ou da NFC-e: a NFC-e off-line tambem e' transmitida aqui, com a MESMA chave.
+pub async fn retomar_doc(
+    doc: Documento,
+    fabrica: Arc<dyn FabricaNfe>,
+    preparo: Preparo,
+    config: Config,
+) -> ResumoDaRetomada {
+    let s = match montar_doc(doc, &fabrica, preparo, config, None) {
         Ok(s) => s,
         Err(e) => {
             return ResumoDaRetomada::do_resultado(Err(rustnf_app::erro::Erro::Uso(e.texto())));
