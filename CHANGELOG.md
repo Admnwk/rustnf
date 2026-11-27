@@ -1,5 +1,12 @@
 # Changelog
 
+## Próxima versão
+
+* Interface de desktop: `gpui-kit` 0.10.0 -> 0.11.0 (GPUI 0.3.12 -> 0.3.14). As telas saem iguais e a janela continua
+  centrada na tela principal. Uma mudança no teclado: logo ao abrir a janela, antes de qualquer clique, o Tab já leva o
+  foco ao próximo controle (e o PageUp/PageDown passa a rolar a tela a partir dele); antes o Tab só andava depois que
+  algum campo ou botão tivesse recebido o foco.
+
 ## 0.5.0 - 2026-11-26
 
 Ao atualizar: o índice da pasta de notas ganha duas situações (`substituida` e `analise_fiscal`). **Um índice que tenha

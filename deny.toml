@@ -35,6 +35,9 @@ allow = [
     "CDLA-Permissive-2.0",
 ]
 confidence-threshold = 0.8
+# libfuzzer-sys (NCSA): o rav1e (AVIF do image, que o GPUI 0.11 liga) so' o declara em cfg(fuzzing); nao entra
+# no executavel. A excecao vale so' para esta crate.
+exceptions = [{ crate = "libfuzzer-sys", allow = ["NCSA"] }]
 
 [bans]
 multiple-versions = "warn"
