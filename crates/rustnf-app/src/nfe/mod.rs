@@ -39,6 +39,8 @@ mod testes_eventos;
 mod testes_recebidas;
 #[cfg(test)]
 mod testes_retomada;
+#[cfg(test)]
+mod testes_substituicao;
 
 use chrono::{DateTime, Utc};
 use rustnf::assinatura::cert_a1::Certificado;
@@ -51,7 +53,10 @@ pub use consulta::{
 };
 pub(crate) use emissao::preparar_e_gravar;
 pub use emissao::{emitir, Emitida};
-pub use eventos::{cancelar, corrigir, epec, inutilizar, Inutilizada, Registrado};
+pub use eventos::{
+    cancelar, corrigir, epec, epec_substituindo, inutilizar, separar_substitui, EpecRegistrado,
+    Inutilizada, Registrado,
+};
 pub(crate) use pedido::emissao_agora;
 pub use pedido::{
     avisos_json, completar_pedido, conferencia_json, montar_pedido, preparar, Montado, Preparada,
@@ -61,7 +66,7 @@ pub use recebidas::{
     Fila, FiltroRecebidas, Manifestada, Sincronizada, LOTES_MAXIMO, LOTES_PADRAO,
 };
 pub use resposta::{erro_do_evento, erro_do_resultado, json_do_resultado};
-pub use retomada::{erro_da_retomada, retomar, Retomada};
+pub use retomada::{erro_da_retomada, pendentes_json, retomar, Retomada};
 
 use crate::erro::Erro;
 use crate::notas::nfe::NotasNfe;

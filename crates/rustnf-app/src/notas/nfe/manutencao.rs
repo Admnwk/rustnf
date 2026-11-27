@@ -341,6 +341,12 @@ impl NotasNfe {
                 .sort_by(|a, b| (&a.tipo, a.sequencia).cmp(&(&b.tipo, b.sequencia)));
             if let Some(a) = anterior.notas.iter().find(|a| a.chave == r.chave) {
                 (r.desde, r.tentativas, r.ultima) = (a.desde, a.tentativas, a.ultima);
+                // a substituicao nao esta em nenhum XML: so' o indice a sabe, e sem ela a retomada reenviaria a pendente
+                r.substituida_por.clone_from(&a.substituida_por);
+                r.substitui.clone_from(&a.substitui);
+                if r.situacao == Situacao::Pendente {
+                    r.cstat.clone_from(&a.cstat);
+                }
             }
             if r.situacao == Situacao::Cancelada {
                 feito.canceladas += 1;
