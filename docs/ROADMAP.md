@@ -46,10 +46,14 @@
   feito pela interface**. O pedido de análise fiscal é oferecido no desfecho do cancelamento recusado por prazo (E0822) e
   como ação do detalhe.
 
-* Interface de desktop, **NF-e (modelo 55) sem a emissão**: configurar a NF-e, ver as notas da pasta, abrir o DANFE, conferir
-  na SEFAZ, cancelar, corrigir por carta, inutilizar números e retomar a nota sem resposta. Testada com uma SEFAZ de mentira e
-  a janela de teste do GPUI: **nenhuma NF-e real, nenhuma SEFAZ real e nenhum certificado real pela interface**. **Fica para as
-  próximas entregas:** a emissão pela janela (assistente por passos, com EPEC), a NFC-e e os documentos recebidos.
+* Interface de desktop, **NF-e (modelo 55)**: configurar a NF-e, ver as notas da pasta, abrir o DANFE, conferir na SEFAZ, cancelar,
+  corrigir por carta, inutilizar números, retomar a nota sem resposta e **emitir por um assistente de cinco passos** (cadastro de
+  produtos, nota anterior como modelo, contingência EPEC). Testada com uma SEFAZ de mentira e a janela de teste do GPUI: **nenhuma
+  NF-e real, nenhuma SEFAZ real e nenhum certificado real pela interface**. **Fica para as próximas entregas:** a NFC-e e os
+  documentos recebidos na janela; e, no assistente, a venda ao exterior, o IPI, a venda por intermediador e a transmissão do EPEC
+  que troca a nota sem resposta: hoje a aplicação não tem um caminho para trocar a nota sem resposta por um EPEC.
+  **Pendência:** o EPEC da nota que ficou sem resposta (a mesma chave). Hoje a aplicação numera o EPEC pelo próximo número
+  livre da pasta, e não pelo da nota pendente; por isso a janela só oferece o EPEC quando não há nota sem resposta.
 
 * Entrega: interface compilada e testada no Windows pelo CI; fluxo de release que monta os executáveis (Windows sem
   dependência do Visual C++ Redistributable, e Linux só com a linha de comando) e abre a release como rascunho.

@@ -174,6 +174,7 @@ pub(super) fn linha_de_resumo(rotulo: &str, valor: impl IntoElement, cx: &App) -
 pub(super) fn faixa(gravidade: Gravidade, texto: impl Into<SharedString>, cx: &App) -> Div {
     let tema = cx.theme();
     let cor = cor_da(gravidade, cx);
+    let texto: SharedString = texto.into();
     h_flex()
         .gap_2()
         .items_start()
@@ -191,7 +192,10 @@ pub(super) fn faixa(gravidade: Gravidade, texto: impl Into<SharedString>, cx: &A
                 .flex_shrink_0()
                 .mt(px(1.)),
         )
-        .child(div().flex_1().min_w_0().child(texto.into()))
+        // sem texto, quem chama poe o proprio corpo (que ocupa a largura toda)
+        .when(!texto.is_empty(), |d| {
+            d.child(div().flex_1().min_w_0().child(texto))
+        })
 }
 
 /// O titulo pequeno, em maiusculas, de um bloco do painel ou de um cartao.

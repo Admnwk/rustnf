@@ -12,7 +12,7 @@ executável, e uma **interface de desktop** para Windows (`rustnf-gui`).
 | documento auxiliar | DANFSe (PDF) | DANFE (PDF, A4 retrato) | DANFC-e (PDF de bobina de 80 e 58 mm e bytes ESC/POS, feature `danfce`); o DANFE Simplificado Tipo 2 da NF-e (`tpImp` 6) sai da assinatura com o QR Code, sem o PDF |
 | notas recebidas de terceiros | | distribuição de DF-e e manifestação do destinatário | não se aplica |
 | linha de comando, API HTTP e MCP | sim | sim | sim |
-| interface de desktop | sim | tudo menos emitir (configurar, ver, DANFE, conferir, cancelar, carta, inutilizar, retomar) | ainda não |
+| interface de desktop | sim | sim, em um assistente por passos (emitir com EPEC, produtos, nota anterior como modelo, configurar, ver, DANFE, conferir, cancelar, carta, inutilizar, retomar) | ainda não |
 
 A NFC-e tem a biblioteca (features `nfe`, `nfe_sefaz` e `danfce`: leitura do modelo 65, montagem, QR Code, envio, contingência
 off-line e o DANFC-e, `rustnf::danfce::{dados, pdf, escpos}`, veja `crates/rustnf/examples/danfce.rs`), a camada de aplicação,
@@ -78,7 +78,7 @@ Os detalhes de cada passo estão em [Interface de desktop](#interface-de-desktop
 | faces da NFC-e (camada `rustnf-app` e `rustnf nfce`: CSC no cofre, pasta `nfce/` de numeração própria, emissão, off-line, retomada, pendentes e fechamento do caixa, cancelamento com aviso de prazo, DANFC-e como arquivo) | transporte falso (autorizada, rejeitada que não gasta número, denegada, resposta perdida com a nota pendente e retomada da mesma chave, off-line com o prazo, transmissão da off-line e a recusa dela anotada, decisão automática antes do envio, cancelamento, pendentes e `--fechar-caixa` com o código de saída, CSC que não vaza para JSON, `Debug` nem arquivo da pasta, numeração do 65 separada do 55 e pasta antiga do 55 lida igual), cofre em memória, DANFC-e gerado da pasta e do XML (PDF e ESC/POS com bytes estáveis) e um simulador local, fora do repositório, pela linha de comando | **nenhuma NFC-e real, nenhuma SEFAZ real (nem a de homologação), nenhum certificado A1 real, nenhum CSC real e nenhuma impressão em impressora real**; o prazo de cancelamento de cada UF (só o nacional de 24 horas tem fonte), o cancelamento por substituição (110112) e a inutilização da NFC-e não foram feitos; não há interface de desktop da NFC-e |
 | API HTTP e MCP da NFC-e (`/nfce/` e as 7 ferramentas `*_nfce`, no mesmo servidor da NF-e) | rotas e ferramentas sobre o transporte falso e uma pasta temporária: um teste por rota e ferramenta e desfecho (autorizada, rejeitada, sem resposta e retomada da mesma chave, off-line e transmissão, cancelamento com aviso de prazo, status, pendentes e fechamento do caixa), 404 sem `--permitir-emissao`, 401 sem o Bearer, `tools/list` com e sem o Bearer, campo desconhecido e CSC recusados sem envio, CSC que não aparece em resposta, no schema nem na pasta de notas, duas NFC-e e uma NFC-e com uma NF-e ao mesmo tempo, NFC-e sem configuração utilizável; e o servidor de verdade contra um simulador local (fora do repositório), por `curl` e por um cliente MCP mínimo | **nenhuma NFC-e real, nenhuma SEFAZ real, nenhum CSC real e nenhum cliente MCP de terceiros** |
 | faces dos documentos recebidos e da manifestação (`rustnf nfe recebidas`, `/nfe/recebidas/` e 4 ferramentas do MCP) | transporte falso (vários lotes até o 137, queda no meio de um lote sem pular NSU, 656 gravado e a chamada seguinte que diz a hora sem ir à rede, documento que não abre e é relido, ciência, confirmação e as recusas antes da rede, baixa por chave com e sem ciência, pasta e configuração da 0.4.0) e um simulador local (fora do repositório) pela linha de comando, pela API e por um cliente MCP mínimo | **nenhuma chamada ao Ambiente Nacional real e nenhum certificado A1 real**; não há interface de desktop para os recebidos |
-| interface de desktop, NF-e (`rustnf-gui`, só Windows: configurar, lista, detalhe, DANFE, conferir, cancelar, carta de correção, inutilizar e retomar; sem emissão) | testes do modelo (campos de `[nfe]`, lista, detalhe, limites e textos dos pedidos, resultado de cada desfecho) e da janela no ambiente de teste do GPUI com uma SEFAZ de mentira (transporte roteirizado, sem rede): testar conexão, alternar para a NF-e, detalhe e DANFE, cancelar (registrado, rejeitado por prazo, sem resposta), carta, inutilização, nota sem resposta retomada e, em produção, nenhuma chamada sem a marcação; uso manual pelo exemplo de demonstração | **nenhuma NF-e real, nenhuma SEFAZ real (nem a de homologação) e nenhum certificado real pela interface**; o DANFE aberto no leitor de PDF de outra máquina; o lado Linux só pelo CI |
+| interface de desktop, NF-e (`rustnf-gui`, só Windows: assistente de emissão em cinco passos, cadastro de produtos, nota anterior como modelo, contingência EPEC, configurar, lista, detalhe, DANFE, conferir, cancelar, carta de correção, inutilizar e retomar) | testes do modelo (a tabela das escolhas fiscais com o CFOP conferido na tabela da biblioteca, o pedido que o assistente monta passando pela montagem da aplicação nos casos típicos do Simples e do regime normal, o que a pessoa editou à mão nunca sobrescrito, cadastro com arquivo ruim, rascunho, a nota anterior lida do XML, texto de cada erro e desfecho) e da janela no ambiente de teste do GPUI com uma SEFAZ de mentira (transporte roteirizado, sem rede): o assistente do início ao fim (autorizada, com o produto novo entrando no cadastro), o produto do cadastro, a rejeitada que se corrige e sai com o mesmo número, a nota sem resposta que só o Retomar resolve (um único envio, nenhuma nota gêmea), a SEFAZ fora e o EPEC (que não é oferecido com nota sem resposta na pasta), a produção sem a marcação (nenhuma chamada), o clique duplo, a nota anterior como modelo e a tela de produtos; uso manual pelo exemplo de demonstração | **nenhuma NF-e real, nenhuma SEFAZ real (nem a de homologação), nenhum EPEC real e nenhum certificado real pela interface**; a venda ao exterior, o IPI, a venda por intermediador e o valor unitário com mais de duas casas não passam pelo assistente (vão pela linha de comando); o DANFE aberto no leitor de PDF de outra máquina; o lado Linux só pelo CI |
 | interface de desktop (`rustnf-gui`, só Windows) | testes do modelo (máscaras, conferência, pedido, prévia, sugestão, rascunho, lista das notas, detalhe, cancelamento, conferência em lote, histórico de eventos, pedido de análise fiscal, confirmação e recusa de nota recebida, consulta pela chave e pela DPS e prévia avulsa), dos fluxos com emissor de demonstração e pasta temporária e da janela no ambiente de teste do GPUI; uso manual da janela em modo de depuração e pelo exemplo de demonstração | **emitir, consultar ou cancelar uma nota real pela janela: nenhuma nota real foi emitida, consultada nem cancelada por esta interface, e nenhuma consulta de DPS ou de evento, nenhuma conferência de situação e nenhum evento (análise fiscal, confirmação, recusa) foi feito por ela contra a Sefin; só o emissor de demonstração respondeu**; o DANFSe aberto no leitor de PDF de outra máquina; uma chamada real à Sefin pelo botão "Testar conexão"; exame da janela em outras escalas de tela; o executável de release aberto numa máquina sem as ferramentas de desenvolvimento |
 
 Se você testar a NFS-e, conte como foi: abra um relato pelo modelo **"Relato de emissão"** (aba Issues), mesmo quando der
@@ -480,7 +480,7 @@ pasta, guarda o que a SEFAZ devolve e diz o resultado em palavras.
 
 **Nenhuma NF-e real foi emitida com este código**, nem em homologação, e nenhuma chamada a uma SEFAZ real nem nenhum
 certificado A1 real foram usados: o que existe foi conferido com transporte falso e com um simulador local, fora do
-repositório. A NF-e também tem API HTTP e MCP no mesmo servidor (veja [NF-e pela API](#nf-e-pela-api) e o [MCP](#mcp)); **a interface de desktop da NF-e faz tudo menos emitir** (veja [Interface de desktop](#interface-de-desktop)). A NFC-e (modelo 65) tem a sua seção, [NFC-e (modelo 65)](#nfc-e-modelo-65): o `rustnf nfe` recusa o pedido do modelo 65 e diz que ele se emite por `rustnf nfce`.
+repositório. A NF-e também tem API HTTP e MCP no mesmo servidor (veja [NF-e pela API](#nf-e-pela-api) e o [MCP](#mcp)); **a interface de desktop da NF-e emite por um assistente de cinco passos** (veja [Nova NF-e](#nova-nf-e-assistente-de-venda)). A NFC-e (modelo 65) tem a sua seção, [NFC-e (modelo 65)](#nfc-e-modelo-65): o `rustnf nfe` recusa o pedido do modelo 65 e diz que ele se emite por `rustnf nfce`.
 
 ### Passo a passo
 
@@ -1159,17 +1159,68 @@ e situação. XML ausente ou ilegível é dito sem derrubar a tela. Dele saem:
   fica vazio e a conferência da Nova nota aponta), com a competência de hoje. Se a Nova nota tiver algo digitado, pergunta
   antes de substituir; com uma tentativa de emissão pendente, não substitui.
 
-### NF-e (venda de mercadoria) na janela
+### Nova NF-e (assistente de venda)
 
-A tela Notas tem, no alto, a escolha **NFS-e | NF-e (venda de mercadoria)**; ela é lembrada de uma vez para outra. A NF-e
-**não é emitida pela janela nesta versão** (a emissão por passos vem depois): emita pela linha de comando e as notas aparecem
-na lista. Nas Configurações, a seção **NF-e** tem o ambiente próprio da NF-e, UF, IE, regime, série, endereço, contingência SVC,
-canhoto e tempos, e o botão "Testar conexão com a SEFAZ" (só pergunta o status do serviço); o certificado é o da NFS-e. Na lista:
-busca, filtro e selos; a nota enviada sem resposta fica em destaque com o botão **Retomar** (consulta a mesma chave e só
-reenvia a mesma nota). No detalhe: DANFE (marcado como cancelado quando for o caso), "Conferir na SEFAZ", **Cancelar**,
-**Carta de correção** (a nova substitui as anteriores; até 20) e, na lista, **Inutilizar números**. Em produção, cada pedido
-exige a marcação "Entendo..." antes de o botão habilitar. A janela não conta o prazo de cancelamento: o prazo vencido volta da
-SEFAZ como recusa 501 e a tela explica. Exemplo de demonstração (sem rede): `--nfe-evento registrado|rejeitado|sem-resposta`.
+Na **Nova nota** (Ctrl+N) há, no alto, a escolha **NFS-e | NF-e (venda de mercadoria)**, a mesma da tela Notas, lembrada de
+uma vez para outra. A NF-e é um assistente de cinco passos, em palavras de quem vende; o termo fiscal (CFOP, CST ou CSOSN,
+`modFrete`, `indPres`...) é escolhido pelo programa a partir das respostas e **mostrado**, nunca escondido:
+
+1. **Para quem**: CPF ou CNPJ (máscara e dígito verificador), nome, "Buscar endereço pelo CEP" (só no clique), se o cliente
+   compra para uso próprio ou para revender, se tem inscrição estadual e como comprou (balcão, internet, telefone). Ao digitar o
+   CPF ou o CNPJ de quem já recebeu uma NF-e, o cadastro é completado com a nota mais recente dele (só os campos vazios).
+2. **O que vendeu**: busca no cadastro de produtos ou produto novo (NCM obrigatório: o programa não tem a tabela do NCM e diz
+   isso), quantidade, valor, desconto, e "Detalhes fiscais" recolhidos.
+3. **Como recebeu**: dinheiro, Pix, cartão, cheque, boleto ou a prazo em parcelas (fatura e duplicatas; o resto da divisão vai
+   na última parcela, as datas andam de mês em mês).
+4. **Como entrega**: balcão, o cliente busca, entrega própria ou transportadora (com os dados dela e os volumes).
+5. **Conferir e enviar**: o resumo em palavras, os erros e avisos que a montagem da aplicação devolve traduzidos com o que fazer
+   e um botão que leva ao passo, o ambiente em destaque e, **em produção, a marcação "Entendo que a nota tem efeito fiscal"**
+   (sem ela o botão não habilita e nenhuma chamada sai). Sem senha no cofre, a tela a pede só para aquela operação.
+
+**O que o programa escolhe, e de onde vem** (a tabela está em `crates/rustnf-gui/src/modelo/nfe_fiscal.rs`, com um teste que
+confere cada CFOP na tabela da biblioteca e na vigência):
+
+| pergunta | escolha | fonte |
+|---|---|---|
+| dentro do estado, outro estado, exterior | `idDest` 1, 2 ou 3 e CFOP 5.xxx, 6.xxx ou 7.xxx (o destino sai das UFs) | MOC 7.00, B11; tabela de CFOP |
+| fabrica ou compra para revender | CFOP x.101 ou x.102; **para outro estado, a cliente que não tem inscrição, 6.107 ou 6.108** | tabela de CFOP do Portal da NF-e |
+| venda para outro estado a consumidor final sem inscrição, no regime normal | a alíquota interna do ICMS do estado do cliente e o adicional do fundo de combate à pobreza (a pessoa digita; o programa não tem a tabela de alíquotas dos estados): a nota leva o DIFAL, que a biblioteca calcula (alíquota interestadual de 4, 7 ou 12% e partilha do ano) e a tela mostra em "ICMS para o estado do cliente (DIFAL)"; no Simples (CRT 1) e com CST de isenção ou não tributação a nota não leva | MOC 7.00, NA01 a NA17 e rejeição 694; Convênio ICMS 236/2021 |
+| ICMS já cobrado antes (só quem revende) | CFOP 5.405 ou 6.404, CSOSN 500 ou CST 60 (base, alíquota e valor retidos a pessoa digita) | tabela de CFOP; MOC, N12 e N12a |
+| regime (CRT) | CSOSN com o CRT 1 e 4 (Simples e MEI), CST com o 2 e o 3 | MOC, C21, N12 e N12a; a biblioteca recusa o resto |
+| paga ICMS na venda (regime normal) | CST 00; a alíquota a pessoa digita (o programa não chuta a do seu estado) | MOC, N12 |
+| PIS e COFINS | CST 49 no Simples (LC 123/2006, art. 13); CST 01 no regime normal, com 0,65% e 3% (cumulativo) ou 1,65% e 7,6% (não cumulativo) | Leis 9.715/1998, 9.718/1998, 10.637/2002 e 10.833/2003 |
+| como entrega | `modFrete` 9 (balcão), 4 (o cliente busca), 3 (própria), 0, 1 ou 2 (transportadora) | MOC, X02 |
+| como comprou | `indPres` 1, 2, 3 ou 9; nas não presenciais, `indIntermed` 0 | MOC, B25a |
+| como pagou | `tPag` 01, 17, 03, 04, 02, 15 (a prazo: `indPag` 1 e `cobr`); cartão leva `tpIntegra` 2 | MOC, YA03 |
+
+**Quando a pergunta simples não decide, a tela mostra as opções e a pessoa escolhe**: o regime do PIS e da COFINS no regime
+normal (cumulativo ou não, se a configuração não diz), o ICMS (as opções do regime), a inscrição estadual do cliente CNPJ, o
+frete por transportadora (quem paga), o CFOP quando o cliente é isento de inscrição ou compra mercadoria com ICMS já cobrado antes sem ser contribuinte (a tabela tem duas opções). **Detalhes fiscais**: CFOP, CST ou CSOSN e CST do PIS e da COFINS podem ser digitados;
+o que a pessoa digita vale no lugar da tabela e **nunca é sobrescrito** (mudar a origem, o ICMS ou o cliente não o desfaz).
+
+**Cadastro de produtos** (`produtos.json` na pasta de notas, lido com tolerância e gravado de forma atômica; arquivo ruim abre
+vazio com aviso e não é trocado). Os produtos novos de uma nota **autorizada** entram nele (a pessoa pode desmarcar "Guardar
+este produto"), com o NCM, a origem e o detalhe fiscal que ela fixou. A tela **Produtos** (barra lateral) lista, busca, edita e
+apaga. **Nota anterior como modelo**: no detalhe da NF-e, "Usar como modelo" lê o XML guardado e preenche o assistente
+(cliente, produtos, pagamento, entrega); número, data e protocolo não se copiam e o que não dá para ler fica vazio, para a
+conferência apontar. Com o assistente preenchido, pergunta antes de substituir.
+
+**Sem resposta e contingência.** A aplicação grava a nota como pendente **antes** de enviar. Se a SEFAZ não responde, a tela diz
+que a nota PODE ter sido autorizada e oferece **Retomar** (consulta a MESMA chave e só reenvia a MESMA nota); não há "emitir de
+novo". Rejeitada: o motivo em palavras, o passo onde se corrige e o número continua livre. **EPEC**: no passo final, "Verificar a
+SEFAZ" só pergunta o status; se o serviço está parado ou não responde, a tela explica o que é a contingência, pede o motivo
+(15 a 255 letras) e oferece "Emitir em contingência (EPEC)", com a marcação em produção. Depois diz que a **mesma nota** tem de
+ser transmitida à SEFAZ da UF em até 168 horas (MOC 7.00, Visão Geral, 3.3.6): Notas, aba NF-e, Retomar. **A contingência não é
+oferecida enquanto há nota sem resposta na pasta**: o EPEC é outra nota (outro número e outra chave) e, com uma pendente, seria
+a gêmea da primeira, que a SEFAZ pode já ter recebido; a aplicação hoje não impede isso, então a tela impede. O rascunho (`rascunho_nfe.json`, arquivo próprio) volta ao reabrir a janela.
+
+Na tela Notas, a NF-e mantém lista, detalhe, DANFE, "Conferir na SEFAZ", cancelar, carta de correção e inutilizar. Nas
+Configurações, a seção **NF-e** tem o ambiente próprio, UF, IE, regime, série, endereço, contingência SVC, canhoto e tempos, e o
+botão "Testar conexão com a SEFAZ"; o certificado é o da NFS-e. A janela não conta o prazo de cancelamento: o prazo vencido volta
+da SEFAZ como recusa 501. Exemplo de demonstração (sem rede): `--nfe-evento registrado|rejeitado|sem-resposta` e
+`--nfe-emissao autorizada|rejeitada|sem-resposta|fora`; a pasta de ensaio ganha NF-e de exemplo e um cadastro com três produtos.
+**Nenhuma NF-e real foi emitida por esta interface.** Fora do assistente (vão pela linha de comando): venda ao exterior, IPI,
+venda por intermediador, valor unitário com mais de duas casas, ST com cálculo próprio, devolução e nota complementar.
 
 ### Consultar
 

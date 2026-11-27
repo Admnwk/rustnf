@@ -13,7 +13,8 @@
 //! cargo run -p rustnf-gui --features demonstracao --example demonstracao -- \
 //!     --config rustnf.toml [--resultado autorizada|rejeitada|sem-resposta] \
 //!     [--cancelamento registrado|rejeitado|sem-resposta] [--evento registrado|rejeitado|sem-resposta] \
-//!     [--nfe-evento registrado|rejeitado|sem-resposta] [--atraso-ms 1200]
+//!     [--nfe-evento registrado|rejeitado|sem-resposta] [--nfe-emissao autorizada|rejeitada|sem-resposta|fora] \
+//!     [--atraso-ms 1200]
 //! ```
 //!
 //! `--resultado` e' o roteiro da emissao: `autorizada` (padrao) autoriza a nota; `rejeitada` devolve duas mensagens de
@@ -26,6 +27,12 @@
 //! Recusar. A consulta devolve as notas que a
 //! demonstracao autorizou e as que estao na pasta de notas do ensaio. A nota autorizada entra de verdade na pasta de
 //! notas do arquivo de configuracao indicado: use uma pasta de ensaio.
+//!
+//! `--nfe-emissao` e' o roteiro da SEFAZ de mentira para a EMISSAO da NF-e pela janela (Nova nota, NF-e): `autorizada`
+//! (padrao); `rejeitada` recusa a primeira tentativa (NCM inexistente) e autoriza a seguinte com o mesmo numero;
+//! `sem-resposta` deixa a primeira sem resposta e a mesma chave e' achada autorizada no Retomar; `fora` diz que o servico
+//! esta parado (a pasta nao ganha a NF-e sem resposta, para a contingencia EPEC poder ser oferecida). A pasta de ensaio
+//! tambem ganha um cadastro com tres produtos.
 //!
 //! `--nfe-evento` e' o roteiro da SEFAZ de mentira da NF-e para o cancelamento, a carta de correcao e a inutilizacao:
 //! `registrado` (padrao); `rejeitado` recusa (o cancelamento com 501, o prazo; a carta e a inutilizacao com outro
@@ -45,7 +52,8 @@ fn main() -> ExitCode {
     };
     use rustnf_gui::demonstracao_eventos::evento_do_nome;
     use rustnf_gui::demonstracao_nfe::{
-        roteiro_nfe_do_nome, semear, FabricaNfeDemonstracao, TransporteNfeDemonstracao,
+        roteiro_emissao_do_nome, roteiro_nfe_do_nome, semear_com, FabricaNfeDemonstracao,
+        RoteiroEmissao, TransporteNfeDemonstracao,
     };
     use rustnf_gui::modelo::argumentos::{self, Pedido};
     use rustnf_gui::servicos::Servicos;
@@ -55,6 +63,7 @@ fn main() -> ExitCode {
     let mut cancelamento = "registrado".to_string();
     let mut evento = "registrado".to_string();
     let mut nfe_evento = "registrado".to_string();
+    let mut nfe_emissao = "autorizada".to_string();
     let mut atraso_ms: u64 = 1200;
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
@@ -79,6 +88,14 @@ fn main() -> ExitCode {
                 Some(v) => nfe_evento = v,
                 None => {
                     eprintln!("demonstracao: --nfe-evento precisa de um valor");
+                    return ExitCode::from(2);
+                }
+            }
+        } else if a == "--nfe-emissao" {
+            match args.next() {
+                Some(v) => nfe_emissao = v,
+                None => {
+                    eprintln!("demonstracao: --nfe-emissao precisa de um valor");
                     return ExitCode::from(2);
                 }
             }
@@ -116,6 +133,10 @@ fn main() -> ExitCode {
     };
     let Some(roteiro_da_nfe) = roteiro_nfe_do_nome(&nfe_evento) else {
         eprintln!("demonstracao: --nfe-evento aceita registrado, rejeitado ou sem-resposta");
+        return ExitCode::from(2);
+    };
+    let Some(roteiro_da_emissao) = roteiro_emissao_do_nome(&nfe_emissao) else {
+        eprintln!("demonstracao: --nfe-emissao aceita autorizada, rejeitada, sem-resposta ou fora");
         return ExitCode::from(2);
     };
     let config = match argumentos::interpretar(resto) {
@@ -163,9 +184,14 @@ fn main() -> ExitCode {
             "demonstracao: nota recebida de outro emitente, para Confirmar e Recusar em Consultar: {chave}"
         );
     }
-    let nfe = TransporteNfeDemonstracao::novo(roteiro_da_nfe, Duration::from_millis(atraso_ms));
+    let nfe = TransporteNfeDemonstracao::novo(roteiro_da_nfe, Duration::from_millis(atraso_ms))
+        .com_emissao(roteiro_da_emissao);
     match base.carregar() {
-        Ok(carga) if !carga.config.nfe.uf.trim().is_empty() => match semear(&carga.config, &nfe) {
+        Ok(carga) if !carga.config.nfe.uf.trim().is_empty() => match semear_com(
+            &carga.config,
+            &nfe,
+            roteiro_da_emissao != RoteiroEmissao::Fora,
+        ) {
             Ok(n) => println!(
                 "demonstracao: NF-e de ensaio na pasta: autorizada {}, cancelada {}, sem resposta {}",
                 n.autorizada, n.cancelada, n.pendente

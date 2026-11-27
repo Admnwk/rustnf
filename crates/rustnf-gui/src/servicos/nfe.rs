@@ -151,7 +151,7 @@ impl Servicos {
         self.fabrica_nfe.demonstracao()
     }
 
-    fn notas_nfe(&self, config: &Config) -> Result<NotasNfe, ErroTela> {
+    pub(super) fn notas_nfe(&self, config: &Config) -> Result<NotasNfe, ErroTela> {
         NotasNfe::abrir(config.notas.pasta.trim()).map_err(|_| ErroTela::Pasta)
     }
 
@@ -263,15 +263,15 @@ impl Servicos {
 }
 
 /// O cliente, o certificado e a pasta de uma chamada.
-struct Sessao {
-    cliente: ClienteNfe,
-    certificado: Certificado,
-    config: Config,
-    notas: Option<NotasNfe>,
+pub(super) struct Sessao {
+    pub(super) cliente: ClienteNfe,
+    pub(super) certificado: Certificado,
+    pub(super) config: Config,
+    pub(super) notas: Option<NotasNfe>,
 }
 
 impl Sessao {
-    fn contexto(&self) -> Contexto<'_, TransporteDin> {
+    pub(super) fn contexto(&self) -> Contexto<'_, TransporteDin> {
         Contexto::novo(
             &self.cliente,
             &self.certificado,
@@ -281,7 +281,7 @@ impl Sessao {
     }
 }
 
-fn montar(
+pub(super) fn montar(
     fabrica: &Arc<dyn FabricaNfe>,
     preparo: Preparo,
     config: Config,
@@ -439,6 +439,6 @@ pub async fn retomar_nfe(
     ResumoDaRetomada::do_resultado(app::retomar(&s.contexto()).await)
 }
 
-fn recusado(e: &ErroTela) -> DesfechoNfe {
+pub(super) fn recusado(e: &ErroTela) -> DesfechoNfe {
     DesfechoNfe::Recusado { texto: e.texto() }
 }

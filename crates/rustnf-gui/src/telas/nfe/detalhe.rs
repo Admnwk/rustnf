@@ -122,6 +122,13 @@ impl TelaNfe {
             .update(cx, |d, cx| d.iniciar(op, Some(alvo), a_retomar, window, cx));
     }
 
+    /// "Usar como modelo": a janela leva a nota para a Nova NF-e.
+    fn usar_como_modelo(&mut self, cx: &mut Context<Self>) {
+        if let Conteudo::Lida(n) = &self.detalhe {
+            cx.emit(super::EventoNfe::UsarComoModelo(n.registro.chave.clone()));
+        }
+    }
+
     fn copiar_chave(&mut self, cx: &mut Context<Self>) {
         if let Conteudo::Lida(n) = &self.detalhe {
             cx.write_to_clipboard(ClipboardItem::new_string(n.registro.chave.clone()));
@@ -259,6 +266,15 @@ impl TelaNfe {
                         .on_click(cx.listener(|this, _, window, cx| {
                             this.pedir(Operacao::Cancelar, window, cx);
                         })),
+                )
+            })
+            .when(!previa, |d| {
+                d.child(
+                    Button::new("nfe-usar-como-modelo")
+                        .label("Usar como modelo")
+                        .icon(IconName::Copy)
+                        .outline()
+                        .on_click(cx.listener(|this, _, _, cx| this.usar_como_modelo(cx))),
                 )
             })
             .when(previa, |d| {

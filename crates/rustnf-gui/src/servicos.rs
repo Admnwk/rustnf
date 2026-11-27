@@ -37,6 +37,7 @@ use crate::modelo::rascunho;
 mod emitir;
 mod eventos;
 mod nfe;
+mod nfe_emissao;
 mod notas;
 
 pub use emitir::{emitir, FabricaDeEmissor, FabricaReal, FabricaSemEmissor};
@@ -49,6 +50,7 @@ pub use nfe::{
     retomar_nfe, testar_sefaz, ClienteNfe, FabricaNfe, FabricaNfeReal, FabricaNfeSemTransporte,
     NotaNfeDaPasta, TransporteDin,
 };
+pub use nfe_emissao::{emitir_nfe, epec_nfe};
 pub use notas::{
     cancelar_nota, conferir_cancelamento, consultar_nota, AbrirArquivos, Destino, DoSistema,
     NotaDaPasta,

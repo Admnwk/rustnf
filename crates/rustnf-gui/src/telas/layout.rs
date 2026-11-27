@@ -109,6 +109,14 @@ impl Raiz {
                                 })),
                         )
                         .child(
+                            SidebarMenuItem::new("Produtos")
+                                .icon(IconName::BookOpen)
+                                .active(tela == Tela::Produtos)
+                                .on_click(cx.listener(|this, _, _, cx| {
+                                    this.ir_para(Tela::Produtos, cx);
+                                })),
+                        )
+                        .child(
                             SidebarMenuItem::new("Consultar")
                                 .icon(IconName::Search)
                                 .active(tela == Tela::Consultar)
@@ -223,6 +231,7 @@ impl Raiz {
                 Tela::NovaNota => self.tela_nova_nota(cx),
                 Tela::Notas => self.tela_notas(cx),
                 Tela::Consultar => self.tela_consultar(cx),
+                Tela::Produtos => self.produtos.clone().into_any_element(),
                 Tela::Previa => self.previa.clone().into_any_element(),
                 Tela::Configuracoes => self.tela_configuracoes(window, cx),
             },

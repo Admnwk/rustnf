@@ -11,16 +11,21 @@ use std::sync::Arc;
 
 use gpui_kit::component::button::{Toggle, ToggleGroup};
 use gpui_kit::component::input::{InputEvent, InputState};
-use gpui_kit::{AppContext as _, Context, Entity, IntoElement, SharedString, Window};
+use gpui_kit::component::notification::Notification;
+use gpui_kit::component::WindowExt as _;
+use gpui_kit::{AppContext as _, Context, Entity, IntoElement, ScrollHandle, SharedString, Window};
 use rustnf_app::config::Config;
 
+use super::nfe_nova::{EventoNovaNfe, ModeloRecebido, NovaNfe};
+use super::produtos::TelaProdutos;
 use super::raiz::{Raiz, Secao, Tela};
 use crate::fora;
 use crate::modelo::ambiente::Ambiente;
 use crate::modelo::nfe_config::{ambiente_da_nfe, CampoNfe, ResultadoSefaz};
 use crate::modelo::nfe_lista::EscolhaDeNotas;
+use crate::modelo::nfe_modelo::ModeloNfe;
 use crate::modelo::passos::configuracao_completa;
-use crate::servicos::{testar_sefaz, ErroTela};
+use crate::servicos::{testar_sefaz, ErroTela, Servicos};
 
 /// Os campos de texto da secao NF-e.
 pub(super) struct EntradasNfe {
@@ -68,6 +73,61 @@ impl Raiz {
         self.entradas_nfe.por_campo.get(&c)
     }
 
+    /// As telas da emissao da NF-e: a Nova NF-e (assistente) e o cadastro de produtos.
+    pub(super) fn criar_telas_nfe(
+        servicos: &Arc<Servicos>,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) -> (Entity<NovaNfe>, Entity<TelaProdutos>) {
+        let (a, b) = (Arc::clone(servicos), Arc::clone(servicos));
+        (
+            cx.new(|cx| NovaNfe::new(a, window, cx)),
+            cx.new(|cx| TelaProdutos::new(b, window, cx)),
+        )
+    }
+
+    /// Entrega a configuracao que vale a Nova NF-e e ao cadastro de produtos.
+    pub(super) fn entregar_config_nova_nfe(
+        &mut self,
+        efetiva: &Config,
+        pronta: bool,
+        completa: bool,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let e = efetiva.clone();
+        self.produtos
+            .update(cx, |p, cx| p.definir_config(e, completa, cx));
+        let e = efetiva.clone();
+        self.nova_nfe
+            .update(cx, |n, cx| n.definir_config(e, pronta, window, cx));
+    }
+
+    /// O que a tela Produtos faz ao abrir: le o cadastro de novo.
+    pub(super) fn ao_abrir_tela_nfe(&mut self, tela: Tela, cx: &mut Context<Self>) {
+        if tela == Tela::Produtos {
+            self.produtos.update(cx, |p, cx| p.recarregar(cx));
+        }
+    }
+
+    /// A rolagem da Nova nota aberta: a do assistente da NF-e ou a da NFS-e, pela escolha lembrada.
+    pub(super) fn rolagem_da_nova_nota(&self, cx: &gpui_kit::App) -> ScrollHandle {
+        if self.escolha_notas == EscolhaDeNotas::Nfe {
+            self.nova_nfe.read(cx).rolagem.clone()
+        } else {
+            self.nova.read(cx).rolagem.clone()
+        }
+    }
+
+    /// Redesenha a Nova nota aberta (depois de rolar pelo teclado).
+    pub(super) fn notificar_nova_nota(&mut self, cx: &mut Context<Self>) {
+        if self.escolha_notas == EscolhaDeNotas::Nfe {
+            self.nova_nfe.update(cx, |_, cx| cx.notify());
+        } else {
+            self.nova.update(cx, |_, cx| cx.notify());
+        }
+    }
+
     /// Liga os campos da secao NF-e e a tela NF-e (chamar uma vez, depois de criar a janela).
     pub(super) fn ligar_nfe(&mut self, window: &mut Window, cx: &mut Context<Self>) {
         let pares: Vec<(CampoNfe, Entity<InputState>)> = self
@@ -97,12 +157,34 @@ impl Raiz {
         let s = cx.subscribe_in(
             &self.nfe.clone(),
             window,
-            |this, _, evento: &super::nfe::EventoNfe, _, cx| match evento {
+            |this, _, evento: &super::nfe::EventoNfe, window, cx| match evento {
                 super::nfe::EventoNfe::IrParaConfiguracoes => {
                     this.tela = Tela::Configuracoes;
                     this.secao = Secao::Nfe;
                     cx.notify();
                 }
+                super::nfe::EventoNfe::UsarComoModelo(chave) => {
+                    this.usar_nfe_como_modelo(chave.clone(), window, cx);
+                }
+            },
+        );
+        self.fixas.push(s);
+        let s = cx.subscribe_in(
+            &self.nova_nfe.clone(),
+            window,
+            |this, _, evento: &EventoNovaNfe, _, cx| {
+                match evento {
+                    EventoNovaNfe::NotaMudou => this.nfe.update(cx, |n, cx| n.recarregar(cx)),
+                    EventoNovaNfe::IrParaConfiguracoes => {
+                        this.tela = Tela::Configuracoes;
+                        this.secao = Secao::Nfe;
+                    }
+                    EventoNovaNfe::IrParaNotas => {
+                        this.escolher_notas(EscolhaDeNotas::Nfe, cx);
+                        this.ir_para(Tela::Notas, cx);
+                    }
+                }
+                cx.notify();
             },
         );
         self.fixas.push(s);
@@ -218,6 +300,71 @@ impl Raiz {
     /// A tela Notas esta mostrando a NF-e.
     pub(super) fn mostrando_a_nfe(&self) -> bool {
         self.tela == Tela::Notas && self.escolha_notas == EscolhaDeNotas::Nfe
+    }
+
+    /// "Usar como modelo" na NF-e: le a nota guardada fora da tela e leva os dados para a Nova NF-e. Com algo digitado,
+    /// pergunta antes de substituir; com nota sem resposta ou envio em curso, nao substitui.
+    pub(super) fn usar_nfe_como_modelo(
+        &mut self,
+        chave: String,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        let servicos = Arc::clone(&self.servicos);
+        let efetiva = self.servicos.efetiva(&self.salvo);
+        cx.spawn_in(window, async move |this, cx| {
+            let r = cx
+                .background_spawn(async move { servicos.modelo_da_nfe(&efetiva, &chave) })
+                .await;
+            this.update_in(cx, |this, window, cx| match r {
+                Ok(m) => this.aplicar_modelo_nfe(m, window, cx),
+                Err(e) => window.push_notification(
+                    Notification::warning(e.texto()).title("Não foi possível usar como modelo"),
+                    cx,
+                ),
+            })
+            .ok();
+        })
+        .detach();
+    }
+
+    fn aplicar_modelo_nfe(&mut self, m: ModeloNfe, window: &mut Window, cx: &mut Context<Self>) {
+        let resposta = self
+            .nova_nfe
+            .update(cx, |n, cx| n.receber_modelo(m, window, cx));
+        match resposta {
+            ModeloRecebido::Aplicado => {
+                self.escolher_notas(EscolhaDeNotas::Nfe, cx);
+                self.ir_para(Tela::NovaNota, cx);
+            }
+            ModeloRecebido::Recusado(texto) => window.push_notification(
+                Notification::warning(texto).title("Não foi possível usar como modelo"),
+                cx,
+            ),
+            ModeloRecebido::PedirConfirmacao(modelo) => {
+                let raiz = cx.entity();
+                window.open_alert_dialog(cx, move |alerta, _, _| {
+                    let (raiz, modelo) = (raiz.clone(), modelo.clone());
+                    alerta
+                        .title("Substituir o que você preencheu?")
+                        .description(
+                            "A Nova NF-e tem dados preenchidos. Usar a nota escolhida como modelo apaga o que está no assistente e o rascunho salvo.",
+                        )
+                        .confirm()
+                        .ok_text("Substituir")
+                        .cancel_text("Manter o assistente")
+                        .on_ok(move |_, window, cx| {
+                            let modelo = (*modelo).clone();
+                            raiz.update(cx, |r, cx| {
+                                r.nova_nfe.update(cx, |n, cx| n.usar_modelo(modelo, window, cx));
+                                r.escolher_notas(EscolhaDeNotas::Nfe, cx);
+                                r.ir_para(Tela::NovaNota, cx);
+                            });
+                            true
+                        })
+                });
+            }
+        }
     }
 
     /// O ambiente da NF-e em vigor (arquivo com as variaveis por cima).
