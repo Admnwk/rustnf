@@ -427,8 +427,11 @@ impl DialogoRecebidas {
             let operacao = c.operacao;
             let titulo = c.titulo();
             let pode = c.pode_enviar();
+            // o erro da justificativa ja aparece embaixo do campo: o rodape nao o repete
+            let erro_do_campo = c.formulario.erro_da_justificativa(c.tocada);
             let motivo = if preenchendo && operacao != OperacaoRecebida::Buscar {
                 c.motivo_de_nao_enviar()
+                    .filter(|m| erro_do_campo.as_deref() != Some(m.as_str()))
             } else {
                 None
             };

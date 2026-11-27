@@ -108,8 +108,20 @@ fn data_e_hora(iso: &str) -> String {
     }
 }
 
+/// A quantidade como se le: sem os zeros a direita do XML e com virgula (`20.0000` -> `20`, `1.5000` -> `1,5`).
+fn quantidade_br(q: &str) -> String {
+    let q = if q.contains('.') {
+        q.trim_end_matches('0').trim_end_matches('.')
+    } else {
+        q
+    };
+    q.replace('.', ",")
+}
+
 fn item(i: &Item) -> ItemNfe {
-    let quantidade = i.quantidade.map_or_else(String::new, |q| q.to_string());
+    let quantidade = i
+        .quantidade
+        .map_or_else(String::new, |q| quantidade_br(&q.to_string()));
     ItemNfe {
         descricao: i.descricao.clone(),
         quantidade: format!("{quantidade} {}", i.unidade).trim().to_string(),
@@ -289,6 +301,14 @@ fn completar(mut d: DetalheNfe, n: &Nfe) -> DetalheNfe {
 mod testes {
     use super::*;
     use rustnf_app::notas::nfe::EventoGuardado;
+
+    #[test]
+    fn a_quantidade_sai_sem_os_zeros_do_xml_e_com_virgula() {
+        assert_eq!(quantidade_br("20.0000"), "20");
+        assert_eq!(quantidade_br("1.5000"), "1,5");
+        assert_eq!(quantidade_br("0.2500"), "0,25");
+        assert_eq!(quantidade_br("100"), "100");
+    }
 
     fn registro() -> Registro {
         Registro {

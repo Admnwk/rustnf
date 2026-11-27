@@ -393,14 +393,15 @@ impl TelaRecebidas {
                 && l.nota == SituacaoDaNota::Autorizada
                 && l.resposta != RespostaDada::Desconhecida
             {
-                coluna = coluna.child(
-                    faixa(
-                        Gravidade::Neutro,
-                        "Você tem só o resumo desta nota. A nota completa (itens, impostos e DANFE) só é entregue depois que a sua empresa responde sobre ela: baixá-la registra a ciência da operação na SEFAZ.",
-                        cx,
-                    )
-                    .id("recebidas-so-o-resumo"),
-                );
+                // a aplicacao so' registra a ciencia ao baixar se a nota ainda nao tem resposta nesta pasta
+                // (`rustnf-app/src/nfe/recebidas.rs`, doc de `baixar`)
+                let texto = if l.resposta == RespostaDada::Nenhuma {
+                    "Você tem só o resumo desta nota. A nota completa (itens, impostos e DANFE) só é entregue depois que a sua empresa responde sobre ela: baixá-la registra a ciência da operação na SEFAZ."
+                } else {
+                    "Você tem só o resumo desta nota. A sua empresa já respondeu sobre ela, então a SEFAZ já entrega a nota completa (itens, impostos e DANFE): baixá-la não registra nada de novo."
+                };
+                coluna =
+                    coluna.child(faixa(Gravidade::Neutro, texto, cx).id("recebidas-so-o-resumo"));
             }
         }
         coluna
