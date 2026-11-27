@@ -1,6 +1,6 @@
 # Changelog
 
-## Próxima versão
+## 0.6.0 - 2026-11-27
 
 * Interface de desktop: as **NF-e recebidas (as compras) na janela**: buscar as notas que fornecedores emitiram contra a empresa,
   ver a lista e o detalhe, baixar a nota completa, abrir o DANFE e **responder à nota** (a manifestação do destinatário).
