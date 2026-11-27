@@ -27,7 +27,9 @@ use gpui_kit::{
 use rustnf_app::config::Config;
 use rustnf_app::segredo::Segredo;
 
-use super::pecas::{campo, faixa, linha_de_resumo, mensagem_da_sefin, Negrito as _};
+use super::pecas::{
+    botao_de_perigo, campo, faixa, linha_de_resumo, mensagem_da_sefin, Negrito as _,
+};
 use super::senha::{classificar, Credencial, DialogoSenha, EventoSenha};
 use crate::fora;
 use crate::modelo::ambiente::{Ambiente, CORES_DA_DEMONSTRACAO, SELO_DA_DEMONSTRACAO};
@@ -773,7 +775,7 @@ impl Cancelamento {
                     f.child(
                         Button::new("cancelamento-enviar")
                             .label(tipo.rotulo_de_enviar(c.ambiente()))
-                            .when(producao, |b| b.danger())
+                            .when(producao, |b| botao_de_perigo(b, cx))
                             .when(!producao, |b| b.primary())
                             .disabled(!pode)
                             .on_click(move |_, window, cx| {

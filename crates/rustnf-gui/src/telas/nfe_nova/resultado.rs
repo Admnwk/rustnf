@@ -31,7 +31,9 @@ use crate::modelo::nfe_emissao::{
 };
 use crate::modelo::nfe_nova::{PassoNfe, PendenciaNfe};
 use crate::modelo::nfe_resultados::contagem;
-use crate::telas::pecas::{cartao, cor_da, faixa, grupo, linha_de_resumo, Negrito as _};
+use crate::telas::pecas::{
+    botao_de_perigo, cartao, cor_da, faixa, grupo, linha_de_resumo, Negrito as _,
+};
 
 impl NovaNfe {
     /// O que esta acontecendo enquanto envia.
@@ -327,7 +329,7 @@ impl NovaNfe {
                     h_flex().child(
                         Button::new("nfe-emitir-epec")
                             .label("Emitir em contingência (EPEC)")
-                            .when(producao, |b| b.danger())
+                            .when(producao, |b| botao_de_perigo(b, cx))
                             .when(!producao, |b| b.primary())
                             .disabled(!pode)
                             .on_click(cx.listener(|this, _, window, cx| {
@@ -458,7 +460,7 @@ impl NovaNfe {
                             "Enviar a NF-e (teste)"
                         })
                         .icon(IconName::ArrowRight)
-                        .when(producao, |b| b.danger())
+                        .when(producao, |b| botao_de_perigo(b, cx))
                         .when(!producao, |b| b.primary())
                         .disabled(!pode)
                         .on_click(cx.listener(|this, _, window, cx| this.enviar(window, cx))),

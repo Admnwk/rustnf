@@ -355,10 +355,9 @@ impl TelaRecebidas {
                         selo_de(l.nota.rotulo(), cor_da(l.nota.gravidade(), cx))
                             .id("recebidas-selo-da-nota"),
                     )
-                    .child(
-                        selo_de(l.resposta.rotulo(), cor_da(l.resposta.gravidade(), cx))
-                            .id("recebidas-selo-da-resposta"),
-                    )
+                    .children(l.selo_da_resposta().map(|(rotulo, g)| {
+                        selo_de(rotulo, cor_da(g, cx)).id("recebidas-selo-da-resposta")
+                    }))
                     .child(
                         div()
                             .id("recebidas-selo-do-ambiente")

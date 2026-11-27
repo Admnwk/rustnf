@@ -5,6 +5,7 @@
 //! Pecas de desenho que as telas repetem: campo com ajuda e erro, titulo de grupo, cartao, aviso e resultado de teste.
 //! So' cores do tema; a unica cor propria e' a do selo de ambiente (`modelo::ambiente`).
 
+use gpui_kit::component::button::{Button, ButtonCustomVariant, ButtonVariants as _};
 use gpui_kit::component::form::{field, Field};
 use gpui_kit::component::{h_flex, v_flex, ActiveTheme as _, Icon, IconName, Sizable as _};
 use gpui_kit::prelude::FluentBuilder as _;
@@ -125,6 +126,34 @@ pub(super) fn cor_da(gravidade: Gravidade, cx: &App) -> Hsla {
         Gravidade::Erro => tema.danger,
         Gravidade::Neutro => tema.muted_foreground,
     }
+}
+
+/// Luminosidade maxima do texto do botao de perigo no tema claro (vermelho bem escuro sobre o fundo rosado).
+const LUMINOSIDADE_DO_PERIGO_NO_CLARO: f32 = 0.27;
+/// Luminosidade minima do texto do botao de perigo no tema escuro (rosa claro sobre o fundo avermelhado escuro).
+const LUMINOSIDADE_DO_PERIGO_NO_ESCURO: f32 = 0.88;
+
+/// O botao de perigo (producao, cancelar): o fundo rosado do tema, com o TEXTO escurecido (claro) ou clareado
+/// (escuro) ate a razao de contraste passar de 4,5:1. O estilo `danger()` do kit usa o proprio vermelho do tema como
+/// texto, que sobre o rosado fica abaixo disso (os numeros estao no teste `o_botao_de_perigo_...`).
+pub(super) fn botao_de_perigo(botao: Button, cx: &App) -> Button {
+    let tema = cx.theme();
+    let (vermelho, escuro) = (tema.danger, tema.is_dark());
+    let texto = Hsla {
+        l: if escuro {
+            vermelho.l.max(LUMINOSIDADE_DO_PERIGO_NO_ESCURO)
+        } else {
+            vermelho.l.min(LUMINOSIDADE_DO_PERIGO_NO_CLARO)
+        },
+        ..vermelho
+    };
+    botao.custom(
+        ButtonCustomVariant::new(cx)
+            .color(vermelho)
+            .foreground(texto)
+            .hover(vermelho.opacity(0.3))
+            .active(vermelho.opacity(0.4)),
+    )
 }
 
 /// Luminosidade maxima de uma cor de aviso usada como TEXTO sobre o fundo claro.
@@ -450,4 +479,76 @@ pub(super) fn estado_vazio(
         .when(!botoes.is_empty(), |d| {
             d.child(h_flex().gap_2().children(botoes))
         })
+}
+
+#[cfg(test)]
+mod testes {
+    use super::*;
+    use gpui_kit::component::{Colorize as _, Theme, ThemeMode};
+    use gpui_kit::{Rgba, TestAppContext};
+
+    /// Luminancia relativa (WCAG 2.x) de uma cor opaca.
+    fn luminancia(c: Rgba) -> f32 {
+        let lin = |v: f32| {
+            if v <= 0.039_28 {
+                v / 12.92
+            } else {
+                ((v + 0.055) / 1.055).powf(2.4)
+            }
+        };
+        0.2126 * lin(c.r) + 0.7152 * lin(c.g) + 0.0722 * lin(c.b)
+    }
+
+    /// A cor `de` (com a sua transparencia) pintada sobre a opaca `sob`.
+    fn sobre(de: Hsla, sob: Hsla) -> Rgba {
+        let (a, b) = (Rgba::from(de), Rgba::from(sob));
+        let m = |x: f32, y: f32| x * a.a + y * (1. - a.a);
+        Rgba {
+            r: m(a.r, b.r),
+            g: m(a.g, b.g),
+            b: m(a.b, b.b),
+            a: 1.,
+        }
+    }
+
+    /// A razao de contraste WCAG do texto sobre o fundo.
+    fn razao(texto: Rgba, fundo: Rgba) -> f32 {
+        let (x, y) = (luminancia(texto), luminancia(fundo));
+        (x.max(y) + 0.05) / (x.min(y) + 0.05)
+    }
+
+    #[gpui_kit::test]
+    fn o_botao_de_perigo_passa_de_4_5_para_1_nos_dois_temas(cx: &mut TestAppContext) {
+        cx.update(super::super::iniciar);
+        for modo in [ThemeMode::Light, ThemeMode::Dark] {
+            let (antes, depois) = cx.update(|cx| {
+                Theme::change(modo, None, cx);
+                let t = cx.theme();
+                let fundo_da_tela = Hsla {
+                    a: 1.,
+                    ..t.background
+                };
+                // antes: o `danger()` do kit (texto `button_danger_foreground` sobre `button_danger`)
+                let antes = razao(
+                    Rgba::from(t.button_danger_foreground),
+                    sobre(t.button_danger, fundo_da_tela),
+                );
+                // depois: o texto e o tint do `botao_de_perigo`
+                let vermelho = t.danger;
+                let l = if t.is_dark() {
+                    vermelho.l.max(LUMINOSIDADE_DO_PERIGO_NO_ESCURO)
+                } else {
+                    vermelho.l.min(LUMINOSIDADE_DO_PERIGO_NO_CLARO)
+                };
+                let texto = Hsla { l, ..vermelho };
+                let tint = vermelho.mix_oklab(t.transparent, 0.2);
+                let depois = razao(Rgba::from(texto), sobre(tint, fundo_da_tela));
+                (antes, depois)
+            });
+            println!(
+                "contraste do botao de perigo {modo:?}: antes {antes:.2}:1, depois {depois:.2}:1"
+            );
+            assert!(depois >= 4.5, "{modo:?}: {depois:.2}:1");
+        }
+    }
 }

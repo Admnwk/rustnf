@@ -250,11 +250,12 @@ impl DesfechoBusca {
                     .join(" ")
             }
             Self::NadaNovo { proxima, extra } => {
+                // o titulo ja diz "Nada novo": o texto so' acrescenta o que a pessoa faz agora
                 let em_dia = proxima.map_or_else(
-                    || "Não há notas novas para você agora.".to_string(),
+                    || "Sua fila no Ambiente Nacional está em dia.".to_string(),
                     |t| {
                         format!(
-                            "Não há notas novas para você agora. A próxima busca pode ser feita a partir das {} (horário de Brasília): o Ambiente Nacional pede uma hora entre as buscas.",
+                            "A próxima busca pode ser feita a partir das {} (horário de Brasília): o Ambiente Nacional pede uma hora entre as buscas.",
                             hora_de_brasilia(t)
                         )
                     },
@@ -568,6 +569,16 @@ mod testes {
         );
         assert_eq!(d.titulo(), "Nada novo");
         assert!(d.texto().contains("10:00"));
+        assert!(
+            !d.texto().contains("Não há notas novas"),
+            "o texto nao repete o titulo: {}",
+            d.texto()
+        );
+        let sem_espera = busca(&DesfechoDfe::EmDia, None, 0);
+        assert_eq!(
+            sem_espera.texto(),
+            "Sua fila no Ambiente Nacional está em dia."
+        );
         assert_eq!(d.gravidade(), Gravidade::Neutro);
     }
 

@@ -20,7 +20,7 @@ use crate::modelo::ambiente::{CORES_DA_DEMONSTRACAO, SELO_DA_DEMONSTRACAO};
 use crate::modelo::mascara::documento_para_resumo;
 use crate::modelo::pedido::PedidoCongelado;
 use crate::modelo::previa::mostrar;
-use crate::telas::pecas::{linha_de_resumo, Negrito as _};
+use crate::telas::pecas::{botao_de_perigo, linha_de_resumo, Negrito as _};
 use crate::telas::senha::{DialogoSenha, EventoSenha};
 
 /// O que a confirmacao mostra: tomador, servico, valor e valor liquido, e a DPS que vai ser usada.
@@ -167,7 +167,7 @@ impl NovaNota {
                                 } else {
                                     "Emitir nota"
                                 })
-                                .when(producao, |b| b.danger())
+                                .when(producao, |b| botao_de_perigo(b, cx))
                                 .when(!producao, |b| b.primary())
                                 .disabled(!pode)
                                 .on_click(move |_, window, cx| {

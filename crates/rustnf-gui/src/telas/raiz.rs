@@ -13,7 +13,8 @@ use gpui_kit::component::notification::Notification;
 use gpui_kit::component::select::{SearchableVec, SelectEvent, SelectState};
 use gpui_kit::component::{IndexPath, Theme, ThemeMode, WindowExt as _};
 use gpui_kit::{
-    AppContext as _, Context, Entity, PathPromptOptions, ScrollHandle, Subscription, Window,
+    AppContext as _, Context, Entity, FocusHandle, PathPromptOptions, ScrollHandle, Subscription,
+    Window,
 };
 use rustnf_app::config::Config;
 use rustnf_app::notas::Situacao;
@@ -229,6 +230,8 @@ pub struct Raiz {
     pub(super) proximo_dps: Option<u64>,
     /// A rolagem das telas da propria janela (Inicio, primeiro uso, Configuracoes, nota sem configuracao).
     pub(super) rolagem: ScrollHandle,
+    /// O foco dos dois botoes do Inicio (o Tab os traz para a vista).
+    pub(super) foco_do_inicio: [FocusHandle; 2],
     pub(super) fixas: Vec<Subscription>,
     das_aliquotas: Vec<Subscription>,
 }
@@ -346,6 +349,7 @@ impl Raiz {
             aviso: None,
             proximo_dps: None,
             rolagem: ScrollHandle::new(),
+            foco_do_inicio: [cx.focus_handle(), cx.focus_handle()],
             fixas: Vec::new(),
             das_aliquotas: Vec::new(),
         };
