@@ -405,7 +405,11 @@ impl TelaNfe {
         if d.correcoes > 0 {
             emissao = emissao.child(linha_de_resumo(
                 "Correções",
-                format!("{} carta(s) de correção", d.correcoes),
+                crate::modelo::nfe_resultados::contagem(
+                    d.correcoes,
+                    "carta de correção",
+                    "cartas de correção",
+                ),
                 cx,
             ));
         }

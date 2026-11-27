@@ -257,8 +257,12 @@ impl FormularioDeCorrecao {
             format!("Esta será a 1ª carta (a nota admite até {CARTAS_MAXIMAS}).")
         } else {
             format!(
-                "Esta nota já tem {} carta(s) de correção (admite até {CARTAS_MAXIMAS}). A nova SUBSTITUI as anteriores: o texto tem de trazer TODAS as correções que ainda valem, as antigas e a nova.",
-                self.ja_feitas
+                "Esta nota já tem {} (admite até {CARTAS_MAXIMAS}). A nova SUBSTITUI as anteriores: o texto tem de trazer TODAS as correções que ainda valem, as antigas e a nova.",
+                super::nfe_resultados::contagem(
+                    self.ja_feitas as usize,
+                    "carta de correção",
+                    "cartas de correção"
+                )
             )
         }
     }
@@ -678,7 +682,10 @@ mod testes {
         assert!(f.aviso_das_cartas().contains("1ª carta"));
         f.ja_feitas = 2;
         let a = f.aviso_das_cartas();
-        assert!(a.contains("2 carta(s)") && a.contains("SUBSTITUI"), "{a}");
+        assert!(
+            a.contains("já tem 2 cartas de correção") && a.contains("SUBSTITUI"),
+            "{a}"
+        );
         f.ja_feitas = CARTAS_MAXIMAS;
         assert!(f.esgotada());
         assert!(f.motivo_de_nao_enviar(false).unwrap().contains("20 cartas"));

@@ -13,6 +13,16 @@ use rustnf_app::notas::nfe::Situacao;
 use super::certificado::Gravidade;
 use super::mascara::frase;
 
+/// "1 nota segue" / "3 notas seguem": o numero e a forma certa, sem o "(s)".
+#[must_use]
+pub fn contagem(n: usize, um: &str, varios: &str) -> String {
+    if n == 1 {
+        format!("1 {um}")
+    } else {
+        format!("{n} {varios}")
+    }
+}
+
 /// O que a consulta achou.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ConsultaNfe {
@@ -206,12 +216,22 @@ impl ResumoDaRetomada {
         let (gravidade, texto) = if sem > 0 {
             (
                 Gravidade::Aviso,
-                format!("{sem} nota(s) seguem sem resposta da SEFAZ: tente de novo mais tarde e não emita outra nota no lugar."),
+                format!(
+                    "{} sem resposta da SEFAZ: tente de novo mais tarde e não emita outra nota no lugar.",
+                    contagem(sem, "nota segue", "notas seguem")
+                ),
             )
         } else if recusadas > 0 {
             (
                 Gravidade::Erro,
-                format!("{recusadas} nota(s) foram recusadas ou denegadas pela SEFAZ."),
+                format!(
+                    "{} pela SEFAZ.",
+                    contagem(
+                        recusadas,
+                        "nota foi recusada ou denegada",
+                        "notas foram recusadas ou denegadas"
+                    )
+                ),
             )
         } else {
             (
@@ -261,6 +281,13 @@ fn linha(f: &Retomada) -> LinhaDaRetomada {
 mod testes {
     use super::*;
     use serde_json::Value;
+
+    #[test]
+    fn contagem_usa_o_singular_so_para_um() {
+        assert_eq!(contagem(1, "nota segue", "notas seguem"), "1 nota segue");
+        assert_eq!(contagem(0, "nota segue", "notas seguem"), "0 notas seguem");
+        assert_eq!(contagem(3, "nota segue", "notas seguem"), "3 notas seguem");
+    }
 
     fn feita(status: &'static str, acao: &'static str, s: Option<Situacao>) -> Retomada {
         Retomada {

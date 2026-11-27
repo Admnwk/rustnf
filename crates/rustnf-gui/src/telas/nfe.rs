@@ -462,8 +462,13 @@ impl TelaNfe {
                 .child(faixa(
                     Gravidade::Aviso,
                     format!(
-                        "{n} {} enviada(s) sem resposta da SEFAZ. Elas podem ou não ter sido autorizadas. Retomar consulta cada uma pela mesma chave e, só se a SEFAZ não a recebeu, reenvia a mesma nota: nunca cria uma nota nova no lugar.",
-                        if n == 1 { "nota" } else { "notas" }
+                        "{} sem resposta da SEFAZ. {} Retomar consulta cada uma pela mesma chave e, só se a SEFAZ não a recebeu, reenvia a mesma nota: nunca cria uma nota nova no lugar.",
+                        crate::modelo::nfe_resultados::contagem(n, "nota enviada", "notas enviadas"),
+                        if n == 1 {
+                            "Ela pode ou não ter sido autorizada."
+                        } else {
+                            "Elas podem ou não ter sido autorizadas."
+                        }
                     ),
                     cx,
                 ))

@@ -261,8 +261,12 @@ impl DialogoNfe {
             Operacao::Retomar => {
                 c = c.child(
                     div().id("nfe-retomar-explicacao").text_sm().child(format!(
-                        "{} nota(s) estão sem resposta da SEFAZ. Para cada uma, o programa consulta a mesma chave: se a SEFAZ já a autorizou, a pasta é posta em dia; se a SEFAZ não a recebeu, reenvia a mesma nota que está guardada, assinada. Nunca cria uma nota nova no lugar.",
-                        self.a_retomar
+                        "{} sem resposta da SEFAZ. Para cada uma, o programa consulta a mesma chave: se a SEFAZ já a autorizou, a pasta é posta em dia; se a SEFAZ não a recebeu, reenvia a mesma nota que está guardada, assinada. Nunca cria uma nota nova no lugar.",
+                        crate::modelo::nfe_resultados::contagem(
+                            self.a_retomar,
+                            "nota está",
+                            "notas estão"
+                        )
                     )),
                 );
             }
