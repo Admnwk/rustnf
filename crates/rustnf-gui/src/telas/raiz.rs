@@ -24,7 +24,7 @@ use super::cancelar::{Cancelamento, EventoCancelamento};
 use super::consultar::{EventoConsulta, TelaConsultar};
 use super::nfe::TelaNfe;
 use super::nfe_dialogo::DialogoNfe;
-use super::nfe_nova::{EventoNovaNfe, NovaNfe};
+use super::nfe_nova::NovaNfe;
 use super::nota::{EventoNota, Modelo, NovaNota};
 use super::notas::{EventoNotas, TelaNotas};
 use super::previa::{EventoPrevia, TelaPrevia};
@@ -262,14 +262,7 @@ impl Raiz {
             let servicos = Arc::clone(&servicos);
             cx.new(|cx| NovaNota::new(servicos, window, cx))
         };
-        let nova_nfe = {
-            let servicos = Arc::clone(&servicos);
-            cx.new(|cx| NovaNfe::new(servicos, window, cx))
-        };
-        let produtos = {
-            let servicos = Arc::clone(&servicos);
-            cx.new(|cx| TelaProdutos::new(servicos, window, cx))
-        };
+        let (nova_nfe, produtos) = Self::criar_telas_nfe(&servicos, window, cx);
         let cancelamento = {
             let servicos = Arc::clone(&servicos);
             cx.new(|cx| Cancelamento::new(servicos, window, cx))
@@ -393,25 +386,6 @@ impl Raiz {
                     EventoNota::IrParaAliquotas => this.ir_para_aliquotas(),
                     EventoNota::NotaAutorizada => {
                         this.notas.update(cx, |n, cx| n.recarregar(cx));
-                    }
-                }
-                cx.notify();
-            },
-        );
-        self.fixas.push(s);
-        let s = cx.subscribe_in(
-            &self.nova_nfe.clone(),
-            window,
-            |this, _, evento: &EventoNovaNfe, _, cx| {
-                match evento {
-                    EventoNovaNfe::NotaMudou => this.nfe.update(cx, |n, cx| n.recarregar(cx)),
-                    EventoNovaNfe::IrParaConfiguracoes => {
-                        this.tela = Tela::Configuracoes;
-                        this.secao = Secao::Nfe;
-                    }
-                    EventoNovaNfe::IrParaNotas => {
-                        this.escolher_notas(EscolhaDeNotas::Nfe, cx);
-                        this.ir_para(Tela::Notas, cx);
                     }
                 }
                 cx.notify();
@@ -608,120 +582,13 @@ impl Raiz {
         self.previa
             .update(cx, |p, cx| p.definir_config(&efetiva, window, cx));
         let pronta = self.nfe_pronta(&efetiva);
-        let e = efetiva.clone();
-        self.produtos
-            .update(cx, |p, cx| p.definir_config(e, completa, cx));
-        let e = efetiva.clone();
-        self.nova_nfe
-            .update(cx, |n, cx| n.definir_config(e, pronta, window, cx));
+        self.entregar_config_nova_nfe(&efetiva, pronta, completa, window, cx);
         let e = efetiva.clone();
         self.dialogo_nfe.update(cx, |d, cx| d.definir_config(e, cx));
         let e = efetiva.clone();
         self.nfe.update(cx, |n, cx| n.definir_config(e, pronta, cx));
         self.carregar_escolha(efetiva.clone(), cx);
         self.atualizar_proximo_dps(efetiva, window, cx);
-    }
-
-    /// Le de novo o proximo numero de DPS da serie (para a secao Notas das Configuracoes).
-    fn atualizar_proximo_dps(
-        &mut self,
-        efetiva: Config,
-        window: &mut Window,
-        cx: &mut Context<Self>,
-    ) {
-        self.proximo_dps = None;
-        if efetiva.notas.pasta.trim().is_empty() {
-            return;
-        }
-        let servicos = Arc::clone(&self.servicos);
-        cx.spawn_in(window, async move |this, cx| {
-            let r = cx
-                .background_spawn(async move { servicos.proximo_numero(&efetiva) })
-                .await;
-            this.update(cx, |this, cx| {
-                this.proximo_dps = r.ok();
-                cx.notify();
-            })
-            .ok();
-        })
-        .detach();
-    }
-
-    /// "Continuar deste numero": confere o que foi digitado e pergunta antes de mudar a numeracao.
-    pub(super) fn pedir_proximo_dps(&mut self, window: &mut Window, cx: &mut Context<Self>) {
-        let digitado = self.entradas.proximo.read(cx).value().trim().to_string();
-        let Some(proximo) = digitado
-            .parse::<u64>()
-            .ok()
-            .filter(|n| *n > 0 && digitado.chars().all(|c| c.is_ascii_digit()))
-        else {
-            self.erros_externos.insert(
-                Campo::ProximoDps,
-                "Digite só o número da próxima DPS, por exemplo 1501.".into(),
-            );
-            cx.notify();
-            return;
-        };
-        self.erros_externos.remove(&Campo::ProximoDps);
-        let serie = self
-            .servicos
-            .contexto_da_nota(&self.servicos.efetiva(&self.salvo))
-            .serie();
-        let raiz = cx.entity();
-        window.open_alert_dialog(cx, move |alerta, _, _| {
-            let raiz = raiz.clone();
-            alerta
-                .title(format!("A próxima DPS da série {serie} será a nº {proximo}?"))
-                .description(
-                    "Use o número seguinte ao da última DPS emitida no outro sistema. Um número já usado faz a Sefin devolver a nota antiga em vez de autorizar a nova. A numeração não volta atrás depois.",
-                )
-                .confirm()
-                .ok_text("Continuar deste número")
-                .cancel_text("Cancelar")
-                .on_ok(move |_, window, cx| {
-                    raiz.update(cx, |this, cx| this.definir_proximo_dps(proximo, window, cx));
-                    true
-                })
-        });
-    }
-
-    fn definir_proximo_dps(&mut self, proximo: u64, window: &mut Window, cx: &mut Context<Self>) {
-        if self.ocupado.numero {
-            return;
-        }
-        let efetiva = self.servicos.efetiva(&self.salvo);
-        let servicos = Arc::clone(&self.servicos);
-        self.ocupado.numero = true;
-        cx.notify();
-        cx.spawn_in(window, async move |this, cx| {
-            let r = cx
-                .background_spawn(async move { servicos.definir_proximo(&efetiva, proximo) })
-                .await;
-            this.update_in(cx, |this, window, cx| {
-                this.ocupado.numero = false;
-                match r {
-                    Ok(n) => {
-                        this.entradas
-                            .proximo
-                            .update(cx, |e, cx| e.set_value("", window, cx));
-                        window.push_notification(
-                            Notification::success(format!("A próxima DPS será a nº {n}."))
-                                .title("Numeração alterada"),
-                            cx,
-                        );
-                        this.proximo_dps = Some(n);
-                        // a Nova nota mostra o numero da proxima DPS: le de novo
-                        this.nova.update(cx, |nova, cx| nova.atualizar_numero(cx));
-                    }
-                    Err(erro) => {
-                        this.erros_externos.insert(Campo::ProximoDps, erro.texto());
-                    }
-                }
-                cx.notify();
-            })
-            .ok();
-        })
-        .detach();
     }
 
     /// Muda a tela. Notas le a pasta de novo ao abrir, para a lista nao ficar atras do que a Nova nota e os
@@ -735,9 +602,7 @@ impl Raiz {
         if tela == Tela::Notas {
             self.notas.update(cx, |n, cx| n.recarregar(cx));
         }
-        if tela == Tela::Produtos {
-            self.produtos.update(cx, |p, cx| p.recarregar(cx));
-        }
+        self.ao_abrir_tela_nfe(tela, cx);
         cx.notify();
     }
 
@@ -745,10 +610,7 @@ impl Raiz {
     pub(super) fn rolagem_da_tela(&self, cx: &gpui_kit::App) -> Option<ScrollHandle> {
         match self.tela {
             Tela::Inicio | Tela::Configuracoes => Some(self.rolagem.clone()),
-            Tela::NovaNota if self.escolha_notas == EscolhaDeNotas::Nfe => {
-                Some(self.nova_nfe.read(cx).rolagem.clone())
-            }
-            Tela::NovaNota => Some(self.nova.read(cx).rolagem.clone()),
+            Tela::NovaNota => Some(self.rolagem_da_nova_nota(cx)),
             Tela::Consultar => Some(self.consultar.read(cx).rolagem.clone()),
             Tela::Previa => Some(self.previa.read(cx).rolagem.clone()),
             Tela::Notas | Tela::Produtos => None,
@@ -768,10 +630,7 @@ impl Raiz {
             return false;
         }
         match self.tela {
-            Tela::NovaNota if self.escolha_notas == EscolhaDeNotas::Nfe => {
-                self.nova_nfe.update(cx, |_, cx| cx.notify());
-            }
-            Tela::NovaNota => self.nova.update(cx, |_, cx| cx.notify()),
+            Tela::NovaNota => self.notificar_nova_nota(cx),
             Tela::Consultar => self.consultar.update(cx, |_, cx| cx.notify()),
             Tela::Previa => self.previa.update(cx, |_, cx| cx.notify()),
             _ => {}

@@ -14,6 +14,11 @@
   * Conferência com os erros e avisos da montagem da aplicação em palavras e com o passo onde se corrige; em produção, sem a
     marcação "Entendo que a nota tem efeito fiscal", nenhuma chamada. Sem resposta: só o Retomar (mesma chave, nunca outra
     nota). Contingência EPEC com o motivo de 15 a 255 letras, **não oferecida enquanto há nota sem resposta na pasta**.
+  * Venda para outro estado a consumidor final sem inscrição estadual: o CFOP é 6.107 (produção própria) ou 6.108 (mercadoria de
+    terceiros), e no regime normal a nota leva o DIFAL (`icms_uf_dest`), que a biblioteca exige (rejeição 694). A tela pede só a
+    alíquota interna do ICMS do estado do cliente e o fundo de combate à pobreza (não há tabela de alíquotas dos estados no
+    programa), calcula o resto pela biblioteca e mostra "ICMS para o estado do cliente (DIFAL)" na conferência. Cliente isento
+    de inscrição e ICMS já cobrado antes a quem não é contribuinte: a tela mostra os CFOP possíveis e a pessoa escolhe.
   * Demonstração: `--nfe-emissao autorizada|rejeitada|sem-resposta|fora` e uma pasta de ensaio com três produtos.
   * Os testes da NFS-e e da lista da NF-e não mudaram de expectativa.
 

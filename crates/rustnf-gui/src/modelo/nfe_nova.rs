@@ -14,7 +14,7 @@ use serde::{Deserialize, Serialize};
 
 use super::mascara::{data_br_para_iso, dinheiro_para_centavos, so_digitos};
 use super::nfe_fiscal::{
-    cfop_da_venda, opcoes_de_icms, Contribuinte, Destino, Entrega, Icms, Origem, Pagamento,
+    cfops_da_venda, opcoes_de_icms, Contribuinte, Destino, Entrega, Icms, Origem, Pagamento,
     Presenca, RegimePisCofins,
 };
 
@@ -153,6 +153,14 @@ pub struct ItemNfe {
     pub st_valor: String,
     /// CFOP escolhido a mao (vale no lugar do da tabela).
     pub cfop: Option<String>,
+    /// O CFOP que a pessoa escolheu entre as opcoes da tabela, quando ela mostra mais de uma (cliente isento, ST a nao
+    /// contribuinte). So' vale enquanto continua entre as opcoes do cliente de agora.
+    pub cfop_escolhido: Option<String>,
+    /// DIFAL: a aliquota interna do ICMS da UF do cliente em percentual, como digitada (so' na venda interestadual a
+    /// consumidor final nao contribuinte, quando a biblioteca exige o grupo `ICMSUFDest`).
+    pub difal_aliquota: String,
+    /// DIFAL: o adicional do Fundo de Combate a Pobreza da UF do cliente em percentual, como digitado (vazio = 0).
+    pub difal_fcp: String,
     /// CST ou CSOSN do ICMS escolhido a mao.
     pub icms_codigo: Option<String>,
     /// CST do PIS e da COFINS escolhido a mao.
@@ -182,6 +190,9 @@ impl Default for ItemNfe {
             st_aliquota: String::new(),
             st_valor: String::new(),
             cfop: None,
+            cfop_escolhido: None,
+            difal_aliquota: String::new(),
+            difal_fcp: String::new(),
             icms_codigo: None,
             pis_cst: None,
             do_cadastro: false,
@@ -233,14 +244,39 @@ impl ItemNfe {
         Some(self.produto_centavos()? - self.desconto_centavos()?)
     }
 
-    /// O CFOP que vale para este item neste destino: o escolhido a mao ou o da tabela.
+    /// As opcoes de CFOP da tabela para este item, neste destino e para este cliente.
     #[must_use]
-    pub fn cfop_efetivo(&self, destino: Destino, crt: u8) -> Option<String> {
+    pub fn cfops_da_tabela(
+        &self,
+        destino: Destino,
+        crt: u8,
+        cliente: Option<Contribuinte>,
+    ) -> &'static [&'static str] {
+        self.icms_efetivo(crt).map_or(&[], |icms| {
+            cfops_da_venda(destino, self.origem, icms, cliente)
+        })
+    }
+
+    /// O CFOP que vale para este item neste destino: o digitado a mao, o da tabela (quando ela tem um so') ou o que a
+    /// pessoa escolheu entre as opcoes. `None` = falta escolher (ou a combinacao nao existe).
+    #[must_use]
+    pub fn cfop_efetivo(
+        &self,
+        destino: Destino,
+        crt: u8,
+        cliente: Option<Contribuinte>,
+    ) -> Option<String> {
         if let Some(c) = self.cfop.as_ref().filter(|c| !c.trim().is_empty()) {
             return Some(c.trim().to_string());
         }
-        let icms = self.icms_efetivo(crt)?;
-        cfop_da_venda(destino, self.origem, icms).map(str::to_string)
+        match self.cfops_da_tabela(destino, crt, cliente) {
+            [unico] => Some((*unico).to_string()),
+            varios => self
+                .cfop_escolhido
+                .as_ref()
+                .filter(|e| varios.contains(&e.as_str()))
+                .cloned(),
+        }
     }
 
     /// O CST ou CSOSN que vale: o escolhido a mao ou o da tabela.
@@ -599,3 +635,6 @@ pub use super::nfe_pendencias::pendencias;
 
 #[cfg(test)]
 pub(crate) mod testes;
+
+#[cfg(test)]
+mod testes_difal;

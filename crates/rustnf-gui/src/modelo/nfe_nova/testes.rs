@@ -263,11 +263,11 @@ fn o_que_a_pessoa_editou_a_mao_nunca_e_sobrescrito() {
     let mut i = item("Cafe", "1", "10,00");
     // a tabela diz 5102 dentro do estado e 6102 fora
     assert_eq!(
-        i.cfop_efetivo(Destino::DentroDoEstado, 1).as_deref(),
+        i.cfop_efetivo(Destino::DentroDoEstado, 1, None).as_deref(),
         Some("5102")
     );
     assert_eq!(
-        i.cfop_efetivo(Destino::OutroEstado, 1).as_deref(),
+        i.cfop_efetivo(Destino::OutroEstado, 1, None).as_deref(),
         Some("6102")
     );
     // editado a mao: vale o da pessoa nos dois destinos
@@ -275,18 +275,18 @@ fn o_que_a_pessoa_editou_a_mao_nunca_e_sobrescrito() {
     i.icms_codigo = Some("900".into());
     i.pis_cst = Some("99".into());
     assert_eq!(
-        i.cfop_efetivo(Destino::DentroDoEstado, 1).as_deref(),
+        i.cfop_efetivo(Destino::DentroDoEstado, 1, None).as_deref(),
         Some("5949")
     );
     assert_eq!(
-        i.cfop_efetivo(Destino::OutroEstado, 1).as_deref(),
+        i.cfop_efetivo(Destino::OutroEstado, 1, None).as_deref(),
         Some("5949")
     );
     // mudar a origem, o ICMS ou o regime nao desfaz a edicao
     i.origem = Origem::Fabricou;
     i.icms = Some(Icms::NaoTributado);
     assert_eq!(
-        i.cfop_efetivo(Destino::OutroEstado, 3).as_deref(),
+        i.cfop_efetivo(Destino::OutroEstado, 3, None).as_deref(),
         Some("5949")
     );
     assert_eq!(i.icms_codigo_efetivo(3).as_deref(), Some("900"));

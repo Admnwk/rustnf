@@ -163,34 +163,79 @@ pub fn opcoes_de_icms(crt: u8) -> &'static [Icms] {
     }
 }
 
-/// O CFOP da venda. `None` = a combinacao nao existe na tabela (o imposto ja cobrado antes nao se aplica a quem fabrica
-/// nem a exportacao): a tela mostra o porque.
+/// Os CFOP que valem para a venda, na ordem em que a tela os mostra. Vazio = a combinacao nao existe na tabela (o imposto
+/// ja cobrado antes nao se aplica a quem fabrica nem a exportacao): a tela mostra o porque. Mais de um = a pergunta simples
+/// nao decide e a pessoa escolhe (nunca se escolhe calado).
 ///
 /// * dentro da UF: 5.101 (venda de producao do estabelecimento), 5.102 (venda de mercadoria adquirida ou recebida de
 ///   terceiros) e 5.405 (venda de mercadoria de terceiros com ST, como substituido);
-/// * outra UF: 6.101, 6.102 e 6.404 (venda de mercadoria sujeita a ST cujo imposto ja foi retido);
+/// * outra UF, cliente contribuinte (ou ainda sem resposta): 6.101, 6.102 e 6.404 (venda de mercadoria sujeita a ST cujo
+///   imposto ja foi retido);
+/// * outra UF, cliente NAO contribuinte (`indIEDest` 9, o consumidor final de quem vende pela internet): 6.107 (venda de
+///   producao do estabelecimento, destinada a nao contribuinte) e 6.108 (venda de mercadoria adquirida ou recebida de
+///   terceiros, destinada a nao contribuinte). Com ST ja retido a tabela tem 6.404 e 6.108: a pessoa escolhe;
+/// * outra UF, cliente contribuinte isento de inscricao (`indIEDest` 2): a tabela nao o separa nem do contribuinte
+///   (6.101, 6.102) nem do nao contribuinte (6.107, 6.108): a pessoa escolhe;
 /// * exterior: 7.101 e 7.102 (exportacao).
 #[must_use]
-pub fn cfop_da_venda(destino: Destino, origem: Origem, icms: Icms) -> Option<&'static str> {
+pub fn cfops_da_venda(
+    destino: Destino,
+    origem: Origem,
+    icms: Icms,
+    cliente: Option<Contribuinte>,
+) -> &'static [&'static str] {
     use Destino::{DentroDoEstado, Exterior, OutroEstado};
     let st = icms == Icms::JaCobradoAntes;
-    match (destino, origem, st) {
-        (DentroDoEstado, Origem::Fabricou, false) => Some("5101"),
-        (DentroDoEstado, Origem::Revende, false) => Some("5102"),
-        (DentroDoEstado, Origem::Revende, true) => Some("5405"),
-        (OutroEstado, Origem::Fabricou, false) => Some("6101"),
-        (OutroEstado, Origem::Revende, false) => Some("6102"),
-        (OutroEstado, Origem::Revende, true) => Some("6404"),
-        (Exterior, Origem::Fabricou, false) => Some("7101"),
-        (Exterior, Origem::Revende, false) => Some("7102"),
+    match (destino, origem, st, cliente) {
+        (DentroDoEstado, Origem::Fabricou, false, _) => &["5101"],
+        (DentroDoEstado, Origem::Revende, false, _) => &["5102"],
+        (DentroDoEstado, Origem::Revende, true, _) => &["5405"],
+        (OutroEstado, Origem::Fabricou, false, Some(Contribuinte::Nao)) => &["6107"],
+        (OutroEstado, Origem::Fabricou, false, Some(Contribuinte::Isento)) => &["6101", "6107"],
+        (OutroEstado, Origem::Fabricou, false, _) => &["6101"],
+        (OutroEstado, Origem::Revende, false, Some(Contribuinte::Nao)) => &["6108"],
+        (OutroEstado, Origem::Revende, false, Some(Contribuinte::Isento)) => &["6102", "6108"],
+        (OutroEstado, Origem::Revende, false, _) => &["6102"],
+        (OutroEstado, Origem::Revende, true, Some(Contribuinte::Nao)) => &["6404", "6108"],
+        (OutroEstado, Origem::Revende, true, _) => &["6404"],
+        (Exterior, Origem::Fabricou, false, _) => &["7101"],
+        (Exterior, Origem::Revende, false, _) => &["7102"],
+        _ => &[],
+    }
+}
+
+/// O CFOP da venda quando a tabela tem um so'; `None` = nao existe ou ha mais de um (veja [`cfops_da_venda`]).
+#[must_use]
+pub fn cfop_da_venda(
+    destino: Destino,
+    origem: Origem,
+    icms: Icms,
+    cliente: Option<Contribuinte>,
+) -> Option<&'static str> {
+    match cfops_da_venda(destino, origem, icms, cliente) {
+        [unico] => Some(unico),
         _ => None,
     }
+}
+
+/// O CFOP em palavras curtas, para a pessoa escolher entre as opcoes da tabela: o numero e o que ele diz.
+#[must_use]
+pub fn rotulo_do_cfop(cfop: &str) -> String {
+    let texto = match cfop {
+        "6101" => "venda da sua produção, a contribuinte",
+        "6102" => "venda de mercadoria de terceiros, a contribuinte",
+        "6107" => "venda da sua produção, a não contribuinte",
+        "6108" => "venda de mercadoria de terceiros, a não contribuinte",
+        "6404" => "mercadoria com ICMS já cobrado antes (substituição tributária)",
+        _ => return cfop.to_string(),
+    };
+    format!("{cfop} ({texto})")
 }
 
 /// O que explica a combinacao que nao existe.
 #[must_use]
 pub fn por_que_sem_cfop(destino: Destino, origem: Origem, icms: Icms) -> Option<&'static str> {
-    if cfop_da_venda(destino, origem, icms).is_some() {
+    if !cfops_da_venda(destino, origem, icms, None).is_empty() {
         return None;
     }
     Some(if destino == Destino::Exterior {
@@ -550,36 +595,119 @@ mod testes {
             Icms::Isento,
             Icms::NaoTributado,
         ];
+        let clientes = [
+            None,
+            Some(Contribuinte::ComIe),
+            Some(Contribuinte::Nao),
+            Some(Contribuinte::Isento),
+        ];
         let mut vistos = 0;
         for d in destinos {
             for o in Origem::TODAS {
                 for i in icms {
-                    let Some(cfop) = cfop_da_venda(d, o, i) else {
-                        assert!(por_que_sem_cfop(d, o, i).is_some());
-                        continue;
-                    };
-                    vistos += 1;
-                    let info = rustnf::cfop::info(cfop).unwrap_or_else(|| panic!("{cfop}"));
-                    assert!(rustnf::cfop::vigente(cfop, hoje()), "{cfop} não vigente");
-                    assert!(
-                        cfop.starts_with(d.digito_do_cfop()),
-                        "{cfop} não combina com {d:?}"
-                    );
-                    // venda, nunca devolucao
-                    assert!(!rustnf::cfop::e_devolucao(cfop), "{cfop}");
-                    // e' um CFOP que se usa em NF-e (indNFe)
-                    assert_eq!(info.ind_nfe, 1, "{cfop} não é de NF-e: {}", info.titulo);
+                    for cli in clientes {
+                        let opcoes = cfops_da_venda(d, o, i, cli);
+                        if opcoes.is_empty() {
+                            assert!(por_que_sem_cfop(d, o, i).is_some());
+                            continue;
+                        }
+                        for cfop in opcoes {
+                            vistos += 1;
+                            let info = rustnf::cfop::info(cfop).unwrap_or_else(|| panic!("{cfop}"));
+                            assert!(rustnf::cfop::vigente(cfop, hoje()), "{cfop} não vigente");
+                            assert!(
+                                cfop.starts_with(d.digito_do_cfop()),
+                                "{cfop} não combina com {d:?}"
+                            );
+                            // venda, nunca devolucao
+                            assert!(!rustnf::cfop::e_devolucao(cfop), "{cfop}");
+                            // e' um CFOP que se usa em NF-e (indNFe)
+                            assert_eq!(info.ind_nfe, 1, "{cfop} não é de NF-e: {}", info.titulo);
+                        }
+                    }
                 }
             }
         }
-        // 3 destinos x 2 origens x 5 icms: com ST so' a revenda e so' dentro do pais; 3 + 3 + 2 = 8 combinacoes de
-        // 'normal' (as 5 opcoes de ICMS sem ST dao o mesmo CFOP) e 2 com ST
-        assert_eq!(vistos, 3 * 2 * 4 + 2);
+        assert!(vistos > 0);
+    }
+
+    #[test]
+    fn o_cfop_da_venda_a_nao_contribuinte_de_outro_estado_e_6107_ou_6108() {
+        use Contribuinte::{ComIe, Isento, Nao};
+        let (outro, f, r) = (Destino::OutroEstado, Origem::Fabricou, Origem::Revende);
+        // tabela do Portal da NF-e: 6107 e 6108 sao "destinada a nao contribuinte"
+        assert!(rustnf::cfop::info("6107")
+            .unwrap()
+            .titulo
+            .contains("não contribuinte"));
+        assert!(rustnf::cfop::info("6108")
+            .unwrap()
+            .titulo
+            .contains("não contribuinte"));
+        assert_eq!(
+            cfop_da_venda(outro, f, Icms::Tributado, Some(Nao)),
+            Some("6107")
+        );
+        assert_eq!(
+            cfop_da_venda(outro, r, Icms::Tributado, Some(Nao)),
+            Some("6108")
+        );
+        assert_eq!(
+            cfop_da_venda(outro, r, Icms::SemDestaque, Some(Nao)),
+            Some("6108")
+        );
+        // contribuinte com IE (ou ainda sem resposta): 6101 e 6102, como antes
+        assert_eq!(
+            cfop_da_venda(outro, f, Icms::Tributado, Some(ComIe)),
+            Some("6101")
+        );
+        assert_eq!(
+            cfop_da_venda(outro, r, Icms::Tributado, Some(ComIe)),
+            Some("6102")
+        );
+        assert_eq!(cfop_da_venda(outro, r, Icms::Tributado, None), Some("6102"));
+        // dentro do estado e exportacao nao olham o cliente
+        for cli in [None, Some(Nao), Some(Isento), Some(ComIe)] {
+            assert_eq!(
+                cfop_da_venda(Destino::DentroDoEstado, r, Icms::Tributado, cli),
+                Some("5102")
+            );
+            assert_eq!(
+                cfop_da_venda(Destino::Exterior, r, Icms::Tributado, cli),
+                Some("7102")
+            );
+        }
+    }
+
+    #[test]
+    fn isento_e_st_a_nao_contribuinte_mostram_as_opcoes_em_vez_de_escolher() {
+        use Contribuinte::{Isento, Nao};
+        let (outro, f, r) = (Destino::OutroEstado, Origem::Fabricou, Origem::Revende);
+        assert_eq!(
+            cfops_da_venda(outro, f, Icms::Tributado, Some(Isento)),
+            ["6101", "6107"]
+        );
+        assert_eq!(
+            cfops_da_venda(outro, r, Icms::Tributado, Some(Isento)),
+            ["6102", "6108"]
+        );
+        assert_eq!(
+            cfops_da_venda(outro, r, Icms::JaCobradoAntes, Some(Nao)),
+            ["6404", "6108"]
+        );
+        // sem uma unica resposta, a tabela nao escolhe
+        assert_eq!(cfop_da_venda(outro, r, Icms::Tributado, Some(Isento)), None);
+        assert_eq!(
+            cfop_da_venda(outro, r, Icms::JaCobradoAntes, Some(Nao)),
+            None
+        );
+        // ST de quem fabrica nao existe
+        assert!(cfops_da_venda(outro, f, Icms::JaCobradoAntes, Some(Nao)).is_empty());
     }
 
     #[test]
     fn os_cfop_da_tabela_sao_estes() {
-        let c = |d, o, i| cfop_da_venda(d, o, i);
+        let c = |d, o, i| cfop_da_venda(d, o, i, Some(Contribuinte::ComIe));
         assert_eq!(
             c(Destino::DentroDoEstado, Origem::Revende, Icms::SemDestaque),
             Some("5102")

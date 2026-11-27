@@ -8,7 +8,8 @@
 use rustnf::chave_dfe;
 
 use super::mascara::{data_br_para_iso, dinheiro_para_centavos, so_digitos};
-use super::nfe_fiscal::{por_que_sem_cfop, Contribuinte, Destino, Icms, Pagamento};
+use super::nfe_difal;
+use super::nfe_fiscal::{por_que_sem_cfop, rotulo_do_cfop, Contribuinte, Destino, Icms, Pagamento};
 use super::nfe_nova::{
     centesimos_de_percentual, municipio_do_codigo, ContextoNfe, DadosNfe, ItemNfe, PassoNfe,
     PendenciaNfe, MAX_PARCELAS,
@@ -136,11 +137,27 @@ fn o_que_vendeu(d: &DadosNfe, c: &ContextoNfe, p: &mut Vec<PendenciaNfe>) {
     }
     let destino = d.destino(c);
     for (n, i) in d.itens.iter().enumerate() {
-        item_pendente(i, n, destino, c, p);
+        item_pendente(d, i, n, destino, c, p);
+        p.extend(nfe_difal::pendencias_do_item(
+            d,
+            i,
+            n,
+            &nome_do_item(i, n),
+            c,
+        ));
+    }
+}
+
+fn nome_do_item(i: &ItemNfe, n: usize) -> String {
+    if i.descricao.trim().is_empty() {
+        format!("\"Produto {}\"", n + 1)
+    } else {
+        format!("\"{}\"", i.descricao.trim())
     }
 }
 
 fn item_pendente(
+    d: &DadosNfe,
     i: &ItemNfe,
     n: usize,
     destino: Option<Destino>,
@@ -148,11 +165,7 @@ fn item_pendente(
     p: &mut Vec<PendenciaNfe>,
 ) {
     use PassoNfe::OQueVendeu as V;
-    let nome = if i.descricao.trim().is_empty() {
-        format!("\"Produto {}\"", n + 1)
-    } else {
-        format!("\"{}\"", i.descricao.trim())
-    };
+    let nome = nome_do_item(i, n);
     let mut falta = |msg: String, como: &str| {
         p.push(PendenciaNfe::nova(V, msg, como).do_item(n));
     };
@@ -245,6 +258,14 @@ fn item_pendente(
                 falta(
                     format!("{nome}: {porque}"),
                     "Mude a origem ou a opção de ICMS.",
+                );
+            }
+            let opcoes = i.cfops_da_tabela(destino, c.crt, d.contribuinte);
+            if opcoes.len() > 1 && i.cfop_efetivo(destino, c.crt, d.contribuinte).is_none() {
+                let lista: Vec<String> = opcoes.iter().map(|o| rotulo_do_cfop(o)).collect();
+                falta(
+                    format!("{nome}: a tabela tem mais de um CFOP para este cliente."),
+                    &format!("Escolha no cartão do produto: {}.", lista.join("; ")),
                 );
             }
         }

@@ -266,11 +266,15 @@ pub enum CampoItem {
     IcmsCodigo,
     /// CST do PIS e da COFINS escolhido a mao.
     PisCst,
+    /// DIFAL: aliquota interna do ICMS da UF do cliente.
+    DifalAliquota,
+    /// DIFAL: adicional do Fundo de Combate a Pobreza da UF do cliente.
+    DifalFcp,
 }
 
 impl CampoItem {
     /// Todos, na ordem da tela.
-    pub const TODOS: [CampoItem; 15] = [
+    pub const TODOS: [CampoItem; 17] = [
         Self::Codigo,
         Self::Descricao,
         Self::Unidade,
@@ -286,6 +290,8 @@ impl CampoItem {
         Self::Cfop,
         Self::IcmsCodigo,
         Self::PisCst,
+        Self::DifalAliquota,
+        Self::DifalFcp,
     ];
 
     /// A dica do campo vazio.
@@ -299,7 +305,8 @@ impl CampoItem {
             Self::Valor | Self::Desconto | Self::StBase | Self::StValor => "0,00",
             Self::Ncm => "0000.00.00",
             Self::Cest => "7 dígitos, se tem",
-            Self::AliquotaIcms | Self::StAliquota => "Ex.: 18",
+            Self::AliquotaIcms | Self::StAliquota | Self::DifalAliquota => "Ex.: 18",
+            Self::DifalFcp => "Ex.: 2 (vazio = não tem)",
             Self::Cfop => "4 dígitos",
             Self::IcmsCodigo => "Ex.: 102 ou 00",
             Self::PisCst => "Ex.: 49",
@@ -325,6 +332,8 @@ impl CampoItem {
             Self::Cfop => i.cfop.clone().unwrap_or_default(),
             Self::IcmsCodigo => i.icms_codigo.clone().unwrap_or_default(),
             Self::PisCst => i.pis_cst.clone().unwrap_or_default(),
+            Self::DifalAliquota => i.difal_aliquota.clone(),
+            Self::DifalFcp => i.difal_fcp.clone(),
         }
     }
 
@@ -383,6 +392,14 @@ impl CampoItem {
             Self::StAliquota => {
                 i.st_aliquota = filtrar_decimal(texto);
                 i.st_aliquota.clone()
+            }
+            Self::DifalAliquota => {
+                i.difal_aliquota = filtrar_decimal(texto);
+                i.difal_aliquota.clone()
+            }
+            Self::DifalFcp => {
+                i.difal_fcp = filtrar_decimal(texto);
+                i.difal_fcp.clone()
             }
             Self::Cfop => manual(&mut i.cfop, 4),
             Self::IcmsCodigo => manual(&mut i.icms_codigo, 3),

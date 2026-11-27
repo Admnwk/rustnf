@@ -57,8 +57,13 @@ impl ConferenciaNfe {
 }
 
 /// Os impostos do `ICMSTot` que a tela mostra, com o nome de quem vende.
-const IMPOSTOS: [(&str, &str); 6] = [
+const IMPOSTOS: [(&str, &str); 8] = [
     ("vICMS", "ICMS"),
+    ("vICMSUFDest", "ICMS para o estado do cliente (DIFAL)"),
+    (
+        "vFCPUFDest",
+        "Fundo de combate à pobreza do estado do cliente",
+    ),
     ("vST", "ICMS cobrado por substituição"),
     ("vIPI", "IPI"),
     ("vPIS", "PIS"),

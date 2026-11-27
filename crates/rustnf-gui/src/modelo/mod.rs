@@ -27,6 +27,7 @@ pub mod mascara;
 pub mod nfe_campos;
 pub mod nfe_config;
 pub mod nfe_detalhe;
+pub mod nfe_difal;
 pub mod nfe_emissao;
 pub mod nfe_eventos;
 pub mod nfe_fiscal;

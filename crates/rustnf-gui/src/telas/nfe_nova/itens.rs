@@ -23,7 +23,10 @@ use super::NovaNfe;
 use crate::modelo::certificado::Gravidade;
 use crate::modelo::mascara::centavos_para_dinheiro;
 use crate::modelo::nfe_campos::CampoItem;
-use crate::modelo::nfe_fiscal::{cst_pis_cofins, opcoes_de_icms, Icms, Origem, RegimePisCofins};
+use crate::modelo::nfe_difal::{exige_o_grupo, uf_do_cliente};
+use crate::modelo::nfe_fiscal::{
+    cst_pis_cofins, opcoes_de_icms, rotulo_do_cfop, Icms, Origem, RegimePisCofins,
+};
 use crate::modelo::nfe_nova::{DadosNfe, ItemNfe};
 use crate::telas::pecas::{campo, cartao, faixa, grupo, Negrito as _};
 
@@ -97,10 +100,12 @@ impl NovaNfe {
     fn resumo_fiscal(&self, item: &ItemNfe) -> String {
         let crt = self.ctx.crt;
         let cfop = match self.dados.destino(&self.ctx) {
-            Some(d) => item.cfop_efetivo(d, crt).map_or_else(
-                || "CFOP: veja os detalhes".to_string(),
-                |c| format!("CFOP {c}"),
-            ),
+            Some(d) => item
+                .cfop_efetivo(d, crt, self.dados.contribuinte)
+                .map_or_else(
+                    || "CFOP: escolha abaixo ou veja os detalhes".to_string(),
+                    |c| format!("CFOP {c}"),
+                ),
             None => "CFOP: depende do cliente (passo 1)".to_string(),
         };
         let tipo = if matches!(crt, 1 | 4) { "CSOSN" } else { "CST" };
@@ -114,6 +119,108 @@ impl NovaNfe {
             .filter(|p| !p.is_empty())
             .unwrap_or_else(|| cst_pis_cofins(crt).to_string());
         format!("{cfop} · {icms} · PIS/COFINS CST {pis}")
+    }
+
+    /// A escolha do CFOP quando a tabela tem mais de uma opcao para este cliente (isento de inscricao; ICMS ja cobrado antes
+    /// a quem nao e' contribuinte): a pessoa escolhe, o programa nunca escolhe calado.
+    fn bloco_do_cfop(
+        &mut self,
+        i: usize,
+        item: &ItemNfe,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        let destino = self.dados.destino(&self.ctx)?;
+        let opcoes = item.cfops_da_tabela(destino, self.ctx.crt, self.dados.contribuinte);
+        if opcoes.len() < 2 || item.cfop.as_ref().is_some_and(|c| !c.trim().is_empty()) {
+            return None;
+        }
+        let atual = item
+            .cfop_efetivo(destino, self.ctx.crt, self.dados.contribuinte)
+            .and_then(|c| opcoes.iter().copied().find(|o| *o == c));
+        let botoes = self.escolhas_do_item(
+            format!("nfe-cfop-{i}"),
+            i,
+            opcoes
+                .iter()
+                .map(|o| (*o, rotulo_do_cfop(o)))
+                .collect::<Vec<(&'static str, String)>>(),
+            atual,
+            |it, v| it.cfop_escolhido = Some(v.to_string()),
+            cx,
+        );
+        Some(
+            v_flex()
+                .id(SharedString::from(format!("nfe-escolha-do-cfop-{i}")))
+                .gap_1p5()
+                .child(
+                    div()
+                        .text_sm()
+                        .font_semibold()
+                        .child("Qual é a venda? (CFOP)"),
+                )
+                .child(div().text_xs().text_color(cx.theme().muted_foreground).child(
+                    "A tabela de CFOP tem mais de uma opção para este cliente. Escolha a que vale para a sua venda; na dúvida, pergunte ao seu contador.",
+                ))
+                .child(botoes)
+                .into_any_element(),
+        )
+    }
+
+    /// O DIFAL: so' aparece quando a biblioteca exige o grupo (venda para outro estado a consumidor final sem inscricao).
+    /// Pede a aliquota interna do ICMS do estado do cliente e o FCP; o resto o programa calcula.
+    fn bloco_do_difal(
+        &self,
+        i: usize,
+        item: &ItemNfe,
+        cx: &mut Context<Self>,
+    ) -> Option<AnyElement> {
+        if !exige_o_grupo(&self.dados, item, &self.ctx) {
+            return None;
+        }
+        let uf = uf_do_cliente(&self.dados).unwrap_or_default();
+        Some(
+            v_flex()
+                .id(SharedString::from(format!("nfe-difal-{i}")))
+                .gap_2()
+                .p_3()
+                .rounded_md()
+                .border_1()
+                .border_color(cx.theme().border)
+                .child(
+                    div()
+                        .text_sm()
+                        .font_semibold()
+                        .child(format!("ICMS que fica para o estado do cliente ({uf})")),
+                )
+                .child(div().text_xs().text_color(cx.theme().muted_foreground).child(format!(
+                    "Venda para outro estado a quem não tem inscrição estadual: a nota leva o DIFAL, a parte do ICMS que é do estado do cliente. O programa calcula; você só digita a alíquota interna de {uf} e, se o estado cobra, o adicional do fundo de combate à pobreza. Procure no site da Secretaria da Fazenda de {uf} ou pergunte ao seu contador: o programa não tem a tabela de alíquotas dos estados."
+                )))
+                .child(
+                    v_form()
+                        .columns(2)
+                        .child(
+                            campo(
+                                format!("Alíquota interna do ICMS de {uf} (%)"),
+                                true,
+                                Some("É a alíquota que o estado cobra de quem compra lá (por exemplo 18).".into()),
+                                None,
+                                self.texto_do_item(i, CampoItem::DifalAliquota),
+                            )
+                            .col_span(1),
+                        )
+                        .child(
+                            campo(
+                                "Adicional do fundo de combate à pobreza (%)",
+                                false,
+                                Some("Só se o estado cobra (por exemplo 2). Vazio = não tem.".into()),
+                                None,
+                                self.texto_do_item(i, CampoItem::DifalFcp),
+                            )
+                            .col_span(1),
+                        ),
+                )
+                .into_any_element(),
+        )
     }
 
     /// O passo "O que vendeu".
@@ -339,6 +446,8 @@ impl NovaNfe {
                 "O programa escolheu: {}",
                 self.resumo_fiscal(&item)
             )))
+            .children(self.bloco_do_cfop(i, &item, cx))
+            .children(self.bloco_do_difal(i, &item, cx))
             .child(
                 Checkbox::new(SharedString::from(format!("nfe-guardar-{i}")))
                     .label(if item.do_cadastro {
@@ -405,7 +514,7 @@ impl NovaNfe {
                 cfop: None,
                 ..item.clone()
             };
-            sem_manual.cfop_efetivo(d, crt)
+            sem_manual.cfop_efetivo(d, crt, self.dados.contribuinte)
         });
         let tipo = if matches!(crt, 1 | 4) { "CSOSN" } else { "CST" };
         let tabela_icms = ItemNfe {

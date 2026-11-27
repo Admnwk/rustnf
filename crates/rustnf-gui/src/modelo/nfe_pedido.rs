@@ -9,6 +9,7 @@ use chrono::Datelike;
 use serde_json::{json, Map, Value};
 
 use super::mascara::{dinheiro_para_centavos, so_digitos};
+use super::nfe_difal;
 use super::nfe_fiscal::{
     cst_pis_cofins, Contribuinte, Destino, Entrega, Icms, Pagamento, RegimePisCofins,
 };
@@ -24,6 +25,7 @@ fn percentual_texto(c: i64) -> Value {
 }
 
 fn item_json(
+    d: &DadosNfe,
     i: &ItemNfe,
     destino: Destino,
     c: &ContextoNfe,
@@ -46,7 +48,9 @@ fn item_json(
     }
     m.insert(
         "cfop".into(),
-        json!(i.cfop_efetivo(destino, c.crt).unwrap_or_default()),
+        json!(i
+            .cfop_efetivo(destino, c.crt, d.contribuinte)
+            .unwrap_or_default()),
     );
     m.insert("unidade".into(), json!(i.unidade.trim().to_uppercase()));
     m.insert(
@@ -65,6 +69,9 @@ fn item_json(
     let (pis, cofins) = pis_cofins_json(i, base, c, regime);
     m.insert("pis".into(), pis);
     m.insert("cofins".into(), cofins);
+    if let Some(g) = nfe_difal::grupo_json(d, i, c, base) {
+        m.insert("icms_uf_dest".into(), g);
+    }
     Value::Object(m)
 }
 
@@ -245,7 +252,7 @@ pub fn pedido(d: &DadosNfe, c: &ContextoNfe) -> Result<Value, Vec<PendenciaNfe>>
     let itens: Vec<Value> = d
         .itens
         .iter()
-        .map(|i| item_json(i, destino, c, regime))
+        .map(|i| item_json(d, i, destino, c, regime))
         .collect();
     let total = d.totais().total;
     let mut m = Map::new();

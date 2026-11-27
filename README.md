@@ -1183,7 +1183,8 @@ confere cada CFOP na tabela da biblioteca e na vigência):
 | pergunta | escolha | fonte |
 |---|---|---|
 | dentro do estado, outro estado, exterior | `idDest` 1, 2 ou 3 e CFOP 5.xxx, 6.xxx ou 7.xxx (o destino sai das UFs) | MOC 7.00, B11; tabela de CFOP |
-| fabrica ou compra para revender | CFOP x.101 ou x.102 | tabela de CFOP do Portal da NF-e |
+| fabrica ou compra para revender | CFOP x.101 ou x.102; **para outro estado, a cliente que não tem inscrição, 6.107 ou 6.108** | tabela de CFOP do Portal da NF-e |
+| venda para outro estado a consumidor final sem inscrição, no regime normal | a alíquota interna do ICMS do estado do cliente e o adicional do fundo de combate à pobreza (a pessoa digita; o programa não tem a tabela de alíquotas dos estados): a nota leva o DIFAL, que a biblioteca calcula (alíquota interestadual de 4, 7 ou 12% e partilha do ano) e a tela mostra em "ICMS para o estado do cliente (DIFAL)"; no Simples (CRT 1) e com CST de isenção ou não tributação a nota não leva | MOC 7.00, NA01 a NA17 e rejeição 694; Convênio ICMS 236/2021 |
 | ICMS já cobrado antes (só quem revende) | CFOP 5.405 ou 6.404, CSOSN 500 ou CST 60 (base, alíquota e valor retidos a pessoa digita) | tabela de CFOP; MOC, N12 e N12a |
 | regime (CRT) | CSOSN com o CRT 1 e 4 (Simples e MEI), CST com o 2 e o 3 | MOC, C21, N12 e N12a; a biblioteca recusa o resto |
 | paga ICMS na venda (regime normal) | CST 00; a alíquota a pessoa digita (o programa não chuta a do seu estado) | MOC, N12 |
@@ -1194,7 +1195,7 @@ confere cada CFOP na tabela da biblioteca e na vigência):
 
 **Quando a pergunta simples não decide, a tela mostra as opções e a pessoa escolhe**: o regime do PIS e da COFINS no regime
 normal (cumulativo ou não, se a configuração não diz), o ICMS (as opções do regime), a inscrição estadual do cliente CNPJ, o
-frete por transportadora (quem paga). **Detalhes fiscais**: CFOP, CST ou CSOSN e CST do PIS e da COFINS podem ser digitados;
+frete por transportadora (quem paga), o CFOP quando o cliente é isento de inscrição ou compra mercadoria com ICMS já cobrado antes sem ser contribuinte (a tabela tem duas opções). **Detalhes fiscais**: CFOP, CST ou CSOSN e CST do PIS e da COFINS podem ser digitados;
 o que a pessoa digita vale no lugar da tabela e **nunca é sobrescrito** (mudar a origem, o ICMS ou o cliente não o desfaz).
 
 **Cadastro de produtos** (`produtos.json` na pasta de notas, lido com tolerância e gravado de forma atômica; arquivo ruim abre

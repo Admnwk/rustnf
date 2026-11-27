@@ -29,6 +29,7 @@ mod produtos;
 mod raiz;
 mod raiz_certificado;
 mod raiz_nfe;
+mod raiz_numero;
 mod rolagem;
 mod senha;
 #[cfg(test)]

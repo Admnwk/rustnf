@@ -52,6 +52,8 @@
   NF-e real, nenhuma SEFAZ real e nenhum certificado real pela interface**. **Fica para as próximas entregas:** a NFC-e e os
   documentos recebidos na janela; e, no assistente, a venda ao exterior, o IPI, a venda por intermediador e a transmissão do EPEC
   que troca a nota sem resposta: hoje a aplicação não tem um caminho para trocar a nota sem resposta por um EPEC.
+  **Pendência:** o EPEC da nota que ficou sem resposta (a mesma chave). Hoje a aplicação numera o EPEC pelo próximo número
+  livre da pasta, e não pelo da nota pendente; por isso a janela só oferece o EPEC quando não há nota sem resposta.
 
 * Entrega: interface compilada e testada no Windows pelo CI; fluxo de release que monta os executáveis (Windows sem
   dependência do Visual C++ Redistributable, e Linux só com a linha de comando) e abre a release como rascunho.
