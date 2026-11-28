@@ -382,4 +382,31 @@ mod testes {
         assert_eq!(c.gravidade, Gravidade::Aviso);
         assert!(c.texto.contains("Não emita outra nota"));
     }
+
+    #[test]
+    fn consulta_recusada_diz_que_a_nota_continua_como_estava() {
+        let resultado = rustnf::nfe::sefaz::Resultado {
+            desfecho: Desfecho::ConsultaRecusada {
+                cstat: "656".into(),
+                motivo: "Rejeicao: Consumo indevido".into(),
+            },
+            chave: "k".into(),
+            recibo: None,
+            xml_retorno: String::new(),
+            xml_enviado: String::new(),
+            recuperada: false,
+            frase: String::new(),
+            detalhe: String::new(),
+        };
+        let c = ConsultaNfe::do_resultado(Ok(Consultada {
+            resultado,
+            situacao: Some(Situacao::Pendente),
+        }));
+        assert_eq!(c.gravidade, Gravidade::Aviso);
+        assert_eq!(c.codigo, "656");
+        assert!(c.titulo.contains("não aceitou a consulta"), "{c:?}");
+        assert!(c.texto.contains("continua como estava"), "{c:?}");
+        assert!(!c.texto.contains("livre"), "{c:?}");
+        assert_eq!(c.situacao, Some(Situacao::Pendente));
+    }
 }
