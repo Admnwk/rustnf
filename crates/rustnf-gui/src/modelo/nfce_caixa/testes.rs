@@ -73,12 +73,20 @@ fn dinheiro_com_troco_o_pedido_passa_na_aplicacao() {
 }
 
 #[test]
-fn pix_cartao_e_duas_formas_passam_e_cartao_leva_o_grupo_card() {
+fn pix_cartao_e_duas_formas_passam_e_cartao_e_pix_levam_o_grupo_card() {
     let cfg = config(1);
     let mut c = cupom_de_cafe();
     assert!(c.pagar(Pagamento::Pix, 0));
     assert_eq!(c.troco(), 0);
-    assert!(conferir(&c, &cfg).xml.contains("<tPag>17</tPag>"));
+    let pix = conferir(&c, &cfg).xml;
+    let det = pix
+        .split("<detPag>")
+        .find(|d| d.contains("<tPag>17</tPag>"))
+        .unwrap_or_else(|| panic!("{pix}"));
+    assert!(
+        det.contains("<card><tpIntegra>2</tpIntegra></card>"),
+        "{pix}"
+    );
     let mut c = cupom_de_cafe();
     assert!(c.pagar(Pagamento::CartaoCredito, 2000));
     assert_eq!(c.falta(), 1180);

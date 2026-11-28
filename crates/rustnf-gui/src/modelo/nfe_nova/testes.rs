@@ -199,17 +199,23 @@ fn o_resto_da_divisao_vai_na_ultima_parcela() {
 }
 
 #[test]
-fn cartao_leva_o_grupo_card() {
-    for forma in [
-        Pagamento::CartaoCredito,
-        Pagamento::CartaoDebito,
-        Pagamento::Pix,
+fn cartao_e_pix_levam_o_grupo_card() {
+    for (forma, leva) in [
+        (Pagamento::CartaoCredito, true),
+        (Pagamento::CartaoDebito, true),
+        (Pagamento::Pix, true),
+        (Pagamento::Dinheiro, false),
+        (Pagamento::Boleto, false),
     ] {
         let mut d = dados_basicos();
         d.pagamento = forma;
         let m = tudo_certo(&d, 1, "");
         assert!(m.xml.contains(&format!("<tPag>{}</tPag>", forma.t_pag())));
-        assert_eq!(m.xml.contains("<tpIntegra>2</tpIntegra>"), forma.e_cartao());
+        assert_eq!(
+            m.xml.contains("<card><tpIntegra>2</tpIntegra></card>"),
+            leva,
+            "{forma:?}"
+        );
     }
 }
 

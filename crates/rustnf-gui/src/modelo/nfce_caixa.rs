@@ -338,7 +338,7 @@ impl Cupom {
                 x.insert("t_pag".into(), json!(p.forma.t_pag()));
                 x.insert("valor".into(), json!(decimal(p.centavos)));
                 x.insert("ind_pag".into(), json!(p.forma.ind_pag()));
-                if p.forma.e_cartao() {
+                if p.forma.leva_card() {
                     x.insert("cartao".into(), json!({"tp_integra": 2}));
                 }
                 Value::Object(x)

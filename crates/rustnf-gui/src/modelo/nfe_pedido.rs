@@ -170,7 +170,7 @@ fn pagamento_json(d: &DadosNfe, total: i64) -> Value {
     p.insert("t_pag".into(), json!(d.pagamento.t_pag()));
     p.insert("valor".into(), json!(decimal(total)));
     p.insert("ind_pag".into(), json!(d.pagamento.ind_pag()));
-    if d.pagamento.e_cartao() {
+    if d.pagamento.leva_card() {
         p.insert("cartao".into(), json!({"tp_integra": 2}));
     }
     json!([Value::Object(p)])

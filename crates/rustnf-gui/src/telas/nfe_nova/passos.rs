@@ -527,6 +527,10 @@ impl NovaNfe {
             coluna = coluna.child(div().text_xs().text_color(tema_muted).child(
                 "Cartão: a nota leva o pagamento como não integrado ao sistema de automação (a maquininha é à parte).",
             ));
+        } else if d.pagamento.leva_card() {
+            coluna = coluna.child(div().text_xs().text_color(tema_muted).child(
+                "Pix: a nota leva o pagamento como não integrado ao sistema de automação (o Pix é recebido à parte).",
+            ));
         }
         coluna.into_any_element()
     }
