@@ -42,7 +42,7 @@ pub enum Desfecho {
         /// O `nfeProc`, quando a consulta traz o protocolo da autorizacao.
         nfe_proc: Option<String>,
     },
-    /// A SEFAZ recusou: o `cStat` e o motivo dizem por que. O numero NAO foi consumido.
+    /// A SEFAZ recusou a NOTA enviada: o `cStat` e o motivo dizem por que. O numero NAO foi consumido.
     Rejeitada {
         /// O codigo da rejeicao.
         cstat: String,
@@ -76,6 +76,15 @@ pub enum Desfecho {
         /// O codigo da SEFAZ.
         cstat: String,
         /// O motivo da SEFAZ.
+        motivo: String,
+    },
+    /// A SEFAZ recusou o PEDIDO de consulta (o consumo indevido 656, o ambiente divergente 252...), nao a nota: a
+    /// consulta pela chave so' le a situacao (MOC 7.00, Visao Geral, 5.4), entao a nota segue como estava e PODE estar
+    /// autorizada. Consulte de novo mais tarde; nao reenvie nem emita outra.
+    ConsultaRecusada {
+        /// O codigo da recusa.
+        cstat: String,
+        /// O motivo, como a SEFAZ o escreveu.
         motivo: String,
     },
     /// Nao deu para saber: sem resposta do envio e sem resposta da consulta. A nota PODE ter sido autorizada.
@@ -154,7 +163,9 @@ impl Resultado {
     pub fn deve_consultar(&self) -> bool {
         matches!(
             self.desfecho,
-            Desfecho::SemResposta | Desfecho::EmProcessamento { .. }
+            Desfecho::SemResposta
+                | Desfecho::EmProcessamento { .. }
+                | Desfecho::ConsultaRecusada { .. }
         )
     }
 }
@@ -192,6 +203,10 @@ fn frase_do(d: &Desfecho) -> String {
         Desfecho::Indisponivel { cstat, motivo } => format!(
             "Servico da SEFAZ indisponivel ({cstat}): {motivo}. Nada foi processado; pode reenviar a MESMA \
              NF-e assinada mais tarde."
+        ),
+        Desfecho::ConsultaRecusada { cstat, motivo } => format!(
+            "A SEFAZ recusou a consulta ({cstat}): {motivo}. Isso nao diz nada da nota, que segue como estava e PODE \
+             ter sido autorizada: consulte de novo mais tarde e NAO emita outra nota."
         ),
         Desfecho::SemResposta => "Sem resposta da SEFAZ e sem como confirmar agora. A nota PODE ter sido \
                                   autorizada: consulte a chave de novo e NAO emita outra nota."

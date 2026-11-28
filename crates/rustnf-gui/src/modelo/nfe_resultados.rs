@@ -147,6 +147,18 @@ impl ConsultaNfe {
                 "Serviço da SEFAZ parado",
                 format!("{} Tente de novo mais tarde.", frase(motivo)),
             ),
+            Desfecho::ConsultaRecusada { cstat, motivo } => {
+                let mut s = Self::nova(
+                    Gravidade::Aviso,
+                    "A SEFAZ não aceitou a consulta",
+                    format!(
+                        "{} Isso não diz nada da nota: ela continua como estava na lista. Consulte de novo mais tarde e não emita outra no lugar.",
+                        frase(motivo)
+                    ),
+                );
+                s.codigo.clone_from(cstat);
+                s
+            }
             _ => Self::nova(
                 Gravidade::Aviso,
                 "Sem resposta da SEFAZ",
@@ -258,6 +270,10 @@ fn linha(f: &Retomada) -> LinhaDaRetomada {
             },
         ),
         ("cancelada", _) => (Gravidade::Aviso, "a SEFAZ informa que foi cancelada"),
+        ("consulta_recusada", _) => (
+            Gravidade::Aviso,
+            "a SEFAZ não aceitou a consulta agora: a nota segue como estava; tente de novo mais tarde, sem emitir outra",
+        ),
         ("denegada", _) => (Gravidade::Erro, "a SEFAZ negou o uso desta nota"),
         // `situacao` None = a recusa tirou a nota da pasta (`rustnf-app/src/nfe/retomada.rs:34`); a NFC-e off-line
         // recusada continua na pasta, pendente com a recusa anotada
@@ -321,6 +337,18 @@ mod testes {
             "{ficou:?}"
         );
         assert!(!ficou.texto.contains("livre"), "{ficou:?}");
+    }
+
+    #[test]
+    fn consulta_recusada_na_retomada_diz_que_a_nota_segue_e_nunca_que_o_numero_ficou_livre() {
+        let l = linha(&feita(
+            "consulta_recusada",
+            "consultou",
+            Some(Situacao::Pendente),
+        ));
+        assert_eq!(l.gravidade, Gravidade::Aviso);
+        assert!(l.texto.contains("segue como estava"), "{l:?}");
+        assert!(!l.texto.contains("livre"), "{l:?}");
     }
 
     #[test]

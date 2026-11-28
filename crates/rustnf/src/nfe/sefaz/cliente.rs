@@ -526,7 +526,8 @@ impl<T: Transporte> ClienteSefaz<T> {
                 cstat: cstat_,
                 motivo,
             },
-            _ => Desfecho::Rejeitada {
+            // a consulta so' le a situacao: a recusa e' do pedido, nunca da nota
+            _ => Desfecho::ConsultaRecusada {
                 cstat: cstat_,
                 motivo,
             },

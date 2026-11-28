@@ -251,9 +251,10 @@ async fn consultar_substituida<T: Transporte>(
                 r.numero
             )),
         ),
-        (Desfecho::Rejeitada { cstat, motivo }, _) => (
+        // a recusa e' do pedido de consulta: ainda nao se sabe se a SEFAZ tem a nota, entao nem cancelar nem inutilizar
+        (Desfecho::ConsultaRecusada { cstat, motivo }, _) => (
             "",
-            Some(format!("Nota {}: recusada ({cstat}): {motivo}", r.chave)),
+            Some(limbo::aviso_da_consulta_recusada(&r.chave, cstat, motivo)),
         ),
         _ => ("", None),
     };

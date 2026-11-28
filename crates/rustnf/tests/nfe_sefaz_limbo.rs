@@ -166,6 +166,16 @@ fn estado_novo_pelo_desfecho() {
         motivo: String::new(),
     };
     assert_eq!(decidir(Estado::Pendente, &indis, true), Estado::Pendente);
+    // a recusa e' do pedido de consulta, nao da nota: o estado fica
+    let recusada = Desfecho::ConsultaRecusada {
+        cstat: "656".into(),
+        motivo: String::new(),
+    };
+    assert_eq!(decidir(Estado::Pendente, &recusada, true), Estado::Pendente);
+    assert_eq!(
+        decidir(Estado::Processando, &recusada, false),
+        Estado::Processando
+    );
 }
 
 #[test]
@@ -296,6 +306,29 @@ async fn nao_consta_com_a_nfe_guardada_reenvia_a_mesma_e_sem_ela_so_avisa() {
     // a consulta da que tem a NFe leva a NFe (para montar o nfeProc)
     assert_eq!(r.consultado.lock().unwrap()[0], ("A".to_string(), true));
     assert_eq!(r.consultado.lock().unwrap()[1], ("B".to_string(), false));
+}
+
+#[tokio::test]
+async fn consulta_recusada_deixa_a_nota_no_limbo_sem_reenviar_e_avisa() {
+    let p = Politica::default();
+    let r = Arc::new(Roteiro::default());
+    let recusada = Desfecho::ConsultaRecusada {
+        cstat: "656".into(),
+        motivo: "Consumo indevido".into(),
+    };
+    r.consultas.lock().unwrap().push(Ok(res(recusada, "A")));
+    let mut a = nota("A", Estado::Pendente, 0);
+    a.nfe_assinada = "<NFe>a</NFe>".into();
+    let passos = varrer(&*r, &[a], 100, &p).await;
+    assert_eq!(passos[0].acao, Acao::Consultou);
+    assert_eq!(passos[0].estado, Estado::Pendente);
+    assert!(passos[0].estado.no_limbo());
+    let av = passos[0].aviso.as_deref().unwrap();
+    assert!(
+        av.contains("656") && av.contains("Consumo indevido") && av.contains("segue como estava"),
+        "{av}"
+    );
+    assert!(r.enviado.lock().unwrap().is_empty(), "nada se reenvia");
 }
 
 #[tokio::test]

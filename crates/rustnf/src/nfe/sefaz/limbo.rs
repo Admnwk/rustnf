@@ -201,7 +201,11 @@ pub fn decidir(estado: Estado, desfecho: &Desfecho, tem_nfe: bool) -> Estado {
         Desfecho::EmProcessamento { .. } => Estado::Processando,
         Desfecho::NaoRecebida if tem_nfe => Estado::Pendente,
         Desfecho::NaoRecebida => Estado::SemXml,
-        Desfecho::SoEpec { .. } | Desfecho::Indisponivel { .. } | Desfecho::SemResposta => estado,
+        // a recusa da consulta e' do pedido: a nota fica como estava
+        Desfecho::SoEpec { .. }
+        | Desfecho::Indisponivel { .. }
+        | Desfecho::ConsultaRecusada { .. }
+        | Desfecho::SemResposta => estado,
     }
 }
 
@@ -222,6 +226,15 @@ pub fn aviso(n: &NotaLocal, agora: i64, pol: &Politica, estado: Estado) -> Optio
         ));
     }
     None
+}
+
+/// O aviso da consulta que a SEFAZ recusou ([`Desfecho::ConsultaRecusada`]): a nota segue como estava.
+#[must_use]
+pub fn aviso_da_consulta_recusada(chave: &str, cstat: &str, motivo: &str) -> String {
+    format!(
+        "Nota {chave}: a SEFAZ recusou a consulta ({cstat}): {motivo}. A nota segue como estava; consulte de novo mais \
+         tarde, sem emitir outra."
+    )
 }
 
 /// A porta da varredura: consultar pela chave e reenviar a MESMA NF-e (sincrono). O [`ClienteSefaz`] a implementa; o
@@ -290,9 +303,15 @@ pub async fn varrer<S: Sefaz>(
         let est = decidir(n.estado, &r.desfecho, nfe.is_some());
         let mut av = aviso(n, agora, pol, est);
         if av.is_none() {
-            if let Desfecho::Rejeitada { cstat, motivo } = &r.desfecho {
-                av = Some(format!("Nota {}: recusada ({cstat}): {motivo}", n.chave));
-            }
+            av = match &r.desfecho {
+                Desfecho::Rejeitada { cstat, motivo } => {
+                    Some(format!("Nota {}: recusada ({cstat}): {motivo}", n.chave))
+                }
+                Desfecho::ConsultaRecusada { cstat, motivo } => {
+                    Some(aviso_da_consulta_recusada(&n.chave, cstat, motivo))
+                }
+                _ => None,
+            };
         }
         out.push(Passo {
             chave: n.chave.clone(),

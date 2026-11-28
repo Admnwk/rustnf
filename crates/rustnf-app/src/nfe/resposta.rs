@@ -24,6 +24,7 @@ pub(crate) fn nome_do_desfecho(d: &Desfecho) -> &'static str {
         Desfecho::NaoRecebida => "nao_recebida",
         Desfecho::SoEpec { .. } => "so_epec",
         Desfecho::Indisponivel { .. } => "indisponivel",
+        Desfecho::ConsultaRecusada { .. } => "consulta_recusada",
         Desfecho::SemResposta => "sem_resposta",
         // desfecho novo da biblioteca: a frase dela diz o que houve
         _ => "outro",
@@ -51,7 +52,9 @@ fn dados_do(d: &Desfecho) -> (String, String, String) {
             protocolo,
             ..
         } => (cstat.clone(), motivo.clone(), protocolo.clone()),
-        Desfecho::Rejeitada { cstat, motivo } | Desfecho::Indisponivel { cstat, motivo } => {
+        Desfecho::Rejeitada { cstat, motivo }
+        | Desfecho::Indisponivel { cstat, motivo }
+        | Desfecho::ConsultaRecusada { cstat, motivo } => {
             (cstat.clone(), motivo.clone(), String::new())
         }
         Desfecho::NumeroJaUsado { motivo, .. } => ("539".into(), motivo.clone(), String::new()),
