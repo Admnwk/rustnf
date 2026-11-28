@@ -36,6 +36,10 @@ use crate::telas::LARGURA_DA_LATERAL;
 
 mod detalhe;
 
+/// A largura da coluna do selo da nota na lista: cabe o selo mais largo do rotulo curto ("Autorizada", "Uso negado")
+/// com folga; o resto da linha fica para o nome do fornecedor.
+pub(super) const LARGURA_DO_SELO_DA_NOTA: f32 = 92.0;
+
 /// O que a tela pede a janela.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) enum EventoRecebidas {
@@ -324,7 +328,7 @@ impl TelaRecebidas {
         } else {
             l.fornecedor.clone()
         };
-        let nota = selo_de(l.nota.rotulo(), cor_da(l.nota.gravidade(), cx));
+        let nota = selo_de(l.nota.rotulo_da_lista(), cor_da(l.nota.gravidade(), cx));
         let resposta = l
             .selo_da_resposta()
             .map(|(rotulo, g)| selo_de(rotulo, cor_da(g, cx)));
@@ -373,7 +377,7 @@ impl TelaRecebidas {
             )
             .child(
                 h_flex()
-                    .w(px(150.))
+                    .w(px(LARGURA_DO_SELO_DA_NOTA))
                     .flex_shrink_0()
                     .justify_end()
                     .child(nota),
@@ -414,7 +418,7 @@ impl TelaRecebidas {
             .child(titulo("Data", Some(84.), false))
             .child(titulo("Fornecedor", None, false))
             .child(titulo("Valor", Some(104.), true))
-            .child(titulo("A nota", Some(150.), true))
+            .child(titulo("A nota", Some(LARGURA_DO_SELO_DA_NOTA), true))
             .child(titulo("Sua resposta", Some(116.), true))
             .into_any_element()
     }

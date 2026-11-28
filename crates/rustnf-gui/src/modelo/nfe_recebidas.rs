@@ -43,6 +43,16 @@ impl SituacaoDaNota {
         }
     }
 
+    /// O rotulo curto do selo da lista: numa nota recebida so' o emitente cancela, e o detalhe diz por extenso. Curto
+    /// para a coluna do selo nao tomar a largura que o nome do fornecedor precisa.
+    #[must_use]
+    pub fn rotulo_da_lista(self) -> &'static str {
+        match self {
+            Self::Cancelada => "Cancelada",
+            outra => outra.rotulo(),
+        }
+    }
+
     /// A cor do selo.
     #[must_use]
     pub fn gravidade(self) -> Gravidade {
@@ -516,6 +526,21 @@ mod testes {
         assert_eq!(l.linha(2).unwrap().documento, "***.***.***-25");
         assert_eq!(l.linha(2).unwrap().resposta.rotulo(), "Ciência dada");
         assert_eq!(l.linha(1).unwrap().nota.rotulo(), "Cancelada pelo emitente");
+    }
+
+    #[test]
+    fn o_rotulo_da_lista_e_curto_e_o_por_extenso_fica_no_detalhe() {
+        assert_eq!(SituacaoDaNota::Cancelada.rotulo_da_lista(), "Cancelada");
+        for s in [
+            SituacaoDaNota::Autorizada,
+            SituacaoDaNota::Cancelada,
+            SituacaoDaNota::Denegada,
+        ] {
+            // a coluna do selo na lista e' medida para "Autorizada"/"Uso negado" (10 letras)
+            assert!(s.rotulo_da_lista().chars().count() <= 10, "{s:?}");
+        }
+        assert_eq!(SituacaoDaNota::Autorizada.rotulo_da_lista(), "Autorizada");
+        assert_eq!(SituacaoDaNota::Denegada.rotulo_da_lista(), "Uso negado");
     }
 
     #[test]
