@@ -15,6 +15,15 @@
   `--substitui` é conferida antes de qualquer rede (da pasta, pendente, do mesmo emitente e ambiente, ainda não substituída) e o
   EPEC recusado não deixa vínculo. `pendentes` e a retomada trazem `substituida_por` e `a_fazer` (`consultar`, `cancelar` ou
   `inutilizar`). A janela continua sem oferecer o EPEC com nota sem resposta: fica para a próxima entrega.
+* **Correção: a consulta que a SEFAZ recusa não tira mais a nota da pasta.** A consulta pela chave só lê a situação da nota
+  (MOC 7.00, Visão Geral, 5.4), então um `cStat` de recusa nela (o consumo indevido 656, o ambiente divergente 252, a chave
+  inválida 236...) é recusa do pedido, não da nota. Antes ele virava `Desfecho::Rejeitada`: a varredura do limbo dava a nota
+  como final e a retomada, a consulta da pasta e a nota substituída pelo EPEC a tiravam da pasta junto com a NF-e assinada,
+  liberando o número de uma nota que podia estar autorizada. Agora a consulta devolve o desfecho novo
+  `Desfecho::ConsultaRecusada` (com `cStat` e motivo; `deve_consultar()` verdadeiro), `limbo::decidir` mantém o estado, a
+  varredura avisa sem reenviar e a pasta fica como estava (a nota substituída mantém o vínculo, e o 217 anotado antes deixa de
+  liberar a inutilização). No JSON da CLI, da API e do MCP o `status` é `consulta_recusada` (antes `rejeitada`), com saída 4,
+  como a nota sem resposta. A janela diz "A SEFAZ não aceitou a consulta" e que a nota continua como estava.
 * Montagem da NF-e e da NFC-e: emitente de **GO ou RJ** com CST 20, 30, 40, 41, 50, 70 ou 90 sem o valor e o motivo do
   ICMS desonerado é recusado antes de assinar, com a rejeição 934 (regra N12-90 da NT 2019.001 v1.70, que as duas UF
   aplicam pelo quadro 3.6.1). Ficam fora a devolução, a nota de ajuste e o CST 90 sem redução de base. As demais UF não

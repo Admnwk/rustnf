@@ -368,6 +368,59 @@ async fn a_consulta_seguinte_sem_217_desfaz_a_permissao_de_inutilizar() {
 }
 
 #[tokio::test]
+async fn consulta_recusada_da_substituida_nao_a_tira_da_pasta_e_desfaz_a_permissao_de_inutilizar() {
+    let (c, pendente, epec) = com_substituida("nfe-subst-656").await;
+    c.roteiro(vec![
+        (CON, consulta("217", NAO_CONSTA, "")),
+        (AUT, tempo()),
+        (CON, tempo()),
+    ]);
+    retomar(&depois(&c, 5)).await.unwrap();
+    assert!(c
+        .notas
+        .registro(&pendente)
+        .unwrap()
+        .inutilizavel_por_substituicao());
+    c.roteiro(vec![
+        (
+            CON,
+            consulta(
+                "656",
+                "Rejeicao: Consumo indevido pelo aplicativo da empresa",
+                "",
+            ),
+        ),
+        (AUT, tempo()),
+        (CON, tempo()),
+    ]);
+    let feitos = retomar(&depois(&c, 10)).await.unwrap();
+    let f = feitos.iter().find(|f| f.chave == pendente).unwrap();
+    assert_eq!(
+        (f.acao, f.status, f.situacao, f.a_fazer()),
+        (
+            "consultou",
+            "consulta_recusada",
+            Some(Situacao::Pendente),
+            ""
+        )
+    );
+    assert!(f.aviso.as_deref().unwrap().contains("656"), "{:?}", f.aviso);
+    // a nota, o vinculo e a assinada ficam; o 217 de antes nao vale mais (a SEFAZ nao respondeu desta vez)
+    let p = c.notas.registro(&pendente).unwrap();
+    assert_eq!(p.situacao, Situacao::Pendente);
+    assert_eq!(p.substituida_por, epec);
+    assert_eq!((p.cstat.as_str(), p.tentativas), ("", 2));
+    assert!(!p.inutilizavel_por_substituicao());
+    assert!(c.notas.ler_assinada(&pendente).unwrap().is_some());
+    assert_eq!(
+        envios_da(&c, &pendente),
+        1,
+        "a substituida nunca e' reenviada"
+    );
+    assert!(erro_da_retomada(&feitos).is_some());
+}
+
+#[tokio::test]
 async fn inutilizar_recusa_a_pendente_comum_e_a_substituida_que_ainda_nao_se_sabe_se_a_sefaz_tem() {
     let (c, pendente, epec) = com_substituida("nfe-subst-recusa-inu").await;
     let comum = pendente_de(&c.notas, "11222333000181", "homologacao", 10);

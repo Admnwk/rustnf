@@ -61,7 +61,7 @@ pub fn estado_do_servico<T: Transporte>(cliente: &ClienteSefaz<T>, s: &StatusSer
 pub struct Consultada {
     /// O resultado da biblioteca.
     pub resultado: Resultado,
-    /// A situacao da nota na pasta depois da consulta; `None` = a nota nao esta na pasta (ou foi rejeitada).
+    /// A situacao da nota na pasta depois da consulta; `None` = a nota nao esta na pasta.
     pub situacao: Option<Situacao>,
 }
 
@@ -74,7 +74,8 @@ impl Consultada {
         v
     }
 
-    /// O erro da consulta: `None` = autorizada; denegada, cancelada, rejeitada e as sem resposta sao erro (saidas 3 e 4).
+    /// O erro da consulta: `None` = autorizada; denegada e cancelada sao recusa (saida 3); a sem resposta e a consulta
+    /// recusada pela SEFAZ, falha de rede (saida 4).
     #[must_use]
     pub fn erro(&self) -> Option<Erro> {
         erro_do_resultado(&self.resultado)
@@ -82,7 +83,8 @@ impl Consultada {
 }
 
 /// Consulta a NF-e pela chave. Se a nota esta na pasta, a situacao dela e' posta em dia com o que a SEFAZ diz (a pendente
-/// vira autorizada, denegada ou sai da pasta se foi rejeitada; a autorizada vira cancelada).
+/// vira autorizada ou denegada; a autorizada vira cancelada). A consulta que a SEFAZ recusa (o consumo indevido 656, por
+/// exemplo) e' recusa do pedido, nao da nota: a pasta fica como estava.
 ///
 /// # Errors
 ///

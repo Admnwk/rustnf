@@ -38,6 +38,7 @@ fn cstat_do(d: &Desfecho) -> Option<&str> {
         | Desfecho::Denegada { cstat, .. }
         | Desfecho::Cancelada { cstat, .. }
         | Desfecho::Rejeitada { cstat, .. }
+        | Desfecho::ConsultaRecusada { cstat, .. }
         | Desfecho::Indisponivel { cstat, .. } => Some(cstat),
         _ => None,
     }

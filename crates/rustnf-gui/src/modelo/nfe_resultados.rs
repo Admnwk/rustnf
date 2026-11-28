@@ -147,6 +147,18 @@ impl ConsultaNfe {
                 "Serviço da SEFAZ parado",
                 format!("{} Tente de novo mais tarde.", frase(motivo)),
             ),
+            Desfecho::ConsultaRecusada { cstat, motivo } => {
+                let mut s = Self::nova(
+                    Gravidade::Aviso,
+                    "A SEFAZ não aceitou a consulta",
+                    format!(
+                        "{} Isso não diz nada da nota: ela continua como estava na lista. Consulte de novo mais tarde e não emita outra no lugar.",
+                        frase(motivo)
+                    ),
+                );
+                s.codigo.clone_from(cstat);
+                s
+            }
             _ => Self::nova(
                 Gravidade::Aviso,
                 "Sem resposta da SEFAZ",
@@ -258,6 +270,10 @@ fn linha(f: &Retomada) -> LinhaDaRetomada {
             },
         ),
         ("cancelada", _) => (Gravidade::Aviso, "a SEFAZ informa que foi cancelada"),
+        ("consulta_recusada", _) => (
+            Gravidade::Aviso,
+            "a SEFAZ não aceitou a consulta agora: a nota segue como estava; tente de novo mais tarde, sem emitir outra",
+        ),
         ("denegada", _) => (Gravidade::Erro, "a SEFAZ negou o uso desta nota"),
         // `situacao` None = a recusa tirou a nota da pasta (`rustnf-app/src/nfe/retomada.rs:34`); a NFC-e off-line
         // recusada continua na pasta, pendente com a recusa anotada
@@ -324,6 +340,18 @@ mod testes {
     }
 
     #[test]
+    fn consulta_recusada_na_retomada_diz_que_a_nota_segue_e_nunca_que_o_numero_ficou_livre() {
+        let l = linha(&feita(
+            "consulta_recusada",
+            "consultou",
+            Some(Situacao::Pendente),
+        ));
+        assert_eq!(l.gravidade, Gravidade::Aviso);
+        assert!(l.texto.contains("segue como estava"), "{l:?}");
+        assert!(!l.texto.contains("livre"), "{l:?}");
+    }
+
+    #[test]
     fn retomar_diz_o_que_aconteceu_com_cada_nota() {
         let r = ResumoDaRetomada::do_resultado(Ok(vec![feita(
             "autorizada",
@@ -353,5 +381,32 @@ mod testes {
         let c = ConsultaNfe::do_resultado(Err(Erro::Rede("tempo esgotado".into())));
         assert_eq!(c.gravidade, Gravidade::Aviso);
         assert!(c.texto.contains("Não emita outra nota"));
+    }
+
+    #[test]
+    fn consulta_recusada_diz_que_a_nota_continua_como_estava() {
+        let resultado = rustnf::nfe::sefaz::Resultado {
+            desfecho: Desfecho::ConsultaRecusada {
+                cstat: "656".into(),
+                motivo: "Rejeicao: Consumo indevido".into(),
+            },
+            chave: "k".into(),
+            recibo: None,
+            xml_retorno: String::new(),
+            xml_enviado: String::new(),
+            recuperada: false,
+            frase: String::new(),
+            detalhe: String::new(),
+        };
+        let c = ConsultaNfe::do_resultado(Ok(Consultada {
+            resultado,
+            situacao: Some(Situacao::Pendente),
+        }));
+        assert_eq!(c.gravidade, Gravidade::Aviso);
+        assert_eq!(c.codigo, "656");
+        assert!(c.titulo.contains("não aceitou a consulta"), "{c:?}");
+        assert!(c.texto.contains("continua como estava"), "{c:?}");
+        assert!(!c.texto.contains("livre"), "{c:?}");
+        assert_eq!(c.situacao, Some(Situacao::Pendente));
     }
 }

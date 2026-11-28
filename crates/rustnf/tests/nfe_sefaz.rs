@@ -419,7 +419,7 @@ async fn consulta_por_situacao() {
         ),
         (
             "236",
-            Desfecho::Rejeitada {
+            Desfecho::ConsultaRecusada {
                 cstat: "236".into(),
                 motivo: "EPEC Autorizado".into(),
             },

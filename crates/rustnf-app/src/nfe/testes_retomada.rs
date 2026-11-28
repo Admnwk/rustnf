@@ -144,6 +144,45 @@ async fn rejeitada_na_retomada_sai_da_pasta_e_libera_o_numero() {
     assert_eq!(c.notas.proximo_numero("1").unwrap(), 1);
 }
 
+const CONSUMO_INDEVIDO: &str = "Rejeicao: Consumo indevido pelo aplicativo da empresa";
+
+#[tokio::test]
+async fn consulta_recusada_na_retomada_nao_tira_a_nota_da_pasta_nem_reenvia() {
+    let (c, chave) = com_pendente("nfe-retoma-656").await;
+    c.roteiro(vec![(CON, consulta("656", CONSUMO_INDEVIDO, ""))]);
+    let feitos = retomar(&depois(&c, 5)).await.unwrap();
+    let f = &feitos[0];
+    assert_eq!(
+        (f.acao, f.status, f.situacao),
+        ("consultou", "consulta_recusada", Some(Situacao::Pendente))
+    );
+    let aviso = f.aviso.as_deref().unwrap();
+    assert!(aviso.contains("656") && aviso.contains("segue"), "{aviso}");
+    // a recusa e' do PEDIDO de consulta: a nota pode estar autorizada, entao fica tudo como estava
+    let r = c.notas.registro(&chave).unwrap();
+    assert_eq!(r.situacao, Situacao::Pendente);
+    assert_eq!((r.tentativas, r.recusa.as_str()), (1, ""));
+    assert!(c.notas.ler_assinada(&chave).unwrap().is_some());
+    assert_eq!(c.notas.proximo_numero("1").unwrap(), 2);
+    assert_eq!(envios(&c).len(), 1, "nada se reenvia");
+    assert_eq!(c.falso.servicos(), vec![AUT, CON, CON]);
+}
+
+#[tokio::test]
+async fn consultar_a_pendente_com_a_consulta_recusada_nao_mexe_na_pasta() {
+    let (c, chave) = com_pendente("nfe-consulta-656").await;
+    c.roteiro(vec![(CON, consulta("656", CONSUMO_INDEVIDO, ""))]);
+    let r = consultar(&c.ctx(), &chave).await.unwrap();
+    assert_eq!(r.situacao, Some(Situacao::Pendente));
+    assert!(r.resultado.deve_consultar());
+    assert_eq!(
+        c.notas.registro(&chave).unwrap().situacao,
+        Situacao::Pendente
+    );
+    assert!(c.notas.ler_assinada(&chave).unwrap().is_some());
+    assert_eq!(c.notas.proximo_numero("1").unwrap(), 2);
+}
+
 #[tokio::test]
 async fn a_nota_em_epec_e_transmitida_a_sefaz_da_uf_na_retomada() {
     let c = Cenario::novo(
