@@ -597,6 +597,8 @@ fn a_pendente_retomada_vira_autorizada(cx: &mut TestAppContext) {
     let e = c.ensaio.clone().unwrap();
     mostrar_a_nfe(cx, &c, 3);
     assert_eq!(situacao_de(&c, &e.pendente), Situacao::Pendente);
+    // a retomada so' consulta a nota depois de 1 segundo na pasta (o minimo da biblioteca); o ensaio a acabou de gravar
+    std::thread::sleep(Duration::from_millis(1300));
     clicar(cx, &c, "nfe-retomar");
     assert!(existe(cx, &c, "nfe-dialogo-enviar"));
     clicar(cx, &c, "nfe-dialogo-enviar");
@@ -632,6 +634,7 @@ fn retomar_sem_resposta_deixa_a_nota_pendente_e_nao_emite_outra(cx: &mut TestApp
     );
     let e = c.ensaio.clone().unwrap();
     mostrar_a_nfe(cx, &c, 3);
+    std::thread::sleep(Duration::from_millis(1300));
     clicar(cx, &c, "nfe-retomar");
     clicar(cx, &c, "nfe-dialogo-enviar");
     let r = esperar_o_desfecho(cx, &c);
