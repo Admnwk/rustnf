@@ -96,19 +96,35 @@ impl Default for Substituicao {
     }
 }
 
+/// Comercio exterior (`serv/comExt`). Leiaute producao: `valor_moeda` (vServMoeda), `num_di` e `num_re`. Leiaute
+/// nt009 (Release 2): sem o vServMoeda; `num_fatura`/`valor_fatura` (opcionais), `num_duimp` (15) e `num_due` (14)
+/// no lugar do nDI e do nRE, e `contrato_cambio` (nContCambio). `modo` 5 (consumo concomitante) so' no nt009.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct ComercioExterior {
     pub modo: u8,
     pub vinculo: u8,
     pub moeda: Valor,
+    /// So' leiaute producao.
     pub valor_moeda: Valor,
     pub mec_prestador: Valor,
     pub mec_tomador: Valor,
     pub mov_temp_bens: u8,
     pub mdic: u8,
+    /// So' leiaute producao.
     pub num_di: String,
+    /// So' leiaute producao.
     pub num_re: String,
+    /// So' leiaute nt009 (nFatura, ate 20 digitos).
+    pub num_fatura: String,
+    /// So' leiaute nt009 (vFatura, na moeda de `moeda`).
+    pub valor_fatura: Option<Valor>,
+    /// So' leiaute nt009 (nDUIMP, 15 posicoes).
+    pub num_duimp: String,
+    /// So' leiaute nt009 (nDUE, 14 posicoes).
+    pub num_due: String,
+    /// So' leiaute nt009 (nContCambio, ate 20 digitos).
+    pub contrato_cambio: String,
 }
 
 impl Default for ComercioExterior {
@@ -124,6 +140,11 @@ impl Default for ComercioExterior {
             mdic: 0,
             num_di: String::new(),
             num_re: String::new(),
+            num_fatura: String::new(),
+            valor_fatura: None,
+            num_duimp: String::new(),
+            num_due: String::new(),
+            contrato_cambio: String::new(),
         }
     }
 }
@@ -145,6 +166,9 @@ pub struct AtividadeEvento {
     pub fim: String,
     pub identificacao: String,
     pub endereco: Option<EnderecoSimples>,
+    /// So' leiaute nt009 (atvEvento/cMun): municipio do evento, so' nos subitens 12.13 e 17.10 e diferente do local da
+    /// prestacao (E0393, E0394).
+    pub cmun: String,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -225,6 +249,9 @@ pub struct Deducao {
     pub valor: Option<Valor>,
     pub documentos: Vec<DocDeducao>,
     pub ajustes: Vec<DocAjusteBC>,
+    /// So' leiaute nt009 (vAjusteBCIBSCBSComExt, pode ser negativo): ajuste da base do IBS/CBS no comercio exterior,
+    /// so' em exportacao pelo prestador ou importacao pelo tomador/intermediario (E0500, E0501).
+    pub comercio_exterior: Option<Valor>,
 }
 
 /// Leiaute nt009, gAjusteBCLocImoveis (so' cTribNac 99.03, E0939). `valor` cheio, sem a copropriedade.
@@ -277,9 +304,12 @@ pub struct BemMovel {
 
 /// Leiaute de producao (XSD `nfse-esquemas_xsd-v1-01-20260209`) -- o padrao.
 pub const LEIAUTE_PRODUCAO: &str = "producao";
-/// XSD da Producao Restrita de 20/10/2026 (`esquemas_prod_restrita_20261020`), parte da NT 009 v1.01: finNFSe antes
-/// de cLocEmi, vAjusteBC, CST/cClassTrib direto em trib, imovel com gLocacao/gUnidImob, bensMoveis, xDescServ no fim
-/// do cServ. Regras: Anexo I PRODREST `anexo_i-sefin_adn-dps_nfse-snnfse_prodrest-v1-01-20261020.xlsx`.
+/// XSD da Producao Restrita de 24/11/2026 (`esquemas-xsd-producao-restrita-20261124`, Releases 1 e 2 da NT 009
+/// v1.01). Release 1: finNFSe antes de cLocEmi, vAjusteBC, CST/cClassTrib direto em trib, imovel com
+/// gLocacao/gUnidImob, bensMoveis, xDescServ no fim do cServ. Release 2: indDest/dest saem do IBSCBS e vao para o
+/// infDPS depois do toma (indDest obrigatorio mesmo sem o grupo IBSCBS), comExt com nFatura/vFatura/nDUIMP/nDUE/
+/// nContCambio, atvEvento/cMun e vAjusteBCIBSCBSComExt. Regras: Anexo I PRODREST
+/// `anexo_i-sefin_adn-dps_nfse-snnfse_prodrest-v1-01-20261124.xlsx`.
 pub const LEIAUTE_NT009: &str = "nt009";
 pub const LEIAUTES: [&str; 2] = [LEIAUTE_PRODUCAO, LEIAUTE_NT009];
 pub(super) const TIPO_AJUSTE_BC: &[&str] = &[
@@ -393,8 +423,9 @@ pub struct DocReembolso {
 }
 
 /// Grupo da Reforma. Leiaute producao = 1.01 vigente (NT 004 + `tpRetPisCofins` da NT 007); leiaute nt009 = XSD da
-/// Producao Restrita de 20/10/2026 (`LEIAUTE_NT009`): `imovel` e `bens_moveis` so' la; `imovel_*` e `reembolsos` so'
-/// na producao (no nt009 o reembolso vai em `Valores.deducao.ajustes`, tpAjusteBC 101-105/199). Prazos de destaque por servico: Ato
+/// Producao Restrita de 24/11/2026 (`LEIAUTE_NT009`): `imovel` e `bens_moveis` so' la; `imovel_*` e `reembolsos` so'
+/// na producao (no nt009 o reembolso vai em `Valores.deducao.ajustes`, tpAjusteBC 101-105/199). No nt009 `ind_dest`
+/// e `destinatario` vao no infDPS (Release 2), nao dentro do IBSCBS. Prazos de destaque por servico: Ato
 /// Conjunto RFB/CGIBS no 4/2026 (fica com o integrador). O emissor manda a CLASSIFICACAO (codigos do contador); o SEFIN calcula.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default)]
@@ -451,7 +482,7 @@ pub struct Dps {
     pub emissao: Option<String>,
     pub ver_aplic: String,
     pub ctribnac_estrito: bool,
-    /// "producao" (padrao) ou "nt009" (XSD da Producao Restrita de 20/10/2026).
+    /// "producao" (padrao) ou "nt009" (XSD da Producao Restrita de 24/11/2026).
     pub leiaute: String,
 }
 

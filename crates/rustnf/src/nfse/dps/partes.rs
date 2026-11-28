@@ -422,10 +422,17 @@ pub(super) fn servico(s: &Servico, cmun_emissor: &str, estrito: bool, leiaute: &
     }
     if let Some(e) = &s.comercio_exterior {
         let ce = format!("{c}/comExt");
+        let r2 = leiaute == LEIAUTE_NT009;
+        conferir_comext_do_leiaute(e, &ce, r2)?;
         let x = n.grupo("comExt");
+        // XSD prodrest 24/11/2026: TSModoPrestacao ganha o 5 (consumo concomitante no pais e no exterior)
         x.add(
             "mdPrestacao",
-            en(e.modo, &refs(&faixa(0, 4)), &format!("{ce}/mdPrestacao"))?,
+            en(
+                e.modo,
+                &refs(&faixa(0, if r2 { 5 } else { 4 })),
+                &format!("{ce}/mdPrestacao"),
+            )?,
         );
         x.add(
             "vincPrest",
@@ -444,15 +451,36 @@ pub(super) fn servico(s: &Servico, cmun_emissor: &str, estrito: bool, leiaute: &
                 "",
             )?,
         );
-        x.add(
-            "vServMoeda",
-            dinheiro(
-                e.valor_moeda.as_str(),
-                &format!("{ce}/vServMoeda"),
-                15,
-                true,
-            )?,
-        );
+        if r2 {
+            // TCComExterior do XSD prodrest 24/11/2026: nFatura e vFatura (opcionais) no lugar do vServMoeda
+            if !e.num_fatura.trim().is_empty() {
+                x.add(
+                    "nFatura",
+                    confere(
+                        "TSNumFatura",
+                        e.num_fatura.trim(),
+                        &format!("{ce}/nFatura"),
+                        "ate 20 digitos",
+                    )?,
+                );
+            }
+            if let Some(vf) = &e.valor_fatura {
+                x.add(
+                    "vFatura",
+                    dinheiro(vf.as_str(), &format!("{ce}/vFatura"), 15, true)?,
+                );
+            }
+        } else {
+            x.add(
+                "vServMoeda",
+                dinheiro(
+                    e.valor_moeda.as_str(),
+                    &format!("{ce}/vServMoeda"),
+                    15,
+                    true,
+                )?,
+            );
+        }
         let p: Vec<String> = (0..9).map(|i| format!("{i:02}")).collect();
         let t: Vec<String> = (0..27).map(|i| format!("{i:02}")).collect();
         x.add(
@@ -479,15 +507,39 @@ pub(super) fn servico(s: &Servico, cmun_emissor: &str, estrito: bool, leiaute: &
                 &format!("{ce}/movTempBens"),
             )?,
         );
-        x.opc(
-            "nDI",
-            &texto(&e.num_di, &format!("{ce}/nDI"), Txt::opc(12))?,
-        );
-        x.opc(
-            "nRE",
-            &texto(&e.num_re, &format!("{ce}/nRE"), Txt::opc(12))?,
-        );
+        if r2 {
+            // TSNumDUIMP (15) e TSNumDUE (14): tamanho exato, sem padrao de caracteres no XSD
+            let exato = |n: usize| Txt {
+                minimo: n,
+                ..Txt::opc(n)
+            };
+            let duimp = texto(&e.num_duimp, &format!("{ce}/nDUIMP"), exato(15))?;
+            let due = texto(&e.num_due, &format!("{ce}/nDUE"), exato(14))?;
+            regras_mov_temp_bens(e.mov_temp_bens, &duimp, &due, &ce)?;
+            x.opc("nDUIMP", &duimp);
+            x.opc("nDUE", &due);
+        } else {
+            x.opc(
+                "nDI",
+                &texto(&e.num_di, &format!("{ce}/nDI"), Txt::opc(12))?,
+            );
+            x.opc(
+                "nRE",
+                &texto(&e.num_re, &format!("{ce}/nRE"), Txt::opc(12))?,
+            );
+        }
         x.add("mdic", en(e.mdic, SIM_NAO, &format!("{ce}/mdic"))?);
+        if r2 && !e.contrato_cambio.trim().is_empty() {
+            x.add(
+                "nContCambio",
+                confere(
+                    "TSNumContCambio",
+                    e.contrato_cambio.trim(),
+                    &format!("{ce}/nContCambio"),
+                    "ate 20 digitos",
+                )?,
+            );
+        }
     }
     if let Some(o) = &s.obra {
         let co = format!("{c}/obra");
@@ -543,6 +595,24 @@ pub(super) fn servico(s: &Servico, cmun_emissor: &str, estrito: bool, leiaute: &
         }
         x.add("dtIni", ini);
         x.add("dtFim", fim);
+        if !e.cmun.trim().is_empty() {
+            if leiaute != LEIAUTE_NT009 {
+                return Err(ErroNfse::novo(
+                    format!("{cv}/cMun"),
+                    "o municipio do evento (cMun) so' existe no leiaute nt009",
+                ));
+            }
+            // XSD prodrest 24/11/2026: atvEvento/cMun entre dtFim e o choice idAtvEvt/end
+            x.add(
+                "cMun",
+                confere(
+                    "TSCodMunIBGE",
+                    &so_digitos(&e.cmun),
+                    &format!("{cv}/cMun"),
+                    "codigo IBGE de 7 digitos",
+                )?,
+            );
+        }
         if !e.identificacao.is_empty() {
             x.add(
                 "idAtvEvt",
@@ -886,8 +956,9 @@ pub(super) fn doc_ajuste(d: &DocAjusteBC, c: &str) -> R<No> {
     Ok(n)
 }
 
-/// vAjusteBC (leiaute nt009, TCInfoAjusteBC do XSD prodrest `tiposComplexos_v1.01.xsd:1831-1856`): percentual OU valor
-/// do ISSQN (choice opcional) E/OU documentos (docAjusteBC). O E0462 (AI:433) so' veda os tipos do ISSQN quando os dois vem juntos.
+/// vAjusteBC (leiaute nt009, TCInfoAjusteBC do XSD prodrest 24/11/2026 `tiposComplexos_v1.01.xsd:1896-1926`):
+/// percentual OU valor do ISSQN (choice opcional) E/OU documentos (docAjusteBC) E/OU o ajuste do comercio exterior
+/// (vAjusteBCIBSCBSComExt, Release 2). O E0462 (AI:433) so' veda os tipos do ISSQN quando os dois vem juntos.
 pub(super) fn ajuste_bc(dd: &Deducao, c: &str) -> R<No> {
     let cd = format!("{c}/vAjusteBC");
     if dd.percentual.is_some() && dd.valor.is_some() {
@@ -896,10 +967,14 @@ pub(super) fn ajuste_bc(dd: &Deducao, c: &str) -> R<No> {
             "informe percentual OU valor do ajuste do ISSQN, nao os dois",
         ));
     }
-    if dd.percentual.is_none() && dd.valor.is_none() && dd.ajustes.is_empty() {
+    if dd.percentual.is_none()
+        && dd.valor.is_none()
+        && dd.ajustes.is_empty()
+        && dd.comercio_exterior.is_none()
+    {
         return Err(ErroNfse::novo(
             cd,
-            "informe o ajuste: percentual, valor ou documentos",
+            "informe o ajuste: percentual, valor, documentos ou o ajuste do comercio exterior",
         ));
     }
     let mut x = No::new("vAjusteBC");
@@ -925,6 +1000,11 @@ pub(super) fn ajuste_bc(dd: &Deducao, c: &str) -> R<No> {
         for (i, d) in dd.ajustes.iter().enumerate() {
             lst.anexar(doc_ajuste(d, &format!("{cd}/documentos/docAjusteBC[{i}]"))?);
         }
+    }
+    if let Some(aj) = &dd.comercio_exterior {
+        // XSD prodrest 24/11/2026: TSDec15V2Neg, depois dos documentos
+        let (s, _) = dinheiro_com_sinal(aj.as_str(), &format!("{cd}/vAjusteBCIBSCBSComExt"), 15)?;
+        x.add("vAjusteBCIBSCBSComExt", s);
     }
     Ok(x)
 }

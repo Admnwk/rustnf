@@ -73,6 +73,10 @@ pub struct Nfse {
     /// ambGer: 1 prefeitura, 2 SEFIN Nacional.
     pub ambiente_gerador: String,
     pub numero_dfe: String,
+    /// verCalcIBSCBS: a versao da Calculadora de Tributos que gerou a NFS-e (Release 2 da NT 009, so' em nota gerada
+    /// pela Sefin Nacional). Vazio na nota anterior a ele.
+    #[serde(default)]
+    pub versao_calculadora: String,
     pub emitente_documento: String,
     pub emitente_nome: String,
     pub id_dps: String,
@@ -169,6 +173,7 @@ pub fn ler_nfse(xml: &str) -> Result<Nfse, ErroLeitura> {
         processada_em: t(Some(inf), "dhProc"),
         ambiente_gerador: t(Some(inf), "ambGer"),
         numero_dfe: t(Some(inf), "nDFSe"),
+        versao_calculadora: t(Some(inf), "verCalcIBSCBS"),
         emitente_documento: ou(t(emit, "CNPJ"), t(emit, "CPF")),
         emitente_nome: t(emit, "xNome"),
         id_dps: dps

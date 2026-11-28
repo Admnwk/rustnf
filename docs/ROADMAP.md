@@ -150,9 +150,34 @@ Itens gerais:
 6. A cada versão nova do `gpui-kit`, rever os oito crates sem mantenedor que ele traz e que estão registrados no
    `deny.toml` (três deles só no lado Linux do GPUI, que a interface não compila).
 
+**NFS-e, NT 009 em produção.** Pelo cronograma da SE/CGNFS-e (veja `docs/FONTES.md`), os Releases 1, 2 e 3 entram em produção em
+07/12/2026 e o 4 (Simples Nacional) em 24/12/2026. O leiaute `nt009` já segue o esquema da produção restrita de 24/11/2026
+(Releases 1 e 2); o de produção segue sendo o padrão. Falta:
+
+* decidir o leiaute padrão a partir de 07/12/2026 e se o de produção continua aceito depois dessa data (nenhuma fonte lida diz);
+  conferir antes de trocar, com o esquema de produção publicado e uma emissão na produção restrita;
+* o Release 3: o grupo de condomínios (subitem 99.05, `condominios` com cobranças e descontos, que o esquema de 24/11/2026 já
+  traz), os novos fatos geradores no emissor web e a série da DPS dentro da chave da NFS-e (a nova versão da NT ainda não saiu);
+* o Release 4 (Simples Nacional), quando o esquema sair;
+* a interface de desktop oferecer o leiaute `nt009` (hoje só a biblioteca, a linha de comando, a API e o MCP o escolhem).
+
+**Ideias anotadas (sem data):**
+
+7. Parâmetros municipais pelas APIs de Parâmetros Municipais do sistema nacional: convênio do município, alíquota e regras de retenção do ISSQN, e os
+   serviços parametrizados numa competência (a notícia do Release 2 lista os serviços novos). Serviriam para conferir a
+   configuração antes de emitir e para preencher a alíquota; hoje o emissor informa tudo.
+8. Dica de correção junto da recusa da Sefin, por código: a mensagem oficial continua, e o rustnf acrescenta o que mudar
+   (por exemplo, o E0014 quando a série e o número já foram usados em outro emissor). Cada dica com a fonte.
+9. Resposta HTTP 429 (limite de requisições) da Sefin com `Retry-After`: guardar a nota como pendente e só reenviar depois do
+   tempo pedido. Falta fonte oficial do limite e do cabeçalho.
+10. Calendário fiscal no CI: um aviso automático (issue) antes de cada data de vigência que o código conhece e das trocas de
+    leiaute anunciadas, para nenhuma virada passar despercebida.
+11. Sonda de alcance das SEFAZ e da Sefin sem certificado (DNS e TLS), para conferir a tabela de endereços antes do teste real.
+
 ## Fora da v1
 
-* Rotas do ADN (distribuição de DF-e, parâmetros municipais): o cliente cobre só a Sefin Nacional;
+* Rotas do ADN (distribuição de DF-e da NFS-e): o cliente cobre só a Sefin Nacional (os parâmetros municipais estão nas
+  ideias, item 7);
 * NFS-e municipal (ABRASF) e CT-e; o cálculo do IBS/CBS de
   mercadoria entra com a montagem do modelo 55;
 * assinatura ICP de PDF;

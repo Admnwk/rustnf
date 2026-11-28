@@ -2,6 +2,19 @@
 
 ## Próxima versão
 
+* **NFS-e, leiaute `nt009` no Release 2 da NT 009.** A produção restrita da Sefin Nacional passou ao Release 2 em 24/11/2026,
+  e a DPS do leiaute `nt009` de antes (esquema de 20/10/2026) deixou de passar no esquema novo. Conferido com o esquema e o Anexo I
+  de 24/11/2026: `indDest` e `dest` saem do grupo `IBSCBS` e vão para o `infDPS`, logo depois do tomador, e o `indDest` é
+  obrigatório mesmo sem o grupo (vai `0`); o comércio exterior troca `vServMoeda`, `nDI` e `nRE` por `nFatura`, `vFatura`, `nDUIMP`
+  (15 posições), `nDUE` (14) e `nContCambio`, e o modo de prestação ganha o 5 (consumo no país e no exterior ao mesmo tempo); o
+  evento ganha o município (`atvEvento/cMun`, só nos subitens 12.13 e 17.10); e o ajuste da base ganha o valor do comércio exterior
+  (`vAjusteBCIBSCBSComExt`, que pode ser negativo). Regras novas antes do envio: E0352, E0354 e E0356 (declaração única de
+  importação e de exportação), E0390 e E0392 (evento obrigatório também no 17.10), E0393 e E0394 (município do evento), E0424 (o
+  valor recebido não vai mais na DPS), E0500 e E0501 (ajuste do comércio exterior), E0908 e E0910 (destinatário). O E0425 antigo
+  (valor recebido menor que o do serviço) não vale no `nt009`: lá o código é outra regra, que depende do ISSQN calculado e fica com
+  a Sefin. O leiaute de produção não muda. A leitura da NFS-e traz `versao_calculadora` (`verCalcIBSCBS`). Os 12 XML de
+  contrato do `nt009` foram passados ao esquema novo fora da biblioteca e conferidos nele; os casos do Release 2 estão em
+  `tests/casos/nfse_nt009_r2.json`. Pelo cronograma publicado, os Releases 1 a 3 entram em produção em 07/12/2026.
 * **O EPEC no lugar de uma NF-e que ficou sem resposta**, na aplicação, na linha de comando (`rustnf nfe epec --substitui
   <chave>`), na API (`substitui` no corpo de `POST /nfe/epec`) e no MCP (`registrar_epec`). Antes de escrever, li o item 2.3.3 do
   Manual de Contingência da NF-e (MOC 7.00, Anexo III) e o 3.3.1 da Visão Geral: a nota pendente de retorno recebe **nova

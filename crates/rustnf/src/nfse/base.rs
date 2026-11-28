@@ -141,6 +141,8 @@ pub fn casa(tipo: &str, v: &str) -> bool {
         // so' no XSD da Producao Restrita 20/10/2026 (leiaute nt009, bensMoveis)
         "TSNCM" => n == 8 && todos(v, dig),
         "TSNum3Dig" => (1..=3).contains(&n) && todos(v, dig),
+        // so' no XSD da Producao Restrita 24/11/2026 (leiaute nt009, comExt do Release 2)
+        "TSNumFatura" | "TSNumContCambio" => (1..=20).contains(&n) && todos(v, dig),
         _ => false,
     }
 }
@@ -373,6 +375,23 @@ pub fn dinheiro(v: &str, campo: &str, inteiros: usize, permite_zero: bool) -> R<
         ));
     }
     Ok(s)
+}
+
+/// TSDec15V2Neg (XSD da Producao Restrita 24/11/2026): como o `dinheiro`, mas aceita o sinal de menos. Zero sai sem
+/// sinal. Devolve o texto e os centavos com sinal.
+pub fn dinheiro_com_sinal(v: &str, campo: &str, inteiros: usize) -> R<(String, i128)> {
+    let t = v.trim();
+    let (neg, resto) = match t.strip_prefix('-') {
+        Some(r) => (true, r),
+        None => (false, t),
+    };
+    let s = dinheiro(resto, campo, inteiros, true)?;
+    let c = centavos(&s)? as i128;
+    if neg && c > 0 {
+        Ok((format!("-{s}"), -c))
+    } else {
+        Ok((s, c))
+    }
 }
 
 /// Valor decimal em centavos (para comparar). Erro com campo vazio.
