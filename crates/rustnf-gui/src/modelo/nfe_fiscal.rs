@@ -470,8 +470,17 @@ impl Pagamento {
         u8::from(self == Self::APrazo)
     }
 
-    /// Cartao: o grupo `card` leva `tpIntegra` 2 (pagamento nao integrado ao sistema de automacao, o caso de quem passa
-    /// a maquininha a parte).
+    /// Cartao e Pix levam o grupo `card` com `tpIntegra` 2 (pagamento nao integrado ao sistema de automacao: a maquininha
+    /// ou o Pix sao a parte). Cartao (03, 04): MOC 7.00, Anexo I, regra YA04a-20, rejeicao 391 (facultativa por UF). Pix
+    /// (17): o esquema PL_010h v1.03 descreve o `card` como grupo "de Cartoes, PIX, Boletos e outros Pagamentos
+    /// Eletronicos" (`leiauteNFe_v4.00.xsd`), e o grupo e' opcional nele: mandar nao e' recusado por esquema e evita a 391
+    /// na UF que a aplica ao Pix.
+    #[must_use]
+    pub fn leva_card(self) -> bool {
+        matches!(self, Self::CartaoCredito | Self::CartaoDebito | Self::Pix)
+    }
+
+    /// Cartao de credito ou de debito.
     #[must_use]
     pub fn e_cartao(self) -> bool {
         matches!(self, Self::CartaoCredito | Self::CartaoDebito)
@@ -820,20 +829,20 @@ mod testes {
             .map(|p| (p.ind_pres(), p.ind_intermed()))
             .collect();
         assert_eq!(p, vec![(1, None), (2, Some(0)), (3, Some(0)), (9, Some(0))]);
-        let t: Vec<(&str, u8, bool)> = Pagamento::TODAS
+        let t: Vec<(&str, u8, bool, bool)> = Pagamento::TODAS
             .iter()
-            .map(|p| (p.t_pag(), p.ind_pag(), p.e_cartao()))
+            .map(|p| (p.t_pag(), p.ind_pag(), p.e_cartao(), p.leva_card()))
             .collect();
         assert_eq!(
             t,
             vec![
-                ("01", 0, false),
-                ("17", 0, false),
-                ("03", 0, true),
-                ("04", 0, true),
-                ("02", 0, false),
-                ("15", 0, false),
-                ("15", 1, false),
+                ("01", 0, false, false),
+                ("17", 0, false, true),
+                ("03", 0, true, true),
+                ("04", 0, true, true),
+                ("02", 0, false, false),
+                ("15", 0, false, false),
+                ("15", 1, false, false),
             ]
         );
         assert_eq!(Pagamento::do_xml("15", "1"), Pagamento::APrazo);

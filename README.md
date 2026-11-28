@@ -1220,7 +1220,7 @@ confere cada CFOP na tabela da biblioteca e na vigência):
 | PIS e COFINS | CST 49 no Simples (LC 123/2006, art. 13); CST 01 no regime normal, com 0,65% e 3% (cumulativo) ou 1,65% e 7,6% (não cumulativo) | Leis 9.715/1998, 9.718/1998, 10.637/2002 e 10.833/2003 |
 | como entrega | `modFrete` 9 (balcão), 4 (o cliente busca), 3 (própria), 0, 1 ou 2 (transportadora) | MOC, X02 |
 | como comprou | `indPres` 1, 2, 3 ou 9; nas não presenciais, `indIntermed` 0 | MOC, B25a |
-| como pagou | `tPag` 01, 17, 03, 04, 02, 15 (a prazo: `indPag` 1 e `cobr`); cartão leva `tpIntegra` 2 | MOC, YA03 |
+| como pagou | `tPag` 01, 17, 03, 04, 02, 15 (a prazo: `indPag` 1 e `cobr`); cartão e Pix levam o grupo `card` com `tpIntegra` 2 | MOC, YA03 e YA04a-20 (rejeição 391); esquema PL_010h v1.03 (`card` de cartões, Pix e outros pagamentos eletrônicos) |
 
 **Quando a pergunta simples não decide, a tela mostra as opções e a pessoa escolhe**: o regime do PIS e da COFINS no regime
 normal (cumulativo ou não, se a configuração não diz), o ICMS (as opções do regime), a inscrição estadual do cliente CNPJ, o

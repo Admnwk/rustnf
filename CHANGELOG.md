@@ -15,6 +15,12 @@
   a Sefin. O leiaute de produção não muda. A leitura da NFS-e traz `versao_calculadora` (`verCalcIBSCBS`). Os 12 XML de
   contrato do `nt009` foram passados ao esquema novo fora da biblioteca e conferidos nele; os casos do Release 2 estão em
   `tests/casos/nfse_nt009_r2.json`. Pelo cronograma publicado, os Releases 1 a 3 entram em produção em 07/12/2026.
+* Interface de desktop, NF-e e Caixa (NFC-e): **o pagamento por Pix passa a levar o grupo `card` com `tpIntegra` 2**, como o
+  cartão já levava. O MOC 7.00 (Anexo I, regra YA04a-20, rejeição 391, aplicada a critério de cada UF) cita só o cartão, mas o
+  esquema PL_010h v1.03 descreve o `card` como grupo de cartões, Pix e outros pagamentos eletrônicos, e o grupo é opcional nele:
+  mandá-lo no Pix não é recusado pelo esquema e evita a rejeição 391 na UF que a aplica ao Pix (houve relato público dessa
+  rejeição para Pix sem o grupo em homologação). Dinheiro, cheque e boleto continuam sem o grupo. Pela linha de comando, pela
+  API e pelo MCP nada muda: o `cartao` vai no pedido quando quem o monta o informa.
 * **O EPEC no lugar de uma NF-e que ficou sem resposta**, na aplicação, na linha de comando (`rustnf nfe epec --substitui
   <chave>`), na API (`substitui` no corpo de `POST /nfe/epec`) e no MCP (`registrar_epec`). Antes de escrever, li o item 2.3.3 do
   Manual de Contingência da NF-e (MOC 7.00, Anexo III) e o 3.3.1 da Visão Geral: a nota pendente de retorno recebe **nova
