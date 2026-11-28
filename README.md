@@ -131,7 +131,8 @@ Correção é bem-vinda por pedido de mudança, com a fonte oficial citada e um 
 | `rustnf sefin testar` | testa a conexão com a Sefin Nacional e a aceitação do certificado |
 
 Nenhuma regra fiscal mora no binário: ele lê a entrada, chama a biblioteca (`crates/rustnf`) e escreve a saída. A
-biblioteca monta a DPS (leiaute 1.01 de produção e NT 009 de produção restrita), confere as regras antes do envio,
+biblioteca monta a DPS (leiaute 1.01 de produção e, com `"leiaute": "nt009"`, o da NT 009 com os Releases 1 e 2, que a
+produção restrita usa desde 24/11/2026), confere as regras antes do envio,
 lê o retorno, calcula a prévia do IBS/CBS, gera o DANFSe e fala com a Sefin Nacional por mTLS com o A1 em memória.
 Valores e percentuais usam inteiros de ponto fixo, nunca ponto flutuante. A DPS não leva IBS/CBS calculado (quem
 calcula é a Sefin Nacional): `calcular` é só uma prévia; vale o que voltar na NFS-e.

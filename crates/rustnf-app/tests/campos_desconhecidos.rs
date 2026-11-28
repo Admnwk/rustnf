@@ -10,9 +10,32 @@ use rustnf_app::nucleo::{campos_desconhecidos, recusar_desconhecidos};
 use serde_json::{json, Value};
 
 fn contrato() -> Value {
-    let p =
-        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../rustnf/tests/casos/nfse_nacional.json");
+    ler_contrato("nfse_nacional.json")
+}
+
+fn ler_contrato(nome: &str) -> Value {
+    let p = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../rustnf/tests/casos")
+        .join(nome);
     serde_json::from_str(&std::fs::read_to_string(p).unwrap()).unwrap()
+}
+
+#[test]
+fn nenhum_pedido_do_release2_da_nt009_tem_campo_desconhecido() {
+    let c = ler_contrato("nfse_nt009_r2.json");
+    let mut conferidos = 0;
+    for secao in ["dps", "dps_erro"] {
+        for caso in c[secao].as_array().unwrap() {
+            let achados = campos_desconhecidos(&caso["entrada"]);
+            assert!(
+                achados.is_empty(),
+                "{secao} '{}': {achados:?}",
+                caso["nome"]
+            );
+            conferidos += 1;
+        }
+    }
+    assert!(conferidos > 20, "{conferidos}");
 }
 
 fn exemplo() -> Value {

@@ -50,7 +50,7 @@ pub(super) fn ctribnac_ou_digitos(ctribnac: &str) -> String {
 
 /// E0850, E0901, E0903-E0906, E0910, E0928, E0931, E0932 (AnexoVI NT009 v1.04.01, aba "RN DPS_NFS-e", linha ao lado
 /// de cada uma).
-pub(super) fn regras_ibscbs(g: &IbsCbs, ctribnac: &str, competencia: &str) -> R<()> {
+pub(super) fn regras_ibscbs(g: &IbsCbs, ctribnac: &str, competencia: &str, nt009: bool) -> R<()> {
     use crate::reforma::indop;
     let c = "infDPS/IBSCBS";
     let comp = data(competencia, "infDPS/dCompet")?;
@@ -96,9 +96,25 @@ pub(super) fn regras_ibscbs(g: &IbsCbs, ctribnac: &str, competencia: &str) -> R<
         &campo_ref,
         "notas referenciadas (gRefNFSe) so' com tpOper 2 ou 3",
     )?;
-    // v1.04.01 :372 = obrigatorio com indDest 1; v1.04.00 :659 = so' com indDest 1. Mesmo codigo, os dois lados.
-    regra(g.destinatario.is_some() != (g.ind_dest == 1), "E0910", &format!("{c}/dest"),
-          "o destinatario (dest) vai quando, e so' quando, indDest = 1 (destinatario diferente do tomador)")?;
+    if nt009 {
+        // Anexo I PRODREST 24/11/2026, linhas 299 e 300: dest no infDPS; E0908 com indDest 0, E0910 sem dest com indDest 1
+        regra(
+            g.destinatario.is_some() && g.ind_dest == 0,
+            "E0908",
+            "infDPS/dest",
+            "com indDest 0 (o destinatario e' o proprio tomador) nao informe o destinatario (dest)",
+        )?;
+        regra(
+            g.destinatario.is_none() && g.ind_dest == 1,
+            "E0910",
+            "infDPS/dest",
+            "com indDest 1 (destinatario diferente do tomador) informe o destinatario (dest)",
+        )?;
+    } else {
+        // v1.04.01 :372 = obrigatorio com indDest 1; v1.04.00 :659 = so' com indDest 1. Mesmo codigo, os dois lados.
+        regra(g.destinatario.is_some() != (g.ind_dest == 1), "E0910", &format!("{c}/dest"),
+              "o destinatario (dest) vai quando, e so' quando, indDest = 1 (destinatario diferente do tomador)")?;
+    }
     let tem_imovel = g.imovel.is_some() || !g.imovel_cib.is_empty() || g.imovel_endereco.is_some();
     let ct = ctribnac_ou_digitos(ctribnac);
     let ci = format!("{c}/imovel");
@@ -152,6 +168,12 @@ pub(super) fn conferir_leiaute(dps: &Dps) -> R<&'static str> {
                 "bensMoveis so' existe no leiaute nt009",
             ));
         }
+        if dd.is_some_and(|d| d.comercio_exterior.is_some()) {
+            return Err(ErroNfse::novo(
+                "infDPS/valores/vDedRed",
+                "o ajuste do comercio exterior (vAjusteBCIBSCBSComExt) so' existe no leiaute nt009",
+            ));
+        }
     } else {
         if dd.is_some_and(|d| !d.documentos.is_empty()) {
             return Err(ErroNfse::novo(
@@ -173,6 +195,65 @@ pub(super) fn conferir_leiaute(dps: &Dps) -> R<&'static str> {
     Ok(lei)
 }
 
+/// Os campos do comExt que so' existem num dos leiautes (o Release 2 da NT 009 trocou vServMoeda, nDI e nRE).
+pub(super) fn conferir_comext_do_leiaute(e: &ComercioExterior, ce: &str, nt009: bool) -> R<()> {
+    let tem = |s: &str| !s.trim().is_empty();
+    if nt009 {
+        let trocas = [
+            (
+                tem(e.valor_moeda.as_str()),
+                "vServMoeda",
+                "valor_fatura (vFatura)",
+            ),
+            (tem(&e.num_di), "nDI", "num_duimp (nDUIMP, 15 posicoes)"),
+            (tem(&e.num_re), "nRE", "num_due (nDUE, 14 posicoes)"),
+        ];
+        if let Some((_, campo, novo)) = trocas.iter().find(|t| t.0) {
+            return Err(ErroNfse::novo(
+                format!("{ce}/{campo}"),
+                format!("{campo} nao existe no leiaute nt009 (Release 2 da NT 009): use {novo}"),
+            ));
+        }
+    } else {
+        let so_nt009 = [
+            (tem(&e.num_fatura), "nFatura"),
+            (e.valor_fatura.is_some(), "vFatura"),
+            (tem(&e.num_duimp), "nDUIMP"),
+            (tem(&e.num_due), "nDUE"),
+            (tem(&e.contrato_cambio), "nContCambio"),
+        ];
+        if let Some((_, campo)) = so_nt009.iter().find(|t| t.0) {
+            return Err(ErroNfse::novo(
+                format!("{ce}/{campo}"),
+                format!("{campo} so' existe no leiaute nt009"),
+            ));
+        }
+    }
+    Ok(())
+}
+
+/// movTempBens x nDUIMP/nDUE (Anexo I PRODREST 24/11/2026, aba "RN DPS_NFS-e 1.01", linhas 391, 392 e 394).
+pub(super) fn regras_mov_temp_bens(mov: u8, duimp: &str, due: &str, ce: &str) -> R<()> {
+    regra(
+        mov == 2 && duimp.is_empty(),
+        "E0352",
+        &format!("{ce}/nDUIMP"),
+        "com movTempBens 2 (vinculada a importacao) informe o numero da DUIMP",
+    )?;
+    regra(
+        mov == 1 && (!duimp.is_empty() || !due.is_empty()),
+        "E0354",
+        &format!("{ce}/nDUIMP"),
+        "com movTempBens 1 (nao vinculada) nao informe DUIMP nem DU-E",
+    )?;
+    regra(
+        mov == 3 && due.is_empty(),
+        "E0356",
+        &format!("{ce}/nDUE"),
+        "com movTempBens 3 (vinculada a exportacao) informe o numero da DU-E",
+    )
+}
+
 /// Centavos de total x pct/100, arredondado meio-para-par ("half even com tolerancia de R$0,01", Anexo I PRODREST,
 /// aba LEIAUTE DPS_NFS-e 1.01, vServ).
 pub(super) fn proporcional(total: &str, pct: &str) -> R<u128> {
@@ -184,9 +265,78 @@ pub(super) fn proporcional(total: &str, pct: &str) -> R<u128> {
     Ok(q)
 }
 
+/// Regras do Release 2 da NT 009 sem rede (Anexo I PRODREST `anexo_i-sefin_adn-dps_nfse-snnfse_prodrest-v1-01-20261124.xlsx`,
+/// aba "RN DPS_NFS-e 1.01", linha ao lado). Ficam com o SEFIN: E0395 (municipio do evento na tabela do IBGE) e o novo
+/// E0425 (vServ x soma da BC do IBS/CBS, que depende do vISSQN calculado).
+fn regras_nt009_release2(dps: &Dps, ct: &str) -> R<()> {
+    let (s, v) = (&dps.servico, &dps.valores);
+    let ct4 = ct.get(..4).unwrap_or(ct);
+    regra(
+        v.recebido.is_some(),
+        "E0424",
+        "infDPS/valores/vServPrest/vReceb", // linha 444
+        "o valor recebido (vReceb) nao se informa na DPS, qualquer que seja o emitente",
+    )?;
+    let evento_obrigatorio = ct.starts_with("12") || ct4 == "1710";
+    let ce = "infDPS/serv/atvEvento";
+    regra(
+        evento_obrigatorio && s.evento.is_none(),
+        "E0390",
+        ce, // linha 414
+        "nos servicos do item 12 e do subitem 17.10 informe a atividade/evento (atvEvento)",
+    )?;
+    regra(
+        !evento_obrigatorio && ct != "990101" && s.evento.is_some(),
+        "E0392",
+        ce, // linha 415
+        "atividade/evento (atvEvento) so' nos servicos do item 12, do subitem 17.10 ou no 99.01.01",
+    )?;
+    if let Some(e) = s.evento.as_ref().filter(|e| !e.cmun.trim().is_empty()) {
+        let cm = so_digitos(&e.cmun);
+        regra(
+            ct4 != "1213" && ct4 != "1710",
+            "E0393",
+            &format!("{ce}/cMun"), // linha 419
+            "o municipio do evento (cMun) so' nos subitens 12.13 e 17.10",
+        )?;
+        // o local da prestacao que vai no XML: sem cmun_prestacao (e sem pais), o municipio emissor (`servico`)
+        let no_exterior = !s.pais_prestacao.is_empty() && s.pais_prestacao.to_uppercase() != "BR";
+        let local = if s.cmun_prestacao.is_empty() {
+            dps.cmun_emissor.as_str()
+        } else {
+            s.cmun_prestacao.as_str()
+        };
+        regra(
+            !no_exterior && cm == so_digitos(local),
+            "E0394",
+            &format!("{ce}/cMun"), // linha 420
+            "o municipio do evento (cMun) so' se informa quando e' diferente do local da prestacao",
+        )?;
+    }
+    if let Some(aj) = v
+        .deducao
+        .as_ref()
+        .and_then(|d| d.comercio_exterior.as_ref())
+    {
+        let campo = "infDPS/valores/vAjusteBC/vAjusteBCIBSCBSComExt";
+        let (_, c) = dinheiro_com_sinal(aj.as_str(), campo, 15)?;
+        let trib = v.municipal.tributacao;
+        let comex = (dps.emitente == 1 && trib == 3) || (dps.emitente != 1 && trib == 1);
+        regra(!comex, "E0500", campo, // linha 514
+              "o ajuste do comercio exterior so' na exportacao pelo prestador (tribISSQN 3) ou na importacao pelo tomador/intermediario (tribISSQN 1)")?;
+        regra(
+            c < 0 && c.unsigned_abs() > centavos(v.servico.as_str())?,
+            "E0501",
+            campo, // linha 515
+            "o ajuste negativo do comercio exterior nao pode passar do valor do servico (vServ)",
+        )?;
+    }
+    Ok(())
+}
+
 /// Regras do leiaute nt009 sem rede (Anexo I PRODREST `anexo_i-sefin_adn-dps_nfse-snnfse_prodrest-v1-01-20261020.xlsx`,
-/// aba "RN DPS_NFS-e 1.01", linha ao lado). Ficam com o SEFIN: E0444, E0448,
-/// E0933, E0973.
+/// aba "RN DPS_NFS-e 1.01", linha ao lado). No Anexo I de 24/11/2026 a logica destas regras nao mudou (so' a linha e,
+/// no E0928/E0931/E0932, o texto da mensagem). Ficam com o SEFIN: E0444, E0448, E0933, E0973.
 pub(super) fn regras_nt009(dps: &Dps) -> R<()> {
     let (pr, s, v, m) = (
         &dps.prestador,
@@ -207,7 +357,13 @@ pub(super) fn regras_nt009(dps: &Dps) -> R<()> {
         .is_some_and(|d| d.percentual.is_some() || d.valor.is_some());
     let v_serv = centavos(v.servico.as_str())?;
     let c = "infDPS/valores/vAjusteBC";
-    if v.deducao.is_some() {
+    // E0435/E0436/E0445 falam do ajuste de BC do ISSQN; o vAjusteBCIBSCBSComExt (Release 2) e' do IBS/CBS e so' vai
+    // justamente na exportacao (tribISSQN 3), entao sozinho ele nao dispara estas tres
+    let ajuste_issqn = v
+        .deducao
+        .as_ref()
+        .is_some_and(|d| d.percentual.is_some() || d.valor.is_some() || !d.ajustes.is_empty());
+    if ajuste_issqn {
         regra(m.tributacao != 1 && !tem_repasse, "E0435", c, // linha 419
               "servico imune, exportado ou sem incidencia so' ajusta a base por documento de repasse/reembolso (tpAjusteBC 101-105 ou 199)")?;
         regra(
@@ -290,6 +446,7 @@ pub(super) fn regras_nt009(dps: &Dps) -> R<()> {
               &ca, "para este tipo de ajuste informe um documento fiscal (chave DF-e ou documento fiscal), nao docOutro")?;
         // 450
     }
+    regras_nt009_release2(dps, &ct)?;
     let Some(g) = &dps.ibscbs else { return Ok(()) };
     let ci = "infDPS/IBSCBS/imovel";
     let im = g.imovel.as_ref();
@@ -476,9 +633,17 @@ pub(super) fn regras_cruzadas(dps: &Dps, ident: &str, dh_emi: &str) -> R<()> {
         "com o grupo IBS/CBS a NBS do servico e' obrigatoria",
     )?;
     if let Some(g) = &dps.ibscbs {
-        regras_ibscbs(g, s.ctribnac.as_str(), &competencia(dps))?;
+        regras_ibscbs(
+            g,
+            s.ctribnac.as_str(),
+            &competencia(dps),
+            dps.leiaute.trim() == LEIAUTE_NT009,
+        )?;
     }
-    if let Some(r) = &v.recebido {
+    let nt009 = dps.leiaute.trim() == LEIAUTE_NT009;
+    // No nt009 (Anexo I PRODREST 24/11/2026) o vReceb nao vai nunca (E0424, em `regras_nt009_release2`) e o E0425 virou
+    // outra regra (vServ x soma da BC do IBS/CBS, linha 445), que depende do vISSQN calculado: fica com o SEFIN.
+    if let Some(r) = v.recebido.as_ref().filter(|_| !nt009) {
         regra(
             centavos(r.as_str())? < centavos(v.servico.as_str())?,
             "E0425",
@@ -486,7 +651,6 @@ pub(super) fn regras_cruzadas(dps: &Dps, ident: &str, dh_emi: &str) -> R<()> {
             "o valor recebido nao pode ser menor que o valor do servico",
         )?;
     }
-    let nt009 = dps.leiaute.trim() == LEIAUTE_NT009;
     if let Some(p) = v.deducao.as_ref().and_then(|d| d.percentual.as_ref()) {
         let c = centavos(p.as_str())?;
         // nt009: mesma regra no pAjusteBCISSQN (Anexo I PRODREST, RN DPS_NFS-e 1.01, linha 428)

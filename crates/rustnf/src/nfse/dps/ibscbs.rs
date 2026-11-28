@@ -153,6 +153,34 @@ pub(super) fn imovel(im: &Imovel, c: &str) -> R<No> {
     Ok(n)
 }
 
+/// O grupo `dest` sob `pai` (infDPS/IBSCBS no leiaute de producao, infDPS no nt009). indDest x dest: E0908/E0910 em
+/// `regras_ibscbs`. DV: AnexoVI NT009 v1.04.01 "RN DPS_NFS-e" linhas 373/375 (E0911, E0913).
+fn destinatario(p: Option<&Pessoa>, pai: &str) -> R<Option<No>> {
+    let Some(p) = p else { return Ok(None) };
+    let cd = format!("{pai}/dest");
+    let mut d = No::new("dest");
+    ident_dv(&mut d, p, &cd, Some(("E0911", "E0913")))?;
+    d.add(
+        "xNome",
+        texto(&p.nome, &format!("{cd}/xNome"), Txt::max(150))?,
+    );
+    contato(&mut d, p, &cd)?;
+    Ok(Some(d))
+}
+
+/// Leiaute nt009 (XSD prodrest 24/11/2026, TCInfDPS): indDest (obrigatorio, 0 sem o grupo IBSCBS) e dest no infDPS,
+/// depois do toma e antes do interm.
+pub(super) fn destinatario_infdps(inf: &mut No, g: Option<&IbsCbs>) -> R<()> {
+    inf.add(
+        "indDest",
+        en(g.map_or(0, |g| g.ind_dest), SIM_NAO, "infDPS/indDest")?,
+    );
+    if let Some(d) = destinatario(g.and_then(|g| g.destinatario.as_ref()), "infDPS")? {
+        inf.anexar(d);
+    }
+    Ok(())
+}
+
 pub(super) fn ibscbs(g: &IbsCbs, leiaute: &str) -> R<No> {
     let c = "infDPS/IBSCBS";
     let nt009 = leiaute == LEIAUTE_NT009;
@@ -205,17 +233,12 @@ pub(super) fn ibscbs(g: &IbsCbs, leiaute: &str) -> R<No> {
             en(x, &refs(&faixa(1, 4)), &format!("{c}/tpEnteGov"))?,
         );
     }
-    n.add("indDest", en(g.ind_dest, SIM_NAO, &format!("{c}/indDest"))?);
-    if let Some(p) = &g.destinatario {
-        // indDest x dest: E0910 em regras_ibscbs. DV: AnexoVI NT009 v1.04.01 "RN DPS_NFS-e" linhas 373/375
-        let cd = format!("{c}/dest");
-        let d = n.grupo("dest");
-        ident_dv(d, p, &cd, Some(("E0911", "E0913")))?;
-        d.add(
-            "xNome",
-            texto(&p.nome, &format!("{cd}/xNome"), Txt::max(150))?,
-        );
-        contato(d, p, &cd)?;
+    if !nt009 {
+        // no nt009 (Release 2) indDest e dest sobem para o infDPS: `destinatario_infdps`
+        n.add("indDest", en(g.ind_dest, SIM_NAO, &format!("{c}/indDest"))?);
+        if let Some(d) = destinatario(g.destinatario.as_ref(), c)? {
+            n.anexar(d);
+        }
     }
     if nt009 {
         if let Some(im) = &g.imovel {

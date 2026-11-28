@@ -1,0 +1,1033 @@
+{
+ "fonte": "XSD prodrest 24/11/2026 (esquemas-xsd-producao-restrita-20261124.zip) e Anexo I PRODREST 24/11/2026",
+ "dps": [
+  {
+   "nome": "comext_exportacao_release2",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao",
+     "comercio_exterior": {
+      "modo": 5,
+      "vinculo": 0,
+      "moeda": "220",
+      "num_fatura": "123",
+      "valor_fatura": "10.50",
+      "mec_prestador": "01",
+      "mec_tomador": "01",
+      "mov_temp_bens": 3,
+      "num_due": "26BR0000000017",
+      "mdic": 0,
+      "contrato_cambio": "998877"
+     }
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     },
+     "municipal": {
+      "tributacao": 3,
+      "pais_resultado": "US"
+     },
+     "deducao": {
+      "comercio_exterior": "-5.25"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-12-08T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-12-08</dCompet><tpEmit>1</tpEmit><finNFSe>0</finNFSe><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><indDest>0</indDest><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ><comExt><mdPrestacao>5</mdPrestacao><vincPrest>0</vincPrest><tpMoeda>220</tpMoeda><nFatura>123</nFatura><vFatura>10.50</vFatura><mecAFComexP>01</mecAFComexP><mecAFComexT>01</mecAFComexT><movTempBens>3</movTempBens><nDUE>26BR0000000017</nDUE><mdic>0</mdic><nContCambio>998877</nContCambio></comExt></serv><valores><vServPrest><vServ>150.00</vServ></vServPrest><vAjusteBC><vAjusteBCIBSCBSComExt>-5.25</vAjusteBCIBSCBSComExt></vAjusteBC><trib><tribMun><tribISSQN>3</tribISSQN><cPaisResult>US</cPaisResult><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores></infDPS></DPS>"
+  },
+  {
+   "nome": "evento_com_municipio",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "121301",
+     "descricao": "Revisao",
+     "evento": {
+      "nome": "Show",
+      "inicio": "2026-12-08",
+      "fim": "2026-12-09",
+      "identificacao": "EV1",
+      "cmun": "3304557"
+     }
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-12-08T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-12-08</dCompet><tpEmit>1</tpEmit><finNFSe>0</finNFSe><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><indDest>0</indDest><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>121301</cTribNac><xDescServ>Revisao</xDescServ></cServ><atvEvento><xNome>Show</xNome><dtIni>2026-12-08</dtIni><dtFim>2026-12-09</dtFim><cMun>3304557</cMun><idAtvEvt>EV1</idAtvEvt></atvEvento></serv><valores><vServPrest><vServ>150.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores></infDPS></DPS>"
+  },
+  {
+   "nome": "sem_ibscbs_indDest_zero",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DPS xmlns=\"http://www.sped.fazenda.gov.br/nfse\" versao=\"1.01\"><infDPS Id=\"DPS355030821122233300018100001000000000000042\"><tpAmb>2</tpAmb><dhEmi>2026-12-08T10:00:00-03:00</dhEmi><verAplic>rustnf</verAplic><serie>1</serie><nDPS>42</nDPS><dCompet>2026-12-08</dCompet><tpEmit>1</tpEmit><finNFSe>0</finNFSe><cLocEmi>3550308</cLocEmi><prest><CNPJ>11222333000181</CNPJ><IM>123456</IM><regTrib><opSimpNac>3</opSimpNac><regApTribSN>1</regApTribSN><regEspTrib>0</regEspTrib></regTrib></prest><toma><CPF>52998224725</CPF><xNome>Cliente</xNome></toma><indDest>0</indDest><serv><locPrest><cLocPrestacao>3550308</cLocPrestacao></locPrest><cServ><cTribNac>140101</cTribNac><xDescServ>Revisao</xDescServ></cServ></serv><valores><vServPrest><vServ>150.00</vServ></vServPrest><trib><tribMun><tribISSQN>1</tribISSQN><tpRetISSQN>1</tpRetISSQN></tribMun><totTrib><pTotTribSN>4.50</pTotTribSN></totTrib></trib></valores></infDPS></DPS>"
+  }
+ ],
+ "dps_erro": [
+  {
+   "nome": "E0352",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao",
+     "comercio_exterior": {
+      "modo": 5,
+      "vinculo": 0,
+      "moeda": "220",
+      "num_fatura": "123",
+      "valor_fatura": "10.50",
+      "mec_prestador": "01",
+      "mec_tomador": "01",
+      "mov_temp_bens": 2,
+      "num_due": "",
+      "mdic": 0,
+      "contrato_cambio": "998877"
+     }
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     },
+     "municipal": {
+      "tributacao": 3,
+      "pais_resultado": "US"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/serv/comExt/nDUIMP",
+   "regra": "E0352"
+  },
+  {
+   "nome": "E0354",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao",
+     "comercio_exterior": {
+      "modo": 5,
+      "vinculo": 0,
+      "moeda": "220",
+      "num_fatura": "123",
+      "valor_fatura": "10.50",
+      "mec_prestador": "01",
+      "mec_tomador": "01",
+      "mov_temp_bens": 1,
+      "num_due": "26BR0000000017",
+      "mdic": 0,
+      "contrato_cambio": "998877"
+     }
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     },
+     "municipal": {
+      "tributacao": 3,
+      "pais_resultado": "US"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/serv/comExt/nDUIMP",
+   "regra": "E0354"
+  },
+  {
+   "nome": "E0356",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao",
+     "comercio_exterior": {
+      "modo": 5,
+      "vinculo": 0,
+      "moeda": "220",
+      "num_fatura": "123",
+      "valor_fatura": "10.50",
+      "mec_prestador": "01",
+      "mec_tomador": "01",
+      "mov_temp_bens": 3,
+      "num_due": "",
+      "mdic": 0,
+      "contrato_cambio": "998877"
+     }
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     },
+     "municipal": {
+      "tributacao": 3,
+      "pais_resultado": "US"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/serv/comExt/nDUE",
+   "regra": "E0356"
+  },
+  {
+   "nome": "nDUIMP_tamanho",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao",
+     "comercio_exterior": {
+      "modo": 5,
+      "vinculo": 0,
+      "moeda": "220",
+      "num_fatura": "123",
+      "valor_fatura": "10.50",
+      "mec_prestador": "01",
+      "mec_tomador": "01",
+      "mov_temp_bens": 2,
+      "num_due": "",
+      "mdic": 0,
+      "contrato_cambio": "998877",
+      "num_duimp": "123"
+     }
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     },
+     "municipal": {
+      "tributacao": 3,
+      "pais_resultado": "US"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/serv/comExt/nDUIMP",
+   "regra": ""
+  },
+  {
+   "nome": "nt009_com_vServMoeda",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao",
+     "comercio_exterior": {
+      "modo": 5,
+      "vinculo": 0,
+      "moeda": "220",
+      "num_fatura": "123",
+      "valor_fatura": "10.50",
+      "mec_prestador": "01",
+      "mec_tomador": "01",
+      "mov_temp_bens": 3,
+      "num_due": "26BR0000000017",
+      "mdic": 0,
+      "contrato_cambio": "998877",
+      "valor_moeda": "10.5"
+     }
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     },
+     "municipal": {
+      "tributacao": 3,
+      "pais_resultado": "US"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/serv/comExt/vServMoeda",
+   "regra": ""
+  },
+  {
+   "nome": "nt009_com_nDI",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao",
+     "comercio_exterior": {
+      "modo": 5,
+      "vinculo": 0,
+      "moeda": "220",
+      "num_fatura": "123",
+      "valor_fatura": "10.50",
+      "mec_prestador": "01",
+      "mec_tomador": "01",
+      "mov_temp_bens": 3,
+      "num_due": "26BR0000000017",
+      "mdic": 0,
+      "contrato_cambio": "998877",
+      "num_di": "123"
+     }
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     },
+     "municipal": {
+      "tributacao": 3,
+      "pais_resultado": "US"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/serv/comExt/nDI",
+   "regra": ""
+  },
+  {
+   "nome": "producao_com_nFatura",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao",
+     "comercio_exterior": {
+      "modo": 1,
+      "vinculo": 0,
+      "moeda": "220",
+      "num_fatura": "123",
+      "valor_fatura": null,
+      "mec_prestador": "01",
+      "mec_tomador": "01",
+      "mov_temp_bens": 1,
+      "num_due": "",
+      "mdic": 0,
+      "contrato_cambio": "",
+      "valor_moeda": "10.5"
+     }
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     },
+     "municipal": {
+      "tributacao": 3,
+      "pais_resultado": "US"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "producao"
+   },
+   "campo": "infDPS/serv/comExt/nFatura",
+   "regra": ""
+  },
+  {
+   "nome": "producao_modo_5",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao",
+     "comercio_exterior": {
+      "modo": 5,
+      "vinculo": 0,
+      "moeda": "220",
+      "valor_moeda": "10.5",
+      "mec_prestador": "01",
+      "mec_tomador": "01",
+      "mov_temp_bens": 1,
+      "mdic": 0
+     }
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     },
+     "municipal": {
+      "tributacao": 3,
+      "pais_resultado": "US"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "producao"
+   },
+   "campo": "infDPS/serv/comExt/mdPrestacao",
+   "regra": ""
+  },
+  {
+   "nome": "producao_com_cMun_do_evento",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "121301",
+     "descricao": "Revisao",
+     "evento": {
+      "nome": "Show",
+      "inicio": "2026-12-08",
+      "fim": "2026-12-09",
+      "identificacao": "EV1",
+      "cmun": "3304557"
+     }
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "producao"
+   },
+   "campo": "infDPS/serv/atvEvento/cMun",
+   "regra": ""
+  },
+  {
+   "nome": "producao_com_ajuste_comext",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     },
+     "deducao": {
+      "comercio_exterior": "1"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "producao"
+   },
+   "campo": "infDPS/valores/vDedRed",
+   "regra": ""
+  },
+  {
+   "nome": "E0390",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "121301",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/serv/atvEvento",
+   "regra": "E0390"
+  },
+  {
+   "nome": "E0390_17_10",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "171001",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/serv/atvEvento",
+   "regra": "E0390"
+  },
+  {
+   "nome": "E0392",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao",
+     "evento": {
+      "nome": "Show",
+      "inicio": "2026-12-08",
+      "fim": "2026-12-09",
+      "identificacao": "EV1"
+     }
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/serv/atvEvento",
+   "regra": "E0392"
+  },
+  {
+   "nome": "E0393",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "120101",
+     "descricao": "Revisao",
+     "evento": {
+      "nome": "Show",
+      "inicio": "2026-12-08",
+      "fim": "2026-12-09",
+      "identificacao": "EV1",
+      "cmun": "3304557"
+     }
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/serv/atvEvento/cMun",
+   "regra": "E0393"
+  },
+  {
+   "nome": "E0394",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "121301",
+     "descricao": "Revisao",
+     "evento": {
+      "nome": "Show",
+      "inicio": "2026-12-08",
+      "fim": "2026-12-09",
+      "identificacao": "EV1",
+      "cmun": "3550308"
+     }
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/serv/atvEvento/cMun",
+   "regra": "E0394"
+  },
+  {
+   "nome": "E0424",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     },
+     "recebido": "150"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vServPrest/vReceb",
+   "regra": "E0424"
+  },
+  {
+   "nome": "E0424_e_nao_E0425",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     },
+     "recebido": "100"
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vServPrest/vReceb",
+   "regra": "E0424"
+  },
+  {
+   "nome": "E0500",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     },
+     "deducao": {
+      "comercio_exterior": "1"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC/vAjusteBCIBSCBSComExt",
+   "regra": "E0500"
+  },
+  {
+   "nome": "E0501",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao",
+     "comercio_exterior": {
+      "modo": 5,
+      "vinculo": 0,
+      "moeda": "220",
+      "num_fatura": "123",
+      "valor_fatura": "10.50",
+      "mec_prestador": "01",
+      "mec_tomador": "01",
+      "mov_temp_bens": 3,
+      "num_due": "26BR0000000017",
+      "mdic": 0,
+      "contrato_cambio": "998877"
+     }
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     },
+     "municipal": {
+      "tributacao": 3,
+      "pais_resultado": "US"
+     },
+     "deducao": {
+      "comercio_exterior": "-150.01"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009"
+   },
+   "campo": "infDPS/valores/vAjusteBC/vAjusteBCIBSCBSComExt",
+   "regra": "E0501"
+  },
+  {
+   "nome": "E0908",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009",
+    "ibscbs": {
+     "cind_op": "030101",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "ind_dest": 0,
+     "destinatario": {
+      "nome": "Dest",
+      "documento": "12345678909"
+     }
+    }
+   },
+   "campo": "infDPS/dest",
+   "regra": "E0908"
+  },
+  {
+   "nome": "E0910",
+   "entrada": {
+    "prestador": {
+     "documento": "11222333000181",
+     "nome": "OFICINA TESTE",
+     "op_simples": 3,
+     "apuracao_sn": 1,
+     "im": "123456"
+    },
+    "servico": {
+     "ctribnac": "140101",
+     "descricao": "Revisao",
+     "cnbs": "123456789"
+    },
+    "valores": {
+     "servico": "150",
+     "total": {
+      "percentual_sn": "4.50"
+     }
+    },
+    "cmun_emissor": "3550308",
+    "numero": 42,
+    "tomador": {
+     "nome": "Cliente",
+     "documento": "52998224725"
+    },
+    "emissao": "2026-12-08T10:00:00",
+    "competencia": "2026-12-08",
+    "leiaute": "nt009",
+    "ibscbs": {
+     "cind_op": "030101",
+     "cst": "000",
+     "cclass_trib": "000001",
+     "ind_dest": 1
+    }
+   },
+   "campo": "infDPS/dest",
+   "regra": "E0910"
+  }
+ ]
+}

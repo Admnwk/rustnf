@@ -3,15 +3,16 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 //! DPS v1.01 COMPLETA: modelo + montagem na ordem do XSD + Id de 45 + regras do Anexo I sem rede.
-//! Dois leiautes por `Dps.leiaute`: "producao" (padrao) e "nt009" (XSD da Producao Restrita de 20/10/2026).
+//! Dois leiautes por `Dps.leiaute`: "producao" (padrao) e "nt009" (XSD da Producao Restrita de 24/11/2026, Releases 1
+//! e 2 da NT 009).
 //! Os nomes de campo seguem o JSON do contrato (entra direto por serde); a ordem de recusa e o XML gerado,
 //! byte a byte, estao em `tests/casos/nfse_nacional.json` (secoes `dps` e `dps_erro`).
 
 use serde::{Deserialize, Serialize};
 
 use super::base::{
-    casa_id_dps, centavos, confere, data, data_hora, dinheiro, documento, regra, so_alnum,
-    so_digitos, texto, ErroNfse, No, Txt, Valor, NS, R, VERSAO,
+    casa_id_dps, centavos, confere, data, data_hora, dinheiro, dinheiro_com_sinal, documento,
+    regra, so_alnum, so_digitos, texto, ErroNfse, No, Txt, Valor, NS, R, VERSAO,
 };
 use super::ctribnac;
 use crate::chave_dfe;
@@ -189,6 +190,9 @@ pub fn montar(dps: &Dps) -> R<String> {
     inf.anexar(prestador(&dps.prestador, emit)?);
     if let Some(t) = &dps.tomador {
         inf.anexar(pessoa("toma", t, "infDPS/toma")?);
+    }
+    if lei == LEIAUTE_NT009 {
+        destinatario_infdps(&mut inf, dps.ibscbs.as_ref())?;
     }
     if let Some(i) = &dps.intermediario {
         inf.anexar(pessoa("interm", i, "infDPS/interm")?);

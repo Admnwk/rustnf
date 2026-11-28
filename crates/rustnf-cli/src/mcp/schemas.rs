@@ -108,14 +108,17 @@ fn servico() -> Value {
             ("ctribmun", texto("Codigo de tributacao municipal.")),
             ("cnbs", texto("Codigo NBS.")),
             ("cod_interno", texto("Codigo interno do contribuinte.")),
-            ("comercio_exterior", objeto("Comercio exterior.")),
+            (
+                "comercio_exterior",
+                objeto("Comercio exterior: modo, vinculo, moeda, mec_prestador, mec_tomador, mov_temp_bens, mdic; no leiaute de producao valor_moeda, num_di e num_re; no nt009 num_fatura, valor_fatura, num_duimp, num_due e contrato_cambio."),
+            ),
             (
                 "obra",
                 objeto("Obra: codigo, cib, endereco, inscricao_imobiliaria."),
             ),
             (
                 "evento",
-                objeto("Atividade de evento: nome, inicio, fim, identificacao, endereco."),
+                objeto("Atividade de evento: nome, inicio, fim, identificacao, endereco; no leiaute nt009 tambem cmun (municipio do evento, so' nos subitens 12.13 e 17.10)."),
             ),
             ("complemento", objeto("Informacoes complementares.")),
         ],
@@ -266,7 +269,7 @@ pub fn dps() -> Value {
             ("emissao", texto("dhEmi em ISO 8601; sem fuso vale Brasilia. Vazio = agora, com folga do relogio.")),
             ("ver_aplic", texto("Versao do aplicativo emissor.")),
             ("ctribnac_estrito", json!({"type": "boolean", "description": "Confere o cTribNac contra a Lista Nacional."})),
-            ("leiaute", json!({"type": "string", "enum": ["producao", "nt009"], "description": "Leiaute do XML."})),
+            ("leiaute", json!({"type": "string", "enum": ["producao", "nt009"], "description": "Leiaute do XML: producao (o vigente, padrao) ou nt009 (Releases 1 e 2 da NT 009, o da Producao Restrita de 24/11/2026)."})),
         ],
     ) else {
         return Value::Null;
